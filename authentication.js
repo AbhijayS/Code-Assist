@@ -4,6 +4,7 @@ var fs = require('fs');
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
+var MongoClient = require('mongodb').MongoClient;
 
 app.listen(80, function() {
   console.log("Server running on port 80")
@@ -20,4 +21,11 @@ app.post('/login.html', function(req, res){
 	res.setHeader('Content-Type', 'application/json');
 	console.log(req.body.email)
 	console.log(req.body.password)
+});
+
+// Connect to the db
+MongoClient.connect("mongodb://localhost:27017", function(err, db) {
+  if(!err) {
+    console.log("We are connected");
+  }
 });
