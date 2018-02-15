@@ -1,43 +1,47 @@
-var app = require('http').createServer(handler)
-var io = require('socket.io')(app);
-var fs = require('fs');
+var express = require('express');
+var app = express();
+var http = require('http').Server(app);
+var io = require('socket.io');
+var bodyParser = require('body-parser');
 
-app.listen(80);
+const PORT = 8080;
 
-function handler (req, res) {
-  fs.readFile(__dirname + '/index.html',
-  function (err, data) {
-    if (err) {
-      res.writeHead(500);
-      return res.end('Error loading');
-    }
+//support parsing of application/json type post data
+app.use(bodyParser.json());
+//support parsing of application/x-www-form-urlencoded post data
+app.use(bodyParser.urlencoded({ extended: true }));
 
-    res.writeHead(200);
-    res.end(data);
-  });
-}
+app.use(express.static('public'));
 
-io.on('connection', function (socket) {
-  socket.emit('news', { hello: 'world' });
-  socket.on('my other event', function (data, id) {
-    console.log("Received: ");
-    console.log(data);
-    console.log(id);
-  });
+app.get('/', function(req, res){
+  console.log("Client connected");
+  res.sendFile(__dirname + '/index.html');
+});
+
+app.post('', function(req, res){
+  console.log('Message: ' + req.body.msg);
+})
+
+app.listen(PORT, function() {
+  console.log("Server running on port 8080")
 });
 
 
 /*
-http.createServer(function (req, res) {
-  //Open a file on the server and return it's content:
-  fs.readFile('index.html', function(err, data) {
-    if(err){
-      res.writeHead(500);
-      res.end();
-    }
-    res.writeHead(200, {'Content-Type': 'text/html'});
-    res.write(data);
-    return res.end();
+OLD TESTING STUFF
+io.on('connection', function(socket){
+  console.log('A user connected');
+
+  socket.on('chat message', function(msg){
+    console.log('Message: ' + msg);
   });
-}).listen(8080);
+
+  socket.on('disconnect', function(){
+    console.log('User disconnected');
+  });
+});
+
+http.listen(PORT, function(){
+  console.log('listening on 8080');
+});
 */

@@ -5,31 +5,49 @@
     <title>Code Assist</title>
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <style media="screen">
+      .light{
+        background-color: lightgrey;
+      }
+      #text-area{
+        display:block;
+        outline-style: solid;
+        outline-width: thin;
+        outline-color: black;
+        margin: 0;
+      }
+      #text-area ul{
+        display: block;
+        list-style: none;
+      }
 
-    <!-- Optional theme -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+      .form-group{
+        margin: 0;
+      }
+
+    </style>
   </head>
   <body>
-    <form>
-      <div class="form-group">
-        <label for="inputMsg">Type message</label>
-        <input type="text" name="form-control" value="">
+    <div class="container light">
+      <h1 class="text-center text-primary">LOGIN</h1>
+      <div class="container justify-center">
+        <div id="text-area">
+          <ul>
+            <li>Hey Welcome</li>
+          </ul>
+        </div>
+        <div class="form-group">
+          <form action="" method="post">
+            <input type="text" name="msg" id="text-box">
+            <button type="submit" name="Submit" class="btn btn-primary">Send</button>
+          </form>
+        </div>
       </div>
-    </form>
+    </div>
+
 
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-      var id = 0;
-      var socket = io('http://localhost');
-      socket.on('news', function (data) {
-        //console.log(data);
-        socket.emit('my other event', { my: 'data', id: id});
-        id = id+1;
-      });
-    </script>
 
   </body>
 </html>
