@@ -9,14 +9,8 @@
       .light{
         background-color: lightgrey;
       }
+
       #text-area{
-        display:block;
-        outline-style: solid;
-        outline-width: thin;
-        outline-color: black;
-        margin: 0;
-      }
-      #text-area ul{
         display: block;
         list-style: none;
       }
@@ -25,20 +19,25 @@
         margin: 0;
       }
 
+      #text-box{
+        max-height: 50%;
+        overflow: scroll;
+      }
+
     </style>
   </head>
   <body>
     <div class="container light">
-      <h1 class="text-center text-primary">LOGIN</h1>
+      <h1 class="text-center text-primary">CHAT</h1>
       <div class="container justify-center">
-        <div id="text-area">
-          <ul>
+        <div class="container text-box">
+          <ul id="text-area">
             <li>Hey Welcome</li>
           </ul>
         </div>
         <div class="form-group">
-          <form action="" method="post">
-            <input type="text" name="msg" id="text-box">
+          <form action="">
+            <input type="text" name="msg" id="text-box" autofocus>
             <button type="submit" name="Submit" class="btn btn-primary">Send</button>
           </form>
         </div>
@@ -48,6 +47,23 @@
 
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
 
+    </script>
   </body>
+    <script>
+      $(document).ready(function(){
+          var socket = io().connect();
+          $('form').submit(function(e){
+            e.preventDefault();
+            socket.emit('chat message', $('#text-box').val());
+            $('#text-box').val('');
+            return false;
+          });
+          socket.on('chat message', function(msg){
+            $('#text-area').append($('<li>').text(msg));
+          });
+      });
+    </script>
 </html>
