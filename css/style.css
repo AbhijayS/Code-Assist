@@ -12,6 +12,12 @@
 	background: #eee;
 }
 
+.signUpPage {
+  display: none;
+  position: absolute;
+
+}
+
 .btn-primary {
   margin-left: 5px;
   background-color: white;

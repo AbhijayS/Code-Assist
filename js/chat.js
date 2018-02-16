@@ -5,10 +5,10 @@ SOCKET.IO
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-const PORT = 80;
+const PORT = 8080;
 
 app.get('/', function(req, res){
-  res.sendFile(__dirname + '/index.html');
+  res.sendFile(__dirname + '/chat.html');
 });
 
 io.on('connection', function(socket){
