@@ -1,0 +1,72 @@
+.navbar {
+  margin-bottom: 0;
+  padding: 0;
+  border-bottom: 0;
+}
+.navbar li{
+  margin: 0;
+  padding: 0;
+}
+
+.navbar-nav li a:hover {
+	background: #eee;
+}
+
+.btn-primary {
+  margin-left: 5px;
+  background-color: white;
+  color: skyblue;
+	border-color: skyblue;
+	margin-bottom: 5px;
+}
+
+.btn-primary:hover {
+	color: white;
+	background-color: skyblue;
+	border-color: #eee;
+}
+
+body{
+  font-family: 'Nunito', sans-serif;
+}
+
+.jumbotron {
+  margin: 0;
+  margin-bottom: 50px;
+  padding: 5% 0 10% 0;
+}
+.jumbotron h1{
+  font-weight: bold;
+  margin-bottom: 50px;
+}
+
+.jumbotron p{
+  font-weight: 200;
+}
+
+.form-inline {
+  position: absolute;
+  display: none;
+}
+
+.call-to-action {
+	text-align: center;
+}
+.call-to-action p {
+	margin-bottom: 30px;
+	font-family: sans-serif;
+}
+.glyphicon-large {
+	font-size: 72px;
+}
+
+.container.title{
+  margin-bottom: 2%;
+}
+
+@media screen and (min-width: 768px) {
+  .form-inline {
+    position: relative;
+    display: inline-flex;
+  }
+}

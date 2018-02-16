@@ -2,8 +2,6 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Code Assist</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <!--[if lt IE 9]>
@@ -11,35 +9,69 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,300,300i,400,400i,700" rel="stylesheet">
+    <link rel="stylesheet" href="./css/style.css">
 
-    <style >
-      .jumbotron{
-        font-family: 'Nunito', sans-serif;
-      }
-      .jumbotron h1{
-        font-weight: bold;
-      }
-
-      .jumbotron p{
-        font-weight: 200;
-      }
-    </style>
   </head>
   <body>
-
+    <nav class="navbar navbar-light navbar-static-top">
+    	<div class="container">
+    		<div class="navbar-header">
+    			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+    				<span class="sr-only">Toggle navigation</span>
+    				<span class="icon-bar"></span>
+    				<span class="icon-bar"></span>
+    				<span class="icon-bar"></span>
+    			</button>
+    			<a class="navbar-brand" href="#">Code Assist</a>
+    		</div>
+    		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    			<ul class="nav navbar-nav navbar-right">
+    				<li><a href="#">About</a></li>
+    				<li><a href="#">Contact</a></li>
+    			</ul>
+    		</div>
+    	</div>
+    </nav>
     <div class="jumbotron">
     	<div class="container text-center">
     		<h1>Find a Code Mentor</h1>
-    		<p>live coding help in 24 hours</p>
+    		<p>Instant Live Code Help</p>
         <form class="form-inline">
-          <div class="form-group">
-            <label for="username" class="sr-only">Password</label>
-            <input type="password" class="form-control" id="username" name="username" placeholder="username">
+          <div class="form-group" style="padding-right: 2%">
+            <input type="text" class="form-control" id="username" name="username" placeholder="username">
           </div>
           <button type="submit" class="btn btn-primary">Sign Up</button>
         </form>
     	</div>
   </div>
+  <div class="container overview">
+    <div class="container text-center title">
+      <h1>24-Hour live coding help</h1>
+    </div>
+    <section class="call-to-action">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <span class="glyphicon glyphicon-cloud glyphicon-large" aria-hidden="true"></span>
+            <h3>Realtime Code</h3>
+            <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh.</p>
+          </div>
+          <div class="col-md-4">
+            <span class="glyphicon glyphicon-tasks glyphicon-large" aria-hidden="true"></span>
+            <h3>Task Scheduling</h3>
+            <p>Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. Lorem ipsum dolor.</p>
+          </div>
+          <div class="col-md-4">
+            <span class="glyphicon glyphicon-send glyphicon-large" aria-hidden="true"></span>
+            <h3>Communication</h3>
+            <p>Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
