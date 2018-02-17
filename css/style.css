@@ -1,5 +1,8 @@
 body{
   font-family: 'Nunito', sans-serif;
+  background: linear-gradient(-135deg, #94eaead9, #0d75e8);
+  background-attachment:fixed;
+  /*-webkit-filter: blur(10px);*/
 }
 
 .navbar {
@@ -37,6 +40,7 @@ body{
 }
 
 .jumbotron {
+  background-color: transparent;
   margin: 0;
   margin-bottom: 50px;
   padding: 5% 0 10% 0;
