@@ -1,11 +1,11 @@
 var pageEl = document.getElementById('page');
-var signUpEl = document.getElementById('login');
+var signUpEl = document.getElementById('signUpPage');
 var buttonEl = document.getElementById('signUp');
 var blur = buttonEl.addEventListener("click", function(){
   console.log('cllickd');
-  pageEl.style.transition = '2s'
-  pageEl.style.filter = 'blur(10px)';
-  pageEl.style.WebkitFilter = "blur(10px)";
-  //signUpEl.style.display = "block";
+  pageEl.style.backgroundColor = 'lightgrey';
+  pageEl.style.transition = '1s'
+  pageEl.style.opacity = '0.3';
+  signUpEl.style.display = "block";
 
 })
