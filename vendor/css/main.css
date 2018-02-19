@@ -28,6 +28,10 @@
 /*//////////////////////////////////////////////////////////////////
 [ RESTYLE TAG ]*/
 
+.limiter {
+  background: transparent !important;
+}
+
 * {
 	margin: 0px;
 	padding: 0px;
@@ -36,7 +40,8 @@
 
 body, html {
 	height: 100%;
-	font-family: Poppins-Regular, sans-serif;
+	font-family: 'Nunito', sans-serif;
+  background: transparent;
 }
 
 /*---------------------------------------------*/
@@ -168,16 +173,12 @@ iframe {
   justify-content: center;
   align-items: center;
   padding: 15px;
-  background: #9053c7;
-  background: -webkit-linear-gradient(-135deg, #c850c0, #4158d0);
-  background: -o-linear-gradient(-135deg, #c850c0, #4158d0);
-  background: -moz-linear-gradient(-135deg, #c850c0, #4158d0);
-  background: linear-gradient(-135deg, #c850c0, #4158d0);
+  background: transparent;
 }
 
 .wrap-login100 {
   width: 960px;
-  background: #fff;
+  background: transparent;
   border-radius: 10px;
   overflow: hidden;
 
@@ -209,9 +210,10 @@ iframe {
 }
 
 .login100-form-title {
-  font-family: Poppins-Bold;
-  font-size: 24px;
-  color: #333333;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  font-size: 36px;
+  color: black;
   line-height: 1.2;
   text-align: center;
 

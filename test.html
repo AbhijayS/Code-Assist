@@ -11,31 +11,32 @@
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,300,300i,400,400i,700" rel="stylesheet">
     <style media="screen">
       body{
-        font-family: 'Nunito', sans-serif;
-        background: linear-gradient(-135deg, #94eaead9, #0d75e8);
-        background-attachment:fixed;
-        /*-webkit-filter: blur(10px);*/
+        background-color: #337ab7;
       }
 
-      #login{
-        background-color: white;
-        height: 500px;
-
+      .form{
+        position: absolute;
+        border: none;
+        top: 10%;
+        left: 10%;
+        right: 10%;
+        bottom: 10%;
+        z-index: 999;
       }
 
-      .login-title{
-        width: 100px;
-        height: 100px;
-        margin: auto;
+      .form iframe{
+        border: none;
+        height: 100%;
+        width: 100%;
+        padding: 0;
       }
     </style>
 
   </head>
   <body>
-    <div class="container">
-      <div id="login" class="text-center">
-        <span class="login-title">Welcome</span>
-      </div>
+    <!-- 16:9 aspect ratio -->
+    <div class="form">
+      <iframe src="vendor/index.html"></iframe>
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>

@@ -1,5 +1,25 @@
 body{
   font-family: 'Nunito', sans-serif;
+  background: linear-gradient(-135deg, #94eaead9, #0d75e8);
+  background-attachment:fixed;
+}
+
+.signIn-form{
+  display: none;
+  position: absolute;
+  border: none;
+  top: 10%;
+  left: 10%;
+  right: 10%;
+  bottom: 10%;
+  z-index: 999;
+}
+
+.signIn-form iframe{
+  border: none;
+  height: 100% !important;
+  width: 100%;
+  padding: 0;
 }
 
 .navbar {
@@ -34,6 +54,8 @@ body{
   margin: 0;
   margin-bottom: 50px;
   padding: 5% 0 10% 0;
+  background-color: transparent;
+
 }
 .jumbotron h1{
   font-weight: bold;
