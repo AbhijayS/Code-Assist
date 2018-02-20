@@ -1,5 +1,6 @@
 var socket = io.connect();
-$('#signupForm').submit(function(e){
+console.log("emit")
+$('form').submit(function(e){
   e.preventDefault();
-  socket.emit("Signup")
+  socket.emit("signup", {username: $("#emailInput").val(), password: $("#passwordInput").val()})
 });
