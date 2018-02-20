@@ -22,7 +22,8 @@
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">Code Assist</a>
+            <!-- <a class="navbar-brand" href="#">Code Assist</a> -->
+            <a class="navbar-brand" href="#">Code</a>
           </div>
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav navbar-right">
@@ -37,12 +38,12 @@
       <div class="jumbotron">
         <div class="container text-center">
           <!--<h1>Code Assist</h1>-->
-          <h1>Code Assist</h1>
-          <!-- <p>Live Coding</p> -->
-          <p>Live Coding Help</p>
+          <h1>Code</h1>
+          <!-- <p>Live Coding Help</p> -->
+          <p>Code</p>
           <form class="form-inline">
             <div class="form-group" style="padding-right: 2%">
-              <input class="" type="text" placeholder="username" autofocus>
+              <input id="text-box" type="text" placeholder="username" autofocus>
             </div>
             <button type="submit" class="btn btn-primary" id="signUp">Get Started<span class="glyphicon glyphicon-menu-right"></span></button>
           </form>
@@ -55,7 +56,7 @@
       <div class="container overview">
         <div class="container text-center title">
           <!--<h1>24-Hour live coding help</h1>-->
-          <h1>24-Hour live coding help</h1>
+          <h1>Code</h1>
         </div>
         <section class="call-to-action">
           <div class="container">
@@ -97,6 +98,9 @@
       $(document).ready(function(){
         $('form').submit(function(e){
           e.preventDefault();
+          var msg = $('#text-box').val();
+          console.log(msg);
+          $('username-text-box').val(msg);
           return false;
         });
       });
