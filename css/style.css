@@ -58,6 +58,9 @@ body{
   padding-left: 5px;
 }
 
+.navbar-nav>li>a:hover{
+  background-color: transparent;
+}
 input[type=text] {
   background-color: transparent;
   border: none;
