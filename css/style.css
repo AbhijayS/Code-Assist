@@ -2,7 +2,24 @@ body{
   font-family: 'Nunito', sans-serif;
   background: linear-gradient(-135deg, #94eaead9, #0d75e8);
   background-attachment:fixed;
-  /*-webkit-filter: blur(10px);*/
+}
+
+.signIn-form{
+  display: none;
+  position: absolute;
+  border: none;
+  top: 10%;
+  left: 10%;
+  right: 10%;
+  bottom: 10%;
+  z-index: 999;
+}
+
+.signIn-form iframe{
+  border: none;
+  height: 100% !important;
+  width: 100%;
+  padding: 0;
 }
 
 .navbar {
@@ -19,31 +36,65 @@ body{
 	background: #eee;
 }
 
-#signUpPage {
-  display: none;
-  position: absolute;
-
-}
-
 .btn-primary {
-  margin-left: 5px;
-  background-color: white;
-  color: skyblue;
-	border-color: skyblue;
+  margin-left: 2%;
+  background-color: transparent;
+  color: white;
+	border-color: white;
 	margin-bottom: 5px;
 }
 
 .btn-primary:hover {
-	color: white;
-	background-color: skyblue;
+	color: skyblue;
+	background-color: white;
 	border-color: #eee;
 }
 
-.jumbotron {
+.btn-primary span{
+  -webkit-transition: 0.4s ease-in-out;
+  transition: 0.4s ease-in-out;
+}
+
+.btn-primary:hover span{
+  padding-left: 5px;
+}
+
+input[type=text] {
   background-color: transparent;
+  border: none;
+  border-bottom: 2px solid white;
+  color: white;
+  padding: 8px;
+  letter-spacing: 1px;
+  font-size: 1.5em;
+}
+
+input[type=text]:focus {
+  outline: none;
+}
+
+::placeholder {
+    color: #00000066;
+    opacity: 1; /* Firefox */
+    text-align: center;
+}
+
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+   color: #00000066;
+   text-align: center;
+}
+
+::-ms-input-placeholder { /* Microsoft Edge */
+   color: #00000066;
+   text-align: center;
+}
+
+.jumbotron {
   margin: 0;
-  margin-bottom: 50px;
-  padding: 5% 0 10% 0;
+  margin-bottom: 8%;
+  padding: 5% 0 0 0;
+  background-color: transparent;
+
 }
 .jumbotron h1{
   font-weight: bold;
@@ -51,14 +102,18 @@ body{
 }
 
 .jumbotron p{
-  font-weight: 200;
+  font-weight: 400;
+  margin-bottom: 5%;
 }
 
 .form-inline {
-  position: absolute;
-  display: none;
+  position: relative;
+  display: inline-flex;
 }
 
+.form-control {
+  width: 500px;
+}
 .call-to-action {
 	text-align: center;
 }
@@ -74,9 +129,12 @@ body{
   margin-bottom: 2%;
 }
 
-@media screen and (min-width: 768px) {
-  .form-inline {
-    position: relative;
-    display: inline-flex;
-  }
+.divider {
+  height: 1px;
+  margin-left: 10%;
+  margin-bottom: 2%;
+  width:80%;
+  display:block; /* for use on default inline elements like span */
+  overflow: hidden;
+  background-color: #dddddd87;
 }

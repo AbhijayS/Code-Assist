@@ -10,7 +10,6 @@
     <![endif]-->
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,300,300i,400,400i,700" rel="stylesheet">
     <link rel="stylesheet" href="./css/style.css">
-
   </head>
   <body>
     <div id="page">
@@ -23,7 +22,7 @@
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#"></a>
+            <a class="navbar-brand" href="#">Code Assist</a>
           </div>
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav navbar-right">
@@ -33,24 +32,30 @@
           </div>
         </div>
       </nav>
+
+
       <div class="jumbotron">
         <div class="container text-center">
           <!--<h1>Code Assist</h1>-->
-          <h1>Code</h1>
+          <h1>Code Assist</h1>
           <!-- <p>Live Coding</p> -->
-          <p>Code</p>
+          <p>Live Coding Help</p>
           <form class="form-inline">
             <div class="form-group" style="padding-right: 2%">
-              <input type="text" class="form-control" id="username" name="username" placeholder="username" autofocus>
+              <input class="" type="text" placeholder="username" autofocus>
             </div>
-            <button type="" class="btn btn-primary" id="signUp">Sign Up</button>
+            <button type="submit" class="btn btn-primary" id="signUp">Get Started <span class="glyphicon glyphicon-menu-right"></span></button>
           </form>
         </div>
+
       </div>
+
+      <div class="divider"></div>
+
       <div class="container overview">
         <div class="container text-center title">
           <!--<h1>24-Hour live coding help</h1>-->
-          <h1>24-Hour</h1>
+          <h1>24-Hour live coding help</h1>
         </div>
         <section class="call-to-action">
           <div class="container">
@@ -76,17 +81,25 @@
       </div>
     </div>
 
+    <!-- 16:9 aspect ratio -->
+    <div class="signIn-form">
+      <iframe src="vendor/index.html" scrolling="no"></iframe>
+    </div>
+
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
     <script type="text/javascript" src="/js/blur.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
 
     <script type="text/javascript">
+
       $(document).ready(function(){
-          $('form').submit(function(e){
-            e.preventDefault();
-            return false;
-          });
+        $('form').submit(function(e){
+          e.preventDefault();
+          return false;
+        });
       });
 
     </script>
