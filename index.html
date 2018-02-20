@@ -84,7 +84,7 @@
 
     <!-- 16:9 aspect ratio -->
     <div class="signIn-form">
-      <iframe src="vendor/index.html" scrolling="no"></iframe>
+      <iframe id="iframe-form" src="vendor/index.html" scrolling="no"></iframe>
     </div>
 
 
@@ -100,7 +100,7 @@
           e.preventDefault();
           var msg = $('#text-box').val();
           console.log(msg);
-          $('username-text-box').val(msg);
+          $('#iframe-form').contents().find('#username-text-box').val(msg);
           return false;
         });
       });
