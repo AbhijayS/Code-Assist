@@ -103,17 +103,18 @@
           $('#iframe-form').contents().find('#username-text-box').val(msg);
           return false;
         });
+        $("#iframe-form").contents().find('#login-form').submit(function(e) {
+          e.preventDefault();
+          alert("form submitted");
+        });
       });
 
-      $("#iframe-form").contents().find('#login-form').bind("submit", function(e) {
-        e.preventDefault();
-        alert("form submitted");
+
         /*
         console.log('triggered');
         var pass = $('#iframe-form').contents().find('#form-password').val();
         console.log('Password: ' + pass);
         */
-      });
 
 
     </script>
