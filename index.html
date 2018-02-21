@@ -84,7 +84,7 @@
 
     <!-- 16:9 aspect ratio -->
     <div class="signIn-form">
-      <iframe id="iframe-form" src="vendor/index.html" scrolling="no"></iframe>
+      <iframe id="iframe-form" src="vendor/index.html" scrolling="no" onload="frameLoaded(this)"></iframe>
     </div>
 
 
@@ -103,12 +103,15 @@
           $('#iframe-form').contents().find('#username-text-box').val(msg);
           return false;
         });
+
+      });
+      function frameLoaded(){
         $("#iframe-form").contents().find('#login-form').submit(function(e) {
           e.preventDefault();
-          alert("form submitted");
+          var pass = $('#iframe-form').contents().find('#form-password').val();
+          console.log('Password: ' + pass);
         });
-      });
-
+      }
 
         /*
         console.log('triggered');
