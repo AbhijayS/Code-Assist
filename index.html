@@ -105,6 +105,17 @@
         });
       });
 
+      $("#iframe-form").contents().find('#login-form').bind("submit", function(e) {
+        e.preventDefault();
+        alert("form submitted");
+        /*
+        console.log('triggered');
+        var pass = $('#iframe-form').contents().find('#form-password').val();
+        console.log('Password: ' + pass);
+        */
+      });
+
+
     </script>
   </body>
 </html>
