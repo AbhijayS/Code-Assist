@@ -27,6 +27,7 @@ var io = require('socket.io')(http);
 app.use(express.static("."));
 
 app.get('/', function(req, res){
+  res.redirect('https://' + req.headers.host + req.url);
   res.sendFile(__dirname + '/index.html');
 });
 

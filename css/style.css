@@ -49,7 +49,6 @@ body{
 	background-color: white;
 	border-color: #eee;
 }
-
 .btn-primary span{
   -webkit-transition: 0.4s ease-in-out;
   transition: 0.4s ease-in-out;
@@ -59,6 +58,9 @@ body{
   padding-left: 5px;
 }
 
+.navbar-nav>li>a:hover{
+  background-color: transparent;
+}
 input[type=text] {
   background-color: transparent;
   border: none;
@@ -87,6 +89,10 @@ input[type=text]:focus {
 ::-ms-input-placeholder { /* Microsoft Edge */
    color: #00000066;
    text-align: center;
+}
+
+.navbar-nav>li>a:hover{
+  background-color: transparent;
 }
 
 .jumbotron {

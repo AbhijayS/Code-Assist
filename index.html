@@ -22,7 +22,8 @@
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">Code Assist</a>
+            <!-- <a class="navbar-brand" href="#">Code Assist</a> -->
+            <a class="navbar-brand" href="#">Code</a>
           </div>
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav navbar-right">
@@ -37,14 +38,14 @@
       <div class="jumbotron">
         <div class="container text-center">
           <!--<h1>Code Assist</h1>-->
-          <h1>Code Assist</h1>
-          <!-- <p>Live Coding</p> -->
-          <p>Live Coding Help</p>
+          <h1>Code</h1>
+          <!-- <p>Live Coding Help</p> -->
+          <p>Code</p>
           <form class="form-inline">
             <div class="form-group" style="padding-right: 2%">
-              <input class="" type="text" placeholder="username" autofocus>
+              <input id="text-box" type="text" placeholder="username" autofocus>
             </div>
-            <button type="submit" class="btn btn-primary" id="signUp">Get Started <span class="glyphicon glyphicon-menu-right"></span></button>
+            <button type="submit" class="btn btn-primary" id="signUp">Get Started<span class="glyphicon glyphicon-menu-right"></span></button>
           </form>
         </div>
 
@@ -55,7 +56,7 @@
       <div class="container overview">
         <div class="container text-center title">
           <!--<h1>24-Hour live coding help</h1>-->
-          <h1>24-Hour live coding help</h1>
+          <h1>Code</h1>
         </div>
         <section class="call-to-action">
           <div class="container">
@@ -83,24 +84,41 @@
 
     <!-- 16:9 aspect ratio -->
     <div class="signIn-form">
-      <iframe src="vendor/index.html" scrolling="no"></iframe>
+      <iframe id="iframe-form" src="vendor/index.html" scrolling="no" onload="frameLoaded(this)"></iframe>
     </div>
 
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="js/blur.js"></script>
 
-    <script type="text/javascript" src="/js/blur.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
 
     <script type="text/javascript">
 
       $(document).ready(function(){
         $('form').submit(function(e){
           e.preventDefault();
+          var msg = $('#text-box').val();
+          console.log(msg);
+          $('#iframe-form').contents().find('#username-text-box').val(msg);
           return false;
         });
+
       });
+      function frameLoaded(){
+        $("#iframe-form").contents().find('#login-form').submit(function(e) {
+          e.preventDefault();
+          var pass = $('#iframe-form').contents().find('#form-password').val();
+          console.log('Password: ' + pass);
+        });
+      }
+
+        /*
+        console.log('triggered');
+        var pass = $('#iframe-form').contents().find('#form-password').val();
+        console.log('Password: ' + pass);
+        */
+
 
     </script>
   </body>
