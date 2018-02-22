@@ -24,7 +24,7 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
-app.enable('trust proxy');
+//app.enable('trust proxy');
 
 app.use(express.static("."));
 
@@ -52,23 +52,22 @@ app.get('/login.html', function(req, res){
 io.on('connection', function(socket){
   console.log('User connected');
 
-  socket.on('signup', function(user) {
-    console.log("Username: " + user.username)
-    console.log("Password: " + user.password)
+  socket.on('signup', function(data) {
+    console.log("Username: " + data.username);
+    console.log("Password: " + data.password);
   });
 
-  socket.on('chat message', function(msg){
-    io.emit('chat message', msg);
-    console.log('Message: ' + msg);
+  socket.on('chat message', function(data){
+    io.emit('chat message', data);
+    console.log('Message: ' + data);
   });
 
   socket.on('disconnect', function(){
-    console.log('User disconnected');
+    console.log('------------------ Session Ended ------------------');
+    console.log('---------------------------------------------------')
+    console.log('');
   });
 
-  socket.on('username', function(data){
-    console.log('Username: '+ data);
-  })
 });
 
 http.listen(PORT, function(){
