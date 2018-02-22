@@ -24,11 +24,21 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
+app.enable('trust proxy');
+
 app.use(express.static("."));
 
+app.use(function(req, res, next) {
+  if(req.secure) {
+    next();
+  } else{
+    res.redirect('https://' + req.headers.host + req.url);
+  }
+});
+
 app.get('/', function(req, res){
-  res.redirect('https://' + req.headers.host + req.url);
   res.sendFile(__dirname + '/index.html');
+  console.log('index loaded');
 });
 
 app.get('/chat.html', function(req, res){
@@ -42,7 +52,7 @@ app.get('/login.html', function(req, res){
 io.on('connection', function(socket){
   console.log('User connected');
 
-  socket.on("signup", function(user) {
+  socket.on('signup', function(user) {
     console.log("Username: " + user.username)
     console.log("Password: " + user.password)
   });
