@@ -92,28 +92,6 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
     <script type="text/javascript" src="js/blur.js"></script>
-    <script type="text/javascript">
-    var socket = io().connect();
-
-    $(document).ready(function(){
-
-      $('form').submit(function(e){
-        e.preventDefault();
-        var msg = $('#text-box').val();
-        console.log(msg);
-        $('#iframe-form').contents().find('#username-text-box').val(msg);
-        return false;
-      });
-    });
-
-    function frameLoaded(){
-      $("#iframe-form").contents().find('#login-form').submit(function(e) {
-        e.preventDefault();
-        var pass = $('#iframe-form').contents().find('#form-password').val();
-        var user = $('#iframe-form').contents().find('#username-text-box').val();
-        socket.emit('signup', {username: user, password:pass});
-      });
-    }
-    </script>
+    <script type="text/javascript" src="js/main.js"></script>
   </body>
 </html>
