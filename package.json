@@ -1,0 +1,29 @@
+{
+  "name": "code-assist",
+  "version": "1.0.0",
+  "description": "Testing new code assist website code. This will be more organixed and will be moved to a more permanent branch soon.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AbhijayS/Code-Assist.git"
+  },
+  "author": "Abhijay Saini",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AbhijayS/Code-Assist/issues"
+  },
+  "homepage": "https://github.com/AbhijayS/Code-Assist#readme",
+  "dependencies": {
+   "bcryptjs": "*",
+   "body-parser": "*",
+   "express": "*",
+   "express-handlebars": "*",
+   "express-validator": "*",
+   "mongodb": "*",
+   "mongoose": "*",
+   "passport": "*",
+ }
+}
