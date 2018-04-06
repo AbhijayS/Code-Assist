@@ -17,13 +17,19 @@
   },
   "homepage": "https://github.com/AbhijayS/Code-Assist#readme",
   "dependencies": {
-   "bcryptjs": "*",
-   "body-parser": "*",
-   "express": "*",
-   "express-handlebars": "*",
-   "express-validator": "*",
-   "mongodb": "*",
-   "mongoose": "*",
-   "passport": "*",
- }
+    "bcryptjs": "*",
+    "body-parser": "*",
+    "cookie-parser": "^1.4.1",
+    "express": "*",
+    "express-handlebars": "*",
+    "express-validator": "*",
+    "mongodb": "*",
+    "mongoose": "*",
+    "passport": "*",
+    "passport-http": "*",
+    "passport-local": "*"
+  },
+  "devDependencies": {
+    "nodemon": "^1.17.3"
+  }
 }
