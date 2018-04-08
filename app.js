@@ -7,21 +7,26 @@ var expressValidator = require('express-validator');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var mongo = require('mongodb');
-var mongoose = require('mongoose');
-
-// mongoose.connect('mongodb://localhost/loginapp');
-// var db = mongoose.connection;
 
 var routes = require('./routes/index');
-// var users = require('./routes/users');
 
 // Init App
 var app = express();
 
+// Create App Instance
+var hbs = exphbs({
+	defaultLayout: 'layout'
+});
+
 // View Engine
 app.set('views', path.join(__dirname, 'views'));
-app.engine('handlebars', exphbs({defaultLayout:'layout'}));
+app.engine('handlebars', hbs);
 app.set('view engine', 'handlebars');
+
+// BodyParser Middleware
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
 
 // Set Static Folder
 app.use(express.static(path.join(__dirname, 'public')));

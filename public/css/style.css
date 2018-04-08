@@ -1,6 +1,6 @@
 body{
   font-family: 'Nunito', sans-serif !important;
-  background: linear-gradient(-135deg, #94eaead9, #0d75e8) !important;
+  background: linear-gradient(-135deg, #94eaead9, #0d75e8);
   background-attachment:fixed;
 }
 /*
@@ -23,9 +23,17 @@ body{
 } */
 
 .navbar {
-  margin-bottom: 0;
+  margin: 0;
   padding: 0;
-  border-bottom: 0;
+  background: transparent !important;
+  border: 0;
+  border-color: transparent;
+}
+
+.navbar-collapse {
+  background:none !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 /* .navbar li{
   margin: 0;
@@ -35,37 +43,36 @@ body{
 .navbar-nav li a:hover {
 	background: #eee;
 }
-
-.btn-primary {
+*/
+#jumbotron-container .btn-primary {
   margin-left: 2%;
-  background-color: transparent;
-  color: white;
-	border-color: white;
-	margin-bottom: 5px;
+  background-color: transparent !important;
+  color: white !important;
+	border-color: white !important;
+	margin-bottom: 5px !important;
 }
 
-.btn-primary:hover {
-	color: skyblue;
-	background-color: white;
+#jumbotron-container .btn-primary:hover {
+	color: skyblue !important;
+	background-color: white !important;
 	border-color: #eee;
 }
 
 
-.btn-primary span{
+#jumbotron-container .btn-primary span{
+  margin: 0;
+  margin-top: 3%;
+  margin-left: 1%;
+  padding: 0;
   -webkit-transition: 0.4s ease-in-out;
   transition: 0.4s ease-in-out;
 }
 
-.btn-primary:hover span{
+#jumbotron-container .btn-primary:hover span{
   padding-left: 5px;
 }
 
-.navbar-nav>li>a:hover{
-  background-color: transparent;
-}
-*/
-
-input[type=text] {
+#jumbotron-container input[type=text] {
   background-color: transparent;
   border: none;
   border-bottom: 2px solid white;
@@ -75,7 +82,7 @@ input[type=text] {
   font-size: 1.5em;
 }
 
-input[type=text]:focus {
+#jumbotron-container input[type=text]:focus {
   outline: none;
 }
 
@@ -98,47 +105,44 @@ input[type=text]:focus {
 #jumbotron-container{
   background-color: transparent;
 }
-.jumbotron {
-  margin: 0;
-  margin-bottom: 8%;
+
+#jumbotron-container {
+  margin: 8% 0;
   padding: 5% 0 0 0;
   height: 100vh;
 }
 
-
-.jumbotron h1{
+#jumbotron-container h1{
+  font-size: 100px !important;
   font-weight: bold;
   margin-bottom: 50px;
 }
 
-.jumbotron p{
+#jumbotron-container p{
+  font-size: 35px !important;
   font-weight: 400;
-  margin-bottom: 5%;
+  margin: 5% 0 10% 0;
 }
 
-/* .form-inline {
-  position: relative;
-  display: inline-flex;
-}
-
-.form-control {
-  width: 500px;
-}
-.call-to-action {
+/* .form-control {
+  width: 100%;
+} */
+.overview .call-to-action {
 	text-align: center;
 }
-.call-to-action p {
+.overview .call-to-action p {
 	margin-bottom: 30px;
 	font-family: sans-serif;
-} */
-.glyphicon-large {
-	font-size: 72px;
 }
 
-/* .container.title{
+.overview .glyphicon-large {
+  font-size: 72px !important;
+}
+
+.overview .title{
   margin-bottom: 2%;
 }
-
+/*
 .divider {
   height: 1px;
   margin-left: 10%;
@@ -148,3 +152,17 @@ input[type=text]:focus {
   overflow: hidden;
   background-color: #dddddd87;
 } */
+
+#jumbotron-container .form-inline {
+  margin-top: 10%;
+}
+
+.overview {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+}
+
+.overview .title h1{
+  font-size: 50px;
+}
