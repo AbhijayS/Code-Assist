@@ -19,9 +19,11 @@
   "dependencies": {
     "bcryptjs": "*",
     "body-parser": "*",
+    "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.1",
     "express": "*",
     "express-handlebars": "*",
+    "express-session": "^1.15.6",
     "express-validator": "*",
     "mongodb": "*",
     "mongoose": "*",

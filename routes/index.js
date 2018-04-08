@@ -8,16 +8,31 @@ var LocalStrategy = require('passport-local').Strategy;
 // Get Homepage
 router.get('/', function(req, res){
 	res.render('index', {layout: 'layout'});
+	console.log(req.isAuthenticated());
 });
 
 // Login
 router.get('/login', function(req, res){
-	res.render('login', {layout: false});
+	if(req.user) {
+		res.redirect('/');
+	}else{
+		res.render('login', {layout: false});
+	}
+
 });
 
 // Register
 router.get('/register', function(req, res){
-	res.render('register', {layout: false});
+	if(req.user) {
+		res.redirect('/');
+	}else{
+		res.render('register', {layout: false});
+	}
+});
+
+router.get('/logout', function(req, res) {
+	req.logout();
+	res.redirect('/login');
 });
 
 // Register User
@@ -48,7 +63,7 @@ router.post('/register', function(req, res){
 		console.log('--------------------------------------------');
 
 	});
-	res.redirect('register');
+	res.redirect('/');
 });
 
 passport.use(new LocalStrategy(
@@ -83,6 +98,7 @@ passport.deserializeUser(function(id, done) {
 router.post('/login',
  	passport.authenticate('local', {failureRedirect: '/login'}),
 	function(req, res) {
+		// console.log(req.body.username);
 		res.redirect('/');
 });
 
