@@ -16,7 +16,8 @@ router.get('/login', function(req, res){
 	if(req.user) {
 		res.redirect('/');
 	}else{
-		res.render('login', {layout: false});
+		console.log(req.flash('username'));
+		res.render('login', {layout: false, username: req.flash('username')});
 	}
 
 });
@@ -33,6 +34,16 @@ router.get('/register', function(req, res){
 router.get('/logout', function(req, res) {
 	req.logout();
 	res.redirect('/login');
+});
+
+router.get('/dashboard', function(req, res) {
+	if(req.user) {
+		res.render('dashboard');
+	}else {
+		console.log(req.body.username);
+		req.flash('username', req.body.username);
+		res.redirect('/login');
+	}
 });
 
 // Register User
@@ -101,5 +112,6 @@ router.post('/login',
 		// console.log(req.body.username);
 		res.redirect('/');
 });
+
 
 module.exports = router;
