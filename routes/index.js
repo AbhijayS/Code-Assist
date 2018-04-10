@@ -59,18 +59,28 @@ router.post('/register', function(req, res){
 		email: email,
 		password: password,
 	});
-	User.createUser(newUser, function(err, user){
-		if(err) throw err;
-		console.log('--------------------------------------------');
-		console.log('User Created ->')
-		console.log(user);
-		console.log('');
-		console.log('--------------------------------------------');
-		// req.user = true;
 
+	User.getUserByUsername(username, function(err, user) {
+		console.log(user);
+		if (user) {
+			console.log("user exists")
+			res.render("register", )
+		} else {
+			console.log("new user created")
+			User.createUser(newUser, function(err, user){
+				if(err) throw err;
+				console.log('--------------------------------------------');
+				console.log('User Created ->')
+				console.log(user);
+				console.log('');
+				console.log('--------------------------------------------');
+				res.redirect('/');
+				// req.user = true;
+			});
+			// console.log(req.user);
+		}
 	});
-	// console.log(req.user);
-	res.redirect('/');
+
 });
 
 passport.use(new LocalStrategy(
