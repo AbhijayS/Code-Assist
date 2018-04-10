@@ -16,6 +16,7 @@ router.get('/login', function(req, res){
 	if(req.user) {
 		res.redirect('/');
 	}else{
+<<<<<<< HEAD
 		var username = req.flash('username');
 		console.log("username: " + username);
 		if(username == '')
@@ -34,6 +35,9 @@ router.get('/login', function(req, res){
 				}
 			});
 		}
+=======
+		res.render('login', {layout: false});
+>>>>>>> parent of 70f4165... trying to get username from homepage to login/register if they click on "go to dashboard"
 	}
 		// console.log(req.flash('username'));
 });
@@ -52,6 +56,7 @@ router.get('/logout', function(req, res) {
 	res.redirect('/login');
 });
 
+<<<<<<< HEAD
 router.post('/dashboard', function(req, res) {
 	if(req.user) {
 		res.render('dashboard');
@@ -62,6 +67,8 @@ router.post('/dashboard', function(req, res) {
 	}
 });
 
+=======
+>>>>>>> parent of 70f4165... trying to get username from homepage to login/register if they click on "go to dashboard"
 // Register User
 router.post('/register', function(req, res){
 	var username = req.body.username;
@@ -130,6 +137,5 @@ router.post('/login',
 		// console.log(req.body.username);
 		res.redirect('/');
 });
-
 
 module.exports = router;
