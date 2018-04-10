@@ -7,8 +7,8 @@ var LocalStrategy = require('passport-local').Strategy;
 
 // Get Homepage
 router.get('/', function(req, res){
+	// console.log(req.isAuthenticated());
 	res.render('index', {layout: 'layout'});
-	console.log(req.isAuthenticated());
 });
 
 // Login
@@ -16,39 +16,13 @@ router.get('/login', function(req, res){
 	if(req.user) {
 		res.redirect('/');
 	}else{
-<<<<<<< HEAD
-		var username = req.flash('username');
-		console.log("username: " + username);
-		if(username == '')
-		{
-			res.render('login', {layout: false});
-		}else{
-			User.getUserByUsername(username, function(err, user) {
-				if(err) throw err;
-				if(user) {
-					console.log('User exists');
-					res.render('login', {layout: false, username: username});
-				}else {
-					console.log("Doesn't exist");
-					req.flash('username', username);
-					res.redirect('/register');
-				}
-			});
-		}
-=======
 		res.render('login', {layout: false});
->>>>>>> parent of 70f4165... trying to get username from homepage to login/register if they click on "go to dashboard"
 	}
-		// console.log(req.flash('username'));
 });
 
 // Register
 router.get('/register', function(req, res){
-	if(req.user) {
-		res.redirect('/');
-	}else{
-		res.render('register', {layout: false, username: req.flash('username')});
-	}
+	res.render('register', {layout: false});
 });
 
 router.get('/logout', function(req, res) {
@@ -56,19 +30,16 @@ router.get('/logout', function(req, res) {
 	res.redirect('/login');
 });
 
-<<<<<<< HEAD
-router.post('/dashboard', function(req, res) {
+router.get('/dashboard', function(req, res) {
 	if(req.user) {
 		res.render('dashboard');
 	}else {
-		console.log("Sending username: " + req.body.username);
+		console.log(req.body.username);
 		req.flash('username', req.body.username);
 		res.redirect('/login');
 	}
 });
 
-=======
->>>>>>> parent of 70f4165... trying to get username from homepage to login/register if they click on "go to dashboard"
 // Register User
 router.post('/register', function(req, res){
 	var username = req.body.username;
@@ -95,8 +66,10 @@ router.post('/register', function(req, res){
 		console.log(user);
 		console.log('');
 		console.log('--------------------------------------------');
+		// req.user = true;
 
 	});
+	// console.log(req.user);
 	res.redirect('/');
 });
 
@@ -105,14 +78,12 @@ passport.use(new LocalStrategy(
 		User.getUserByUsername(username, function(err, user) {
 			if(err) throw err;
 			if(!user) {
-				console.log("user doesn't exist");
 				return done(null, false, {message: 'Unknown user'});
 			}
 
 			User.comparePassword(password, user.password, function(err, isMatch) {
 				if(err) throw err;
 				if(isMatch) {
-					console.log("user exists");
 					return done(null, user);
 				}else{
 					return done(null, false, {message: 'Invalid password'});
@@ -132,10 +103,11 @@ passport.deserializeUser(function(id, done) {
 });
 
 router.post('/login',
- 	passport.authenticate('local', {failureRedirect: '/login'}),
+ 	passport.authenticate('local', {successRedirect: '/', failureRedirect: '/login'}),
 	function(req, res) {
 		// console.log(req.body.username);
 		res.redirect('/');
 });
+
 
 module.exports = router;

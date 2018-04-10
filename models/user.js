@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var bcrypt = require('bcryptjs');
 
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/app');
+mongoose.connect('mongodb://localhost/code-assist');
 var db = mongoose.connection;
 
 // User Schema

@@ -7,7 +7,7 @@ var expressValidator = require('express-validator');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var mongo = require('mongodb');
-// var flash = require('connect-flash');
+var flash = require('connect-flash');
 var routes = require('./routes/index');
 var session = require('express-session');
 
@@ -19,12 +19,6 @@ var hbs = exphbs({
 	defaultLayout: 'layout'
 });
 
-// app.use(require('connect-flash')());
-// app.use(session({
-//     secret: 'secret',
-//     saveUninitialized: true,
-//     resave: true
-// }));
 
 // View Engine
 app.set('views', path.join(__dirname, 'views'));
@@ -46,9 +40,12 @@ app.use(session({
     resave: true
 }));
 
+
 // Passport init
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.use(require('connect-flash')());
 
 // Global Vars
 app.use(function (req, res, next) {
