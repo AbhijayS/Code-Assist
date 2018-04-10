@@ -16,10 +16,26 @@ router.get('/login', function(req, res){
 	if(req.user) {
 		res.redirect('/');
 	}else{
-		console.log(req.flash('username'));
-		res.render('login', {layout: false, username: req.flash('username')});
+		var username = req.flash('username');
+		console.log("username: " + username);
+		if(username == '')
+		{
+			res.render('login', {layout: false});
+		}else{
+			User.getUserByUsername(username, function(err, user) {
+				if(err) throw err;
+				if(user) {
+					console.log('User exists');
+					res.render('login', {layout: false, username: username});
+				}else {
+					console.log("Doesn't exist");
+					req.flash('username', username);
+					res.redirect('/register');
+				}
+			});
+		}
 	}
-
+		// console.log(req.flash('username'));
 });
 
 // Register
@@ -27,7 +43,7 @@ router.get('/register', function(req, res){
 	if(req.user) {
 		res.redirect('/');
 	}else{
-		res.render('register', {layout: false});
+		res.render('register', {layout: false, username: req.flash('username')});
 	}
 });
 
@@ -36,11 +52,11 @@ router.get('/logout', function(req, res) {
 	res.redirect('/login');
 });
 
-router.get('/dashboard', function(req, res) {
+router.post('/dashboard', function(req, res) {
 	if(req.user) {
 		res.render('dashboard');
 	}else {
-		console.log(req.body.username);
+		console.log("Sending username: " + req.body.username);
 		req.flash('username', req.body.username);
 		res.redirect('/login');
 	}
@@ -82,12 +98,14 @@ passport.use(new LocalStrategy(
 		User.getUserByUsername(username, function(err, user) {
 			if(err) throw err;
 			if(!user) {
+				console.log("user doesn't exist");
 				return done(null, false, {message: 'Unknown user'});
 			}
 
 			User.comparePassword(password, user.password, function(err, isMatch) {
 				if(err) throw err;
 				if(isMatch) {
+					console.log("user exists");
 					return done(null, user);
 				}else{
 					return done(null, false, {message: 'Invalid password'});
