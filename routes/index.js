@@ -16,13 +16,33 @@ router.get('/login', function(req, res){
 	if(req.user) {
 		res.redirect('/');
 	}else{
-		res.render('login', {layout: false});
+		var username = req.flash('username');
+		if(username == '') {
+			console.log("Blank");
+			res.render('login', {layout: false});
+		}else{
+			User.getUserByUsername(username, function(err, user) {
+				if(err) throw err;
+				if(user) {
+					console.log('User exists');
+					res.render('login', {layout: false, username: username});
+				}else {
+					console.log("Doesn't exist");
+					req.flash('username', username);
+					res.redirect('/register');
+				}
+			});
+		}
 	}
 });
 
 // Register
 router.get('/register', function(req, res){
-	res.render('register', {layout: false});
+	if(req.user) {
+		res.redirect('/');
+	}else{
+		res.render('register', {layout: false, username: req.flash('username')});
+	}
 });
 
 router.get('/logout', function(req, res) {
@@ -31,6 +51,15 @@ router.get('/logout', function(req, res) {
 });
 
 router.get('/dashboard', function(req, res) {
+	if(req.user)
+	{
+		res.render('dashboard');
+	}else{
+		res.redirect('login');
+	}
+});
+
+router.post('/dashboard', function(req, res) {
 	if(req.user) {
 		res.render('dashboard');
 	}else {
