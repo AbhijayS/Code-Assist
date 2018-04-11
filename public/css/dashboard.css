@@ -13,6 +13,7 @@ body{
 .navbar {
   margin: 0;
   padding: 0;
+  background: transparent !important;
   border: 0;
   border-color: transparent;
   border-bottom: 0;
@@ -56,4 +57,18 @@ body{
   text-align: center;
   padding: 3%;
 
+}
+
+/*
+========================================
+Mentor Page
+========================================
+*/
+
+#mentor-container h1{
+  text-align: center;
+}
+
+#mentor-container p {
+  text-align: center;
 }

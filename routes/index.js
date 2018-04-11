@@ -4,6 +4,7 @@ var path = require('path');
 var User = require('../models/user');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
+var nodemailer = require('nodemailer');
 
 // Get Homepage
 router.get('/', function(req, res){
@@ -146,5 +147,65 @@ router.post('/login',
 		}
 });
 
+router.get('/dashboard/mentor', function(req, res) {
+	res.render('mentor', {layout: 'dashboard-layout'});
+});
+
+router.get('/dashboard/faq', function(req, res) {
+	res.render('mentor');
+});
+
+router.get('/dashboard/community', function(req, res) {
+	res.render('mentor');
+});
+
+router.post('/dashboard/send', function(req, res) {
+	// console.log(req.body);
+	const output = `
+		<p>A user has sent a request</p>
+		<h3>Contact Details<h2>
+		<ul>
+			<li>Email: ${req.body.email}</li>
+		</ul>
+		<h3>Message</h3>
+		${req.body.text}
+	`;
+
+	// create reusable transporter object using the default SMTP transport
+  let transporter = nodemailer.createTransport({
+			service: 'gmail',
+      auth: {
+          user: '', // generated ethereal user
+          pass:  ''// generated ethereal password
+      },
+			tls:{
+				rejectUnauthorized:false // if running with localhost
+			}
+  });
+
+  // setup email data with unicode symbols
+  let mailOptions = {
+      from: '"Code-Assist.club" <email@a.com>', // sender address
+      to: '',// list of receivers
+      subject: 'Code-Assist Email', // Subject line
+      text: 'This message is directly being sent from code-assist', // plain text body
+      html: output // html body
+  };
+
+  // send mail with defined transport object
+  transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+          return console.log(error);
+      }
+      console.log('Message sent: %s', info.messageId);
+      // Preview only available when sending through an Ethereal account
+      console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+			res.render('mentor', {layout: 'dashboard-layout',msg: 'Notification has been sent to the mentors'});
+
+      // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+      // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+  });
+
+});
 
 module.exports = router;
