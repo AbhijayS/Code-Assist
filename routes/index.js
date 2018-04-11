@@ -4,10 +4,12 @@ var path = require('path');
 var User = require('../models/user');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
+var nodemailer = require('nodemailer');
 
 // Get Homepage
 router.get('/', function(req, res){
-	// console.log(req.isAuthenticated());
+	console.log("Homepage: ");
+	console.log(req.isAuthenticated());
 	res.render('index', {layout: 'layout'});
 });
 
@@ -15,19 +17,20 @@ router.get('/', function(req, res){
 router.get('/login', function(req, res){
 	if(req.user) {
 		res.redirect('/');
+		// console.log('User exists');
 	}else{
 		var username = req.flash('username');
 		if(username == '') {
-			console.log("Blank");
 			res.render('login', {layout: false});
 		}else{
 			User.getUserByUsername(username, function(err, user) {
 				if(err) throw err;
 				if(user) {
-					console.log('User exists');
+					// console.log('User exists');
+					req.flash('user-existed', true);
 					res.render('login', {layout: false, username: username});
 				}else {
-					console.log("Doesn't exist");
+					// console.log("Doesn't exist");
 					req.flash('username', username);
 					res.redirect('/register');
 				}
@@ -53,7 +56,7 @@ router.get('/logout', function(req, res) {
 router.get('/dashboard', function(req, res) {
 	if(req.user)
 	{
-		res.render('dashboard');
+		res.render('dashboard', {layout: 'dashboard-layout'});
 	}else{
 		res.redirect('login');
 	}
@@ -61,9 +64,9 @@ router.get('/dashboard', function(req, res) {
 
 router.post('/dashboard', function(req, res) {
 	if(req.user) {
-		res.render('dashboard');
+		res.render('dashboard', {layout: 'dashboard-layout'});
 	}else {
-		console.log(req.body.username);
+		// console.log(req.body.username);
 		req.flash('username', req.body.username);
 		res.redirect('/login');
 	}
@@ -103,13 +106,15 @@ router.post('/register', function(req, res){
 				console.log(user);
 				console.log('');
 				console.log('--------------------------------------------');
-				res.redirect('/');
 				// req.user = true;
 			});
+			console.log("Registered: " + req.user);
+			req.flash('user-created', true);
+			req.flash('username', username);
+			res.redirect('/login');
 			// console.log(req.user);
 		}
 	});
-
 });
 
 passport.use(new LocalStrategy(
@@ -142,11 +147,76 @@ passport.deserializeUser(function(id, done) {
 });
 
 router.post('/login',
- 	passport.authenticate('local', {successRedirect: '/', failureRedirect: '/login'}),
+ 	passport.authenticate('local', {failureRedirect: '/login'}),
 	function(req, res) {
 		// console.log(req.body.username);
-		res.redirect('/');
+		if(req.flash('user-existed'))
+		{
+			res.redirect('dashboard');
+		}else{
+			res.redirect('/');
+		}
 });
 
+router.get('/dashboard/mentor', function(req, res) {
+	res.render('mentor', {layout: 'dashboard-layout'});
+});
+
+router.get('/dashboard/faq', function(req, res) {
+	res.render('mentor');
+});
+
+router.get('/dashboard/community', function(req, res) {
+	res.render('mentor');
+});
+
+router.post('/dashboard/send', function(req, res) {
+	// console.log(req.body);
+	const output = `
+		<p>A user has sent a request</p>
+		<h3>Contact Details<h2>
+		<ul>
+			<li>Email: ${req.body.email}</li>
+		</ul>
+		<h3>Message</h3>
+		${req.body.text}
+	`;
+
+	// create reusable transporter object using the default SMTP transport
+  let transporter = nodemailer.createTransport({
+			service: 'gmail',
+      auth: {
+          user: '', // generated ethereal user
+          pass:  ''// generated ethereal password
+      },
+			tls:{
+				rejectUnauthorized:false // if running with localhost
+			}
+  });
+
+  // setup email data with unicode symbols
+  let mailOptions = {
+      from: '"Code-Assist.club" <email@a.com>', // sender address
+      to: '',// list of receivers
+      subject: 'Code-Assist Email', // Subject line
+      text: 'This message is directly being sent from code-assist', // plain text body
+      html: output // html body
+  };
+
+  // send mail with defined transport object
+  transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+          return console.log(error);
+      }
+      console.log('Message sent: %s', info.messageId);
+      // Preview only available when sending through an Ethereal account
+      console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+			res.render('mentor', {layout: 'dashboard-layout',msg: 'Notification has been sent to the mentors'});
+
+      // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+      // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+  });
+
+});
 
 module.exports = router;

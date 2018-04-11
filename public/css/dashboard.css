@@ -1,0 +1,74 @@
+/*
+========================================
+Dashboard
+========================================
+*/
+
+body{
+  font-family: 'Nunito', sans-serif !important;
+  background: white;
+  background-attachment:fixed;
+}
+
+.navbar {
+  margin: 0;
+  padding: 0;
+  background: transparent !important;
+  border: 0;
+  border-color: transparent;
+  border-bottom: 0;
+}
+
+.navbar-collapse {
+  background:none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+#dashboard-title {
+  margin-bottom: 0;
+  background-color: transparent;
+}
+
+#dashboard-overview {
+  font-family: 'Roboto', Arial;
+  margin-top: 55px;
+  width: 100%;
+  padding: 0 2%;
+}
+
+#dashboard-overview .col-sm-4{
+  /* border-right: black solid 1px; */
+  /* Add shadows to create the "card" effect */
+  box-shadow: 4px 0px 8px grey;
+  transition: 0.3s;
+  height: 600px;
+  border-radius: 5px;
+  padding: 0 3%;
+
+}
+
+/* On mouse-over, add a deeper shadow */
+#dashboard-overview .col-sm-4:hover {
+  box-shadow: 4px 0 30px 0 grey;
+}
+
+#dashboard-overview p {
+  text-align: center;
+  padding: 3%;
+
+}
+
+/*
+========================================
+Mentor Page
+========================================
+*/
+
+#mentor-container h1{
+  text-align: center;
+}
+
+#mentor-container p {
+  text-align: center;
+}
