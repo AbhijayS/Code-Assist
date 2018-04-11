@@ -96,7 +96,7 @@ router.post('/register', function(req, res){
 		console.log(user);
 		if (user) {
 			console.log("user exists")
-			res.render("register", )
+			res.render('register', {layout: false, username: username, email: email, usernameTaken: true});
 		} else {
 			console.log("new user created")
 			User.createUser(newUser, function(err, user){
