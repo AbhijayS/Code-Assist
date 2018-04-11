@@ -7,7 +7,8 @@ var LocalStrategy = require('passport-local').Strategy;
 
 // Get Homepage
 router.get('/', function(req, res){
-	// console.log(req.isAuthenticated());
+	console.log("Homepage: ");
+	console.log(req.isAuthenticated());
 	res.render('index', {layout: 'layout'});
 });
 
@@ -15,19 +16,20 @@ router.get('/', function(req, res){
 router.get('/login', function(req, res){
 	if(req.user) {
 		res.redirect('/');
+		// console.log('User exists');
 	}else{
 		var username = req.flash('username');
 		if(username == '') {
-			console.log("Blank");
 			res.render('login', {layout: false});
 		}else{
 			User.getUserByUsername(username, function(err, user) {
 				if(err) throw err;
 				if(user) {
-					console.log('User exists');
+					// console.log('User exists');
+					req.flash('user-existed', true);
 					res.render('login', {layout: false, username: username});
 				}else {
-					console.log("Doesn't exist");
+					// console.log("Doesn't exist");
 					req.flash('username', username);
 					res.redirect('/register');
 				}
@@ -53,7 +55,7 @@ router.get('/logout', function(req, res) {
 router.get('/dashboard', function(req, res) {
 	if(req.user)
 	{
-		res.render('dashboard');
+		res.render('dashboard', {layout: 'dashboard-layout'});
 	}else{
 		res.redirect('login');
 	}
@@ -61,9 +63,9 @@ router.get('/dashboard', function(req, res) {
 
 router.post('/dashboard', function(req, res) {
 	if(req.user) {
-		res.render('dashboard');
+		res.render('dashboard', {layout: 'dashboard-layout'});
 	}else {
-		console.log(req.body.username);
+		// console.log(req.body.username);
 		req.flash('username', req.body.username);
 		res.redirect('/login');
 	}
@@ -96,10 +98,11 @@ router.post('/register', function(req, res){
 		console.log('');
 		console.log('--------------------------------------------');
 		// req.user = true;
-
 	});
-	// console.log(req.user);
-	res.redirect('/');
+	console.log("Registered: " + req.user);
+	req.flash('user-created', true);
+	req.flash('username', username);
+	res.redirect('/login');
 });
 
 passport.use(new LocalStrategy(
@@ -132,10 +135,15 @@ passport.deserializeUser(function(id, done) {
 });
 
 router.post('/login',
- 	passport.authenticate('local', {successRedirect: '/', failureRedirect: '/login'}),
+ 	passport.authenticate('local', {failureRedirect: '/login'}),
 	function(req, res) {
 		// console.log(req.body.username);
-		res.redirect('/');
+		if(req.flash('user-existed'))
+		{
+			res.redirect('dashboard');
+		}else{
+			res.redirect('/');
+		}
 });
 
 
