@@ -123,6 +123,10 @@ router.post('/register', function(req, res){
 			}
 		});
 	});
+	console.log("Registered: " + req.user);
+	req.flash('user-created', true);
+	req.flash('username', username);
+	res.redirect('/login');
 });
 
 passport.use(new LocalStrategy(
