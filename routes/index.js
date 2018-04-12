@@ -1,5 +1,7 @@
 var express = require('express');
 var router = express.Router();
+var expressValidator = require('express-validator');
+router.use(expressValidator());
 var path = require('path');
 var User = require('../models/user');
 var passport = require('passport');
@@ -77,43 +79,47 @@ router.post('/register', function(req, res){
 	var username = req.body.username;
 	var email = req.body.email;
 	var password = req.body.password;
-	// var CS_Class = req.body.CS_class;
-	//
-	// req.checkBody('username', 'Username is required').len(3);
 	// req.checkBody('email', 'Email is required').notEmpty();
-	// req.checkBody('email', 'Email is invalid').isEmail();
-	// req.checkBody('password', 'Password must be at least 6 characters long').len(6);
-	// req.checkBody('password', 'Password can\'t be longer than 128 characters').not().len(128);
-	// req.checkBody('password2', 'Passwords do not match').equals(req.body.password);
-	//
+	// var CS_Class = req.body.CS_class;
+	req.checkBody('username', 'Username is required').len(3);
+
+	req.checkBody('email', 'Email is invalid').isEmail();
+	req.checkBody('password', 'Password must be at least 8 characters long').len(8);
+	req.checkBody('password', 'Password can\'t be longer than 128 characters').not().len(128);
+		
+	var errors = req.validationErrors(true);
+
 	var newUser = new User({
 		username: username,
 		email: email,
 		password: password,
 	});
 
-	User.getUserByUsername(username, function(err, user) {
-		console.log(user);
-		if (user) {
-			console.log("user exists")
-			res.render('register', {layout: false, username: username, email: email, usernameTaken: true});
-		} else {
-			console.log("new user created")
-			User.createUser(newUser, function(err, user){
-				if(err) throw err;
-				console.log('--------------------------------------------');
-				console.log('User Created ->')
-				console.log(user);
-				console.log('');
-				console.log('--------------------------------------------');
-				// req.user = true;
-			});
-			console.log("Registered: " + req.user);
-			req.flash('user-created', true);
-			req.flash('username', username);
-			res.redirect('/login');
-			// console.log(req.user);
-		}
+	console.log(errors)
+
+	User.getUserByUsername(username, function(err, userWithUsername) {
+		User.getUserByEmail(email, function(err, userWithEmail) {;
+			if (userWithUsername || userWithEmail) {
+				console.log("user exists")
+				res.render('register', {layout: false, username: username, email: email, usernameTaken: userWithUsername, emailTaken: userWithEmail});
+			} else {
+				console.log("new user created")
+				User.createUser(newUser, function(err, user){
+					if(err) throw err;
+					console.log('--------------------------------------------');
+					console.log('User Created ->')
+					console.log(user);
+					console.log('');
+					console.log('--------------------------------------------');
+					// req.user = true;
+				});
+				console.log("Registered: " + req.user);
+				req.flash('user-created', true);
+				req.flash('username', username);
+				res.redirect('/login');
+				// console.log(req.user);
+			}
+		});
 	});
 });
 

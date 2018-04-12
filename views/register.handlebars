@@ -39,14 +39,22 @@
 					</span> -->
 
 					{{#if usernameTaken}}
-          				<div class="wrap-input100 validate-input alert-validate" data-validate = "Username is taken">
-					{{else}}
-          				<div class="wrap-input100 validate-input" data-validate = "At least 3 characters">
+						<div style="margin-bottom: 2rem;" class="alert alert-danger">
+						  <strong>Username</strong> is taken
+						</div>
 					{{/if}}
+
+					{{#if emailTaken}}
+						<div style="margin-bottom: 2rem;" class="alert alert-danger">
+						  <strong>Email</strong> is already registered
+						</div>
+					{{/if}}
+          				
+					<div class="wrap-input100 validate-input" data-validate = "At least 3 characters">
 						{{#if username}}
-						<input class="input100 has-val" type="text" name="username" value="{{username}}">
+						<input class="input100 has-val" type="text" name="username" value="{{username}}" autofocus>
 						{{else}}
-						<input class="input100" type="text" name="username" value="{{username}}">
+						<input class="input100" type="text" name="username">
 						{{/if}}
 						<span class="focus-input100" data-placeholder="Username"></span>
 					</div>
@@ -55,7 +63,7 @@
 						{{#if email}}
 						<input class="input100 has-val" type="text" name="email" value="{{email}}">
 						{{else}}
-						<input class="input100" type="text" name="email" value="{{email}}">
+						<input class="input100" type="text" name="email">
 						{{/if}}
 						<span class="focus-input100" data-placeholder="Email"></span>
 					</div>
