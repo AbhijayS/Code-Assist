@@ -1,9 +1,20 @@
-var mongoose = require('mongoose');
+var mongo = require('mongodb');
+var MongoClient = mongo.MongoClient;
 var bcrypt = require('bcryptjs');
 
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/code-assist');
 var db = mongoose.connection;
+
+
+var ThreadSchema = mongoose.Schema({
+	question: String,
+	answer: String
+});
+
+var PostSchema = mongoose.Schema({
+	thread: [ThreadSchema]
+});
 
 // User Schema
 var UserSchema = mongoose.Schema({
@@ -16,9 +27,12 @@ var UserSchema = mongoose.Schema({
   },
 	password: {
 		type: String
-	}
+	},
+	threads: [PostSchema]
 });
 
+var Thread = module.exports = mongoose.model('Thread', ThreadSchema);
+var Post = module.exports = mongoose.model('Post', PostSchema);
 var User = module.exports = mongoose.model('User', UserSchema);
 
 module.exports.createUser = function(newUser, callback){

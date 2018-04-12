@@ -6,7 +6,6 @@ var exphbs = require('express-handlebars');
 var expressValidator = require('express-validator');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
-var mongo = require('mongodb');
 var flash = require('connect-flash');
 var routes = require('./routes/index');
 var session = require('express-session');

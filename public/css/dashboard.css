@@ -69,6 +69,6 @@ Mentor Page
   text-align: center;
 }
 
-#mentor-container p {
-  text-align: center;
+#mentor-container .container{
+  padding-top: 2%;
 }
