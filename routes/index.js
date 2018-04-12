@@ -96,9 +96,26 @@ router.post('/register', function(req, res){
 		console.log('--------------------------------------------');
 		console.log('User Created ->')
 		console.log(user);
-		console.log('');
-		console.log('--------------------------------------------');
-		// req.user = true;
+		if (user) {
+			console.log("user exists")
+			res.render('register', {layout: false, username: username, email: email, usernameTaken: true});
+		} else {
+			console.log("new user created")
+			User.createUser(newUser, function(err, user){
+				if(err) throw err;
+				console.log('--------------------------------------------');
+				console.log('User Created ->')
+				console.log(user);
+				console.log('');
+				console.log('--------------------------------------------');
+				// req.user = true;
+			});
+			console.log("Registered: " + req.user);
+			req.flash('user-created', true);
+			req.flash('username', username);
+			res.redirect('/login');
+			// console.log(req.user);
+		}
 	});
 	console.log("Registered: " + req.user);
 	req.flash('user-created', true);

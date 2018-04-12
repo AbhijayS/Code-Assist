@@ -38,13 +38,25 @@
 						<i class="zmdi zmdi-font"></i>
 					</span> -->
 
-          <div class="wrap-input100 validate-input" data-validate = "Atleast 3 characters">
-						<input class="input100" type="text" name="username" value="{{username}}" autofocus>
+					{{#if usernameTaken}}
+          				<div class="wrap-input100 validate-input alert-validate" data-validate = "Username is taken">
+					{{else}}
+          				<div class="wrap-input100 validate-input" data-validate = "At least 3 characters">
+					{{/if}}
+						{{#if username}}
+						<input class="input100 has-val" type="text" name="username" value="{{username}}">
+						{{else}}
+						<input class="input100" type="text" name="username" value="{{username}}">
+						{{/if}}
 						<span class="focus-input100" data-placeholder="Username"></span>
 					</div>
 
 					<div class="wrap-input100 validate-input" data-validate = "Valid email is: a@b.c">
-						<input class="input100" type="text" name="email">
+						{{#if email}}
+						<input class="input100 has-val" type="text" name="email" value="{{email}}">
+						{{else}}
+						<input class="input100" type="text" name="email" value="{{email}}">
+						{{/if}}
 						<span class="focus-input100" data-placeholder="Email"></span>
 					</div>
 
