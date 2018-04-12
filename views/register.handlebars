@@ -52,9 +52,9 @@
           				
 					<div class="wrap-input100 validate-input" data-validate = "At least 3 characters">
 						{{#if username}}
-						<input class="input100 has-val" type="text" name="username" value="{{username}}" autofocus>
+						<input class="input100 has-val" type="text" name="username" value="{{username}}">
 						{{else}}
-						<input class="input100" type="text" name="username">
+						<input class="input100" type="text" name="username" autofocus>
 						{{/if}}
 						<span class="focus-input100" data-placeholder="Username"></span>
 					</div>
@@ -63,7 +63,7 @@
 						{{#if email}}
 						<input class="input100 has-val" type="text" name="email" value="{{email}}">
 						{{else}}
-						<input class="input100" type="text" name="email">
+						<input class="input100" type="text" name="email" autofocus>
 						{{/if}}
 						<span class="focus-input100" data-placeholder="Email"></span>
 					</div>
@@ -93,15 +93,17 @@
 						</div>
 					</div>
 
-					<div class="text-center p-t-115">
+{{!-- 					<div class="text-center p-t-115">
 						<span class="txt1">
 							Don’t have an account?
 						</span>
 
-						<a class="txt2" href="#">
+						
+ 						<a class="txt2" href="#">
 							Sign Up
 						</a>
-					</div>
+						
+					</div> --}}
 				</form>
 			</div>
 		</div>

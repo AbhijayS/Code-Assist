@@ -22,15 +22,18 @@ router.get('/login', function(req, res){
 		// console.log('User exists');
 	}else{
 		var username = req.flash('username');
+
+		var error = req.flash('error');
+
 		if(username == '') {
-			res.render('login', {layout: false});
+			res.render('login', {layout: false, error: error});
 		}else{
 			User.getUserByUsername(username, function(err, user) {
 				if(err) throw err;
 				if(user) {
 					// console.log('User exists');
 					req.flash('user-existed', true);
-					res.render('login', {layout: false, username: username});
+					res.render('login', {layout: false, username: username, error: error});
 				}else {
 					// console.log("Doesn't exist");
 					req.flash('username', username);
@@ -86,7 +89,7 @@ router.post('/register', function(req, res){
 	req.checkBody('email', 'Email is invalid').isEmail();
 	req.checkBody('password', 'Password must be at least 8 characters long').len(8);
 	req.checkBody('password', 'Password can\'t be longer than 128 characters').not().len(128);
-		
+
 	var errors = req.validationErrors(true);
 
 	var newUser = new User({
@@ -95,25 +98,24 @@ router.post('/register', function(req, res){
 		password: password,
 	});
 
-	console.log(errors)
+	console.log("Validation errors: " + errors);
 
 	User.getUserByUsername(username, function(err, userWithUsername) {
 		User.getUserByEmail(email, function(err, userWithEmail) {;
-			if (userWithUsername || userWithEmail) {
-				console.log("user exists")
+			if (userWithUsername || userWithEmail || errors) {
+				if (userWithEmail) console.log("Email taken");
+				if (userWithUsername) console.log("Username taken");
 				res.render('register', {layout: false, username: username, email: email, usernameTaken: userWithUsername, emailTaken: userWithEmail});
 			} else {
-				console.log("new user created")
 				User.createUser(newUser, function(err, user){
 					if(err) throw err;
 					console.log('--------------------------------------------');
 					console.log('User Created ->')
 					console.log(user);
-					console.log('');
 					console.log('--------------------------------------------');
+					console.log('');
 					// req.user = true;
 				});
-				console.log("Registered: " + req.user);
 				req.flash('user-created', true);
 				req.flash('username', username);
 				res.redirect('/login');
@@ -153,7 +155,7 @@ passport.deserializeUser(function(id, done) {
 });
 
 router.post('/login',
- 	passport.authenticate('local', {failureRedirect: '/login'}),
+ 	passport.authenticate('local', {failureRedirect: '/login', failureFlash: 'Invalid login'}),
 	function(req, res) {
 		// console.log(req.body.username);
 		if(req.flash('user-existed'))
