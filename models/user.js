@@ -56,7 +56,14 @@ module.exports.createUser = function(newUser, callback){
 }
 
 module.exports.getUserByUsername = function(username, callback) {
-	var query = {username: username};
+	// "i" regex ignores upper/lowercase
+	var query = {username: new RegExp(username, 'i')};
+	User.findOne(query, callback);
+}
+
+module.exports.getUserByEmail = function(email, callback) {
+	// "i" regex ignores upper/lowercase
+	var query = {email: new RegExp(email, 'i')};
 	User.findOne(query, callback);
 }
 

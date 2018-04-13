@@ -38,8 +38,18 @@
 						<i class="zmdi zmdi-font"></i>
 					</span> -->
 
+					{{#if error}}
+						<div style="margin-bottom: 2rem;" class="alert alert-danger">
+						  {{error}}
+						</div>
+					{{/if}}
+
 					<div class="wrap-input100">
-						<input class="input100" type="text" name="username" value="{{username}}"autofocus>
+						{{#if username}}
+						<input class="input100 has-val" type="text" name="username" value="{{username}}">
+						{{else}}
+						<input class="input100" type="text" name="username" value="{{username}}" autofocus>
+						{{/if}}
 						<span class="focus-input100" data-placeholder="Username"></span>
 					</div>
 
@@ -47,7 +57,11 @@
 						<span class="btn-show-pass">
 							<i class="zmdi zmdi-eye"></i>
 						</span>
+						{{#if username}}
+						<input class="input100" type="password" name="password" autofocus>
+						{{else}}
 						<input class="input100" type="password" name="password">
+						{{/if}}
 						<span class="focus-input100" data-placeholder="Password"></span>
 					</div>
 
@@ -65,7 +79,7 @@
 							Don’t have an account?
 						</span>
 
-						<a class="txt2" href="#">
+						<a class="txt2" href="/register">
 							Sign Up
 						</a>
 					</div>
