@@ -1,1 +1,18 @@
-COMMUNITY
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    <h1>Posts</h1>
+    <ul>
+      {{#each posts}}
+      <li>Question: {{this.question}}
+      {{#each answers}}
+      Answer: {{this.answer}}</li>
+      {{/each}}
+      {{/each}}
+    </ul>
+  </body>
+</html>

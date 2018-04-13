@@ -96,6 +96,7 @@ router.post('/register', function(req, res){
 		console.log('--------------------------------------------');
 		console.log('User Created ->')
 		console.log(user);
+
 		if (user) {
 			console.log("user exists")
 			res.render('register', {layout: false, username: username, email: email, usernameTaken: true});
@@ -192,8 +193,8 @@ router.post('/dashboard/send', function(req, res) {
   let transporter = nodemailer.createTransport({
 			service: 'gmail',
       auth: {
-          user: '', // generated ethereal user
-          pass:  ''// generated ethereal password
+          user: 'clubcodeassist@gmail.com', // generated ethereal user
+          pass: 'codeassistpassword123#abinchris'// generated ethereal password
       },
 			tls:{
 				rejectUnauthorized:false // if running with localhost
@@ -202,8 +203,8 @@ router.post('/dashboard/send', function(req, res) {
 
   // setup email data with unicode symbols
   let mailOptions = {
-      from: '"Code-Assist.club" <email@a.com>', // sender address
-      to: '',// list of receivers
+      from: '"Code-Assist.club" <code-assist-club.com>', // sender address
+      to: '"abhijay.saini@gmail.com", "christopher.smith4202@gmail.com"',// list of receivers
       subject: 'Code-Assist Email', // Subject line
       text: 'This message is directly being sent from code-assist', // plain text body
       html: output // html body
@@ -222,6 +223,13 @@ router.post('/dashboard/send', function(req, res) {
       // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
       // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
   });
+
+});
+
+router.get('/post', function(req, res) {
+	var newPost = new User.Post({
+		name: "Abhijay"
+	});
 
 });
 
