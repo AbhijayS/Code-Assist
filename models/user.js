@@ -21,15 +21,16 @@ var UserSchema = new Schema({
 		}
 });
 
-// var CommunitySchema = new Schema ({
-//   posts: [{
-//     type: Schema.Types.ObjectId,
-//     ref: 'PostSchema'
-//   }]
-// });
+var CommunitySchema = new Schema ({
+  posts: [{
+    type: Schema.Types.ObjectId,
+    ref: 'PostSchema'
+  }]
+});
 
 var PostSchema = new Schema ({
-  question: String,
+	date: {type: Date, default: Date.now},
+	question: String,
   answers: [{
     type: Schema.Types.ObjectId,
     ref: 'AnswerSchema'
