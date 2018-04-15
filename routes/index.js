@@ -166,18 +166,6 @@ router.post('/login',
 		}
 });
 
-router.get('/dashboard/mentor', function(req, res) {
-	res.render('mentor', {layout: 'dashboard-layout'});
-});
-
-router.get('/dashboard/faq', function(req, res) {
-	res.render('mentor');
-});
-
-router.get('/dashboard/community', function(req, res) {
-	res.render('mentor');
-});
-
 router.post('/dashboard/send', function(req, res) {
 	// console.log(req.body);
 	const output = `

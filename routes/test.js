@@ -4,12 +4,6 @@ var User = require('../models/user');
 // var User = require('../models/test-user');
 
 router.get('/', function(req, res) {
-  if(req.user)
-  {
-    res.render('community');
-  }else{
-    res.redirect('login');
-  }
   var answer1 = new User.AnswerSchema({
     answer: "MongoDB"
   });
@@ -38,34 +32,6 @@ router.get('/', function(req, res) {
       res.render('community', {layout: false, posts: posts});
     });
   });
-
-  // answer1.save(function (err) {
-  //   if (err) throw err;
-  //   var newPost = new User.PostSchema();
-  //
-  //   newPost.question = "Question";
-  //   var arr = newPost.answers;
-  //   arr.push(answer1._id);
-  //   newPost.answers = arr;
-  //
-  //   newPost.save(function (err) {
-  //     if (err) throw err;
-  //     // thats it!
-  //   });
-  // });
-  //
-  // User.PostSchema.
-  //   find({}).
-  //   populate('answer1').
-  //   exec(function(err, posts) {
-  //     if(err) throw err;
-  //     console.log(posts);
-  //     console.log(posts[0].answers[0]._id);
-  //     console.log(User.getAnswerById(posts[0].answers[0]._id, function(err){
-  //       if(err) throw err;
-  //     }));
-  //     res.send(posts);
-  //   });
 });
 
 router.get('post', function(req, res) {
@@ -78,8 +44,7 @@ router.get('post', function(req, res) {
 });
 
 router.post('post', function(req, res) {
-  var question = req.body.question;
-
+  // var question = req.body.question;
 });
 
 module.exports = router;
