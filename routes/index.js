@@ -92,7 +92,7 @@ router.post('/register', function(req, res){
 
 	var errors = req.validationErrors(true);
 
-	var newUser = new User({
+	var newUser = new User.UserSchema({
 		username: username,
 		email: email,
 		password: password,
@@ -123,10 +123,6 @@ router.post('/register', function(req, res){
 			}
 		});
 	});
-	console.log("Registered: " + req.user);
-	req.flash('user-created', true);
-	req.flash('username', username);
-	res.redirect('/login');
 });
 
 passport.use(new LocalStrategy(
@@ -232,7 +228,7 @@ router.post('/dashboard/send', function(req, res) {
 });
 
 router.get('/post', function(req, res) {
-	var newPost = new User.Post({
+	var newPost = new User.PostSchema({
 		name: "Abhijay"
 	});
 

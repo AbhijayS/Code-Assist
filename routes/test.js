@@ -3,82 +3,13 @@ var router = express.Router();
 var User = require('../models/user');
 // var User = require('../models/test-user');
 
-router.get('/test', function(req, res) {
-  // var post = new User.CommunitySchema({
-  //   post: "Hey"
-  // });
-  //
-  //
-  // var post = {
-  //   question: "What is COde Assist?",
-  //   answers: []
-  // };
-  //
-  // var answer1 = {
-  //   answer: "This is how you 'do it' - Shia Lebouf (2)"
-  // }
-  //
-  // post.answers.push(answer1);
-
-  var Answer = new User.AnswerSchema();
-  Answer.answer = "This is how you 'do it' - Shia Lebouf (2)"
-  console.log(Answer);
-  //
-  // Answer.save(function(err, Answer) {
-  //   if(err)
-  //   {
-  //     throw err;
-  //   }
-  //   // saved
-  // });
-
-  var Post = new User.PostSchema();
-  Post.question = "What is Code Assist?";
-  Post.answers.push(Answer);
-  console.log(Post);
-  //
-  // Post.save(function(err, Post) {
-  //   if(err)
-  //   {
-  //     throw err;
-  //   }
-  //   // saved
-  // });
-  //
-
-  // User.PostSchema.create(post, function(err, post) {
-  //   if(err)
-  //   {
-  //     throw err;
-  //   }
-  //   console.log(post);
-  // });
-  var Community = new User.CommunitySchema();
-  Community.posts.push(Post);
-
-  Community.save(function(err, Community) {
-    if(err)
-    {
-      throw err;
-    }
-    console.log(Community);
-    User.CommunitySchema.find({}, function(err, thread) {
-      if(err)
-      {
-        throw err;
-      }else{
-        console.log("Found->");
-        console.log(thread);
-        res.render('community', {layout: false, posts: thread});
-      }
-    });
-  });
-
-  // saved
-});
-
 router.get('/', function(req, res) {
-
+  if(req.user)
+  {
+    res.render('community');
+  }else{
+    res.redirect('login');
+  }
   var answer1 = new User.AnswerSchema({
     answer: "MongoDB"
   });
@@ -136,4 +67,19 @@ router.get('/', function(req, res) {
   //     res.send(posts);
   //   });
 });
+
+router.get('post', function(req, res) {
+  if(req.user)
+  {
+    res.render('community-post');
+  }else{
+    res.redirect('login');
+  }
+});
+
+router.post('post', function(req, res) {
+  var question = req.body.question;
+
+});
+
 module.exports = router;

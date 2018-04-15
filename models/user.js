@@ -42,17 +42,16 @@ var AnswerSchema = new Schema ({
   // ...
 });
 
-// var Thread = mongoose.model('Thread', ThreadSchema);
-// var CommunitySchema = mongoose.model('CommunitySchema', CommunitySchema);
+var User = mongoose.model('UserSchema', UserSchema);
+var CommunitySchema = mongoose.model('CommunitySchema', CommunitySchema);
 var PostSchema = mongoose.model('PostSchema', PostSchema);
 var AnswerSchema = mongoose.model('AnswerSchema', AnswerSchema);
-var User = mongoose.model('User', UserSchema);
 
 module.exports = {
-  // CommunitySchema: CommunitySchema,
+	UserSchema: User,
+  CommunitySchema: CommunitySchema,
   PostSchema: PostSchema,
   AnswerSchema: AnswerSchema,
-	User: User
 }
 
 PostSchema.find({}, function(err, post) {
