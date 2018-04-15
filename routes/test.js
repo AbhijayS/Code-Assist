@@ -58,6 +58,7 @@ router.post('/post', function(req, res) {
     });
 
     community.posts.push(newPost);
+    req.user.posts.push(newPost);
 
     community.save(function(err) {
       if(err) throw err;
@@ -67,6 +68,11 @@ router.post('/post', function(req, res) {
       console.log('');
       res.redirect('/community');
     });
+
+    req.user.save(function(err) {
+      if(err) throw err;
+    });
+    
   });
 });
 
