@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
-var User = require('../models/test-user');
+var User = require('../models/user');
+// var User = require('../models/test-user');
 
 router.get('/test', function(req, res) {
   // var post = new User.CommunitySchema({
@@ -79,23 +80,26 @@ router.get('/test', function(req, res) {
 router.get('/', function(req, res) {
 
   var answer1 = new User.AnswerSchema({
-    answer: "MongoDB sucks"
+    answer: "MongoDB"
   });
 
   answer1.save(function(err) {
     if(err) throw err;
   });
 
-  var newPost = new User.PostSchema();
-  newPost.question = "What?";
-  newPost.answers.push(answer1._id);
+  User.PostSchema.find({question: "What?"}).populate('answers').exec(function(err, newPost) {
+    for (var i = 0; i < newPost.length; i++)
+    {
+      newPost[i].answers.push(answer1);
 
-  newPost.save(function(err, newPost) {
-    if(err) throw err;
-    console.log("New Post Saved:")
-    console.log(newPost);
-    console.log('-------------------------');
-    console.log('');
+      newPost[i].save(function(err) {
+        if(err) throw err;
+        console.log("New Post Saved:")
+        console.log(newPost);
+        console.log('-------------------------');
+        console.log('');
+      });
+    }
 
     User.PostSchema.find({}).populate('answers').exec(function(err, posts) {
       if(err) throw err;

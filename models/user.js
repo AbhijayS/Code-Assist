@@ -7,16 +7,6 @@ var Schema = mongoose.Schema;
 mongoose.connect('mongodb://localhost/code-assist');
 var db = mongoose.connection;
 
-
-var ThreadSchema = new Schema({
-		question: String,
-		answer: String
-});
-
-var PostSchema = new Schema({
-		name: String
-});
-
 // User Schema
 var UserSchema = new Schema({
 		username: {
@@ -28,19 +18,59 @@ var UserSchema = new Schema({
 	  },
 		password: {
 			type: String
-		},
-		threads: [PostSchema]
+		}
 });
 
-var Thread = mongoose.model('Thread', ThreadSchema);
-var Post = mongoose.model('Post', PostSchema);
+// var CommunitySchema = new Schema ({
+//   posts: [{
+//     type: Schema.Types.ObjectId,
+//     ref: 'PostSchema'
+//   }]
+// });
+
+var PostSchema = new Schema ({
+  question: String,
+  answers: [{
+    type: Schema.Types.ObjectId,
+    ref: 'AnswerSchema'
+  }]
+});
+
+var AnswerSchema = new Schema ({
+  answer: String
+  // ...
+});
+
+// var Thread = mongoose.model('Thread', ThreadSchema);
+// var CommunitySchema = mongoose.model('CommunitySchema', CommunitySchema);
+var PostSchema = mongoose.model('PostSchema', PostSchema);
+var AnswerSchema = mongoose.model('AnswerSchema', AnswerSchema);
 var User = mongoose.model('User', UserSchema);
 
 module.exports = {
-	User: User,
-	Post: Post,
-	Thread: Thread
+  // CommunitySchema: CommunitySchema,
+  PostSchema: PostSchema,
+  AnswerSchema: AnswerSchema,
+	User: User
 }
+
+PostSchema.find({}, function(err, post) {
+	console.log(post);
+	if(post.length < 2)
+	{
+		var newPost = new PostSchema({
+			question: "What?",
+			answers:[]
+		});
+
+		newPost.save(function(err) {
+			if(err) throw err;
+			console.log('Temp post created');
+		});
+	}
+
+});
+
 /*
 ==============================
 User Creation

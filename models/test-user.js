@@ -35,5 +35,11 @@ module.exports = {
 }
 
 var newPost = new PostSchema({
-    question: "How are you doing Mongoose?"
+    question: "What?",
+    answers:[]
 });
+
+newPost.save(function(err) {
+  if(err) throw err;
+  console.log('Temp post created');
+})

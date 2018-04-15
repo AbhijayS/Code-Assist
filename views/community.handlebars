@@ -6,13 +6,15 @@
   </head>
   <body>
     <h1>Posts</h1>
+
+    {{#each posts}}
+    {{this.question}}
     <ul>
-      {{#each posts}}
-      <li>Question: {{this.question}}
       {{#each answers}}
-      Answer: {{this.answer}}</li>
-      {{/each}}
+      <li>Answer: {{this.answer}}</li>
       {{/each}}
     </ul>
+    {{/each}}
+
   </body>
 </html>
