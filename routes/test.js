@@ -66,13 +66,15 @@ router.get('/post', function(req, res) {
 router.post('/post', function(req, res) {
   var question = req.body.title;
   var description = req.body.description;
+  var author = req.user.username;
 
   User.CommunitySchema.findOne({}, function(err, community) {
     console.log(community);
     var newPost = new User.PostSchema();
     newPost.question = question;
     newPost.description = description;
-
+    newPost.author = author;
+    
     newPost.save(function(err) {
       if(err) throw err;
       console.log('new post saved');

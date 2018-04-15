@@ -33,6 +33,7 @@ var CommunitySchema = new Schema ({
 });
 
 var PostSchema = new Schema ({
+	author: String,
 	timestamp: {type: Date, default: Date.now},
 	question: String,
 	description: String,

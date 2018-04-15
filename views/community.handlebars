@@ -9,7 +9,7 @@
 
     <ul>
     {{#each posts}}
-      <li><a href="/community/{{this._id}}">{{this.question}}</a></li>
+      <li>{{this.author}}: <a href="/community/{{this._id}}">{{this.question}}</a></li>
     {{/each}}
     </ul>
   </body>
