@@ -33,7 +33,7 @@ var CommunitySchema = new Schema ({
 });
 
 var PostSchema = new Schema ({
-	date: {type: Date, default: Date.now},
+	timestamp: {type: Date, default: Date.now},
 	question: String,
 	description: String,
   answers: [{
@@ -71,28 +71,28 @@ CommunitySchema.findOne({}).populate('posts').exec(function(err, community) {
 			if(err) throw err;
 			console.log('Community created');
 		});
-	} else {
-		// add posts to community
-		if(community.posts.length < 2)
-		{
-			var newPost = new PostSchema({
-				question: "What?",
-				answers:[]
-			});
-
-			newPost.save(function(err) {
-				if(err) throw err;
-				console.log('Temp post created');
-			});
-
-			community.posts.push(newPost);
-
-			community.save(function(err) {
-				if(err) throw err;
-				console.log('Temp post added to Community');
-			});
-		}
 	}
+// } else {
+// 	// add posts to community
+// 	if(community.posts.length < 2)
+// 	{
+// 		var newPost = new PostSchema({
+// 			question: "What?",
+// 			answers:[]
+// 		});
+//
+// 		newPost.save(function(err) {
+// 			if(err) throw err;
+// 			console.log('Temp post created');
+// 		});
+//
+// 		community.posts.push(newPost);
+//
+// 		community.save(function(err) {
+// 			if(err) throw err;
+// 			console.log('Temp post added to Community');
+// 		});
+// 	}
 
 });
 

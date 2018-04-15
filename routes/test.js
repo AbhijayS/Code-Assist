@@ -5,6 +5,20 @@ var User = require('../models/user');
 
 router.get('/', function(req, res) {
 	User.CommunitySchema.findOne({}).populate('posts').exec(function(err, community) {
+
+    var allPosts = community.posts;
+
+    allPosts.sort(function(date1,date2){
+      if (date1 > date2) return -1;
+      if (date1 < date2) return 1;
+      return 0;
+    });
+
+    // console.log('---------------------------');
+    // console.log('Sorted posts:');
+    // console.log(allPosts);
+    // console.log('---------------------------');
+
 		res.render('community', {layout: false, posts: community.posts});
 	});
 
@@ -43,6 +57,7 @@ router.get('/post', function(req, res) {
   {
     res.render('community-post', {layout: false});
   }else{
+    req.flash('origin');
     req.flash('origin', '/community/post');
     res.redirect('../login');
   }
@@ -78,7 +93,7 @@ router.post('/post', function(req, res) {
     req.user.save(function(err) {
       if(err) throw err;
     });
-    
+
   });
 });
 
