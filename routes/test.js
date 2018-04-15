@@ -4,7 +4,6 @@ var User = require('../models/user');
 // var User = require('../models/test-user');
 
 router.get('/', function(req, res) {
-
 	User.CommunitySchema.findOne({}).populate('posts').exec(function(err, community) {
 		res.render('community', {layout: false, posts: community.posts});
 	});
@@ -39,17 +38,42 @@ router.get('/', function(req, res) {
 		});
 	});*/
 
-router.get('post', function(req, res) {
-	if(req.user)
-	{
-	res.render('community-post');
-	} else {
-	res.redirect('login');
-	}
+router.get('/post', function(req, res) {
+  if(req.user)
+  {
+    res.render('community-post', {layout: false});
+  }else{
+    req.flash('origin', '/community/post');
+    res.redirect('../login');
+  }
 });
 
-router.post('post', function(req, res) {
-	// var question = req.body.question;
+router.post('/post', function(req, res) {
+  var question = req.body.title;
+  var description = req.body.description;
+
+  User.CommunitySchema.findOne({}, function(err, community) {
+    console.log(community);
+    var newPost = new User.PostSchema();
+    newPost.question = question;
+    newPost.description = description;
+
+    newPost.save(function(err) {
+      if(err) throw err;
+      console.log('new post saved');
+    });
+
+    community.posts.push(newPost);
+
+    community.save(function(err) {
+      if(err) throw err;
+      console.log("Post Saved");
+      console.log(community);
+      console.log('-----------------------------');
+      console.log('');
+      res.redirect('/community');
+    });
+  });
 });
 
 router.get('/:id', function(req, res) {
@@ -73,7 +97,6 @@ router.get('/:id', function(req, res) {
 
 		res.render('post', {layout: false, post: post});
 	});
-
 });
 
 module.exports = router;

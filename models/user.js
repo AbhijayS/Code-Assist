@@ -18,7 +18,11 @@ var UserSchema = new Schema({
 	  },
 		password: {
 			type: String
-		}
+		},
+		posts: [{
+			type: Schema.Types.ObjectId,
+			ref: 'PostSchema'
+		}]
 });
 
 var CommunitySchema = new Schema ({
@@ -31,6 +35,7 @@ var CommunitySchema = new Schema ({
 var PostSchema = new Schema ({
 	date: {type: Date, default: Date.now},
 	question: String,
+	description: String,
   answers: [{
     type: Schema.Types.ObjectId,
     ref: 'AnswerSchema'
@@ -109,6 +114,23 @@ CommunitySchema.findOne({}).populate('posts').exec(function(err, community) {
 	}
 
 });*/
+
+// PostSchema.find({}, function(err, post) {
+// 	console.log(post);
+// 	if(post.length < 2)
+// 	{
+// 		var newPost = new PostSchema({
+// 			question: "What?",
+// 			answers:[]
+// 		});
+//
+// 		newPost.save(function(err) {
+// 			if(err) throw err;
+// 			console.log('Temp post created');
+// 		});
+// 	}
+//
+// });
 
 /*
 ==============================
