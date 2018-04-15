@@ -5,12 +5,12 @@
     <title></title>
   </head>
   <body>
-    <h1>Posts</h1>
-
+    <h1>{{post.question}}</h1>
     <ul>
-    {{#each posts}}
-      <li><a href="/community/{{this._id}}">{{this.question}}</a></li>
-    {{/each}}
+      {{#each post.answers}}
+      <li>Answer: {{this.answer}}</li>
+      {{/each}}
     </ul>
+
   </body>
 </html>

@@ -54,18 +54,66 @@ var AnswerSchema = mongoose.model('AnswerSchema', AnswerSchema);
 
 module.exports = {
 	UserSchema: User,
-  CommunitySchema: CommunitySchema,
-  PostSchema: PostSchema,
-  AnswerSchema: AnswerSchema,
+	CommunitySchema: CommunitySchema,
+	PostSchema: PostSchema,
+	AnswerSchema: AnswerSchema
 }
 
-var CA_Community = new CommunitySchema({
-	posts: []
+CommunitySchema.findOne({}).populate('posts').exec(function(err, community) {
+	console.log("community: " + community)
+	if (!community) {
+		// create new community
+		var newCommunity = new CommunitySchema({
+			posts: []
+		});
+
+		newCommunity.save(function(err) {
+			if(err) throw err;
+			console.log('Community created');
+		});
+	} else {
+		// add posts to community
+		if(community.posts.length < 2)
+		{
+			var newPost = new PostSchema({
+				question: "What?",
+				answers:[]
+			});
+
+			newPost.save(function(err) {
+				if(err) throw err;
+				console.log('Temp post created');
+			});
+
+			community.posts.push(newPost);
+
+			community.save(function(err) {
+				if(err) throw err;
+				console.log('Temp post added to Community');
+			});
+		}
+	}
+
 });
 
-CA_Community.save(function(err) {
-	if(err) throw err;
-});
+// For adding to answers to posts
+
+/*PostSchema.find({}, function(err, post) {
+	console.log(post);
+	if(post.length < 2)
+	{
+		var newPost = new PostSchema({
+			question: "What?",
+			answers:[]
+		});
+
+		newPost.save(function(err) {
+			if(err) throw err;
+			console.log('Temp post created');
+		});
+	}
+
+});*/
 
 // PostSchema.find({}, function(err, post) {
 // 	console.log(post);
