@@ -19,7 +19,15 @@ var UserSchema = new Schema({
 		password: {
 			type: String
 		},
+
+		title: String,
+
 		posts: [{
+			type: Schema.Types.ObjectId,
+			ref: 'PostSchema'
+		}],
+
+		private_posts: [{
 			type: Schema.Types.ObjectId,
 			ref: 'PostSchema'
 		}]

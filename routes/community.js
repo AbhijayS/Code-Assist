@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var User = require('../models/user');
+var moment = require('moment');
+
 // var User = require('../models/test-user');
 
 router.get('/', function(req, res) {
@@ -89,7 +91,9 @@ router.get('/:id', function(req, res) {
 		// post.save(function(err) {
 		// 	if(err) throw err;
 		// });
-		res.render('post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: Date.now()});
+		var today = moment(Date.now());
+		console.log(today.format("MMM"));
+		res.render('post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today});
 	});
 });
 

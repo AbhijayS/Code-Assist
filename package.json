@@ -25,6 +25,7 @@
     "express-handlebars": "*",
     "express-session": "^1.15.6",
     "express-validator": "*",
+    "handlebars.moment": "^1.0.4",
     "mongodb": "*",
     "mongoose": "*",
     "nodemailer": "^4.6.4",

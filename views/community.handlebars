@@ -1,21 +1,14 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <title></title>
-  </head>
-  <body>
-    <div class="jumbotron text-center" id="community-title">
-      <h1>Community</h1>
-      <a href="/community/post"><button class="btn btn-success" type="button" name="button">Post a Question</button></a>
-    </div>
+<body>
+  <div class="jumbotron text-center" id="community-title">
+    <h1>Community</h1>
+    <a href="/community/post"><button class="btn btn-success" type="button" name="button">Post a Question</button></a>
+  </div>
 
-    <div class="container" id="community-body">
-      <div class="list-group">
-        {{#each posts}}
-        <a class="list-group-item" href="/community/{{this._id}}">{{this.question}}<span class="badge">{{this.author}}</span><span class="badge">{{this.answers.length}}</span></a>
-        {{/each}}
-      </div>
+  <div class="container" id="community-body">
+    <div class="list-group">
+      {{#each posts}}
+      <a class="list-group-item" href="/community/{{this._id}}">{{this.question}}<span class="badge">{{this.author}}</span><span class="badge">{{this.answers.length}}</span></a>
+      {{/each}}
     </div>
-  </body>
-</html>
+  </div>
+</body>

@@ -9,6 +9,7 @@ var LocalStrategy = require('passport-local').Strategy;
 var flash = require('connect-flash');
 var routes = require('./routes/index');
 var com = require('./routes/community');
+var men = require('./routes/mentor');
 var session = require('express-session');
 
 // Init App
@@ -59,6 +60,7 @@ app.use(function (req, res, next) {
 app.use('/', routes);
 // app.use('/users', users);
 app.use('/community', com);
+app.use('/mentor', men);
 
 // Set Port
 app.set('port', (process.env.PORT || 3000));

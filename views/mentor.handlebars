@@ -15,14 +15,23 @@
   </div>
   {{msg}}
   <div class="container mentor-overview">
-    <form class="" action="send" method="post">
+    <form action="mentor/send" method="post">
       <div class="form-group">
-        <label for="exampleFormControlInput1">Email address</label>
-        <input type="email" class="form-control" id="exampleFormControlInput1" name="email" placeholder="name@example.com">
+        <label for="email-choose">Choose your email</label>
+        <select class="form-control" id="email-choose">
+          <option type="email">{{email}}</option>
+          <option>Email 2</option>
+        </select>
       </div>
+
       <div class="form-group">
-        <label for="exampleFormControlTextarea1">Example textarea</label>
-        <textarea class="form-control" id="exampleFormControlTextarea1" name="text" rows="3"></textarea>
+        <label for="exampleFormControlInput1">Question Summary</label>
+        <input type="text" class="form-control" id="question" name="question" placeholder="">
+      </div>
+
+      <div class="form-group">
+        <label for="exampleFormControlTextarea1">Description</label>
+        <textarea class="form-control" id="exampleFormControlTextarea1" name="description" rows="3"></textarea>
       </div>
 
       <button type="submit" class="btn btn-primary">Submit</button>
