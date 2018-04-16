@@ -6,7 +6,7 @@
   </head>
   <body>
     <h1>Posts</h1>
-
+    <a href="/community/post"><button type="button" name="button">Post a Question</button></a>
     <ul>
     {{#each posts}}
       <li>{{this.author}}: <a href="/community/{{this._id}}">{{this.question}}</a></li>
