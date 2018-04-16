@@ -63,6 +63,37 @@ router.get('/post', function(req, res) {
   }
 });
 
+
+router.get('/:id', function(req, res) {
+	var postID = req.params.id;
+	// var newAnswer = new User.AnswerSchema({
+	// 	answer: "MongoDB"
+	// });
+	// newAnswer.save(function(err) {
+	// 	if(err) throw err;
+	// });
+
+	User.PostSchema.findOne({_id: postID}).populate('answers').exec(function(err, post) {
+
+    var allAnswers = post.answers;
+    allAnswers.sort(function(date1,date2){
+      if (date1 > date2) return -1;
+      if (date1 < date2) return 1;
+      return 0;
+    });
+
+		console.log(post);
+    //
+		// post.answers.push(newAnswer);
+    //
+		// post.save(function(err) {
+		// 	if(err) throw err;
+		// });
+
+		res.render('post', {layout: false, post: post, saved: req.flash('saved_answer')});
+	});
+});
+
 router.post('/post', function(req, res) {
   var question = req.body.title;
   var description = req.body.description;
@@ -74,7 +105,7 @@ router.post('/post', function(req, res) {
     newPost.question = question;
     newPost.description = description;
     newPost.author = author;
-    
+
     newPost.save(function(err) {
       if(err) throw err;
       console.log('new post saved');
@@ -95,31 +126,47 @@ router.post('/post', function(req, res) {
     req.user.save(function(err) {
       if(err) throw err;
     });
-
   });
 });
 
-router.get('/:id', function(req, res) {
-	var postID = req.params.id;
 
-	var newAnswer = new User.AnswerSchema({
-		answer: "MongoDB"
-	});
-	newAnswer.save(function(err) {
-		if(err) throw err;
-	});
+router.post('/:id/answer', function(req, res) {
 
-	User.PostSchema.findOne({_id: postID}).populate('answers').exec(function(err, post) {
-		console.log(post);
+  var postID = req.params.id;
+  // console.log("Id: " + postID);
+  var message = req.body.answer;
 
-		post.answers.push(newAnswer);
+  if(req.user)
+  {
+    // console.log("User exists");
+    var author = req.user.username;
 
-		post.save(function(err) {
-			if(err) throw err;
-		});
+    User.PostSchema.findOne({_id: postID}).populate('answers').exec(function(err, post) {
+      console.log('');
+      console.log("Answering to:");
 
-		res.render('post', {layout: false, post: post});
-	});
+      var newAnswer = new User.AnswerSchema();
+      newAnswer.answer = message;
+      newAnswer.author = author;
+      newAnswer.save(function(err) {
+        if(err) throw err;
+        // saved
+      });
+
+      post.answers.push(newAnswer);
+      post.save(function(err) {
+        if(err) throw err;
+        // console.log("Answer saved");
+      });
+      res.redirect('/community/'+postID);
+    });
+  }else{
+    req.flash('origin');
+    req.flash('saved_answer');
+
+    req.flash('origin', '/community/'+postID);
+    req.flash('saved_answer', message);
+    res.redirect('../../login');
+  }
 });
-
 module.exports = router;

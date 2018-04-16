@@ -44,7 +44,9 @@ var PostSchema = new Schema ({
 });
 
 var AnswerSchema = new Schema ({
-  answer: String
+	author: String,
+  answer: String,
+	timestamp: {type: Date, default: Date.now}
   // ...
 });
 

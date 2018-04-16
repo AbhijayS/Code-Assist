@@ -8,9 +8,12 @@
     <h1>{{post.question}}</h1>
     <ul>
       {{#each post.answers}}
-      <li>Answer: {{this.answer}}</li>
+      <li>{{this.author}}: {{this.answer}}</li>
       {{/each}}
     </ul>
-
+    <form class="" action="{{post._id}}/answer" method="post">
+      <textarea name="answer" rows="8" cols="80">{{saved}}</textarea>
+      <button type="submit" name="button">Post your answer</button>
+    </form>
   </body>
 </html>
