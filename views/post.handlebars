@@ -5,15 +5,29 @@
     <title></title>
   </head>
   <body>
-    <h1>{{post.question}}</h1>
-    <ul>
-      {{#each post.answers}}
-      <li>{{this.author}}: {{this.answer}}</li>
-      {{/each}}
-    </ul>
-    <form class="" action="{{post._id}}/answer" method="post">
-      <textarea name="answer" rows="8" cols="80">{{saved}}</textarea>
-      <button type="submit" name="button">Post your answer</button>
-    </form>
+    <div class="jumbotron text-center" id="post-title">
+      <h1>{{post.question}}</h1>
+      <p class="lead">{{post.description}}</p>
+    </div>
+
+    <div class="container" id="post-body">
+      <div class="list-group">
+        {{#each post.answers}}
+        <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+          <div class="d-flex w-100 justify-content-between">
+            <h5> </h5>
+            <small>{{this.author}}</small>
+          </div>
+          <p class="mb-1">{{this.answer}}</p>
+          <small>{{date}}</small>
+        </a>
+        {{/each}}
+      </div>
+      <form class="" action="{{post._id}}/answer" method="post">
+        <textarea name="answer" rows="8" cols="80">{{saved}}</textarea>
+        <button type="submit" name="button">Post your answer</button>
+      </form>
+    </div>
+
   </body>
 </html>

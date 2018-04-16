@@ -19,7 +19,7 @@ router.get('/', function(req, res) {
     // console.log(allPosts);
     // console.log('---------------------------');
 
-		res.render('community', {layout: false, posts: community.posts});
+		res.render('community', {layout: 'dashboard-layout', posts: community.posts});
 	});
 
 });
@@ -55,7 +55,7 @@ router.get('/', function(req, res) {
 router.get('/post', function(req, res) {
   if(req.user)
   {
-    res.render('community-post', {layout: false});
+    res.render('community-post', {layout: 'dashboard-layout'});
   }else{
     req.flash('origin');
     req.flash('origin', '/community/post');
@@ -89,8 +89,7 @@ router.get('/:id', function(req, res) {
 		// post.save(function(err) {
 		// 	if(err) throw err;
 		// });
-
-		res.render('post', {layout: false, post: post, saved: req.flash('saved_answer')});
+		res.render('post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: Date.now()});
 	});
 });
 
