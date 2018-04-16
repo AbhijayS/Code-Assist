@@ -1,0 +1,41 @@
+<body>
+  <div class="jumbotron" id="mentor-container">
+    <h1>Ask a Mentor</h1>
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-sm-6">
+          <button type="button" class="btn btn-primary">Ask community Instead</button>
+        </div>
+
+        <div class="col-sm-6">
+          <button type="button" class="btn btn-warning">View Old</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  {{msg}}
+  <div class="container mentor-overview">
+    <form action="mentor/send" method="post">
+      <div class="form-group">
+        <label for="email-choose">Choose your email</label>
+        <select class="form-control" id="email-choose">
+          <option type="email">{{email}}</option>
+          <option>Email 2</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="exampleFormControlInput1">Question Summary</label>
+        <input type="text" class="form-control" id="question" name="question" placeholder="">
+      </div>
+
+      <div class="form-group">
+        <label for="exampleFormControlTextarea1">Description</label>
+        <textarea class="form-control" id="exampleFormControlTextarea1" name="description" rows="3"></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Submit</button>
+
+    </form>
+  </div>
+</body>

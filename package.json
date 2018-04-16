@@ -1,8 +1,8 @@
 {
-  "name": "Code-Assist",
+  "name": "code-assist",
   "version": "1.0.0",
-  "description": "Code Assist Website for students programmers",
-  "main": "index.js",
+  "description": "Testing new code assist website code. This will be more organixed and will be moved to a more permanent branch soon.",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -10,18 +10,30 @@
     "type": "git",
     "url": "git+https://github.com/AbhijayS/Code-Assist.git"
   },
-  "keywords": [],
-  "author": "",
+  "author": "Abhijay Saini",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/AbhijayS/Code-Assist/issues"
   },
   "homepage": "https://github.com/AbhijayS/Code-Assist#readme",
   "dependencies": {
-    "bcrypt": "^1.0.3",
-    "bootstrap": "^4.0.0",
-    "express": "^4.16.2",
-    "mongodb": "^3.0.2",
-    "socket.io": "^2.0.4"
+    "bcryptjs": "*",
+    "body-parser": "*",
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "^1.4.1",
+    "express": "*",
+    "express-handlebars": "*",
+    "express-session": "^1.15.6",
+    "express-validator": "*",
+    "handlebars.moment": "^1.0.4",
+    "mongodb": "*",
+    "mongoose": "*",
+    "nodemailer": "^4.6.4",
+    "passport": "*",
+    "passport-http": "*",
+    "passport-local": "*"
+  },
+  "devDependencies": {
+    "nodemon": "^1.17.3"
   }
 }

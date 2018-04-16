@@ -1,0 +1,168 @@
+body{
+  font-family: 'Nunito', sans-serif !important;
+  background: linear-gradient(-135deg, #94eaead9, #0d75e8);
+  background-attachment:fixed;
+}
+/*
+.signIn-form{
+  display: none;
+  position: absolute;
+  border: none;
+  top: 10%;
+  left: 10%;
+  right: 10%;
+  bottom: 10%;
+  z-index: 999;
+}
+
+.signIn-form iframe{
+  border: none;
+  height: 100% !important;
+  width: 100%;
+  padding: 0;
+} */
+
+.navbar {
+  margin: 0;
+  padding: 0;
+  background: transparent !important;
+  border: 0;
+  border-color: transparent;
+}
+
+.navbar-collapse {
+  background:none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+/* .navbar li{
+  margin: 0;
+  padding: 0;
+}
+
+.navbar-nav li a:hover {
+	background: #eee;
+}
+*/
+#jumbotron-container .btn-primary {
+  margin-left: 2%;
+  background-color: transparent !important;
+  color: white !important;
+	border-color: white !important;
+	margin-bottom: 5px !important;
+}
+
+#jumbotron-container .btn-primary:hover {
+	color: skyblue !important;
+	background-color: white !important;
+	border-color: #eee;
+}
+
+
+#jumbotron-container .btn-primary span{
+  margin: 0;
+  margin-top: 3%;
+  margin-left: 1%;
+  padding: 0;
+  -webkit-transition: 0.4s ease-in-out;
+  transition: 0.4s ease-in-out;
+}
+
+#jumbotron-container .btn-primary:hover span{
+  padding-left: 5px;
+}
+
+#jumbotron-container input[type=text] {
+  background-color: transparent;
+  border: none;
+  border-bottom: 2px solid white;
+  color: white;
+  padding: 8px;
+  letter-spacing: 1px;
+  font-size: 1.5em;
+}
+
+#jumbotron-container input[type=text]:focus {
+  outline: none;
+}
+
+::placeholder {
+    color: #00000066;
+    opacity: 1; /* Firefox */
+    text-align: center;
+}
+
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+   color: #00000066;
+   text-align: center;
+}
+
+::-ms-input-placeholder { /* Microsoft Edge */
+   color: #00000066;
+   text-align: center;
+}
+
+#jumbotron-container{
+  background-color: transparent;
+}
+
+#jumbotron-container {
+  margin: 8% 0;
+  padding: 5% 0 0 0;
+  height: 100vh;
+}
+
+#jumbotron-container h1{
+  font-size: 100px !important;
+  font-weight: bold;
+  margin-bottom: 50px;
+}
+
+#jumbotron-container p{
+  font-size: 35px !important;
+  font-weight: 400;
+  margin: 5% 0 10% 0;
+}
+
+/* .form-control {
+  width: 100%;
+} */
+.overview .call-to-action {
+	text-align: center;
+}
+.overview .call-to-action p {
+	margin-bottom: 30px;
+	font-family: sans-serif;
+}
+
+.overview .glyphicon-large {
+  font-size: 72px !important;
+}
+
+.overview .title{
+  margin-bottom: 2%;
+}
+/*
+.divider {
+  height: 1px;
+  margin-left: 10%;
+  margin-bottom: 2%;
+  width:80%;
+  display:block;
+  overflow: hidden;
+  background-color: #dddddd87;
+} */
+
+#jumbotron-container .form-inline {
+  margin-top: 10%;
+}
+
+.overview {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+}
+
+.overview .title h1{
+  font-size: 50px;
+}
