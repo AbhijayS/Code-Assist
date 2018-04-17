@@ -70,23 +70,19 @@ router.post('/send', function(req, res) {
         // create reusable transporter object using the default SMTP transport
         let transporter = nodemailer.createTransport({
           host: 'mail.privateemail.com',
-          port: 993, //
-          secure: false, // true for 465, false for other ports
+          port: 465, //
+          secure: true, // true for 465, false for other ports
           // service: 'gmail',
           auth: {
-              user: 'clubcodeassist@gmail.com', // generated ethereal user
+              user: 'contact@codeassist.club', // generated ethereal user
               pass: 'codeassistpassword123#abinchris'  // generated ethereal password
-          },
-          
-          tls:{
-            rejectUnauthorized:false
           }
         });
 
         // setup email data with unicode symbols
         let mailOptions = {
-            from: '"Code Assist" <clubcodeassist@gmail.com>', // sender address
-            to: 'abhijay.saini@gmail.com, christopher.smith4202@gmail.com, contact@codeassist.club', // list of receivers
+            from: '"Code Assist" <contact@codeassist.club>', // sender address
+            to: 'abhijay.saini@gmail.com, christopher.smith4202@gmail.com', // list of receivers
             subject: 'User Request', // Subject line
             text: 'Hello world?', // plain text body
             html: output // html body
