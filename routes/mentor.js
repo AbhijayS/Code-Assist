@@ -76,7 +76,8 @@ router.post('/send', function(req, res) {
           auth: {
               user: 'clubcodeassist@gmail.com', // generated ethereal user
               pass: 'codeassistpassword123#abinchris'  // generated ethereal password
-          }
+          },
+          
           tls:{
             rejectUnauthorized:false
           }

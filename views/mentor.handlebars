@@ -1,18 +1,10 @@
 <body>
-  <div class="jumbotron" id="mentor-container">
+  <div class="jumbotron text-center" id="mentor-container">
     <h1>Ask a Mentor</h1>
-    <div class="container">
-      <div class="row justify-content-center">
-        <div class="col-sm-6">
-          <button type="button" class="btn btn-primary">Ask community Instead</button>
-        </div>
-
-        <div class="col-sm-6">
-          <a href="/mentor/history"><button type="button" class="btn btn-warning">View Old</button></a>
-        </div>
-      </div>
-    </div>
+    <a href="/mentor/history"><button type="button" class="btn btn-warning">View Old</button></a>
+    <a href="/community"><button type="button" class="btn btn-primary">Ask community</button></a>
   </div>
+
   {{msg}}
   <div class="container mentor-overview">
     <form action="/mentor/send" method="post">
