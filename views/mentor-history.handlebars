@@ -1,13 +1,13 @@
 <body>
   <div class="jumbotron text-center" id="history-title">
-    <h1>History</h1>
-    <!-- <a href="/community/post"><button class="btn btn-success" type="button" name="button">Post a Question</button></a> -->
+    <h1>Conversations</h1>
+    <a href="/mentor"><button class="btn btn-success" type="button" name="button">Ask a Mentor</button></a>
   </div>
 
   <div class="container" id="history-body">
     <div class="list-group">
       {{#each posts}}
-      <a class="list-group-item" href="/mentor/{{this._id}}">{{this.question}}<span class="badge">{{this.answers.length}}</span></a>
+      <a class="list-group-item" href="/mentor/history/{{this._id}}">{{this.question}}<span class="badge">#{{this.author}}</span><span class="badge">{{this.answers.length}}</span></a>
       {{/each}}
     </div>
   </div>
