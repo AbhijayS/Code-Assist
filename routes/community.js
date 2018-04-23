@@ -98,7 +98,7 @@ router.get('/:id', function(req, res) {
 });
 
 router.post('/post', function(req, res) {
-  var question = req.body.title;
+  var question = req.body.question;
   var description = req.body.description;
   var author = req.user.username;
 
