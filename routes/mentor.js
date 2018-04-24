@@ -26,6 +26,7 @@ router.post('/send', function(req, res) {
       pPost.author = req.user.username;
       pPost.question = question;
       pPost.description = description;
+      pPost.prog_lang = req.body.programming;
 
       pPost.save(function(err) {
         if(err) throw err;
@@ -41,7 +42,7 @@ router.post('/send', function(req, res) {
 
       console.log("---------------------------");
       console.log("List of Mentors:");
-      for(var i = 0; i < mentors.length; i++)
+      for (var i = 0; i < mentors.length; i++)
       {
         var mentor = mentors[i];
         mentor.private_posts.push(pPost);
@@ -49,6 +50,7 @@ router.post('/send', function(req, res) {
           if(err) throw err;
           // saved
         });
+
         console.log(i+1 + ". Mentor Name: " + mentor.username);
         console.log(mentor.private_posts);
         console.log('');
@@ -56,14 +58,19 @@ router.post('/send', function(req, res) {
         // send an email to each mentor
 
         const output = `
-          <p>You have a new contact request</p>
-          <h2>${question}</h2>
-          <h3>Contact Details</h3>
+          <p>Hi ${mentor.username},</p>
+          <p>A User recently sent a new request:</p>
+          <strong><p>${question}</p></strong>
+
+          <h3>Contact details:</h3>
           <ul>
-            <li>Userame: ${req.user.username}</li>
-            <li>Email: ${req.user.email}</li>
+            <li>Date Replied: ${pPost.timestamp}</li>
+            <li>User's Name: ${req.user.username}</li>
+            <li>User's Email: ${req.user.email}</li>
+            <li>Link: localhost:3000/mentor/history/${pPost._id}</li>
           </ul>
-          <h3>Message</h3>
+
+          <h3>User Request</h3>
           <p>${description}</p>
         `;
 
@@ -74,29 +81,30 @@ router.post('/send', function(req, res) {
           secure: true, // true for 465, false for other ports
           // service: 'gmail',
           auth: {
-              user: 'contact@codeassist.club', // generated ethereal user
-              pass: 'codeassistpassword123#abinchris'  // generated ethereal password
+            user: 'contact@codeassist.club', // generated ethereal user
+            pass: 'codeassistpassword123#abinchris'  // generated ethereal password
           }
         });
-
+        var subject = 'New User Query | ' + question;
         // setup email data with unicode symbols
         let mailOptions = {
-            from: '"Code Assist" <contact@codeassist.club>', // sender address
-            to: 'abhijay.saini@gmail.com, christopher.smith4202@gmail.com', // list of receivers
-            subject: 'User Request', // Subject line
-            text: 'Hello world?', // plain text body
-            html: output // html body
+          from: '"Code Assist" <contact@codeassist.club>', // sender address
+          to: mentor.email, // list of receivers
+          subject: 'New User Query | ' + question, // Subject line
+          text: 'Hello world?', // plain text body
+          html: output // html body
         };
 
         // send mail with defined transport object
         transporter.sendMail(mailOptions, (error, info) => {
           console.log("Sending Email");
           if (error) {
-              return console.log(error);
+            return console.log(error);
           }
           console.log('Message sent: %s', info.messageId);
           console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
         });
+
       }
       res.redirect('/mentor/history');
     });
@@ -145,7 +153,7 @@ router.get('/history/:id', function(req, res) {
     {
       // console.log("Found: " + found);
       User.PostSchema.findOne({_id: postID}).populate('answers').exec(function(err, post) {
-        res.render('mentor-history-post', {layout: 'dashboard-layout', post: post});
+        res.render('mentor-history-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer')});
       });
     }else{
       res.send("You don't have access to this post");
@@ -159,4 +167,155 @@ router.get('/history/:id', function(req, res) {
   // res.render('mentor-history-post', {layout: 'dashboard-layout', post: post});
 
 });
+
+router.post('/history/:id/answer', function(req, res) {
+
+  var postID = req.params.id;
+  // console.log("Id: " + postID);
+  var message = req.body.answer;
+
+  if(req.user)
+  {
+    // console.log("User exists");
+    var author = req.user.username;
+
+    User.PostSchema.findOne({_id: postID}).populate('answers').exec(function(err, post) {
+      console.log('');
+      console.log("Answering to:");
+
+      var newAnswer = new User.AnswerSchema();
+      newAnswer.answer = message;
+      newAnswer.author = author;
+
+      newAnswer.save(function(err) {
+        if(err) throw err;
+        // saved
+      });
+
+      post.answers.push(newAnswer);
+      post.save(function(err) {
+        if(err) throw err;
+        // console.log("Answer saved");
+      });
+
+      if(req.user.title == 'mentor')
+      {
+        const output = `
+          <p>Hi ${author},</p>
+          <p>A Mentor has recently replied to your question:</p>
+          <p>${post.question}</p>
+
+          <h3>Contact details:</h3>
+          <ul>
+            <li>Date Replied: ${newAnswer.timestamp}</li>
+            <li>Mentor Name: ${req.user.username}</li>
+            <li>Mentor Email: ${req.user.email}</li>
+            <li>Link: localhost:3000/mentor/history/${postID}</li>
+          </ul>
+
+          <h3>Mentor's Reply</h3>
+          <p>${message}</p>
+        `;
+
+        // create reusable transporter object using the default SMTP transport
+        let transporter = nodemailer.createTransport({
+          host: 'mail.privateemail.com',
+          port: 465, //
+          secure: true, // true for 465, false for other ports
+          // service: 'gmail',
+          auth: {
+              user: 'contact@codeassist.club', // generated ethereal user
+              pass: 'codeassistpassword123#abinchris'  // generated ethereal password
+          }
+        });
+
+        User.UserSchema.findOne({username: post.author}, function(err, user) {
+
+          // setup email data with unicode symbols
+          let mailOptions = {
+            from: '"Code Assist" <contact@codeassist.club>', // sender address
+            to: user.email,
+            subject: 'New Mentor Reply | ' + post.question, // Subject line
+            text: 'Hello world?', // plain text body
+            html: output // html body
+          };
+
+          // send mail with defined transport object
+          transporter.sendMail(mailOptions, (error, info) => {
+            console.log("Sending Email");
+            if (error) {
+              return console.log(error);
+            }
+            console.log('Message sent: %s', info.messageId);
+            console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+          });
+
+        });
+
+      }else{
+        User.UserSchema.find({title: "mentor"}).populate('private_posts').exec(function(err, mentors) {
+          for (var i = 0; i < mentors.length; i++)
+          {
+            const output = `
+              <p>Hi ${mentors[i].username},</p>
+              <p>A User has recently replied to a post:</p>
+              <p>${post.question}</p>
+
+              <h3>Contact details:</h3>
+              <ul>
+                <li>Date Replied: ${newAnswer.timestamp}</li>
+                <li>User's Name: ${req.user.username}</li>
+                <li>User's Email: ${req.user.email}</li>
+                <li>Link: localhost:3000/mentor/history/${postID}</li>
+              </ul>
+
+              <h3>User's Reply</h3>
+              <p>${message}</p>
+            `;
+
+            // create reusable transporter object using the default SMTP transport
+            let transporter = nodemailer.createTransport({
+              host: 'mail.privateemail.com',
+              port: 465, //
+              secure: true, // true for 465, false for other ports
+              // service: 'gmail',
+              auth: {
+                user: 'contact@codeassist.club', // generated ethereal user
+                pass: 'codeassistpassword123#abinchris'  // generated ethereal password
+              }
+            });
+
+            // setup email data with unicode symbols
+            let mailOptions = {
+              from: '"Code Assist" <contact@codeassist.club>', // sender address
+              to: mentors[i].email, // list of receivers
+              subject: 'New User Reply | ' + post.question, // Subject line
+              text: 'Hello world?', // plain text body
+              html: output // html body
+            };
+
+            // send mail with defined transport object
+            transporter.sendMail(mailOptions, (error, info) => {
+              console.log("Sending Email");
+              if (error) {
+                return console.log(error);
+              }
+              console.log('Message sent: %s', info.messageId);
+              console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+            });
+          }
+        });
+      }
+      res.redirect('/mentor/history/'+postID);
+    });
+  }else{
+    req.flash('origin');
+    req.flash('saved_answer');
+
+    req.flash('origin', '/mentor/history/'+postID);
+    req.flash('saved_answer', message);
+    res.redirect('../../../login');
+  }
+});
+
 module.exports = router;

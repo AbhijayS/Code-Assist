@@ -17,13 +17,25 @@
       </div>
 
       <div class="form-group">
+        <label for="language-choose">Programming Language</label>
+        <select class="form-control" id="language-choose" name="programming">
+          <option>Python</option>
+          <option>Java</option>
+          <option>C/C++</option>
+          <option>HTML</option>
+          <option>CSS</option>
+          <option>Javascript</option>
+        </select>
+      </div>
+
+      <div class="form-group">
         <label for="exampleFormControlInput1">Question Summary</label>
         <input type="text" class="form-control" id="question" name="question" placeholder="">
       </div>
 
       <div class="form-group">
         <label for="exampleFormControlTextarea1">Description</label>
-        <textarea class="form-control" id="exampleFormControlTextarea1" name="description" rows="3"></textarea>
+        <textarea class="form-control" id="exampleFormControlTextarea1" name="description" rows="3">{{saved}}</textarea>
       </div>
 
       <button type="submit" class="btn btn-primary">Submit</button>

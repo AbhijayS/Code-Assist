@@ -1,13 +1,21 @@
 <body>
   <div class="jumbotron text-center" id="post-title">
-    <h1>{{post.question}}</h1>
-    <p class="lead">{{post.description}}</p>
+    <h2>{{post.question}}</h2>
   </div>
 
   <div class="container" id="post-body">
     <div class="list-group">
+
+      <a class="list-group-item list-group-item-action flex-column align-items-start active">
+        <div class="d-flex w-100 justify-content-between">
+          <small>{{post.author}}</small>
+        </div>
+        <p class="mb-1">{{post.description}}</p>
+        <small>{{post.timestamp}}</small>
+      </a>
+
       {{#each post.answers}}
-      <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+      <a class="list-group-item list-group-item-action flex-column align-items-start">
         <div class="d-flex w-100 justify-content-between">
           <h5> </h5>
           <small>{{this.author}}</small>
@@ -17,10 +25,19 @@
       </a>
       {{/each}}
     </div>
-    <form class="" action="{{post._id}}/answer" method="post">
+    <!-- <form class="container" action="{{post._id}}/answer" method="post">
       <textarea name="answer" rows="8" cols="80">{{saved}}</textarea>
       <button type="submit" name="button">Post your answer</button>
     </form>
+ -->
+    <form action="{{post._id}}/answer" method="post">
+      <div class="form-group">
+        <label for="answer-description">Reply</label>
+        <textarea class="form-control" name="answer" id="answer-description" rows="3">{{saved}}</textarea>
+      </div>
+      <button class="btn btn-primary" type="submit">Post your answer</button>
+    </form>
+
   </div>
 
 </body>

@@ -8,7 +8,7 @@
   <div class="container" id="community-body">
     <div class="list-group">
       {{#each posts}}
-      <a class="list-group-item" href="/community/{{this._id}}">{{this.question}}<span class="badge">{{this.author}}</span><span class="badge">{{this.answers.length}}</span></a>
+      <a class="list-group-item" href="/community/{{this._id}}">{{this.question}} <span class="badge progress-bar-danger">{{this.answers.length}}</span> <span class="badge">{{this.author}}</span> <span class="badge progress-bar-info">{{this.prog_lang}}</span> </a>
       {{/each}}
     </div>
   </div>

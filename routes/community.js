@@ -101,6 +101,7 @@ router.post('/post', function(req, res) {
   var question = req.body.question;
   var description = req.body.description;
   var author = req.user.username;
+	var prog_lang = req.body.programming;
 
   User.CommunitySchema.findOne({}, function(err, community) {
     console.log(community);
@@ -108,6 +109,7 @@ router.post('/post', function(req, res) {
     newPost.question = question;
     newPost.description = description;
     newPost.author = author;
+		newPost.prog_lang = prog_lang;
 
     newPost.save(function(err) {
       if(err) throw err;
@@ -172,4 +174,5 @@ router.post('/:id/answer', function(req, res) {
     res.redirect('../../login');
   }
 });
+
 module.exports = router;

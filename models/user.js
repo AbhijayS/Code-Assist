@@ -45,6 +45,7 @@ var PostSchema = new Schema ({
 	timestamp: {type: Date, default: Date.now},
 	question: String,
 	description: String,
+	prog_lang: String,
   answers: [{
     type: Schema.Types.ObjectId,
     ref: 'AnswerSchema'
