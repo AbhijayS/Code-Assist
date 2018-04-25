@@ -171,4 +171,15 @@ router.post('/login',
     }
 });
 
+
+/*
+=====================================================
+                    DEVELOPERS
+=====================================================
+*/
+
+router.get('/dev', function(req, res) {
+  res.render('test', {layout: false});
+});
+
 module.exports = router;

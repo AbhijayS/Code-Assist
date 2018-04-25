@@ -54,7 +54,7 @@ var PostSchema = new Schema ({
 
 var AnswerSchema = new Schema ({
 	author: String,
-  answer: String,
+  answer: String, // soon to be changed to an array to accept quillEditor.getContents();
 	timestamp: {type: Date, default: Date.now}
   // ...
 });
