@@ -7,6 +7,18 @@
 
   {{msg}}
   <div class="container mentor-overview">
+    {{#if questionInvalid}}
+      <div style="margin-bottom: 2rem;" class="alert alert-danger">
+        Please enter a <strong>question</strong>
+      </div>
+    {{/if}}
+
+    {{#if descriptionInvalid}}
+      <div style="margin-bottom: 2rem;" class="alert alert-danger">
+        Please enter a <strong>description</strong>
+      </div>
+    {{/if}}
+  
     <form action="/mentor/send" method="post">
       <div class="form-group">
         <label for="email-choose">Choose your email</label>
@@ -30,7 +42,7 @@
 
       <div class="form-group">
         <label for="exampleFormControlInput1">Question Summary</label>
-        <input type="text" class="form-control" id="question" name="question" placeholder="">
+        <input type="text" class="form-control" id="question" name="question" placeholder="" value="{{question}}">
       </div>
 
       <div class="form-group">

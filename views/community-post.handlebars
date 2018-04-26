@@ -11,6 +11,18 @@
 
   {{msg}}
   <div class="container mentor-overview">
+    {{#if questionInvalid}}
+      <div style="margin-bottom: 2rem;" class="alert alert-danger">
+        Please enter a <strong>question</strong>
+      </div>
+    {{/if}}
+
+    {{#if descriptionInvalid}}
+      <div style="margin-bottom: 2rem;" class="alert alert-danger">
+        Please enter a <strong>description</strong>
+      </div>
+    {{/if}}
+
     <form action="/community/post" method="post">
       <div class="form-group">
         <label for="language-choose">Programming Language</label>
@@ -26,12 +38,12 @@
 
       <div class="form-group">
         <label for="exampleFormControlInput1">Question Title</label>
-        <input type="text" class="form-control" id="question" name="question" placeholder="">
+        <input type="text" class="form-control" id="question" name="question" placeholder="" value="{{question}}">
       </div>
 
       <div class="form-group">
         <label for="exampleFormControlTextarea1">Description</label>
-        <textarea class="form-control" id="exampleFormControlTextarea1" name="description" rows="3"></textarea>
+        <textarea class="form-control" id="exampleFormControlTextarea1" name="description" rows="3">{{description}}</textarea>
       </div>
 
       <button type="submit" class="btn btn-primary">Submit</button>

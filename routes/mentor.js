@@ -22,6 +22,19 @@ router.post('/send', function(req, res) {
       var question = req.body.question;
       var description = req.body.description;
 
+      var questionInvalid = false;
+      var descriptionInvalid = false;
+
+      if (question.length == 0)
+        questionInvalid = true;
+      if (description.length == 0)
+        descriptionInvalid = true;
+
+      if (questionInvalid || descriptionInvalid) {
+        res.render('mentor', {layout: 'dashboard-layout', email: req.user.email, questionInvalid: questionInvalid, descriptionInvalid: descriptionInvalid, question: question, saved: description});
+        return;
+      }
+
       var pPost = new User.PostSchema();
       pPost.author = req.user.username;
       pPost.question = question;
@@ -67,7 +80,7 @@ router.post('/send', function(req, res) {
             <li>Date Replied: ${pPost.timestamp}</li>
             <li>User's Name: ${req.user.username}</li>
             <li>User's Email: ${req.user.email}</li>
-            <li>Link: localhost:3000/mentor/history/${pPost._id}</li>
+            <li>Link: <a href="http://localhost:3000/mentor/history/${pPost._id}">Post</a></li>
           </ul>
 
           <h3>User Request</h3>
