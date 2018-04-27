@@ -10,8 +10,8 @@ var nodemailer = require('nodemailer');
 
 // Get Homepage
 router.get('/', function(req, res){
-    console.log("Homepage: ");
-    console.log(req.isAuthenticated());
+    // console.log("Homepage: ");
+    // console.log(req.isAuthenticated());
     res.render('index', {layout: 'layout'});
 });
 
@@ -72,7 +72,7 @@ router.post('/dashboard', function(req, res) {
     res.render('dashboard', {layout: 'dashboard-layout'});
     }else {
     // console.log(req.body.username);
-    console.log("User not logged in");
+    // console.log("User not logged in");
     req.flash('username', req.body.username);
     req.flash('origin');
     req.flash('origin', '/dashboard');

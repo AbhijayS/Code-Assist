@@ -72,7 +72,6 @@ module.exports = {
 }
 
 CommunitySchema.findOne({}).populate('posts').exec(function(err, community) {
-	console.log("community: " + community)
 	if (!community) {
 		// create new community
 		var newCommunity = new CommunitySchema({
@@ -81,8 +80,15 @@ CommunitySchema.findOne({}).populate('posts').exec(function(err, community) {
 
 		newCommunity.save(function(err) {
 			if(err) throw err;
-			console.log('Community created');
+			console.log('Code Assist Community created');
+			console.log('------------------------------------');
+			console.log('');
 		});
+	}else{
+		console.log("Welcome Again: Code Assist Community");
+		console.log('------------------------------------');
+		console.log('');
+
 	}
 // } else {
 // 	// add posts to community

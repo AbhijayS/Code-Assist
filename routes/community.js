@@ -95,9 +95,9 @@ router.get('/:id', function(req, res) {
 		// console.log(today.format("MMM"));
 		// post.description.stringify = JSON.stringify(post.description);
 		var description = post.description;
-		console.log('');
-		console.log("Type of description: " + typeof description);
-		console.log(description);
+		// console.log('');
+		// console.log("Type of description: " + typeof description);
+		// console.log(description);
 		res.render('post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description});
 	});
 });
@@ -116,7 +116,7 @@ router.post('/post', function(req, res) {
   if (description.length == 0)
     descriptionInvalid = true;
 
-  console.log("description: " + description);
+  // console.log("description: " + description);
   if (questionInvalid || descriptionInvalid) {
     res.render('community-post', {layout: 'dashboard-layout', questionInvalid: questionInvalid, descriptionInvalid: descriptionInvalid, question: question, description: description});
     return;
@@ -169,8 +169,6 @@ router.post('/:id/answer', function(req, res) {
     var author = req.user.username;
 
     User.PostSchema.findOne({_id: postID}).populate('answers').exec(function(err, post) {
-      console.log('');
-      console.log("Answering to:");
 
       var newAnswer = new User.AnswerSchema();
       newAnswer.answer = message;
