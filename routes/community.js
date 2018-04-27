@@ -108,12 +108,20 @@ router.post('/post', function(req, res) {
   var author = req.user.username;
 	var prog_lang = req.body.programming;
 
-	console.log('---------------------------------');
-	console.log(req.body);
-	console.log("Returned from QUILL: " + description);
-	console.log("Type of QUILL: " + typeof description);
-	console.log('---------------------------------');
-	console.log('');
+  var questionInvalid = false;
+  var descriptionInvalid = false;
+
+  if (question.length == 0)
+    questionInvalid = true;
+  if (description.length == 0)
+    descriptionInvalid = true;
+
+  console.log("description: " + description);
+  if (questionInvalid || descriptionInvalid) {
+    res.render('community-post', {layout: 'dashboard-layout', questionInvalid: questionInvalid, descriptionInvalid: descriptionInvalid, question: question, description: description});
+    return;
+  }
+
 
   User.CommunitySchema.findOne({}, function(err, community) {
     // console.log(community);
