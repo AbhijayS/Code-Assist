@@ -84,7 +84,7 @@ router.get('/:id', function(req, res) {
       return 0;
     });
 
-		console.log(post);
+		// console.log(post);
     //
 		// post.answers.push(newAnswer);
     //
@@ -92,8 +92,13 @@ router.get('/:id', function(req, res) {
 		// 	if(err) throw err;
 		// });
 		var today = moment(Date.now());
-		console.log(today.format("MMM"));
-		res.render('post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today});
+		// console.log(today.format("MMM"));
+		// post.description.stringify = JSON.stringify(post.description);
+		var description = post.description;
+		console.log('');
+		console.log("Type of description: " + typeof description);
+		console.log(description);
+		res.render('post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description});
 	});
 });
 
@@ -103,8 +108,15 @@ router.post('/post', function(req, res) {
   var author = req.user.username;
 	var prog_lang = req.body.programming;
 
+	console.log('---------------------------------');
+	console.log(req.body);
+	console.log("Returned from QUILL: " + description);
+	console.log("Type of QUILL: " + typeof description);
+	console.log('---------------------------------');
+	console.log('');
+
   User.CommunitySchema.findOne({}, function(err, community) {
-    console.log(community);
+    // console.log(community);
     var newPost = new User.PostSchema();
     newPost.question = question;
     newPost.description = description;
@@ -113,7 +125,7 @@ router.post('/post', function(req, res) {
 
     newPost.save(function(err) {
       if(err) throw err;
-      console.log('new post saved');
+      // console.log('new post saved');
     });
 
     community.posts.push(newPost);
@@ -122,10 +134,12 @@ router.post('/post', function(req, res) {
     community.save(function(err) {
       if(err) throw err;
       console.log("Post Saved");
-      console.log(community);
-      console.log('-----------------------------');
-      console.log('');
-      res.redirect('/community');
+      // console.log(community);
+      // console.log('-----------------------------');
+      // console.log('');
+			console.log('Redirecting to COMMUNITY...');
+      // res.redirect('/community');
+			res.send(description);
     });
 
     req.user.save(function(err) {

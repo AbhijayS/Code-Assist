@@ -1,18 +1,22 @@
+<script src="//cdn.quilljs.com/1.3.6/quill.js"></script>
+<link rel="stylesheet" href="//cdn.quilljs.com/1.3.6/quill.snow.css">
+
 <body>
   <div class="jumbotron text-center" id="post-title">
     <h2>{{post.question}}</h2>
   </div>
 
   <div class="container" id="post-body">
+
     <div class="list-group">
       <a class="list-group-item list-group-item-action flex-column align-items-start active">
         <div class="d-flex w-100 justify-content-between">
           <small>{{post.author}}</small>
         </div>
-        <p class="mb-1">{{post.description}}</p>
+        <p class="mb-1" id="description"><div id="editor"></div></p>
         <small>{{post.timestamp}}</small>
       </a>
-
+<!-- {{post.description}} -->
       {{#each post.answers}}
       <a class="list-group-item list-group-item-action flex-column align-items-start">
         <div class="d-flex w-100 justify-content-between">
@@ -33,4 +37,20 @@
     </form>
 
   </div>
+  <script type="text/javascript">
+    window.onload = function(){
+      // Your code here
+      var quillEditor = new Quill('#editor', {
+        modules: {
+          toolbar: false
+        },
+        theme: 'snow'
+      });
+
+      console.log("Community description: " + typeof {{{description}}});
+      quillEditor.setContents({{{description}}});
+      quillEditor.disable();
+    }
+  </script>
+
 </body>

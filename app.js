@@ -11,6 +11,7 @@ var routes = require('./routes/index');
 var com = require('./routes/community');
 var men = require('./routes/mentor');
 var session = require('express-session');
+// var quill = require('quill');
 
 // Init App
 var app = express();
@@ -27,8 +28,8 @@ app.engine('handlebars', hbs);
 app.set('view engine', 'handlebars');
 
 // BodyParser Middleware
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json({limit: "50mb"}));
+app.use(bodyParser.urlencoded({limit: "50mb", extended: true, parameterLimit:50000}));
 app.use(cookieParser());
 
 // Set Static Folder
