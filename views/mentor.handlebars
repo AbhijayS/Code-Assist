@@ -18,7 +18,7 @@
         Please enter a <strong>description</strong>
       </div>
     {{/if}}
-  
+
     <form action="/mentor/send" method="post">
       <div class="form-group">
         <label for="email-choose">Choose your email</label>
@@ -41,17 +41,58 @@
       </div>
 
       <div class="form-group">
-        <label for="exampleFormControlInput1">Question Summary</label>
+        <label for="exampleFormControlInput1">Question Title</label>
         <input type="text" class="form-control" id="question" name="question" placeholder="" value="{{question}}">
       </div>
 
       <div class="form-group">
-        <label for="exampleFormControlTextarea1">Description</label>
-        <textarea class="form-control" id="exampleFormControlTextarea1" name="description" rows="3">{{saved}}</textarea>
+        <label for="editor">Description</label>
+        <!-- <textarea class="form-control" id="exampleFormControlTextarea1" name="description" rows="3">{{saved}}</textarea> -->
+        <div id="editor">
+
+        </div>
       </div>
 
-      <button type="submit" class="btn btn-primary">Submit</button>
+      <button id="submit" class="btn btn-primary">Submit</button>
 
     </form>
   </div>
+
+  <script type="text/javascript">
+    window.onload = function(){
+      var quillEditor = new Quill('#editor', {
+        modules: {
+          toolbar: [
+            [{ header: [1, 2, false] }],
+            ['bold', 'italic', 'underline'],
+            ['image', 'code-block']
+          ]
+        },
+        theme: 'snow'
+      });
+
+      $('#submit').on('click', function(event) {
+        event.preventDefault();
+        console.log('');
+        console.log('-------------------------------------');
+        console.log('community-post clicked');
+        var description = JSON.stringify(quillEditor.getContents().ops);
+
+        var data = {
+          programming: $('#language-choose').val(),
+          question: $("input[name=question]").val(),
+          description: description,
+        };
+
+        // console.log(data.description);
+        // console.log("Object Created");
+        // console.log("Object Type: " + typeof data.description);
+
+        $.post("/mentor/post", data, function(url) {
+          console.log("Data sent");
+          window.location.replace(url);
+        });
+      });
+    };
+  </script>
 </body>

@@ -14,7 +14,7 @@ router.get('/', function(req, res) {
   }
 });
 
-router.post('/send', function(req, res) {
+router.post('/post', function(req, res) {
   if(req.user)
   {
     User.UserSchema.find({title: "mentor"}).populate('private_posts').exec(function(err, mentors) {
@@ -24,16 +24,16 @@ router.post('/send', function(req, res) {
 
       var questionInvalid = false;
       var descriptionInvalid = false;
-
-      if (question.length == 0)
-        questionInvalid = true;
-      if (description.length == 0)
-        descriptionInvalid = true;
-
-      if (questionInvalid || descriptionInvalid) {
-        res.render('mentor', {layout: 'dashboard-layout', email: req.user.email, questionInvalid: questionInvalid, descriptionInvalid: descriptionInvalid, question: question, saved: description});
-        return;
-      }
+      //
+      // if (question.length == 0)
+      //   questionInvalid = true;
+      // if (description.length == 0)
+      //   descriptionInvalid = true;
+      //
+      // if (questionInvalid || descriptionInvalid) {
+      //   res.render('mentor', {layout: 'dashboard-layout', email: req.user.email, questionInvalid: questionInvalid, descriptionInvalid: descriptionInvalid, question: question, saved: description});
+      //   return;
+      // }
 
       var pPost = new User.PostSchema();
       pPost.author = req.user.username;
@@ -48,13 +48,13 @@ router.post('/send', function(req, res) {
       req.user.private_posts.push(pPost);
       req.user.save(function(err) {
         if(err) throw err;
-        console.log("Private post saved: ");
-        console.log(req.user.private_posts);
+        console.log("Private post saved");
+        // console.log(req.user.private_posts);
         // saved
       });
 
-      console.log("---------------------------");
-      console.log("List of Mentors:");
+      // console.log("---------------------------");
+      // console.log("List of Mentors:");
       for (var i = 0; i < mentors.length; i++)
       {
         var mentor = mentors[i];
@@ -64,10 +64,10 @@ router.post('/send', function(req, res) {
           // saved
         });
 
-        console.log(i+1 + ". Mentor Name: " + mentor.username);
-        console.log(mentor.private_posts);
-        console.log('');
-        console.log('');
+        // console.log(i+1 + ". Mentor Name: " + mentor.username);
+        // console.log(mentor.private_posts);
+        // console.log('');
+        // console.log('');
         // send an email to each mentor
 
         const output = `
@@ -119,7 +119,7 @@ router.post('/send', function(req, res) {
         });
 
       }
-      res.redirect('/mentor/history');
+      res.send('/mentor/history');
     });
   }
 });
@@ -154,7 +154,7 @@ router.get('/history/:id', function(req, res) {
     // console.log('');
     for (var i = 0; (i < req.user.private_posts.length); i++)
     {
-      console.log("Iterating: " + req.user.private_posts[i]);
+      // console.log("Iterating: " + req.user.private_posts[i]);
       if(req.user.private_posts[i] == postID)
       {
         found = true;
@@ -193,9 +193,6 @@ router.post('/history/:id/answer', function(req, res) {
     var author = req.user.username;
 
     User.PostSchema.findOne({_id: postID}).populate('answers').exec(function(err, post) {
-      console.log('');
-      console.log("Answering to:");
-
       var newAnswer = new User.AnswerSchema();
       newAnswer.answer = message;
       newAnswer.author = author;
@@ -319,7 +316,7 @@ router.post('/history/:id/answer', function(req, res) {
           }
         });
       }
-      res.redirect('/mentor/history/'+postID);
+      res.send('/mentor/history/'+postID);
     });
   }else{
     req.flash('origin');
@@ -327,7 +324,7 @@ router.post('/history/:id/answer', function(req, res) {
 
     req.flash('origin', '/mentor/history/'+postID);
     req.flash('saved_answer', message);
-    res.redirect('../../../login');
+    res.send('/login');
   }
 });
 

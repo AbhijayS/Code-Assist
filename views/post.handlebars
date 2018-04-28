@@ -1,6 +1,3 @@
-<script src="//cdn.quilljs.com/1.3.6/quill.js"></script>
-<link rel="stylesheet" href="//cdn.quilljs.com/1.3.6/quill.snow.css">
-
 <body>
   <div class="jumbotron text-center" id="post-title">
     <h2>{{post.question}}</h2>
@@ -51,7 +48,7 @@
         theme: 'snow'
       });
 
-      console.log("Community description: " + typeof {{{description}}});
+      // console.log("Community description: " + typeof {{{description}}});
       postViewEditor.setContents({{{description}}});
       postViewEditor.disable();
 

@@ -10,7 +10,7 @@
         <div class="d-flex w-100 justify-content-between">
           <small>{{post.author}}</small>
         </div>
-        <p class="mb-1">{{post.description}}</p>
+        <p class="mb-1"><div id="post-view-editor"></div></p>
         <small>{{post.timestamp}}</small>
       </a>
 
@@ -20,7 +20,7 @@
           <h5> </h5>
           <small>{{this.author}}</small>
         </div>
-        <p class="mb-1">{{this.answer}}</p>
+        <p class="mb-1"><div class="answer-view"></div></p>
         <small>{{this.timestamp}}</small>
       </a>
       {{/each}}
@@ -30,14 +30,93 @@
       <button type="submit" name="button">Post your answer</button>
     </form>
  -->
-    <form action="{{post._id}}/answer" method="post">
+    <form action="/" method="post">
       <div class="form-group">
-        <label for="answer-description">Reply</label>
-        <textarea class="form-control" name="answer" id="answer-description" rows="3">{{saved}}</textarea>
+        <label for="answer-editor">Description</label>
+        <div id="answer-editor">
+
+        </div>
       </div>
-      <button class="btn btn-primary" type="submit">Post your answer</button>
+
+      <button class="btn btn-primary" id="submit">Post your answer</button>
     </form>
 
   </div>
+  <script type="text/javascript">
+    window.onload = function(){
+      /* Post Description Viewer (Quill) */
+      var postViewEditor = new Quill('#post-view-editor', {
+        modules: {
+          toolbar: false
+        },
+        theme: 'snow'
+      });
+      postViewEditor.setContents({{{post.description}}});
+      postViewEditor.disable();
 
+      /* All of the Answers Viewer (Quill) */
+      var answerViews = $('.answer-view');
+      // console.log("#Answers: " + answerViews.length);
+      var postAnswers = [];
+      {{#each post.answers}}
+      postAnswers.push({{{this.answer}}});
+      {{/each}}
+      for (var i = 0; i < answerViews.length; i++)
+      {
+        var answer = answerViews.get(i);
+        var quill = new Quill(answer, {
+          modules: {
+            toolbar: false
+          },
+          theme: 'snow'
+        });
+        quill.setContents(postAnswers[i]);
+        quill.disable();
+      }
+
+
+      /*New answer posting editor (Quill)
+        Render saved data as well
+      */
+
+      var answerEditor = new Quill('#answer-editor', {
+        modules: {
+          toolbar: [
+            [{ header: [1, 2, false] }],
+            ['bold', 'italic', 'underline'],
+            ['image', 'code-block']
+          ]
+        },
+        theme: 'snow'
+      });
+      answerEditor.setContents({{{saved}}});
+
+      $('#submit').on('click', function(event) {
+        event.preventDefault();
+        var answer = JSON.stringify(answerEditor.getContents().ops);
+        console.log($(location).attr('pathname'));
+        var post_url = "/mentor/history/{{post.id}}/answer";
+
+        $.post(post_url, {answer: answer}, function(url) {
+          /* Would be nice to have the page not reload after answer submission
+             but due to code minimization and time constraints,
+             we deem it necessary to reload the page*/
+
+          // var newAnswer = `
+          // <a class="list-group-item list-group-item-action flex-column align-items-start">
+          // <div class="d-flex w-100 justify-content-between">
+          // <small></small>
+          // </div>
+          // <p class="mb-1"></p>
+          // <small></small>
+          // </a>
+          // `;
+          //
+          // $("#descriptions_answers").append(newAnswer);
+          // console.log("Answer Saved");
+          window.location.replace(url);
+        });
+      });
+    };
+  </script>
 </body>
