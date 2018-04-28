@@ -181,9 +181,9 @@ router.post('/:id/answer', function(req, res) {
       post.answers.push(newAnswer);
       post.save(function(err) {
         if(err) throw err;
-        // console.log("Answer saved");
+        console.log("Answer saved");
       });
-      res.redirect('/community/'+postID);
+      res.send("/community/" + postID + "/");
     });
   }else{
     req.flash('origin');
@@ -191,7 +191,7 @@ router.post('/:id/answer', function(req, res) {
 
     req.flash('origin', '/community/'+postID);
     req.flash('saved_answer', message);
-    res.redirect('../../login');
+    res.send('/login');
   }
 });
 

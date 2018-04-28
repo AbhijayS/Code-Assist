@@ -82,13 +82,10 @@ CommunitySchema.findOne({}).populate('posts').exec(function(err, community) {
 			if(err) throw err;
 			console.log('Code Assist Community created');
 			console.log('------------------------------------');
-			console.log('');
 		});
 	}else{
 		console.log("Welcome Again: Code Assist Community");
 		console.log('------------------------------------');
-		console.log('');
-
 	}
 // } else {
 // 	// add posts to community

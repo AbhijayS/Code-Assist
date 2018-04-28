@@ -18,18 +18,16 @@ window.onload = function(){
     console.log('-------------------------------------');
     console.log('community-post clicked');
     var description = JSON.stringify(quillEditor.getContents().ops);
-    var programming = $('#language-choose').val();
-    console.log("Programming Language: " + programming);
 
     var data = {
-      programming: programming,
+      programming: $('#language-choose').val(),
       question: $("input[name=question]").val(),
       description: description,
     };
 
-    console.log(data.description);
-    console.log("Object Created");
-    console.log("Object Type: " + typeof data.description);
+    // console.log(data.description);
+    // console.log("Object Created");
+    // console.log("Object Type: " + typeof data.description);
 
     $.post("/community/post", data, function(data) {
       console.log("Data sent");
