@@ -113,15 +113,14 @@ router.post('/post', function(req, res) {
 
   if (question.length == 0)
     questionInvalid = true;
-  if (description.length == 0)
-    descriptionInvalid = true;
+  // if (description.length == 0)
+  //   descriptionInvalid = true;
 
   // console.log("description: " + description);
   if (questionInvalid || descriptionInvalid) {
-    res.render('community-post', {layout: 'dashboard-layout', questionInvalid: questionInvalid, descriptionInvalid: descriptionInvalid, question: question, description: description});
+    res.render('community-post', {layout: 'dashboard-layout', questionInvalid: questionInvalid, question: question, description: description});
     return;
   }
-
 
   User.CommunitySchema.findOne({}, function(err, community) {
     // console.log(community);
@@ -130,10 +129,11 @@ router.post('/post', function(req, res) {
     newPost.description = description;
     newPost.author = author;
 		newPost.prog_lang = prog_lang;
+		console.log("Programming Language: " + newPost.prog_lang);
 
     newPost.save(function(err) {
       if(err) throw err;
-      // console.log('new post saved');
+      console.log('new post saved');
     });
 
     community.posts.push(newPost);
@@ -146,8 +146,8 @@ router.post('/post', function(req, res) {
       // console.log('-----------------------------');
       // console.log('');
 			console.log('Redirecting to COMMUNITY...');
-      // res.redirect('/community');
-			res.send(description);
+      res.redirect('/community');
+			// res.send(description);
     });
 
     req.user.save(function(err) {

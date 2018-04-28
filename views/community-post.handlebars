@@ -27,7 +27,7 @@
       </div>
     {{/if}}
 
-    <form action="/community/post" method="post">
+    <form action="/" method="post">
 
       <div class="form-group">
         <label for="language-choose">Programming Language</label>
@@ -59,44 +59,6 @@
 
     </form>
   </div>
-  <script type="text/javascript">
-    window.onload = function(){
-      // var Delta = Quill.import('delta');
-      // Your code here
-      var quillEditor = new Quill('#editor', {
-        modules: {
-          toolbar: [
-            [{ header: [1, 2, false] }],
-            ['bold', 'italic', 'underline'],
-            ['image', 'code-block']
-          ]
-        },
-        theme: 'snow'
-      });
-
-      $('#submit').on('click', function(event) {
-        event.preventDefault();
-        console.log('');
-        console.log('-------------------------------------');
-        console.log('community-post clicked');
-        var description = JSON.stringify(quillEditor.getContents().ops);
-        var data = {
-          question: $("input[name=question]").val(),
-          description: description,
-          programming: $("input[name=programming]").val()
-        };
-        console.log(data.description);
-        console.log("Object Created");
-        console.log("Object Type: " + typeof data.description);
-
-        $.post("/community/post", data, function(data) {
-          console.log("Data sent");
-          console.log(data);
-          window.location.replace("/community");
-        });
-      });
-    };
-  </script>
-  <!-- <script type="text/javascript" src="/js/quill-post.js"></script> -->
+  <script type="text/javascript" src="/js/quill-post.js"></script>
 
 </body>
