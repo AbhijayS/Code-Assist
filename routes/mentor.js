@@ -17,23 +17,31 @@ router.get('/', function(req, res) {
 router.post('/post', function(req, res) {
   if(req.user)
   {
+    var question = req.body.question;
+    var description = req.body.description;
+
+    var questionInvalid = false;
+    var descriptionInvalid = false;
+
+    if (question.length == 0)
+      questionInvalid = true;
+
+    if (JSON.parse(description)[0].insert == "\n") {
+      descriptionInvalid = true;
+    }
+
+    // console.log("description: " + description);
+    if (questionInvalid || descriptionInvalid) {
+      var data = {
+        questionInvalid: questionInvalid,
+        descriptionInvalid: descriptionInvalid
+      }
+      res.send(data);
+      return;
+    }
+
     User.UserSchema.find({title: "mentor"}).populate('private_posts').exec(function(err, mentors) {
       // console.log("Post");
-      var question = req.body.question;
-      var description = req.body.description;
-
-      var questionInvalid = false;
-      var descriptionInvalid = false;
-      //
-      // if (question.length == 0)
-      //   questionInvalid = true;
-      // if (description.length == 0)
-      //   descriptionInvalid = true;
-      //
-      // if (questionInvalid || descriptionInvalid) {
-      //   res.render('mentor', {layout: 'dashboard-layout', email: req.user.email, questionInvalid: questionInvalid, descriptionInvalid: descriptionInvalid, question: question, saved: description});
-      //   return;
-      // }
 
       var pPost = new User.PostSchema();
       pPost.author = req.user.username;
@@ -51,6 +59,12 @@ router.post('/post', function(req, res) {
         console.log("Private post saved");
         // console.log(req.user.private_posts);
         // saved
+        var data = {
+          questionInvalid: questionInvalid,
+          descriptionInvalid: descriptionInvalid,
+          url: "/mentor/history/" + pPost._id
+        }
+        res.send(data);
       });
 
       // console.log("---------------------------");
@@ -119,7 +133,6 @@ router.post('/post', function(req, res) {
         });
 
       }
-      res.send('/mentor/history');
     });
   }
 });

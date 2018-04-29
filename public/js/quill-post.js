@@ -29,10 +29,17 @@ window.onload = function(){
     // console.log("Object Created");
     // console.log("Object Type: " + typeof data.description);
 
-    $.post("/community/post", data, function(data) {
-      console.log("Data sent");
-      console.log(data);
-      window.location.replace("/community");
+    $.post("/community/post", data).done(function(resData) {
+      $(".alert-danger").hide();
+      // console.log(resData);
+      if (!resData.questionInvalid && !resData.descriptionInvalid) {
+        window.location.replace(resData.url);
+      } else {
+        if (resData.questionInvalid)
+          $("#questionInvalid").show();
+        if (resData.descriptionInvalid)
+          $("#descriptionInvalid").show();
+      }
     });
   });
 };
