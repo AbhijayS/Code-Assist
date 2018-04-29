@@ -113,12 +113,18 @@ router.post('/post', function(req, res) {
 
   if (question.length == 0)
     questionInvalid = true;
-  // if (description.length == 0)
-  //   descriptionInvalid = true;
+
+  if (JSON.parse(description)[0].insert == "\n") {
+    descriptionInvalid = true;
+  }
 
   // console.log("description: " + description);
   if (questionInvalid || descriptionInvalid) {
-    res.render('community-post', {layout: 'dashboard-layout', questionInvalid: questionInvalid, question: question, description: description});
+    var data = {
+      questionInvalid: questionInvalid,
+      descriptionInvalid: descriptionInvalid
+    }
+    res.send(data);
     return;
   }
 
@@ -145,9 +151,13 @@ router.post('/post', function(req, res) {
       // console.log(community);
       // console.log('-----------------------------');
       // console.log('');
-			console.log('Redirecting to COMMUNITY...');
-      res.redirect('/community');
-			// res.send(description);
+      var data = {
+        questionInvalid: questionInvalid,
+        descriptionInvalid: descriptionInvalid,
+        url: "/community/" + newPost._id
+      }
+      res.send(data);
+      
     });
 
     req.user.save(function(err) {

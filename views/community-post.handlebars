@@ -12,17 +12,13 @@
   {{msg}}
   <div class="container mentor-overview">
 
-    {{#if questionInvalid}}
-      <div style="margin-bottom: 2rem;" class="alert alert-danger">
-        Please enter a <strong>question</strong>
-      </div>
-    {{/if}}
+    <div id="questionInvalid" style="margin-bottom: 2rem; display: none;" class="alert alert-danger">
+      Please enter a <strong>question</strong>
+    </div>
 
-    {{#if descriptionInvalid}}
-      <div style="margin-bottom: 2rem;" class="alert alert-danger">
-        Please enter a <strong>description</strong>
-      </div>
-    {{/if}}
+    <div id="descriptionInvalid" style="margin-bottom: 2rem; display: none;" class="alert alert-danger">
+      Please enter a <strong>description</strong>
+    </div>
 
     <form action="/" method="post">
 
