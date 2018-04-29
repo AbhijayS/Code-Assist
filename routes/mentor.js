@@ -328,4 +328,59 @@ router.post('/history/:id/answer', function(req, res) {
   }
 });
 
+router.post('/history/filter', function(req, res) {
+  if(req.user) {
+    var option = req.body.filter_opt;
+    console.log("Made filter request: " + option);
+    if(option == "Remove Filter")
+    {
+      console.log("Filter Removed");
+      User.UserSchema.findOne({}).populate('private_posts').exec(function(err, user) {
+        var allPosts = user.private_posts;
+
+        allPosts.sort(function(date1,date2){
+          if (date1 > date2) return -1;
+          if (date1 < date2) return 1;
+          return 0;
+        });
+
+        if(err) throw err;
+        // console.log(community);
+        // console.log(community.posts);
+        res.send(allPosts);
+      });
+
+    }else{
+      User.UserSchema.findOne({}).populate('private_posts').exec(function(err, user) {
+        if(err) throw err;
+        var allPosts = user.private_posts;
+
+        allPosts.sort(function(date1,date2){
+          if (date1 > date2) return -1;
+          if (date1 < date2) return 1;
+          return 0;
+        });
+
+        var sendPosts = [];
+        for (var i = 0; i < allPosts.length; i++)
+        {
+          if(allPosts[i].prog_lang == option)
+          {
+            console.log("Found same");
+            sendPosts.push(allPosts[i]);
+          }
+        }
+        // console.log(community);
+        // console.log(community.posts);
+        res.send(sendPosts);
+      });
+    }
+
+  }else{
+    req.flash('origin');
+    req.flash('origin', '/mentor/history/');
+    res.send({url: '/login'});
+  }
+
+});
 module.exports = router;

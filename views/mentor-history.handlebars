@@ -5,10 +5,30 @@
   </div>
 
   <div class="container" id="history-body">
-    <div class="list-group">
-      {{#each posts}}
-      <a class="list-group-item" href="/mentor/history/{{this._id}}">{{this.question}} <span class="badge progress-bar-danger">{{this.answers.length}}</span> <span class="badge">{{this.author}}</span> <span class="badge progress-bar-info">{{this.prog_lang}}</span></a>
-      {{/each}}
+    <div class="container btn-group" id="filter-button-body">
+      <button id="filter-button" type="button" class="btn btn-default btn-lg dropdown-toggle" data-toggle="dropdown">
+        Filter By <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+      </button>
+
+      <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu3">
+        <li role="presentation"><a class="filter" role="menuitem" tabindex="-1" href="#">Remove Filter</a></li>
+        <li role="presentation"><a class="filter" role="menuitem" tabindex="-1" href="#">Python</a></li>
+        <li role="presentation"><a class="filter" role="menuitem" tabindex="-1" href="#">Java</a></li>
+        <li role="presentation"><a class="filter" role="menuitem" tabindex="-1" href="#">C/C++</a></li>
+        <li role="presentation"><a class="filter" role="menuitem" tabindex="-1" href="#">HTML</a></li>
+        <li role="presentation"><a class="filter" role="menuitem" tabindex="-1" href="#">CSS</a></li>
+        <li role="presentation"><a class="filter" role="menuitem" tabindex="-1" href="#">Javascript</a></li>
+      </ul>
+    </div>
+
+    <div id="all-post-container" class="container list-group">
+      <div  id="all-posts">
+        {{#each posts}}
+        <a class="list-group-item" href="/mentor/history/{{this._id}}">{{this.question}} <span class="badge progress-bar-danger">{{this.answers.length}}</span> <span class="badge">{{this.author}}</span> <span class="badge progress-bar-info">{{this.prog_lang}}</span></a>
+        {{/each}}
+      </div>
     </div>
   </div>
+  <script type="text/javascript" src="/js/mentor-filter.js"></script>
+
 </body>

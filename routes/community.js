@@ -195,4 +195,51 @@ router.post('/:id/answer', function(req, res) {
   }
 });
 
+router.post('/filter', function(req, res) {
+	var option = req.body.filter_opt;
+	// console.log("Made filter request: " + option);
+	if(option == "Remove Filter")
+	{
+		// console.log("Filter Removed");
+		User.CommunitySchema.findOne({}).populate('posts').exec(function(err, community) {
+			var allPosts = community.posts;
+
+			allPosts.sort(function(date1,date2){
+				if (date1 > date2) return -1;
+				if (date1 < date2) return 1;
+				return 0;
+			});
+
+			if(err) throw err;
+			// console.log(community);
+			// console.log(community.posts);
+			res.send(allPosts);
+		});
+
+	}else{
+		User.CommunitySchema.findOne({}).populate('posts').exec(function(err, community) {
+			if(err) throw err;
+			var allPosts = community.posts;
+
+			allPosts.sort(function(date1,date2){
+				if (date1 > date2) return -1;
+				if (date1 < date2) return 1;
+				return 0;
+			});
+
+			var sendPosts = [];
+			for (var i = 0; i < allPosts.length; i++)
+			{
+				if(allPosts[i].prog_lang == option)
+				{
+					// console.log("Found same");
+					sendPosts.push(allPosts[i]);
+				}
+			}
+			// console.log(community);
+			// console.log(community.posts);
+			res.send(sendPosts);
+		});
+	}
+});
 module.exports = router;
