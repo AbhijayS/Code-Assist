@@ -7,7 +7,7 @@ body{
 .navbar {
   margin: 0;
   padding: 0;
-  background: transparent !important;
+  background-color: #0d75e8 !important;
   border: 0;
   border-color: transparent;
   border-bottom: 0;
@@ -157,3 +157,47 @@ Community Post Page (community-post.handlebars)
 #_404-title{
   padding-top: 10%;
 }
+
+
+/*
+========================================
+Team Page (team.handlebars)
+========================================
+*/
+#team-page {
+  overflow-x: none;
+}
+
+#team-body .image-box{
+  width: 300px;
+  height: 300px;
+  background-size: cover;
+  transform: rotate(90deg);
+  background-position: top;
+  border-radius: 50%;
+  -webkit-transition: 0.75s; /* Safari */
+  transition: 0.75s;
+}
+
+#team-body #c_img{
+  background-image: url('../images/chris.jpg');
+}
+
+#team-body #a_img{
+  background-image: url('../images/abhijay.jpg');
+}
+
+#team-body .col-md-6{
+  width: 300px !important;
+}
+
+#team-body .description hr{
+  border-style: solid;
+}
+/* #team-body #right-col {
+  border-left: solid black 1px;
+}
+
+#team-body #left-col {
+  border-left: solid black 1px;
+} */

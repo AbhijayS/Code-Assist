@@ -6,7 +6,7 @@
       <!-- <p>Live Coding Help</p> -->
       <p>Live Coding Help</p>
         {{#if user}}
-        <button class="btn btn-primary btn-lg" type="submit">Go to Dashboard<span class="glyphicon glyphicon-menu-right"></span></button>
+        <a href="/dashboard"><button class="btn btn-primary btn-lg" type="submit">Go to Dashboard<span class="glyphicon glyphicon-menu-right"></span></button></a>
         {{else}}
         <form class="form-inline" action="/dashboard" method="post">
           <input type="text" placeholder="USERNAME" name="username" autofocus>
