@@ -15,6 +15,7 @@ router.get('/', function(req, res){
     res.render('index', {layout: 'layout'});
 });
 
+
 // Login
 router.get('/login', function(req, res){
     if(req.user) {
@@ -40,6 +41,11 @@ router.get('/login', function(req, res){
       });
     }
     }
+});
+
+// Get Contact page
+router.get('/contact', function(req, res){
+    res.render('contact', {layout: 'dashboard-layout'});
 });
 
 // Register
