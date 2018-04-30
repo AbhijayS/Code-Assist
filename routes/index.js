@@ -172,9 +172,23 @@ router.post('/login',
 
 router.get('/account', function(req, res) {
   if(req.user) {
+    var data = req.flash('account-status');
+    if(data[0])
+    {
+      if(data[0].status == false)
+      {
+        // console.log("Sending password errors");
+        // console.log(data[0].msg);
+        res.render('account', {layout: 'dashboard-layout', error: data[0], user: req.user});
+      }else{
+        // console.log("No errors");
+        // console.log(data[0].msg);
+        res.render('account', {layout: 'dashboard-layout', success: data[0], user: req.user});
+      }
 
-    res.render('account', {layout: 'dashboard-layout', user: req.user});
-
+    }else{
+      res.render('account', {layout: 'dashboard-layout', user: req.user});
+    }
   }else{
     req.flash('origin');
     req.flash('origin', '/account');
@@ -267,15 +281,61 @@ router.post('/password-change', function(req, res) {
     var old = req.body.oldPass;
     var newPass = req.body.newPass;
     var conf = req.body.confPass;
-    req.checkBody('new', 'Password must be at least 8 characters long').len(8);
-    req.checkBody('new', 'Password can\'t be longer than 128 characters').not().len(128);
+    req.checkBody('newPass', 'Password must be at least 8 characters long').len(8);
+    req.checkBody('newPass', 'Password can\'t be longer than 128 characters').not().len(128);
 
     var errors = req.validationErrors(true);
+    var sendData = {
+      status: true,
+      msg: []
+    };
+
+    if(errors)
+    {
+      // console.log("Express validator errors");
+      sendData.status = false;
+      sendData.msg.push('Invalid Password!');
+    }
+
+    if (newPass != conf)
+    {
+      sendData.status = false;
+      sendData.msg.push("Passwords don't match");
+    }
+
+    User.comparePassword(old, req.user.password, function(err, match) {
+      if(err) throw err;
+      if(Boolean(sendData.status) == true)
+      {
+        if(match == true)
+        {
+          // console.log("Saving new password");
+          User.createHash(newPass, function(err, hash) {
+            if(err) throw err;
+            req.user.password = hash;
+            req.user.save(function (err) {
+              if (err) throw err;
+              // saved!
+            });
+          });
+          sendData.status = true;
+          sendData.msg.push('New password saved!');
+        }else{
+          sendData.status = false;
+          sendData.msg.push('Invalid Password!');
+        }
+      }
+      // console.log("Login status: " + sendData.status);
+      // console.log("Msg: " + sendData.msg);
+      req.flash('account-status');
+      req.flash('account-status', sendData);
+      res.redirect('/account');
+    });
+
   }else{
     req.flash('origin');
     req.flash('origin', '/account');
     res.redirect('/login');
-
   }
 
 
