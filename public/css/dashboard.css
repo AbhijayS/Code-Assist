@@ -33,6 +33,7 @@ body{
 
 .jumbotron-title {
   background-color: #0d75e8;
+  color: white;
 }
 
 .ql-container  {
@@ -146,4 +147,13 @@ Community Post Page (community-post.handlebars)
 */
 #post-title {
   background-color: #0d75e8;
+}
+
+/*
+========================================
+404 Page (_404.handlebars)
+========================================
+*/
+#_404-title{
+  padding-top: 10%;
 }
