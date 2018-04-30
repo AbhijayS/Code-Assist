@@ -152,8 +152,9 @@ CommunitySchema.findOne({}).populate('posts').exec(function(err, community) {
 User Creation
 ==============================
 */
+var saltRounds = 10;
 module.exports.createUser = function(newUser, callback){
-	bcrypt.genSalt(10, function(err, salt) {
+	bcrypt.genSalt(saltRounds, function(err, salt) {
 	    bcrypt.hash(newUser.password, salt, function(err, hash) {
 	        newUser.password = hash;
 	        newUser.save(callback);
@@ -181,6 +182,14 @@ module.exports.comparePassword = function(candidatePassword, hash, callback) {
 	bcrypt.compare(candidatePassword, hash, function(err, isMatch) {
 		if(err) throw err;
 		callback(null, isMatch);
+	});
+}
+
+module.exports.createHash = function(candidatePassword, callback) {
+	bcrypt.hash(candidatePassword, saltRounds, function(err, hash) {
+  // Store hash in your password DB.
+		if(err) throw err;
+		callback(null, hash);
 	});
 }
 

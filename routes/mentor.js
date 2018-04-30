@@ -116,7 +116,7 @@ router.post('/post', function(req, res) {
         // setup email data with unicode symbols
         let mailOptions = {
           from: '"Code Assist" <contact@codeassist.club>', // sender address
-          to: mentor.email, // list of receivers
+          to: mentor.email[0], // list of receivers
           subject: 'New User Query | ' + question, // Subject line
           text: 'Hello world?', // plain text body
           html: output // html body

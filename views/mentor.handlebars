@@ -19,8 +19,9 @@
       <div class="form-group">
         <label for="email-choose">Choose your email</label>
         <select class="form-control" id="email-choose">
-          <option type="email">{{email}}</option>
-          <option>Email 2</option>
+          {{#each email}}
+          <option type="email">{{this}}</option>
+          {{/each}}
         </select>
       </div>
 
