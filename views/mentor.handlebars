@@ -1,8 +1,10 @@
 <body>
   <div class="jumbotron text-center" id="mentor-container">
     <h1>Ask a Mentor</h1>
-    <a href="/mentor/history"><button type="button" class="btn btn-warning">View Old</button></a>
-    <a href="/community"><button type="button" class="btn btn-primary">Ask community</button></a>
+    <div class="title-buttons">
+      <a href="/mentor/history"><button type="button" class="btn btn-warning btn-lg">View All</button></a>
+      <a href="/community"><button type="button" class="btn btn-primary btn-lg">Ask community</button></a>
+    </div>
   </div>
 
   {{msg}}
@@ -19,9 +21,7 @@
       <div class="form-group">
         <label for="email-choose">Choose your email</label>
         <select class="form-control" id="email-choose">
-          {{#each email}}
-          <option type="email">{{this}}</option>
-          {{/each}}
+          <option type="email">{{email}}</option>
         </select>
       </div>
 

@@ -1,19 +1,37 @@
 <body>
   <div class="jumbotron text-center" id="post-title">
     <h2>{{post.question}}</h2>
+    <div class="title-buttons">
+      <a href="/community/post"><button class="btn btn-primary btn-lg" type="button" name="button">Post a Question</button></a>
+      <a href="/mentor"><button class="btn btn-warning btn-lg" type="button" name="button">Ask a Mentor</button></a>
+    </div>
   </div>
 
   <div class="container" id="post-body">
-
     <div id="descriptions_answers" class="list-group">
       <a class="list-group-item list-group-item-action flex-column align-items-start active">
         <div class="d-flex w-100 justify-content-between">
+          <h3>{{post.question}}</h3>
           <small>{{post.author}}</small>
         </div>
-        <p class="mb-1" id="description"><div id="post-view-editor"></div></p>
-        <small>{{post.timestamp}}</small>
       </a>
+
+      <a class="list-group-item list-group-item-action flex-column align-items-start">
+        <div class="d-flex w-100 justify-content-between">
+          <p class="mb-1" id="description"><div id="post-view-editor"></div></p>
+        </div>
+      </a>
+
+      <a class="list-group-item list-group-item-action flex-column align-items-start">
+        <div class="d-flex w-100 justify-content-between">
+          <small>{{post.timestamp}}</small>
+        </div>
+      </a>
+
 <!-- {{post.description}} -->
+
+    </div>
+    <div class="list-group">
       {{#each post.answers}}
       <a class="list-group-item list-group-item-action flex-column align-items-start">
         <div class="d-flex w-100 justify-content-between">
@@ -23,6 +41,7 @@
         <small>{{this.timestamp}}</small>
       </a>
       {{/each}}
+
     </div>
 
     <form action="/" method="post">
