@@ -96,3 +96,29 @@ Community Page
 #community-body #filter-button {
   border: none;
 }
+
+
+/*
+========================================
+Account Page
+========================================
+*/
+
+#account-body #labels label{
+  font-size: 20px;
+  margin-top: 10px;
+  height: 100;
+  color: #007bff;
+}
+
+#account-body .jumbotron .row {
+  margin-bottom: 3%;
+}
+
+#account-body .glyphicon-user {
+  font-size: 80px;
+}
+
+#account-body #changePassword {
+  margin-top: 2%;
+}

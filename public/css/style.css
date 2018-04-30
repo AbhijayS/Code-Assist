@@ -2,6 +2,7 @@ body{
   font-family: 'Nunito', sans-serif !important;
   background: linear-gradient(-135deg, #94eaead9, #0d75e8);
   background-attachment:fixed;
+  overflow-y: hidden;
 }
 /*
 .signIn-form{

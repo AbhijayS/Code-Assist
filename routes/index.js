@@ -101,15 +101,14 @@ router.post('/register', function(req, res){
       password: password,
       title: 'user'
     });
-
     console.log("Validation errors: " + errors);
 
     User.getUserByUsername(username, function(err, userWithUsername) {
-    User.getUserByEmail(email, function(err, userWithEmail) {;
-    if (userWithUsername || userWithEmail || errors) {
-    if (userWithEmail) console.log("Email taken");
-    if (userWithUsername) console.log("Username taken");
-    res.render('register', {layout: false, username: username, email: email, usernameTaken: userWithUsername, emailTaken: userWithEmail});
+      User.getUserByEmail(email, function(err, userWithEmail) {;
+      if (userWithUsername || userWithEmail || errors) {
+      if (userWithEmail) console.log("Email taken");
+      if (userWithUsername) console.log("Username taken");
+      res.render('register', {layout: false, username: username, email: email, usernameTaken: userWithUsername, emailTaken: userWithEmail});
     } else {
     User.createUser(newUser, function(err, user){
     if(err) throw err;
@@ -171,15 +170,127 @@ router.post('/login',
     }
 });
 
+router.get('/account', function(req, res) {
+  if(req.user) {
+
+    res.render('account', {layout: 'dashboard-layout', user: req.user});
+
+  }else{
+    req.flash('origin');
+    req.flash('origin', '/account');
+    res.redirect('/login');
+  }
+});
+
+router.post('/username-change', function(req, res) {
+  if(req.user)
+  {
+    var username = req.body.username;
+    if(username.length >= 3)
+    {
+      if(username == req.user.username)
+      {
+        res.send({status: true});
+      }else{
+        User.UserSchema.findOne({username: username}, function(err, user) {
+          if(user)
+          {
+            console.log("Username Exists :(");
+            res.send({status: false});
+          }else{
+            console.log("Username Doesn't Exist! :)");
+            req.user.username = username;
+            console.log(req.user.username);
+            req.user.save(function (err) {
+              if (err) throw err;
+              // saved!
+            });
+            res.send({status: true});
+          }
+        });
+
+      }
+
+    }else{
+      res.send({status: false});
+    }
+  }else{
+    req.flash('origin');
+    req.flash('origin', '/account');
+    res.send({url: '/login'});
+  }
+});
+
+router.post('/email-change', function(req, res) {
+  if(req.user)
+  {
+    var email = req.body.email;
+    req.checkBody('email', 'Email is invalid').isEmail();
+    var errors = req.validationErrors(true);
+
+    if(errors)
+    {
+      res.send({status: false});
+    }else{
+      if(email == req.user.email)
+      {
+        res.send({status: true});
+      }else{
+        User.UserSchema.findOne({email: email}, function(err, user) {
+          if(user)
+          {
+            console.log("Email Exists :(");
+            res.send({status: false});
+          }else{
+            console.log("Email Doesn't Exist! :)");
+            req.user.email = email;
+            console.log(req.user.email);
+            req.user.save(function (err) {
+              if (err) throw err;
+              // saved!
+            });
+            res.send({status: true});
+          }
+        });
+      }
+    }
+  }else{
+    req.flash('origin');
+    req.flash('origin', '/account');
+    res.send({url: '/login'});
+  }
+});
+
+router.post('/password-change', function(req, res) {
+  if(req.user)
+  {
+    var old = req.body.oldPass;
+    var newPass = req.body.newPass;
+    var conf = req.body.confPass;
+    req.checkBody('new', 'Password must be at least 8 characters long').len(8);
+    req.checkBody('new', 'Password can\'t be longer than 128 characters').not().len(128);
+
+    var errors = req.validationErrors(true);
+  }else{
+    req.flash('origin');
+    req.flash('origin', '/account');
+    res.redirect('/login');
+
+  }
+
+
+});
+
 
 /*
 =====================================================
                     DEVELOPERS
 =====================================================
-*/
+
 
 router.get('/dev', function(req, res) {
-  res.render('test', {layout: false});
+  res.render('guinee', {layout: 'test'});
 });
+*/
 
 module.exports = router;
