@@ -68,6 +68,10 @@ app.use('/', routes);
 app.use('/community', com);
 app.use('/mentor', men);
 
+app.use(function(req, res, next){
+  res.status(404).render('_404.handlebars', {layout: 'dashboard-layout'});
+});
+
 // Set Port
 app.set('port', (process.env.PORT || 3000));
 

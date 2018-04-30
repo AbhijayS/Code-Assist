@@ -340,11 +340,11 @@ router.post('/password-change', function(req, res) {
 
 
 });
-
-//The 404 Route (ALWAYS Keep this as the last route)
-router.get('*', function(req, res){
-  res.render('_404', {layout: 'dashboard-layout'});
-});
+// 
+// //The 404 Route (ALWAYS Keep this as the last route)
+// router.get('*', function(req, res){
+//   res.render('_404', {layout: 'dashboard-layout'});
+// });
 
 /*
 =====================================================
