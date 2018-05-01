@@ -18,10 +18,10 @@ router.get('/', function(req, res){
 
 // Login
 router.get('/login', function(req, res){
-    if(req.user) {
+  if(req.user) {
     res.redirect('/');
-    // console.log('User exists');
-    }else{
+  // console.log('User exists');
+  }else{
     var username = req.flash('username');
     var error = req.flash('error');
 
@@ -40,7 +40,7 @@ router.get('/login', function(req, res){
         }
       });
     }
-    }
+  }
 });
 
 // Get Contact page
@@ -51,9 +51,9 @@ router.get('/contact', function(req, res){
 // Register
 router.get('/register', function(req, res){
     if(req.user) {
-    res.redirect('/');
+      res.redirect('/');
     }else{
-    res.render('register', {layout: false, username: req.flash('username')});
+      res.render('register', {layout: false, username: req.flash('username')});
     }
 });
 
@@ -75,63 +75,64 @@ router.get('/dashboard', function(req, res) {
 
 router.post('/dashboard', function(req, res) {
     if(req.user) {
-    res.render('dashboard', {layout: 'dashboard-layout'});
+      res.render('dashboard', {layout: 'dashboard-layout'});
     }else {
-    // console.log(req.body.username);
-    // console.log("User not logged in");
-    req.flash('username', req.body.username);
-    req.flash('origin');
-    req.flash('origin', '/dashboard');
-    res.redirect('/login');
+      // console.log(req.body.username);
+      // console.log("User not logged in");
+      req.flash('username', req.body.username);
+      req.flash('origin');
+      req.flash('origin', '/dashboard');
+      res.redirect('/login');
     }
 });
 
 // Register User
 router.post('/register', function(req, res){
-    var username = req.body.username;
-    var email = req.body.email;
-    var password = req.body.password;
-    // req.checkBody('email', 'Email is required').notEmpty();
-    // var CS_Class = req.body.CS_class;
-    req.checkBody('username', 'Username is required').len(3);
+  var username = req.body.username;
+  var email = req.body.email;
+  var password = req.body.password;
+  // req.checkBody('email', 'Email is required').notEmpty();
+  // var CS_Class = req.body.CS_class;
+  req.checkBody('username', 'Username is required').len(3);
 
-    req.checkBody('email', 'Email is invalid').isEmail();
-    req.checkBody('password', 'Password must be at least 8 characters long').len(8);
-    req.checkBody('password', 'Password can\'t be longer than 128 characters').not().len(128);
+  req.checkBody('email', 'Email is invalid').isEmail();
+  req.checkBody('password', 'Password must be at least 8 characters long').len(8);
+  req.checkBody('password', 'Password can\'t be longer than 128 characters').not().len(128);
 
-    var errors = req.validationErrors(true);
+  var errors = req.validationErrors(true);
 
-    var newUser = new User.UserSchema({
-      username: username,
-      email: email,
-      password: password,
-      title: 'user'
-    });
-    console.log("Validation errors: " + errors);
+  var newUser = new User.UserSchema({
+    username: username,
+    email: email,
+    password: password,
+    title: 'user'
+  });
+  console.log("Validation errors: " + errors);
 
-    User.getUserByUsername(username, function(err, userWithUsername) {
-      User.getUserByEmail(email, function(err, userWithEmail) {;
+  User.getUserByUsername(username, function(err, userWithUsername) {
+    User.getUserByEmail(email, function(err, userWithEmail) {
       if (userWithUsername || userWithEmail || errors) {
-      if (userWithEmail) console.log("Email taken");
-      if (userWithUsername) console.log("Username taken");
-      res.render('register', {layout: false, username: username, email: email, usernameTaken: userWithUsername, emailTaken: userWithEmail});
-    } else {
-    User.createUser(newUser, function(err, user){
-    if(err) throw err;
-    console.log('--------------------------------------------');
-    console.log('User Created ->')
-    console.log(user);
-    console.log('--------------------------------------------');
-    console.log('');
-    // req.user = true;
+        if (userWithEmail) console.log("Email taken");
+        if (userWithUsername) console.log("Username taken");
+        res.render('register', {layout: false, username: username, email: email, usernameTaken: userWithUsername, emailTaken: userWithEmail});
+      }else {
+        User.createUser(newUser, function(err, user){
+          if(err) throw err;
+          console.log('--------------------------------------------');
+          console.log('User Created ->')
+          console.log(user);
+          console.log('--------------------------------------------');
+          console.log('');
+          // req.user = true;
+        });
+        req.flash('user-created', true);
+        req.flash('username');
+        req.flash('username', username);
+        res.redirect('/login');
+        // console.log(req.user);
+      }
     });
-    req.flash('user-created', true);
-    req.flash('username', username);
-    res.redirect('/login');
-    // console.log(req.user);
-    }
-    });
-    });
+  });
 });
 
 passport.use(new LocalStrategy(
