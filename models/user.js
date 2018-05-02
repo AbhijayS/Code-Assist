@@ -164,7 +164,7 @@ module.exports.createUser = function(newUser, callback){
 
 module.exports.getUserByUsername = function(username, callback) {
 	// "i" regex ignores upper/lowercase
-	var query = {username: new RegExp(username, 'i')};
+	var query = {username: username};
 	User.findOne(query, callback);
 }
 
