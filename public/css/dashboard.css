@@ -1,9 +1,3 @@
-/*
-========================================
-Dashboard
-========================================
-*/
-
 body{
   font-family: 'Nunito', sans-serif !important;
   background: white;
@@ -13,7 +7,7 @@ body{
 .navbar {
   margin: 0;
   padding: 0;
-  background: transparent !important;
+  background-color: #0d75e8 !important;
   border: 0;
   border-color: transparent;
   border-bottom: 0;
@@ -25,38 +19,42 @@ body{
   box-shadow: none !important;
 }
 
-#dashboard-title {
-  margin-bottom: 0;
+.navbar li a{
+  color: white;
+}
+
+.navbar li a:hover {
   background-color: transparent;
 }
 
-#dashboard-overview {
-  font-family: 'Roboto', Arial;
-  margin-top: 55px;
-  width: 100%;
-  padding: 0 2%;
+.navbar-brand {
+  color: white;
 }
 
-#dashboard-overview .col-sm-4{
-  /* border-right: black solid 1px; */
-  /* Add shadows to create the "card" effect */
-  box-shadow: 4px 0px 8px grey;
-  transition: 0.3s;
-  height: 600px;
-  border-radius: 5px;
-  padding: 0 3%;
-
+.jumbotron-title {
+  background-color: #0d75e8;
+  color: white;
 }
 
-/* On mouse-over, add a deeper shadow */
-#dashboard-overview .col-sm-4:hover {
-  box-shadow: 4px 0 30px 0 grey;
+.ql-container  {
+  border: 0px !important;
 }
 
-#dashboard-overview p {
-  text-align: center;
-  padding: 3%;
+.title-buttons {
+  margin-top: 2%;
+}
 
+.title-buttons a{
+  margin-right: 1%;
+  margin-left: 1%;
+}
+/*
+========================================
+Dashboard
+========================================
+*/
+#dashboard-title {
+  background-color: #0d75e8;
 }
 
 /*
@@ -65,6 +63,11 @@ Mentor Page
 ========================================
 */
 
+#mentor-container {
+  background-color: #0d75e8;
+
+}
+
 #mentor-container h1{
   text-align: center;
 }
@@ -72,3 +75,129 @@ Mentor Page
 #mentor-container .container{
   padding-top: 2%;
 }
+
+#history-body #filter-button-body {
+  padding: 0 !important;
+  margin-bottom: 20px;
+}
+
+#history-body #filter-button {
+  border: none;
+}
+
+/*
+========================================
+Community Page
+========================================
+*/
+
+#community-body #filter-button-body {
+  padding: 0 !important;
+  margin-bottom: 20px;
+}
+
+#community-body #filter-button {
+  border: none;
+}
+
+#community-title {
+  background-color: #0d75e8;
+
+}
+
+/*
+========================================
+Account Page
+========================================
+*/
+
+#account-body #labels label{
+  font-size: 20px;
+  margin-top: 10px;
+  height: 100;
+  color: #007bff;
+}
+
+#account-body .jumbotron .row {
+  margin-bottom: 3%;
+}
+
+#account-body .glyphicon-user {
+  font-size: 80px;
+}
+
+#account-body #changePassword {
+  margin-top: 2%;
+}
+
+/*
+========================================
+Community Post Page (community-post.handlebars)
+========================================
+*/
+
+#community-post-title {
+  background-color: #0d75e8;
+}
+
+/*
+========================================
+Community Post Page (community-post.handlebars)
+========================================
+*/
+#post-title {
+  background-color: #0d75e8;
+}
+
+/*
+========================================
+404 Page (_404.handlebars)
+========================================
+*/
+#_404-title{
+  padding-top: 10%;
+}
+
+
+/*
+========================================
+Team Page (team.handlebars)
+========================================
+*/
+#team-page {
+  overflow-x: none;
+}
+
+#team-body .image-box{
+  width: 300px;
+  height: 300px;
+  background-size: cover;
+  transform: rotate(90deg);
+  background-position: top;
+  border-radius: 50%;
+  -webkit-transition: 0.75s; /* Safari */
+  transition: 0.75s;
+}
+
+#team-body #c_img{
+  background-image: url('../images/chris.jpg');
+}
+
+#team-body #a_img{
+  background-image: url('../images/abhijay.jpg');
+}
+
+#team-body .col-md-6{
+  width: 300px !important;
+}
+
+#team-body .description hr{
+  border-style: solid;
+}
+/* #team-body #right-col {
+  border-left: solid black 1px;
+}
+
+#team-body #left-col {
+  border-left: solid black 1px;
+} */

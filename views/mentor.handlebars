@@ -1,33 +1,103 @@
 <body>
-  <div class="jumbotron text-center" id="mentor-container">
+  <div class="jumbotron jumbotron-title text-center" id="mentor-container">
     <h1>Ask a Mentor</h1>
-    <a href="/mentor/history"><button type="button" class="btn btn-warning">View Old</button></a>
-    <a href="/community"><button type="button" class="btn btn-primary">Ask community</button></a>
+    <div class="title-buttons">
+      <a href="/mentor/history"><button type="button" class="btn btn-warning btn-lg">View All</button></a>
+      <a href="/community"><button type="button" class="btn btn-primary btn-lg">Ask community</button></a>
+    </div>
   </div>
 
   {{msg}}
   <div class="container mentor-overview">
+    <div id="questionInvalid" style="margin-bottom: 2rem; display: none;" class="alert alert-danger">
+      Please enter a <strong>question</strong>
+    </div>
+
+    <div id="descriptionInvalid" style="margin-bottom: 2rem; display: none;" class="alert alert-danger">
+      Please enter a <strong>description</strong>
+    </div>
+
     <form action="/mentor/send" method="post">
       <div class="form-group">
         <label for="email-choose">Choose your email</label>
         <select class="form-control" id="email-choose">
           <option type="email">{{email}}</option>
-          <option>Email 2</option>
         </select>
       </div>
 
       <div class="form-group">
-        <label for="exampleFormControlInput1">Question Summary</label>
-        <input type="text" class="form-control" id="question" name="question" placeholder="">
+        <label for="language-choose">Programming Language</label>
+        <select class="form-control" id="language-choose" name="programming">
+          <option>Python</option>
+          <option>Java</option>
+          <option>C/C++</option>
+          <option>HTML</option>
+          <option>CSS</option>
+          <option>Javascript</option>
+        </select>
       </div>
 
       <div class="form-group">
-        <label for="exampleFormControlTextarea1">Description</label>
-        <textarea class="form-control" id="exampleFormControlTextarea1" name="description" rows="3"></textarea>
+        <label for="exampleFormControlInput1">Question Title</label>
+        <input type="text" class="form-control" id="question" name="question" placeholder="" value="{{question}}">
       </div>
 
-      <button type="submit" class="btn btn-primary">Submit</button>
+      <div class="form-group">
+        <label for="editor">Description</label>
+        <!-- <textarea class="form-control" id="exampleFormControlTextarea1" name="description" rows="3">{{saved}}</textarea> -->
+        <div id="editor">
+
+        </div>
+      </div>
+
+      <button id="submit" class="btn btn-primary">Submit</button>
 
     </form>
   </div>
+
+  <script type="text/javascript">
+    window.onload = function(){
+      var quillEditor = new Quill('#editor', {
+        modules: {
+          toolbar: [
+            [{ header: [1, 2, false] }],
+            ['bold', 'italic', 'underline'],
+            ['image', 'code-block']
+          ]
+        },
+        theme: 'snow'
+      });
+
+      $('#submit').on('click', function(event) {
+        event.preventDefault();
+        console.log('');
+        console.log('-------------------------------------');
+        console.log('community-post clicked');
+        var description = JSON.stringify(quillEditor.getContents().ops);
+
+        var data = {
+          programming: $('#language-choose').val(),
+          question: $("input[name=question]").val(),
+          description: description,
+        };
+
+        // console.log(data.description);
+        // console.log("Object Created");
+        // console.log("Object Type: " + typeof data.description);
+
+        $.post("/mentor/post", data).done(function(resData) {
+          $(".alert-danger").hide();
+          // console.log(resData);
+          if (!resData.questionInvalid && !resData.descriptionInvalid) {
+            window.location.replace(resData.url);
+          } else {
+            if (resData.questionInvalid)
+              $("#questionInvalid").show();
+            if (resData.descriptionInvalid)
+              $("#descriptionInvalid").show();
+          }
+        });
+      });
+    };
+  </script>
 </body>

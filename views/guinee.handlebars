@@ -1,0 +1,59 @@
+<body>
+  <div class="jumbotron" id="jumbotron-container">
+    <div class="container text-center">
+      <!--<h1>Code Assist</h1>-->
+      <h1>Code Assist</h1>
+      <!-- <p>Live Coding Help</p> -->
+      <p>Live Coding Help</p>
+      <form class="form-inline" action="/dashboard" method="post">
+        {{#if user}}
+        <button class="btn btn-primary" type="submit">Go to Dashboard<span class="glyphicon glyphicon-menu-right"></span></button>
+        {{else}}
+        <input type="text" placeholder="USERNAME" name="username" autofocus>
+        <button class="btn btn-primary" type="submit">Go to Dashboard<span class="glyphicon glyphicon-menu-right"></span></button>
+        {{/if}}
+      </form>
+
+      <!-- {{#if user}}
+      <form class="form-inline" action="/dashboard" method="get">
+        <button class="btn btn-primary" type="submit">Go to Dashboard<span class="glyphicon glyphicon-menu-right"></span></button>
+      </form>
+      {{else}}
+      <form class="form-inline" action="/dashboard" method="post">
+        <input type="text" placeholder="USERNAME" name="username" autofocus>
+        <button class="btn btn-primary" type="submit">Go to Dashboard<span class="glyphicon glyphicon-menu-right"></span></button>
+      </form>
+      {{/if}} -->
+    </div>
+  </div>
+
+    <!-- <div class="container overview">
+      <div class="container text-center title">
+        <h1>Code</h1>
+      </div>
+      <section class="call-to-action">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-4">
+              <span class="glyphicon glyphicon-cloud glyphicon-large" aria-hidden="true"></span>
+              <h3>Realtime Code</h3>
+            </div>
+            <div class="col-md-4">
+              <span class="glyphicon glyphicon-tasks glyphicon-large" aria-hidden="true"></span>
+              <h3>Task Scheduling</h3>
+            </div>
+            <div class="col-md-4">
+              <span class="glyphicon glyphicon-send glyphicon-large" aria-hidden="true"></span>
+              <h3>Communication</h3>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div> -->
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+  <!--<script type="text/javascript" src="js/blur.js"></script>-->
+</body>

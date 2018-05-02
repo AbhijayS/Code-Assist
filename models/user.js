@@ -45,6 +45,7 @@ var PostSchema = new Schema ({
 	timestamp: {type: Date, default: Date.now},
 	question: String,
 	description: String,
+	prog_lang: String,
   answers: [{
     type: Schema.Types.ObjectId,
     ref: 'AnswerSchema'
@@ -71,7 +72,6 @@ module.exports = {
 }
 
 CommunitySchema.findOne({}).populate('posts').exec(function(err, community) {
-	console.log("community: " + community)
 	if (!community) {
 		// create new community
 		var newCommunity = new CommunitySchema({
@@ -80,8 +80,12 @@ CommunitySchema.findOne({}).populate('posts').exec(function(err, community) {
 
 		newCommunity.save(function(err) {
 			if(err) throw err;
-			console.log('Community created');
+			console.log('Code Assist Community created');
+			console.log('------------------------------------');
 		});
+	}else{
+		console.log("Welcome Again: Code Assist Community");
+		console.log('------------------------------------');
 	}
 // } else {
 // 	// add posts to community
@@ -148,8 +152,9 @@ CommunitySchema.findOne({}).populate('posts').exec(function(err, community) {
 User Creation
 ==============================
 */
+var saltRounds = 10;
 module.exports.createUser = function(newUser, callback){
-	bcrypt.genSalt(10, function(err, salt) {
+	bcrypt.genSalt(saltRounds, function(err, salt) {
 	    bcrypt.hash(newUser.password, salt, function(err, hash) {
 	        newUser.password = hash;
 	        newUser.save(callback);
@@ -159,7 +164,7 @@ module.exports.createUser = function(newUser, callback){
 
 module.exports.getUserByUsername = function(username, callback) {
 	// "i" regex ignores upper/lowercase
-	var query = {username: new RegExp(username, 'i')};
+	var query = {username: username};
 	User.findOne(query, callback);
 }
 
@@ -177,6 +182,14 @@ module.exports.comparePassword = function(candidatePassword, hash, callback) {
 	bcrypt.compare(candidatePassword, hash, function(err, isMatch) {
 		if(err) throw err;
 		callback(null, isMatch);
+	});
+}
+
+module.exports.createHash = function(candidatePassword, callback) {
+	bcrypt.hash(candidatePassword, saltRounds, function(err, hash) {
+  // Store hash in your password DB.
+		if(err) throw err;
+		callback(null, hash);
 	});
 }
 

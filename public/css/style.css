@@ -1,8 +1,10 @@
 body{
   font-family: 'Nunito', sans-serif !important;
-  background: linear-gradient(-135deg, #94eaead9, #0d75e8);
+  background: linear-gradient(-135deg, #83b6ef, #0d75e8);
   background-attachment:fixed;
+  overflow-y: hidden;
 }
+
 /*
 .signIn-form{
   display: none;
@@ -28,6 +30,18 @@ body{
   background: transparent !important;
   border: 0;
   border-color: transparent;
+}
+
+.navbar li a{
+  color: white;
+}
+
+.navbar li a:hover {
+  background-color: transparent !important;
+}
+
+.navbar-brand {
+  color: white;
 }
 
 .navbar-collapse {
@@ -121,7 +135,8 @@ body{
 #jumbotron-container p{
   font-size: 35px !important;
   font-weight: 400;
-  margin: 5% 0 10% 0;
+  margin: 5% 0 5% 0;
+
 }
 
 /* .form-control {
@@ -155,6 +170,7 @@ body{
 
 #jumbotron-container .form-inline {
   margin-top: 10%;
+
 }
 
 .overview {

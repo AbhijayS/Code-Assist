@@ -11,6 +11,7 @@ var routes = require('./routes/index');
 var com = require('./routes/community');
 var men = require('./routes/mentor');
 var session = require('express-session');
+// var quill = require('quill');
 
 // Init App
 var app = express();
@@ -27,8 +28,8 @@ app.engine('handlebars', hbs);
 app.set('view engine', 'handlebars');
 
 // BodyParser Middleware
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json({limit: "50mb"}));
+app.use(bodyParser.urlencoded({limit: "50mb", extended: true, parameterLimit:50000}));
 app.use(cookieParser());
 
 // Set Static Folder
@@ -54,10 +55,6 @@ app.use(function (req, res, next) {
   // res.locals.error_msg = req.flash('error_msg');
   // res.locals.error = req.flash('error');
   res.locals.user = req.user || null;
-	if(req.user)
-	{
-		res.locals.username = req.user.username || null;
-	}
   next();
 });
 
@@ -67,9 +64,13 @@ app.use('/', routes);
 app.use('/community', com);
 app.use('/mentor', men);
 
+app.use(function(req, res, next){
+  res.status(404).render('_404.handlebars', {layout: 'dashboard-layout'});
+});
+
 // Set Port
 app.set('port', (process.env.PORT || 3000));
 
 app.listen(app.get('port'), function(){
-	console.log('Server started on port '+app.get('port'));
+	// console.log('Server started on port '+app.get('port'));
 });
