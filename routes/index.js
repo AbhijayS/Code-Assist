@@ -91,6 +91,7 @@ router.post('/register', function(req, res){
   var username = req.body.username;
   var email = req.body.email;
   var password = req.body.password;
+
   // req.checkBody('email', 'Email is required').notEmpty();
   // var CS_Class = req.body.CS_class;
   req.checkBody('username', 'Username is required').len(3);
@@ -107,14 +108,14 @@ router.post('/register', function(req, res){
     password: password,
     title: 'user'
   });
-  console.log("Validation errors: " + errors);
 
+  var passwordMatch = req.body.password2 == password;
   User.getUserByUsername(username, function(err, userWithUsername) {
     User.getUserByEmail(email, function(err, userWithEmail) {
-      if (userWithUsername || userWithEmail || errors) {
+      if (!passwordMatch || userWithUsername || userWithEmail || errors) {
         if (userWithEmail) console.log("Email taken");
         if (userWithUsername) console.log("Username taken");
-        res.render('register', {layout: false, username: username, email: email, usernameTaken: userWithUsername, emailTaken: userWithEmail});
+        res.render('register', {layout: false, username: username, email: email, usernameTaken: userWithUsername, emailTaken: userWithEmail, notMatch: !passwordMatch});
       }else {
         User.createUser(newUser, function(err, user){
           if(err) throw err;

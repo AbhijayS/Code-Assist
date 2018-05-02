@@ -50,12 +50,19 @@
           if($(input).val().length < 8) {
             return false;
           }
-        }else if($(input).attr('name') == 'pass2'){
-          if(!($(input).val() == $("[name='password']").val())) {
-            // console.log('passwords dont match');
+        }else if($(input).attr('type') == 'password') {
+          var original = $(input).val();
+          var compare = $("input[name='password']").val();
+          console.log("original: " + original);
+          console.log("compare: " + compare);
+          if(!(original == compare)) {
+            console.log('passwords dont match');
             return false;
+          }else{
+            console.log('passwords match');
           }
         }else {
+          console.log("Parameter not pass2");
             if($(input).val().trim() == ''){
                 return false;
             }

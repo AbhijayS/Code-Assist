@@ -3,7 +3,6 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 <!--===============================================================================================-->
-	<link rel="icon" type="image/png" href="/vendors/images/icons/favicon.ico"/>
 <!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="/vendors/vendor/bootstrap/css/bootstrap.min.css">
 <!--===============================================================================================-->
@@ -52,6 +51,12 @@
 						</div>
 					{{/if}}
 
+					{{#if notMatch}}
+						<div style="margin-bottom: 2rem;" class="alert alert-danger">
+							<strong>Passwords</strong> don't match
+						</div>
+					{{/if}}
+
 					<div class="wrap-input100 validate-input" data-validate = "At least 3 characters">
 						{{#if username}}
 						<input class="input100 has-val" type="text" name="username" value="{{username}}">
@@ -82,7 +87,7 @@
             <span class="btn-show-pass">
               <i class="zmdi zmdi-eye"></i>
             </span>
-            <input class="input100" type="password" name="pass2">
+            <input class="input100" type="password" name="password2">
             <span class="focus-input100" data-placeholder="Re-enter Password"></span>
           </div>
 
