@@ -27,7 +27,7 @@ router.get('/login', function(req, res){
   }else{
     var username = req.flash('username');
     var error = req.flash('error');
-
+    //username = abi
     if(username == '') {
       console.log('============================================');
       console.log("Rendering Login from Login");
@@ -99,6 +99,7 @@ router.post('/dashboard', function(req, res) {
       console.log("User is redirected to: Login from: Dashboard");
       console.log("Username: " + req.body.username);
       console.log('============================================');
+      req.flash('username');
       req.flash('username', req.body.username);
       req.flash('origin');
       req.flash('origin', '/dashboard');
