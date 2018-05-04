@@ -11,10 +11,13 @@ var routes = require('./routes/index');
 var com = require('./routes/community');
 var men = require('./routes/mentor');
 var session = require('express-session');
+var yes_https = require('yes-https');
 // var quill = require('quill');
 
 // Init App
 var app = express();
+
+app.use(yes_https());
 
 // Create App Instance
 var hbs = exphbs({

@@ -4,7 +4,8 @@
   "description": "Testing new code assist website code. This will be more organixed and will be moved to a more permanent branch soon.",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
   },
   "repository": {
     "type": "git",
@@ -33,9 +34,13 @@
     "passport": "*",
     "passport-http": "*",
     "passport-local": "*",
-    "quill": "^1.3.6"
+    "quill": "^1.3.6",
+    "yes-https": "0.0.4"
   },
   "devDependencies": {
     "nodemon": "^1.17.3"
+  },
+  "engines": {
+    "node": "9.x"
   }
 }
