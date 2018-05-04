@@ -77,12 +77,10 @@ router.post('/post', function(req, res) {
           if(err) throw err;
           // saved
         });
-
-        // console.log(i+1 + ". Mentor Name: " + mentor.username);
-        // console.log(mentor.private_posts);
-        // console.log('');
-        // console.log('');
-        // send an email to each mentor
+        console.log('============================================');
+        console.log("Sending Email ...");
+        console.log(i+1 + ". Mentor Name: " + mentor.username);
+        console.log('============================================');
 
         const output = `
           <p>Hi ${mentor.username},</p>
