@@ -134,14 +134,20 @@ router.post('/register', function(req, res){
   var passwordMatch = req.body.password2 == password;
 
   try{
-
     User.getUserByUsername(username, function(err, userWithUsername) {
       User.getUserByEmail(email, function(err, userWithEmail) {
         if (!passwordMatch || userWithUsername || userWithEmail || errors) {
-          // if (userWithEmail) console.log("Email taken");
-          // if (userWithUsername) console.log("Username taken");
+          console.log('============================================');
+          if (userWithEmail) console.log("Email taken");
+          if (userWithUsername) console.log("Username taken");
+          console.log("Redirecting to: Register from: Register");
+          console.log('============================================');
           res.render('register', {layout: false, username: username, email: email, usernameTaken: userWithUsername, emailTaken: userWithEmail, notMatch: !passwordMatch});
-        }else {
+        } else {
+          console.log('============================================');
+          console.log("Registering New User");
+          console.log("Redirecting to: Login from: Register");
+          console.log('============================================');
           User.createUser(newUser, function(err, user){
             if(err) throw err;
             // console.log('--------------------------------------------');
@@ -151,6 +157,7 @@ router.post('/register', function(req, res){
             // console.log('');
             // req.user = true;
           });
+          req.flash('user-created');
           req.flash('user-created', true);
           req.flash('username');
           req.flash('username', username);
@@ -160,6 +167,10 @@ router.post('/register', function(req, res){
       });
     });
   } catch(e){
+    console.log('============================================');
+    console.log("Register page has invalid characters");
+    console.log("Redirecting to: Register from: Register");
+    console.log('============================================');
     res.render('register', {layout: false, username: username, email: email, invalidChars: true});
   }
 });
