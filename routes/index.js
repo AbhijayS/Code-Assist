@@ -144,10 +144,6 @@ router.post('/register', function(req, res){
           console.log('============================================');
           res.render('register', {layout: false, username: username, email: email, usernameTaken: userWithUsername, emailTaken: userWithEmail, notMatch: !passwordMatch});
         } else {
-          console.log('============================================');
-          console.log("Registering New User");
-          console.log("Redirecting to: Login from: Register");
-          console.log('============================================');
           User.createUser(newUser, function(err, user){
             if(err) throw err;
             // console.log('--------------------------------------------');
@@ -156,13 +152,15 @@ router.post('/register', function(req, res){
             // console.log('--------------------------------------------');
             // console.log('');
             // req.user = true;
+            console.log('============================================');
+            console.log("Registering New User");
+            console.log("Redirecting to: Login from: Register");
+            console.log('============================================');
+            req.flash('username');
+            req.flash('username', username);
+            res.redirect('/login');
+            // console.log(req.user);
           });
-          req.flash('user-created');
-          req.flash('user-created', true);
-          req.flash('username');
-          req.flash('username', username);
-          res.redirect('/login');
-          // console.log(req.user);
         }
       });
     });
