@@ -80,6 +80,7 @@ router.post('/post', function(req, res) {
         });
         console.log('============================================');
         console.log("Sending Email ...");
+        console.log("User: " + req.user.username);
         console.log(i+1 + ". Mentor Name: " + mentor.username);
         console.log(i+1 + ". Mentor Email: " + mentor.email);
         console.log('============================================');
