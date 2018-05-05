@@ -7,6 +7,7 @@ window.onload = function(){
       filter_opt: value
     };
 
+    $("#filterLoading").show();
     $.post('/mentor/history/filter', data, function(data) {
       if(data.url)
       {
@@ -40,6 +41,7 @@ window.onload = function(){
 
         }
       }
+      $("#filterLoading").hide();
     });
   });
 };
