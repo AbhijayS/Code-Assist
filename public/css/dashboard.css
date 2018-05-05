@@ -27,6 +27,10 @@ body{
   background-color: transparent;
 }
 
+.navbar li a:focus {
+  background-color: transparent;
+}
+
 .navbar-brand {
   color: white;
 }
