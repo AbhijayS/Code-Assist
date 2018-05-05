@@ -388,6 +388,28 @@ router.post('/password-change', function(req, res) {
 
 });
 
+router.post('/delete-account', function(req, res) {
+    if(req.user) {
+      res.send("/account-deleted");
+    }else {
+      console.log('============================================');
+      console.log("User is redirected to: Login from: Account");
+      console.log("Username: " + req.body.username);
+      console.log('============================================');
+      req.flash('origin');
+      req.flash('origin', '/account');
+      res.redirect('/login');
+    }
+});
+
+router.get('/account-deleted', function(req, res) {
+    if(req.user) {
+      res.redirect('/')
+    }else {
+      res.render('account-deleted', {layout: 'dashboard-layout'})
+    }
+});
+
 router.get('/team', function(req, res) {
   res.render('team', {layout: 'dashboard-layout'});
 });

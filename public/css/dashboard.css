@@ -36,7 +36,7 @@ body{
   color: white;
 }
 
-.ql-container  {
+.ql-container.noborder  {
   border: 0px !important;
 }
 
@@ -48,6 +48,7 @@ body{
   margin-right: 1%;
   margin-left: 1%;
 }
+
 /*
 ========================================
 Dashboard

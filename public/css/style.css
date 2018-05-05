@@ -182,3 +182,10 @@ body{
 .overview .title h1{
   font-size: 50px;
 }
+
+#account-deleted {
+  width: 500px !important;
+  margin: auto;
+  margin-top: 0;
+  margin-top: 30px;
+}
