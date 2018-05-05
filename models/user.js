@@ -4,7 +4,8 @@ require('dotenv').config();
 var bcrypt = require('bcryptjs');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-mongoose.connect(process.env.DB_HOST);
+// mongoose.connect(process.env.DB_HOST);
+mongoose.connect(process.env.DB_HOST_TEST);
 var db = mongoose.connection;
 
 // User Schema

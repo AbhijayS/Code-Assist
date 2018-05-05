@@ -1,8 +1,12 @@
 var express = require('express');
 var router = express.Router();
 var User = require('../models/user');
-var nodemailer = require('nodemailer');
+// var nodemailer = require('nodemailer');
 require('dotenv').config();
+
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
 
 router.get('/', function(req, res) {
   if(req.user)
@@ -101,37 +105,13 @@ router.post('/post', function(req, res) {
           <p>${description}</p>
         `;
 
-        // create reusable transporter object using the default SMTP transport
-        let transporter = nodemailer.createTransport({
-          host: 'mail.privateemail.com',
-          port: 460, //
-          secure: true, // true for 465, false for other ports
-          // service: 'gmail',
-          auth: {
-            user: 'contact@codeassist.club', // generated ethereal user
-            pass: process.env.EMAIL_PASS  // generated ethereal password
-          }
-        });
-        var subject = 'New User Query | ' + question;
-        // setup email data with unicode symbols
-        let mailOptions = {
-          from: '"Code Assist" <contact@codeassist.club>', // sender address
-          to: mentor.email, // list of receivers
-          subject: 'New User Query | ' + question, // Subject line
-          text: 'Hello world?', // plain text body
-          html: output // html body
+        const msg = {
+          to: mentor.email,
+          from: process.env.SENDER_EMAIL,
+          subject: 'New User Query | ' + question,
+          html: output
         };
-
-        // send mail with defined transport object
-        transporter.sendMail(mailOptions, (error, info) => {
-          console.log("Sending Email");
-          if (error) {
-            return console.log(error);
-          }
-          console.log('Message sent: %s', info.messageId);
-          console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
-        });
-
+        sgMail.send(msg);
       }
     });
   }
