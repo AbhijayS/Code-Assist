@@ -109,7 +109,7 @@ router.post('/post', function(req, res) {
           // service: 'gmail',
           auth: {
             user: 'contact@codeassist.club', // generated ethereal user
-            pass: 'codeassistpassword123#abinchris'  // generated ethereal password
+            pass: 'pass'  // generated ethereal password
           }
         });
         var subject = 'New User Query | ' + question;
