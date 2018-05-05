@@ -6,7 +6,7 @@
     /*==================================================================
     [ Focus input ]*/
     $('.input100').each(function(){
-        $(this).on('blur', function(){
+        $(this).on('change', function(){
             if($(this).val().trim() != "") {
                 $(this).addClass('has-val');
             }
