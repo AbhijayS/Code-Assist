@@ -1,10 +1,10 @@
 // var mongo = require('mongodb');
 // var MongoClient = mongo.MongoClient;
+require('dotenv').config();
 var bcrypt = require('bcryptjs');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-
-mongoose.connect('mongodb://localhost/code-assist');
+mongoose.connect(process.env.DB_HOST);
 var db = mongoose.connection;
 
 // User Schema

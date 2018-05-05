@@ -23,6 +23,7 @@
     "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.1",
     "cookie-session": "^2.0.0-beta.3",
+    "dotenv": "^5.0.1",
     "express": "*",
     "express-handlebars": "*",
     "express-session": "^1.15.6",
