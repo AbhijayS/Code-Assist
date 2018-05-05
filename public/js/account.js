@@ -45,9 +45,11 @@ window.onload = function(){
   });
 
   $("#deleteAccount").click(function() {
-    var confirmDeletion = alert("Are you sure?");
-    $.post('/delete-account', function(url) {
-      window.location.replace(url);
-    });
+    var confirmDeletion = confirm("Are you sure you want to delete your account?");
+    if (confirmDeletion) {
+      $.post('/delete-account', function(url) {
+        window.location.replace(url);
+      });
+    }
   });
 };
