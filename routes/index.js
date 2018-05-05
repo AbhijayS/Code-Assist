@@ -12,10 +12,21 @@ var nodemailer = require('nodemailer');
 router.get('/', function(req, res){
     // console.log("Homepage: ");
     // console.log(req.isAuthenticated());
-    res.render('index', {layout: 'layout'});
     console.log('============================================');
     console.log("User is isAuthenticated: " + req.isAuthenticated());
-    console.log('============================================');
+    var deleted = req.flash('account-deleted');
+    console.log("User Account Deleted: " + deleted);
+
+    if(deleted == 'true')
+    {
+      console.log("Rendering Deleted Account Page");
+      console.log('============================================');
+      res.render('account-deleted', {layout: 'dashboard-layout'});
+    }else{
+      console.log('============================================');
+      res.render('index', {layout: 'layout'});
+
+    }
 });
 
 
@@ -390,7 +401,16 @@ router.post('/password-change', function(req, res) {
 
 router.post('/delete-account', function(req, res) {
     if(req.user) {
-      res.send("/account-deleted");
+      User.UserSchema.findOne({_id: req.user._id}).remove(function(err) {
+        if(err) throw err;
+        console.log('============================================');
+        console.log('User Account Deleted');
+        console.log('User is redirected to: Home from: Account');
+        console.log('============================================');
+        req.flash('account-deleted');
+        req.flash('account-deleted', true);
+        res.send("/");
+      });
     }else {
       console.log('============================================');
       console.log("User is redirected to: Login from: Account");
@@ -399,14 +419,6 @@ router.post('/delete-account', function(req, res) {
       req.flash('origin');
       req.flash('origin', '/account');
       res.redirect('/login');
-    }
-});
-
-router.get('/account-deleted', function(req, res) {
-    if(req.user) {
-      res.redirect('/')
-    }else {
-      res.render('account-deleted', {layout: 'dashboard-layout'})
     }
 });
 
