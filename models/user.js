@@ -1,5 +1,6 @@
 // var mongo = require('mongodb');
 // var MongoClient = mongo.MongoClient;
+require('dotenv').config();
 var bcrypt = require('bcryptjs');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
