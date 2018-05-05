@@ -13,7 +13,7 @@ var men = require('./routes/mentor');
 var session = require('cookie-session');
 var yes_https = require('yes-https');
 // var quill = require('quill');
-
+require('dotenv').config();
 // Init App
 var app = express();
 

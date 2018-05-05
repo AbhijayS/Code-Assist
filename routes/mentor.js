@@ -103,12 +103,12 @@ router.post('/post', function(req, res) {
         // create reusable transporter object using the default SMTP transport
         let transporter = nodemailer.createTransport({
           host: 'mail.privateemail.com',
-          port: 465, //
+          port: 460, //
           secure: true, // true for 465, false for other ports
           // service: 'gmail',
           auth: {
             user: 'contact@codeassist.club', // generated ethereal user
-            pass: 'pass'  // generated ethereal password
+            pass: process.env.EMAIL_PASS  // generated ethereal password
           }
         });
         var subject = 'New User Query | ' + question;
