@@ -87,22 +87,8 @@ router.get('/:id', function(req, res) {
       if (date1 < date2) return 1;
       return 0;
     });
-
-		// console.log(post);
-    //
-		// post.answers.push(newAnswer);
-    //
-		// post.save(function(err) {
-		// 	if(err) throw err;
-		// });
-		var today = moment(Date.now());
-		// console.log(today.format("MMM"));
-		// post.description.stringify = JSON.stringify(post.description);
 		var description = post.description;
-		// console.log('');
-		// console.log("Type of description: " + typeof description);
-		// console.log(description);
-		res.render('post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description});
+		res.render('post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), description: description});
 	});
 });
 
@@ -199,6 +185,7 @@ router.post('/:id/answer', function(req, res) {
       });
 
 			User.UserSchema.findOne({username: post.author}, function(err, user) {
+				var newTimestamp = moment(newAnswer.timestamp);
 				const output = `
 					<p>Hi ${post.author},</p>
 					<p>The Community has recently replied to your question:</p>
@@ -209,7 +196,7 @@ router.post('/:id/answer', function(req, res) {
 
 					<h3>Contact details</h3>
 					<ul>
-						<li>Date Replied: ${newAnswer.timestamp}</li>
+						<li>Date Replied: ${newTimestamp.format('MMM D')}</li>
 						<li>User's Name: ${author}</li>
 					</ul>
 				`;
