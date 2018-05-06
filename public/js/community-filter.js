@@ -7,6 +7,7 @@ window.onload = function(){
       filter_opt: value
     };
 
+    $("#filterLoading").show();
     $.post('/community/filter', data, function(data) {
       // console.log("Filter request returned: " + data);
       $('#all-posts').empty()
@@ -36,6 +37,7 @@ window.onload = function(){
         }
 
       }
+      $("#filterLoading").hide();
     });
   });
 };

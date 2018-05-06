@@ -8,19 +8,27 @@
 
   <div class="container" id="history-body">
     <div class="container btn-group" id="filter-button-body">
-      <button id="filter-button" type="button" class="btn btn-default btn-lg dropdown-toggle" data-toggle="dropdown">
-        Filter By <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
-      </button>
+      <div class="row">
+        <div class="col-sm-2">
+          <button id="filter-button" type="button" class="btn btn-default btn-lg dropdown-toggle" data-toggle="dropdown">
+            Filter By <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu3">
+            <li role="presentation"><a class="filter" role="menuitem" tabindex="-1" href="#">Remove Filter</a></li>
+            <li role="presentation"><a class="filter" role="menuitem" tabindex="-1" href="#">Python</a></li>
+            <li role="presentation"><a class="filter" role="menuitem" tabindex="-1" href="#">Java</a></li>
+            <li role="presentation"><a class="filter" role="menuitem" tabindex="-1" href="#">C/C++</a></li>
+            <li role="presentation"><a class="filter" role="menuitem" tabindex="-1" href="#">HTML</a></li>
+            <li role="presentation"><a class="filter" role="menuitem" tabindex="-1" href="#">CSS</a></li>
+            <li role="presentation"><a class="filter" role="menuitem" tabindex="-1" href="#">Javascript</a></li>
+          </ul>
+        </div>
 
-      <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu3">
-        <li role="presentation"><a class="filter" role="menuitem" tabindex="-1" href="#">Remove Filter</a></li>
-        <li role="presentation"><a class="filter" role="menuitem" tabindex="-1" href="#">Python</a></li>
-        <li role="presentation"><a class="filter" role="menuitem" tabindex="-1" href="#">Java</a></li>
-        <li role="presentation"><a class="filter" role="menuitem" tabindex="-1" href="#">C/C++</a></li>
-        <li role="presentation"><a class="filter" role="menuitem" tabindex="-1" href="#">HTML</a></li>
-        <li role="presentation"><a class="filter" role="menuitem" tabindex="-1" href="#">CSS</a></li>
-        <li role="presentation"><a class="filter" role="menuitem" tabindex="-1" href="#">Javascript</a></li>
-      </ul>
+        <div class="col-sm-10">
+            <img id="filterLoading" src="/images/loadingwheel.gif" style="width: 30px; display: none;">
+        </div>
+      </div>
+
     </div>
 
     <div id="all-post-container" class="container list-group">
