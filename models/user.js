@@ -206,6 +206,34 @@ module.exports.createHash = function(candidatePassword, callback) {
 	});
 }
 
+module.exports.userHasPrivatePostById = function(userID, postID, callback) {
+	User.findOne({_id: userID}).populate('private_posts').exec(function(err, user)
+	{
+		if(err) throw err;
+		if(user)
+		{
+			var posts = user.private_posts;
+			// console.log("# Posts: " + posts.length);
+			for (var i = 0; i < posts.length; i++)
+			{
+				if(posts[i]._id == postID)
+				{
+					// console.log("True");
+					callback(true);
+					return;
+				}
+			}
+			// console.log("False");
+			callback(false);
+			return;
+
+		}else{
+			// console.log("False");
+			callback(false);
+			return;
+		}
+	});
+}
 /*
 ==============================
 Database Utilities
