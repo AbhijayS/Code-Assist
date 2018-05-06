@@ -77,11 +77,6 @@ router.post('/post', function(req, res) {
       for (var i = 0; i < mentors.length; i++)
       {
         var mentor = mentors[i];
-        mentor.private_posts.push(pPost);
-        mentor.save(function(err) {
-          if(err) throw err;
-          // saved
-        });
         console.log('============================================');
         console.log("Sending Email ...");
         console.log("User: " + req.user.username);
@@ -91,25 +86,28 @@ router.post('/post', function(req, res) {
 
         const output = `
           <p>Hi ${mentor.username},</p>
-          <p>A User recently sent a new request:</p>
-          <strong><p>${question}</p></strong>
+          <p>A User recently asked a new question to the mentors.</p>
+          <h2>New Question Details<h2>
+          <hr>
 
-          <h3>Contact details:</h3>
+          <h3>Question</h3>
+          <p>${question}</p>
+          <h3>Description</h3>
+          <strong><p>${description}</p></strong>
+
+          <h3>Contact details</h3>
           <ul>
-            <li>Date Replied: ${pPost.timestamp}</li>
+            <li>Date Posted: ${pPost.timestamp}</li>
             <li>User's Name: ${req.user.username}</li>
             <li>User's Email: ${req.user.email}</li>
-            <li>Link: <a href="http://localhost:3000/mentor/history/${pPost._id}">Post</a></li>
+            <li>Link: <a href="https://codeassist.club/mentor/history/${pPost._id}">Post</a></li>
           </ul>
-
-          <h3>User Request</h3>
-          <p>${description}</p>
         `;
 
         const msg = {
           to: mentor.email,
-          from: process.env.SENDER_EMAIL,
-          subject: 'New User Query | ' + question,
+          from: `Code Assist <${process.env.SENDER_EMAIL}>`,
+          subject: 'New Private Question | ' + question,
           html: output
         };
         sgMail.send(msg);
@@ -120,15 +118,28 @@ router.post('/post', function(req, res) {
 
 router.get('/history', function(req, res) {
   if(req.user) {
-    User.UserSchema.findOne({_id: req.user._id}).populate('private_posts').exec(function(err, user) {
-      var allPosts = user.private_posts;
-      allPosts.sort(function(date1,date2){
-        if (date1 > date2) return -1;
-        if (date1 < date2) return 1;
-        return 0;
+    if(req.user.title == 'mentor')
+    {
+      User.PostSchema.find({}, function(err, posts) {
+        var allPosts = posts;
+        allPosts.sort(function(date1,date2){
+          if (date1 > date2) return -1;
+          if (date1 < date2) return 1;
+          return 0;
+        });
+        res.render('mentor-history', {layout: 'dashboard-layout', posts: allPosts});
+      })
+    }else{
+      User.UserSchema.findOne({_id: req.user._id}).populate('private_posts').exec(function(err, user) {
+        var allPosts = user.private_posts;
+        allPosts.sort(function(date1,date2){
+          if (date1 > date2) return -1;
+          if (date1 < date2) return 1;
+          return 0;
+        });
+        res.render('mentor-history', {layout: 'dashboard-layout', posts: allPosts});
       });
-      res.render('mentor-history', {layout: 'dashboard-layout', posts: allPosts});
-    });
+    }
   }else{
     req.flash('origin');
     req.flash('origin', '/mentor/history');
@@ -140,38 +151,45 @@ router.get('/history/:id', function(req, res) {
   var postID = req.params.id;
   if(req.user)
   {
-    var found = false;
-    // console.log('-------------------------');
-    // console.log(req.user.private_posts.length);
-    // console.log(req.user.private_posts);
-    // console.log('');
-    // console.log('');
-    for (var i = 0; (i < req.user.private_posts.length); i++)
+    // var found = false;
+    // // console.log('-------------------------');
+    // // console.log(req.user.private_posts.length);
+    // // console.log(req.user.private_posts);
+    // // console.log('');
+    // // console.log('');
+    // for (var i = 0; (i < req.user.private_posts.length); i++)
+    // {
+    //   // console.log("Iterating: " + req.user.private_posts[i]);
+    //   if(req.user.private_posts[i] == postID)
+    //   {
+    //     found = true;
+    //     break;
+    //   }
+    // }
+    if(req.user.title == 'mentor')
     {
-      // console.log("Iterating: " + req.user.private_posts[i]);
-      if(req.user.private_posts[i] == postID)
-      {
-        found = true;
-        break;
-      }
-    }
-
-    if(found)
-    {
-      // console.log("Found: " + found);
       User.PostSchema.findOne({_id: postID}).populate('answers').exec(function(err, post) {
         res.render('mentor-history-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer')});
       });
     }else{
-      res.send("You don't have access to this post");
+      User.userHasPrivatePostById(req.user._id, postID, function(found) {
+        if(found == true)
+        {
+          // console.log("Found: " + found);
+          User.PostSchema.findOne({_id: postID}).populate('answers').exec(function(err, post) {
+            res.render('mentor-history-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer')});
+          });
+        }else{
+          // console.log("Found: " + found);
+          res.render('private-post.handlebars', {layout: 'dashboard-layout'});
+        }
+      });
     }
   }else{
     req.flash('origin');
     req.flash('origin', '/mentor/history/'+postID);
     res.redirect('../../login');
   }
-
-  // res.render('mentor-history-post', {layout: 'dashboard-layout', post: post});
 
 });
 
@@ -180,138 +198,132 @@ router.post('/history/:id/answer', function(req, res) {
   var postID = req.params.id;
   // console.log("Id: " + postID);
   var message = req.body.answer;
+  var author = req.user.username;
 
   if(req.user)
   {
-    // console.log("User exists");
-    var author = req.user.username;
-
-    User.PostSchema.findOne({_id: postID}).populate('answers').exec(function(err, post) {
-      var newAnswer = new User.AnswerSchema();
-      newAnswer.answer = message;
-      newAnswer.author = author;
-
-      newAnswer.save(function(err) {
+    if(req.user.title == 'mentor')
+    {
+      User.PostSchema.findOne({_id: postID}).populate('answers').exec(function(err, post) {
         if(err) throw err;
-        // saved
-      });
+        var newAnswer = new User.AnswerSchema();
+        newAnswer.answer = message;
+        newAnswer.author = author;
 
-      post.answers.push(newAnswer);
-      post.save(function(err) {
-        if(err) throw err;
-        // console.log("Answer saved");
-      });
+        newAnswer.save(function(err) {
+          if(err) throw err;
+          // saved
+        });
 
-      if(req.user.title == 'mentor')
-      {
+        post.answers.push(newAnswer);
+        post.save(function(err) {
+          if(err) throw err;
+          // console.log("Answer saved");
+        });
+
         const output = `
-          <p>Hi ${author},</p>
+          <p>Hi ${post.author},</p>
           <p>A Mentor has recently replied to your question:</p>
-          <p>${post.question}</p>
+          <h2>New Answer Details</h2>
+          <hr>
 
-          <h3>Contact details:</h3>
+          <h3>Link to the <a href="https://codeassist.club/mentor/history/${postID}">Answer</a></h3>
+
+          <h3>Contact details</h3>
           <ul>
             <li>Date Replied: ${newAnswer.timestamp}</li>
-            <li>Mentor Name: ${req.user.username}</li>
+            <li>Mentor Name: ${author}</li>
             <li>Mentor Email: ${req.user.email}</li>
-            <li>Link: localhost:3000/mentor/history/${postID}</li>
+            <li><a href="https://codeassist.club/team">About the Mentors</a></li>
           </ul>
-
-          <h3>Mentor's Reply</h3>
-          <p>${message}</p>
         `;
 
-        // create reusable transporter object using the default SMTP transport
-        let transporter = nodemailer.createTransport({
-          host: 'mail.privateemail.com',
-          port: 465, //
-          secure: true, // true for 465, false for other ports
-          // service: 'gmail',
-          auth: {
-              user: 'contact@codeassist.club', // generated ethereal user
-              pass: 'codeassistpassword123#abinchris'  // generated ethereal password
-          }
-        });
-
         User.UserSchema.findOne({username: post.author}, function(err, user) {
-
-          // setup email data with unicode symbols
-          let mailOptions = {
-            from: '"Code Assist" <contact@codeassist.club>', // sender address
+          const msg = {
             to: user.email,
-            subject: 'New Mentor Reply | ' + post.question, // Subject line
-            text: 'Hello world?', // plain text body
-            html: output // html body
+            from: `Code Assist <${process.env.SENDER_EMAIL}>`,
+            subject: 'New Mentor Answer to Private Post',
+            html: output
           };
 
-          // send mail with defined transport object
-          transporter.sendMail(mailOptions, (error, info) => {
-            console.log("Sending Email");
-            if (error) {
-              return console.log(error);
-            }
-            console.log('Message sent: %s', info.messageId);
-            console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+          sgMail.send(msg);
+          console.log('============================================');
+          console.log("Sending Email to User ... ");
+          console.log("User's Username: " + author);
+          console.log("Redirecting to: Specific Private post page from: Specific Private post page");
+          console.log('============================================');
+          res.send('/mentor/history/'+postID);
+        });
+      });
+    }else{
+      User.userHasPrivatePostById(req.user._id, postID, function(found) {
+        if(found == true)
+        {
+          User.PostSchema.findOne({_id: postID}).populate('answers').exec(function(err, post) {
+            if(err) throw err;
+            var newAnswer = new User.AnswerSchema();
+            newAnswer.answer = message;
+            newAnswer.author = author;
+
+            newAnswer.save(function(err) {
+              if(err) throw err;
+              // saved
+            });
+
+            post.answers.push(newAnswer);
+            post.save(function(err) {
+              if(err) throw err;
+              // console.log("Answer saved");
+            });
+
+            User.UserSchema.find({title: 'mentor'}, function(err, mentors) {
+              if(err) throw err;
+              for(var i = 0; i < mentors.length; i++)
+              {
+                var mentor = mentors[i];
+                const output = `
+                  <p>Hi ${mentor.username},</p>
+                  <p>A User recently replied to a private post</p>
+                  <h2>Reply Details<h2>
+                  <hr>
+
+                  <h3>Answer</h3>
+                  <p>${message}</p>
+
+                  <h3>Contact details</h3>
+                  <ul>
+                    <li>Date Posted: ${newAnswer.timestamp}</li>
+                    <li>User's Name: ${author}</li>
+                    <li>User's Email: ${req.user.email}</li>
+                    <li>Link: <a href="https://codeassist.club/mentor/history/${postID}">Post</a></li>
+                  </ul>
+                `;
+
+                const msg = {
+                  to: mentor.email,
+                  from: `Code Assist <${process.env.SENDER_EMAIL}>`,
+                  subject: 'New User Reply to Private Post',
+                  html: output
+                };
+                sgMail.send(msg);
+                console.log('============================================');
+                console.log("Sending Email to Mentor ... ");
+                console.log("Mentor's Username: " + mentor.username);
+                console.log("Redirecting to: Specific Private post page from: Specific Private post page");
+                console.log('============================================');
+              }
+              res.send('/mentor/history/'+postID);
+            });
           });
-
-        });
-
-      }else{
-        User.UserSchema.find({title: "mentor"}).populate('private_posts').exec(function(err, mentors) {
-          for (var i = 0; i < mentors.length; i++)
-          {
-            const output = `
-              <p>Hi ${mentors[i].username},</p>
-              <p>A User has recently replied to a post:</p>
-              <p>${post.question}</p>
-
-              <h3>Contact details:</h3>
-              <ul>
-                <li>Date Replied: ${newAnswer.timestamp}</li>
-                <li>User's Name: ${req.user.username}</li>
-                <li>User's Email: ${req.user.email}</li>
-                <li>Link: localhost:3000/mentor/history/${postID}</li>
-              </ul>
-
-              <h3>User's Reply</h3>
-              <p>${message}</p>
-            `;
-
-            // create reusable transporter object using the default SMTP transport
-            let transporter = nodemailer.createTransport({
-              host: 'mail.privateemail.com',
-              port: 465, //
-              secure: true, // true for 465, false for other ports
-              // service: 'gmail',
-              auth: {
-                user: 'contact@codeassist.club', // generated ethereal user
-                pass: 'codeassistpassword123#abinchris'  // generated ethereal password
-              }
-            });
-
-            // setup email data with unicode symbols
-            let mailOptions = {
-              from: '"Code Assist" <contact@codeassist.club>', // sender address
-              to: mentors[i].email, // list of receivers
-              subject: 'New User Reply | ' + post.question, // Subject line
-              text: 'Hello world?', // plain text body
-              html: output // html body
-            };
-
-            // send mail with defined transport object
-            transporter.sendMail(mailOptions, (error, info) => {
-              console.log("Sending Email");
-              if (error) {
-                return console.log(error);
-              }
-              console.log('Message sent: %s', info.messageId);
-              console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
-            });
-          }
-        });
-      }
-      res.send('/mentor/history/'+postID);
-    });
+        }else{
+          console.log('============================================');
+          console.log("Unauthorized Post Request");
+          console.log("Redirecting to: Unauthorized Page from: Private post page");
+          console.log('============================================');
+          res.render('private-post.handlebars', {layout: 'dashboard-layout'});
+        }
+      });
+    }
   }else{
     req.flash('origin');
     req.flash('saved_answer');

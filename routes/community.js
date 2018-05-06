@@ -2,6 +2,10 @@ var express = require('express');
 var router = express.Router();
 var User = require('../models/user');
 var moment = require('moment');
+require('dotenv').config();
+
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 // var User = require('../models/test-user');
 
@@ -157,7 +161,7 @@ router.post('/post', function(req, res) {
         url: "/community/" + newPost._id
       }
       res.send(data);
-      
+
     });
 
     req.user.save(function(err) {
@@ -191,8 +195,39 @@ router.post('/:id/answer', function(req, res) {
       post.answers.push(newAnswer);
       post.save(function(err) {
         if(err) throw err;
-        console.log("Answer saved");
+        // console.log("Answer saved");
       });
+
+			User.UserSchema.findOne({username: post.author}, function(err, user) {
+				const output = `
+					<p>Hi ${post.author},</p>
+					<p>The Community has recently replied to your question:</p>
+					<h2>New Answer Details</h2>
+					<hr>
+
+					<h3>Link to the <a href="https://codeassist.club/community/${postID}">Answer</a></h3>
+
+					<h3>Contact details</h3>
+					<ul>
+						<li>Date Replied: ${newAnswer.timestamp}</li>
+						<li>User's Name: ${author}</li>
+					</ul>
+				`;
+				const msg = {
+					to: user.email,
+					from: `Code Assist <${process.env.SENDER_EMAIL}>`,
+					subject: 'New Answer to Community Post',
+					html: output
+				};
+
+				sgMail.send(msg);
+				console.log('============================================');
+				console.log("Sending Email to User ... ");
+				console.log("User's Username: " + user.username);
+				console.log("Redirecting to: Specific community post page from: Specific community post page");
+				console.log('============================================');
+
+			});
       res.send("/community/" + postID + "/");
     });
   }else{
