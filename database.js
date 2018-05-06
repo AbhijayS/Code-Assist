@@ -16,7 +16,7 @@ var database = process.env.DB_HOST_TEST;
 // **************************************
 
 mongoose.connect(database);
-var conn = mongoose.createConnection(database);
+var conn = mongoose.connection;
 
 conn.once('open', () => {
   // Init stream
@@ -25,7 +25,7 @@ conn.once('open', () => {
 });
 
 var storage = new GridFsStorage({
-  url: process.env.DB_HOST_TEST,
+  url: database,
   file: (req, file) => {
     return new Promise((resolve, reject) => {
       crypto.randomBytes(16, (err, buf) => {
