@@ -5,7 +5,7 @@ var bcrypt = require('bcryptjs');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 // mongoose.connect(process.env.DB_HOST);
-mongoose.connect(process.env.DB_HOST_TEST);
+// mongoose.connect(process.env.DB_HOST_TEST);
 var db = mongoose.connection;
 
 // User Schema
@@ -41,16 +41,26 @@ var CommunitySchema = new Schema ({
   }]
 });
 
+// File Reference Schema
+var FileRefSchema = new Schema ({
+	name: String,
+	fileID: Schema.Types.ObjectId
+});
+
 var PostSchema = new Schema ({
 	author: String,
 	timestamp: {type: Date, default: Date.now},
 	question: String,
 	description: String,
 	prog_lang: String,
-  answers: [{
-    type: Schema.Types.ObjectId,
-    ref: 'AnswerSchema'
-  }]
+	answers: [{
+		type: Schema.Types.ObjectId,
+		ref: 'AnswerSchema'
+	}],
+	files: [{
+		type: Schema.Types.ObjectId,
+		ref: 'FileRefSchema'
+	}]
 });
 
 var AnswerSchema = new Schema ({
@@ -64,12 +74,14 @@ var User = mongoose.model('UserSchema', UserSchema);
 var CommunitySchema = mongoose.model('CommunitySchema', CommunitySchema);
 var PostSchema = mongoose.model('PostSchema', PostSchema);
 var AnswerSchema = mongoose.model('AnswerSchema', AnswerSchema);
+var FileRefSchema = mongoose.model('FileRefSchema', FileRefSchema);
 
 module.exports = {
 	UserSchema: User,
 	CommunitySchema: CommunitySchema,
 	PostSchema: PostSchema,
-	AnswerSchema: AnswerSchema
+	AnswerSchema: AnswerSchema,
+	FileRefSchema: FileRefSchema
 }
 
 CommunitySchema.findOne({}).populate('posts').exec(function(err, community) {

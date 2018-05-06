@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var User = require('../models/user');
+var upload = require('../database').upload;
+var mongoose = require('mongoose');
 // var nodemailer = require('nodemailer');
 require('dotenv').config();
 
@@ -19,7 +21,7 @@ router.get('/', function(req, res) {
   }
 });
 
-router.post('/post', function(req, res) {
+router.post('/post', upload.array('file'), function(req, res) {
   if(req.user)
   {
     var question = req.body.question;
@@ -53,6 +55,19 @@ router.post('/post', function(req, res) {
       pPost.question = question;
       pPost.description = description;
       pPost.prog_lang = req.body.programming;
+      for (var i = 0; i < req.files.length; i++) {
+        // console.log(req.files[i]);
+
+        // new file reference
+        var newFileRef = new User.FileRefSchema();
+        newFileRef.name = req.files[i].filename;
+        newFileRef.fileID = req.files[i].id;
+        newFileRef.save(function(err) {
+          if(err) throw err;
+          // saved
+        });
+        pPost.files.push(newFileRef);
+      }
 
       pPost.save(function(err) {
         if(err) throw err;
@@ -118,6 +133,26 @@ router.post('/post', function(req, res) {
   }
 });
 
+router.get('/file/:fileID', (req, res) => {
+  // converts fileID into object id
+  // allows for file searching by _id
+  var fileID = new mongoose.mongo.ObjectId(req.params.fileID);
+  gfs.files.findOne({_id: fileID}, (err, file) => {
+    // Check if file
+    if (!file || file.length === 0) {
+      return res.status(404).json({
+        err: 'No file exists'
+      });
+    }
+
+    res.set('Content-Type', file.contentType);
+    res.set('Content-Disposition', 'attachment; filename="' + file.filename + '"');
+
+    const readstream = gfs.createReadStream(file.filename);
+    readstream.pipe(res);
+  });
+});
+
 router.get('/history', function(req, res) {
   if(req.user) {
     User.UserSchema.findOne({_id: req.user._id}).populate('private_posts').exec(function(err, user) {
@@ -159,8 +194,8 @@ router.get('/history/:id', function(req, res) {
     if(found)
     {
       // console.log("Found: " + found);
-      User.PostSchema.findOne({_id: postID}).populate('answers').exec(function(err, post) {
-        res.render('mentor-history-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer')});
+      User.PostSchema.findOne({_id: postID}).populate(['answers', 'files']).exec(function(err, post) {
+        res.render('mentor-history-post', {layout: 'dashboard-layout', post: post, files: post.files, saved: req.flash('saved_answer')});
       });
     }else{
       res.send("You don't have access to this post");
