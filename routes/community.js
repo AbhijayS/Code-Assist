@@ -203,7 +203,7 @@ router.get('/:id', function(req, res) {
     // console.log('');
     // console.log("Type of description: " + typeof description);
     // console.log(description);
-    res.render('post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description, files: post.files});
+    res.render('post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description});
   });
 });
 

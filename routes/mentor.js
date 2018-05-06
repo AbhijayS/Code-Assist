@@ -203,26 +203,15 @@ router.get('/history/:id', function(req, res) {
     // }
     if(req.user.title == 'mentor')
     {
-      // console.log("Iterating: " + req.user.private_posts[i]);
-      if(req.user.private_posts[i] == postID)
-      {
-        found = true;
-        break;
-      }
-    }
-
-    if(found)
-    {
-      // console.log("Found: " + found);
       User.PostSchema.findOne({_id: postID}).populate(['answers', 'files']).exec(function(err, post) {
-        res.render('mentor-history-post', {layout: 'dashboard-layout', post: post, files: post.files, saved: req.flash('saved_answer')});
+        res.render('mentor-history-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer')});
       });
     }else{
       User.userHasPrivatePostById(req.user._id, postID, function(found) {
         if(found == true)
         {
           // console.log("Found: " + found);
-          User.PostSchema.findOne({_id: postID}).populate('answers').exec(function(err, post) {
+          User.PostSchema.findOne({_id: postID}).populate(['answers', 'files']).exec(function(err, post) {
             res.render('mentor-history-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer')});
           });
         }else{

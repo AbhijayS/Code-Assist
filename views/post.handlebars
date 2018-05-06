@@ -23,10 +23,10 @@
         </div>
       </a>
 
-      {{#if files}}
+      {{#if post.files}}
       <div class="list-group-item list-group-item-action flex-column align-items-start">
         <div class="d-flex w-100 justify-content-between">
-          {{#each files}}
+          {{#each post.files}}
           <a class="btn btn-primary" href="/community/file/{{this.fileID}}" role="button">{{this.name}}</a>
           {{/each}}
         </div>
