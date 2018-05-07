@@ -3,6 +3,7 @@
     <h2>{{post.question}}</h2>
     <div class="title-buttons">
       <a href="/community/post"><button class="btn btn-primary btn-lg" type="button" name="button">Post a Question</button></a>
+      <a href="/community"><button class="btn btn-info btn-lg" type="button" name="button">View All</button></a>
       <a href="/mentor"><button class="btn btn-warning btn-lg" type="button" name="button">Ask a Mentor</button></a>
     </div>
   </div>
@@ -18,13 +19,24 @@
 
       <a class="list-group-item list-group-item-action flex-column align-items-start">
         <div class="d-flex w-100 justify-content-between">
-          <p class="mb-1" id="description"><div id="post-view-editor"></div></p>
+          <p class="mb-1" id="description"><div id="post-view-editor" class="noborder"></div></p>
         </div>
       </a>
 
+      {{#if post.files}}
+      <div class="list-group-item list-group-item-action flex-column align-items-start">
+        <div class="d-flex w-100 justify-content-between">
+          {{#each post.files}}
+          <a class="btn btn-primary" href="/community/file/{{this.fileID}}" role="button">{{this.name}}</a>
+          {{/each}}
+        </div>
+      </div>
+      {{/if}}
+
       <a class="list-group-item list-group-item-action flex-column align-items-start">
         <div class="d-flex w-100 justify-content-between">
-          <small>{{post.timestamp}}</small>
+          <small class="moment-timestamp">{{post.timestamp}}</small>
+          <!-- {{post.timestamp}} -->
         </div>
       </a>
 
@@ -37,8 +49,9 @@
         <div class="d-flex w-100 justify-content-between">
           <small>{{this.author}}</small>
         </div>
-        <p class="mb-1"><div class="answer-view"></div></p>
-        <small>{{this.timestamp}}</small>
+        <p class="mb-1"><div class="answer-view noborder"></div></p>
+        <small class="moment-timestamp">{{this.timestamp}}</small>
+        <!-- {{this.timestamp}} -->
       </a>
       {{/each}}
 
@@ -134,6 +147,16 @@
           // console.log("Answer Saved");
           window.location.replace(url);
         });
+      });
+
+
+      /*
+      Moment Date format
+      */
+      $('.moment-timestamp').each(function() {
+        var timestamp = new Date($(this).text());
+        timestamp = moment(timestamp, "MM-DD");
+        $(this).text("Posted " + timestamp.format("MMM D"));
       });
     }
   </script>

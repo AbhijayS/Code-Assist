@@ -10,10 +10,9 @@ var flash = require('connect-flash');
 var routes = require('./routes/index');
 var com = require('./routes/community');
 var men = require('./routes/mentor');
-var session = require('express-session');
+var session = require('cookie-session');
 var yes_https = require('yes-https');
 // var quill = require('quill');
-
 // Init App
 var app = express();
 
@@ -38,13 +37,16 @@ app.use(cookieParser());
 // Set Static Folder
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Express Session
-app.use(session({
-    secret: 'secret',
-    saveUninitialized: true,
-    resave: true
-}));
+// // Express Session
+// app.use(session({
+//     secret: 'secret',
+//     saveUninitialized: true,
+//     resave: true
+// }));
 
+app.use(session({
+	secret: 'secret'
+}));
 
 // Passport init
 app.use(passport.initialize());

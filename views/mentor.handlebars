@@ -39,7 +39,7 @@
 
       <div class="form-group">
         <label for="exampleFormControlInput1">Question Title</label>
-        <input type="text" class="form-control" id="question" name="question" placeholder="" value="{{question}}">
+        <input type="text" class="form-control" id="question" placeholder="" value="{{question}}">
       </div>
 
       <div class="form-group">
@@ -48,6 +48,11 @@
         <div id="editor">
 
         </div>
+      </div>
+
+      <div class="form-group">
+        <label for="fileUpload">File Upload (optional)</label>
+        <input name="file" type="file" class="form-control-file" id="fileUpload" multiple="">
       </div>
 
       <button id="submit" class="btn btn-primary">Submit</button>
@@ -75,17 +80,47 @@
         console.log('community-post clicked');
         var description = JSON.stringify(quillEditor.getContents().ops);
 
-        var data = {
+        var formData = new FormData($('#upload_form')[0]);
+        for (var i = 0; i < $('input[type=file]')[0].files.length; i++) {
+          formData.append('file', $('input[type=file]')[0].files[i]);
+        }
+        formData.append('programming', $('#language-choose').val());
+        formData.append('question', $("#question").val());
+        formData.append('description', description);
+
+/*        var data = {
           programming: $('#language-choose').val(),
           question: $("input[name=question]").val(),
           description: description,
-        };
+        };*/
+
+
 
         // console.log(data.description);
         // console.log("Object Created");
         // console.log("Object Type: " + typeof data.description);
 
-        $.post("/mentor/post", data).done(function(resData) {
+        $.ajax({
+            url: "/mentor/post",
+            data: formData,
+            type: 'POST',
+            contentType: false,
+            processData: false,
+            success: function(resData) {
+              $(".alert-danger").hide();
+              // console.log(resData);
+              if (!resData.questionInvalid && !resData.descriptionInvalid) {
+                window.location.replace(resData.url);
+              } else {
+                if (resData.questionInvalid)
+                  $("#questionInvalid").show();
+                if (resData.descriptionInvalid)
+                  $("#descriptionInvalid").show();
+              }
+            }
+        });
+
+/*        $.post("/mentor/post", data).done(function(resData) {
           $(".alert-danger").hide();
           // console.log(resData);
           if (!resData.questionInvalid && !resData.descriptionInvalid) {
@@ -96,7 +131,7 @@
             if (resData.descriptionInvalid)
               $("#descriptionInvalid").show();
           }
-        });
+        });*/
       });
     };
   </script>

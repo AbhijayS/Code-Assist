@@ -3,6 +3,13 @@ var router = express.Router();
 var User = require('../models/user');
 var moment = require('moment');
 
+var upload = require('../database').upload;
+var mongoose = require('mongoose');
+require('dotenv').config();
+
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
 // var User = require('../models/test-user');
 
 router.get('/', function(req, res) {
@@ -65,44 +72,27 @@ router.get('/post', function(req, res) {
   }
 });
 
+router.get('/file/:fileID', (req, res) => {
+  // converts fileID into object id
+  // allows for file searching by _id
+  var fileID = new mongoose.mongo.ObjectId(req.params.fileID);
+  gfs.files.findOne({_id: fileID}, (err, file) => {
+    // Check if file
+    if (!file || file.length === 0) {
+      return res.status(404).json({
+        err: 'No file exists'
+      });
+    }
 
-router.get('/:id', function(req, res) {
-	var postID = req.params.id;
-	// var newAnswer = new User.AnswerSchema({
-	// 	answer: "MongoDB"
-	// });
-	// newAnswer.save(function(err) {
-	// 	if(err) throw err;
-	// });
+    res.set('Content-Type', file.contentType);
+    res.set('Content-Disposition', 'attachment; filename="' + file.filename + '"');
 
-	User.PostSchema.findOne({_id: postID}).populate('answers').exec(function(err, post) {
-
-    var allAnswers = post.answers;
-    allAnswers.sort(function(date1,date2){
-      if (date1 > date2) return -1;
-      if (date1 < date2) return 1;
-      return 0;
-    });
-
-		// console.log(post);
-    //
-		// post.answers.push(newAnswer);
-    //
-		// post.save(function(err) {
-		// 	if(err) throw err;
-		// });
-		var today = moment(Date.now());
-		// console.log(today.format("MMM"));
-		// post.description.stringify = JSON.stringify(post.description);
-		var description = post.description;
-		// console.log('');
-		// console.log("Type of description: " + typeof description);
-		// console.log(description);
-		res.render('post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description});
-	});
+    const readstream = gfs.createReadStream(file.filename);
+    readstream.pipe(res);
+  });
 });
 
-router.post('/post', function(req, res) {
+router.post('/post', upload.array('file'), function(req, res) {
   var question = req.body.question;
   var description = req.body.description;
   var author = req.user.username;
@@ -135,6 +125,21 @@ router.post('/post', function(req, res) {
     newPost.description = description;
     newPost.author = author;
 		newPost.prog_lang = prog_lang;
+
+    for (var i = 0; i < req.files.length; i++) {
+      // console.log(req.files[i]);
+
+      // new file reference
+      var newFileRef = new User.FileRefSchema();
+      newFileRef.name = req.files[i].filename;
+      newFileRef.fileID = req.files[i].id;
+      newFileRef.save(function(err) {
+        if(err) throw err;
+        // saved
+      });
+      newPost.files.push(newFileRef);
+    }
+
 		console.log("Programming Language: " + newPost.prog_lang);
 
     newPost.save(function(err) {
@@ -157,12 +162,48 @@ router.post('/post', function(req, res) {
         url: "/community/" + newPost._id
       }
       res.send(data);
-      
+
     });
 
     req.user.save(function(err) {
       if(err) throw err;
     });
+  });
+});
+
+router.get('/:id', function(req, res) {
+  var postID = req.params.id;
+  // var newAnswer = new User.AnswerSchema({
+  //  answer: "MongoDB"
+  // });
+  // newAnswer.save(function(err) {
+  //  if(err) throw err;
+  // });
+
+  User.PostSchema.findOne({_id: postID}).populate(['answers', 'files']).exec(function(err, post) {
+
+    var allAnswers = post.answers;
+    allAnswers.sort(function(date1,date2){
+      if (date1 > date2) return -1;
+      if (date1 < date2) return 1;
+      return 0;
+    });
+
+    // console.log(post);
+    //
+    // post.answers.push(newAnswer);
+    //
+    // post.save(function(err) {
+    //  if(err) throw err;
+    // });
+    var today = moment(Date.now());
+    // console.log(today.format("MMM"));
+    // post.description.stringify = JSON.stringify(post.description);
+    var description = post.description;
+    // console.log('');
+    // console.log("Type of description: " + typeof description);
+    // console.log(description);
+    res.render('post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description});
   });
 });
 
@@ -191,8 +232,40 @@ router.post('/:id/answer', function(req, res) {
       post.answers.push(newAnswer);
       post.save(function(err) {
         if(err) throw err;
-        console.log("Answer saved");
+        // console.log("Answer saved");
       });
+
+			User.UserSchema.findOne({username: post.author}, function(err, user) {
+				var newTimestamp = moment(newAnswer.timestamp);
+				const output = `
+					<p>Hi ${post.author},</p>
+					<p>The Community has recently replied to your question:</p>
+					<h2>New Answer Details</h2>
+					<hr>
+
+					<h3>Link to the <a href="https://codeassist.club/community/${postID}">Answer</a></h3>
+
+					<h3>Contact details</h3>
+					<ul>
+						<li>Date Replied: ${newTimestamp.format('MMM D')}</li>
+						<li>User's Name: ${author}</li>
+					</ul>
+				`;
+				const msg = {
+					to: user.email,
+					from: `Code Assist <${process.env.SENDER_EMAIL}>`,
+					subject: 'New Answer to Community Post',
+					html: output
+				};
+
+				sgMail.send(msg);
+				console.log('============================================');
+				console.log("Sending Email to User ... ");
+				console.log("User's Username: " + user.username);
+				console.log("Redirecting to: Specific community post page from: Specific community post page");
+				console.log('============================================');
+
+			});
       res.send("/community/" + postID + "/");
     });
   }else{

@@ -43,4 +43,13 @@ window.onload = function(){
       }
     });
   });
+
+  $("#deleteAccount").click(function() {
+    var confirmDeletion = confirm("Are you sure you want to delete your account?");
+    if (confirmDeletion) {
+      $.post('/delete-account', function(url) {
+        window.location.replace(url);
+      });
+    }
+  });
 };

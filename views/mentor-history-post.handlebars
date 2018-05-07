@@ -19,13 +19,23 @@
 
       <a class="list-group-item list-group-item-action flex-column align-items-start">
         <div class="d-flex w-100 justify-content-between">
-          <p class="mb-1"><div id="post-view-editor"></div></p>
+          <p class="mb-1"><div id="post-view-editor" class="noborder"></div></p>
         </div>
       </a>
 
+      {{#if post.files}}
+      <div class="list-group-item list-group-item-action flex-column align-items-start">
+        <div class="d-flex w-100 justify-content-between">
+          {{#each post.files}}
+          <a class="btn btn-primary" href="/mentor/file/{{this.fileID}}" role="button">{{this.name}}</a>
+          {{/each}}
+        </div>
+      </div>
+      {{/if}}
+
       <a class="list-group-item list-group-item-action flex-column align-items-start">
         <div class="d-flex w-100 justify-content-between">
-          <small>{{post.timestamp}}</small>
+          <small class="moment-timestamp">{{post.timestamp}}</small>
         </div>
       </a>
 
@@ -35,8 +45,8 @@
           <h5> </h5>
           <small>{{this.author}}</small>
         </div>
-        <p class="mb-1"><div class="quill-editor-view answer-view"></div></p>
-        <small>{{this.timestamp}}</small>
+        <p class="mb-1"><div class="quill-editor-view answer-view noborder"></div></p>
+        <small class="moment-timestamp">{{this.timestamp}}</small>
       </a>
       {{/each}}
     </div>
@@ -131,6 +141,15 @@
           // console.log("Answer Saved");
           window.location.replace(url);
         });
+      });
+
+      /*
+      Moment Date format
+      */
+      $('.moment-timestamp').each(function() {
+        var timestamp = new Date($(this).text());
+        timestamp = moment(timestamp, "MM-DD");
+        $(this).text("Posted " + timestamp.format("MMM D"));
       });
     };
   </script>

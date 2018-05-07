@@ -12,7 +12,21 @@ var nodemailer = require('nodemailer');
 router.get('/', function(req, res){
     // console.log("Homepage: ");
     // console.log(req.isAuthenticated());
-    res.render('index', {layout: 'layout'});
+    console.log('============================================');
+    console.log("User is isAuthenticated: " + req.isAuthenticated());
+    var deleted = req.flash('account-deleted');
+    console.log("User Account Deleted: " + deleted);
+
+    if(deleted == 'true')
+    {
+      console.log("Rendering Deleted Account Page");
+      console.log('============================================');
+      res.render('account-deleted', {layout: 'dashboard-layout'});
+    }else{
+      console.log('============================================');
+      res.render('index', {layout: 'layout'});
+
+    }
 });
 
 
@@ -24,17 +38,29 @@ router.get('/login', function(req, res){
   }else{
     var username = req.flash('username');
     var error = req.flash('error');
-
+    //username = abi
     if(username == '') {
+      console.log('============================================');
+      console.log("Rendering Login from Login");
+      console.log("Username: blank");
+      console.log('============================================');
       res.render('login', {layout: false, error: error});
     }else{
       User.getUserByUsername(username, function(err, user) {
         if(err) throw err;
         if(user) {
           // console.log('User exists');
+          console.log('============================================');
+          console.log("Rendering Login from Login");
+          console.log("Username exists: " + username);
+          console.log('============================================');
           res.render('login', {layout: false, username: username, error: error});
         }else {
           // console.log("Doesn't exist");
+          console.log('============================================');
+          console.log("Redirecting to: Register from: Login");
+          console.log("Username doesn't exist: " + username);
+          console.log('============================================');
           req.flash('username', username);
           res.redirect('/register');
         }
@@ -63,22 +89,28 @@ router.get('/logout', function(req, res) {
 });
 
 router.get('/dashboard', function(req, res) {
-    if(req.user)
-    {
-      res.render('dashboard', {layout: 'dashboard-layout'});
-    }else{
-      req.flash('origin');
-      req.flash('origin', '/dashboard');
-      res.redirect('login');
-    }
+  if(req.user)
+  {
+    res.render('dashboard', {layout: 'dashboard-layout'});
+  }else{
+    req.flash('origin');
+    req.flash('origin', '/dashboard');
+    res.redirect('login');
+  }
 });
 
 router.post('/dashboard', function(req, res) {
     if(req.user) {
+      console.log("User is redirected to: Dashboard from: index");
       res.render('dashboard', {layout: 'dashboard-layout'});
     }else {
       // console.log(req.body.username);
       // console.log("User not logged in");
+      console.log('============================================');
+      console.log("User is redirected to: Login from: Dashboard");
+      console.log("Username: " + req.body.username);
+      console.log('============================================');
+      req.flash('username');
       req.flash('username', req.body.username);
       req.flash('origin');
       req.flash('origin', '/dashboard');
@@ -113,32 +145,41 @@ router.post('/register', function(req, res){
   var passwordMatch = req.body.password2 == password;
 
   try{
-
     User.getUserByUsername(username, function(err, userWithUsername) {
       User.getUserByEmail(email, function(err, userWithEmail) {
         if (!passwordMatch || userWithUsername || userWithEmail || errors) {
+          console.log('============================================');
           if (userWithEmail) console.log("Email taken");
           if (userWithUsername) console.log("Username taken");
+          console.log("Redirecting to: Register from: Register");
+          console.log('============================================');
           res.render('register', {layout: false, username: username, email: email, usernameTaken: userWithUsername, emailTaken: userWithEmail, notMatch: !passwordMatch});
-        }else {
+        } else {
           User.createUser(newUser, function(err, user){
             if(err) throw err;
-            console.log('--------------------------------------------');
-            console.log('User Created ->')
-            console.log(user);
-            console.log('--------------------------------------------');
-            console.log('');
+            // console.log('--------------------------------------------');
+            // console.log('User Created ->')
+            // console.log(user);
+            // console.log('--------------------------------------------');
+            // console.log('');
             // req.user = true;
+            console.log('============================================');
+            console.log("Registering New User");
+            console.log("Redirecting to: Login from: Register");
+            console.log('============================================');
+            req.flash('username');
+            req.flash('username', username);
+            res.redirect('/login');
+            // console.log(req.user);
           });
-          req.flash('user-created', true);
-          req.flash('username');
-          req.flash('username', username);
-          res.redirect('/login');
-          // console.log(req.user);
         }
       });
     });
   } catch(e){
+    console.log('============================================');
+    console.log("Register page has invalid characters");
+    console.log("Redirecting to: Register from: Register");
+    console.log('============================================');
     res.render('register', {layout: false, username: username, email: email, invalidChars: true});
   }
 });
@@ -226,12 +267,12 @@ router.post('/username-change', function(req, res) {
         User.UserSchema.findOne({username: username}, function(err, user) {
           if(user)
           {
-            console.log("Username Exists :(");
+            // console.log("Username Exists :(");
             res.send({status: false});
           }else{
-            console.log("Username Doesn't Exist! :)");
+            // console.log("Username Doesn't Exist! :)");
             req.user.username = username;
-            console.log(req.user.username);
+            // console.log(req.user.username);
             req.user.save(function (err) {
               if (err) throw err;
               // saved!
@@ -270,12 +311,12 @@ router.post('/email-change', function(req, res) {
         User.UserSchema.findOne({email: email}, function(err, user) {
           if(user)
           {
-            console.log("Email Exists :(");
+            // console.log("Email Exists :(");
             res.send({status: false});
           }else{
-            console.log("Email Doesn't Exist! :)");
+            // console.log("Email Doesn't Exist! :)");
             req.user.email = email;
-            console.log(req.user.email);
+            // console.log(req.user.email);
             req.user.save(function (err) {
               if (err) throw err;
               // saved!
@@ -356,6 +397,29 @@ router.post('/password-change', function(req, res) {
   }
 
 
+});
+
+router.post('/delete-account', function(req, res) {
+    if(req.user) {
+      User.UserSchema.findOne({_id: req.user._id}).remove(function(err) {
+        if(err) throw err;
+        console.log('============================================');
+        console.log('User Account Deleted');
+        console.log('User is redirected to: Home from: Account');
+        console.log('============================================');
+        req.flash('account-deleted');
+        req.flash('account-deleted', true);
+        res.send("/");
+      });
+    }else {
+      console.log('============================================');
+      console.log("User is redirected to: Login from: Account");
+      console.log("Username: " + req.body.username);
+      console.log('============================================');
+      req.flash('origin');
+      req.flash('origin', '/account');
+      res.redirect('/login');
+    }
 });
 
 router.get('/team', function(req, res) {
