@@ -95,7 +95,8 @@ router.get('/file/:fileID', (req, res) => {
 router.post('/post', upload.array('file'), function(req, res) {
   var question = req.body.question;
   var description = req.body.description;
-  var author = req.user.username;
+  var author = req.user._id;
+	var authorname=req.user.username;
 	var prog_lang = req.body.programming;
 
   var questionInvalid = false;
@@ -124,6 +125,7 @@ router.post('/post', upload.array('file'), function(req, res) {
     newPost.question = question;
     newPost.description = description;
     newPost.author = author;
+		newPost.authorname=authorname;
 		newPost.prog_lang = prog_lang;
 
     for (var i = 0; i < req.files.length; i++) {
