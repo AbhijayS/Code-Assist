@@ -270,9 +270,19 @@ router.post('/username-change', function(req, res) {
             // console.log("Username Exists :(");
             res.send({status: false});
           }else{
+
             // console.log("Username Doesn't Exist! :)");
             req.user.username = username;
             // console.log(req.user.username);
+              User.PostSchema.find({authorid:req.user._id},function(err,posts){
+                for(var oof=0;oof<posts.length;oof++){
+                  posts[oof].author=username;
+                  posts[oof].save(function (err) {
+                    if (err) throw err;
+                    // saved!
+                  });
+                }
+              });
             req.user.save(function (err) {
               if (err) throw err;
               // saved!
