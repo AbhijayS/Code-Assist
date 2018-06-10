@@ -1,3 +1,4 @@
+
 window.onload = function(){
   $('#usernameInput').change(function() {
     var change = $(this).val();

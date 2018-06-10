@@ -13,8 +13,10 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 // var User = require('../models/test-user');
 
 router.get('/', function(req, res) {
+	  //	User.UserSchema.findOne({username: "otherusername"}, function(err, user) {
+			//	console.log(user);
+		//	});
 	User.CommunitySchema.findOne({}).populate('posts').exec(function(err, community) {
-
     var allPosts = community.posts;
 
     allPosts.sort(function(date1,date2){
@@ -29,6 +31,8 @@ router.get('/', function(req, res) {
     // console.log('---------------------------');
 
 		res.render('community', {layout: 'dashboard-layout', posts: community.posts});
+
+
 	});
 
 });
@@ -119,7 +123,6 @@ router.post('/post', upload.array('file'), function(req, res) {
   }
 
   User.CommunitySchema.findOne({}, function(err, community) {
-    // console.log(community);
     var newPost = new User.PostSchema();
     newPost.question = question;
     newPost.description = description;
