@@ -13,6 +13,7 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 // var User = require('../models/test-user');
 
 router.get('/', function(req, res) {
+	console.log("hi");
 	User.CommunitySchema.findOne({}).populate('posts').exec(function(err, community) {
 
     var allPosts = community.posts;
@@ -97,7 +98,7 @@ router.post('/post', upload.array('file'), function(req, res) {
   var description = req.body.description;
   var author = req.user.username;
 	var prog_lang = req.body.programming;
-
+  var authorid=req.user._id;
   var questionInvalid = false;
   var descriptionInvalid = false;
 
@@ -119,11 +120,12 @@ router.post('/post', upload.array('file'), function(req, res) {
   }
 
   User.CommunitySchema.findOne({}, function(err, community) {
-    // console.log(community);
+    console.log(community);
     var newPost = new User.PostSchema();
     newPost.question = question;
     newPost.description = description;
     newPost.author = author;
+		newPost.authorid=authorid;
 		newPost.prog_lang = prog_lang;
 
     for (var i = 0; i < req.files.length; i++) {

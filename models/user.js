@@ -49,6 +49,7 @@ var FileRefSchema = new Schema ({
 
 var PostSchema = new Schema ({
 	author: String,
+	authorid:String,
 	timestamp: {type: Date, default: Date.now},
 	question: String,
 	description: String,
@@ -178,6 +179,12 @@ module.exports.createUser = function(newUser, callback){
 module.exports.getUserByUsername = function(username, callback) {
 	// "i" regex ignores upper/lowercase
 	var query = {username: username};
+	User.findOne(query, callback);
+}
+
+module.exports.getUserByUserId = function(_id, callback) {
+	// "i" regex ignores upper/lowercase
+	var query = {_id: _id};
 	User.findOne(query, callback);
 }
 
