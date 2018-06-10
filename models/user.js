@@ -50,7 +50,6 @@ var FileRefSchema = new Schema ({
 
 var PostSchema = new Schema ({
 	author: String,
-	authorname: String,
 	timestamp: {type: Date, default: Date.now},
 	question: String,
 	description: String,
