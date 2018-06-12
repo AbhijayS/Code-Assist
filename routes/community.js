@@ -207,8 +207,12 @@ router.get('/:id', function(req, res) {
     // console.log('');
     // console.log("Type of description: " + typeof description);
     // console.log(description);
+		if(req.user._id==post.authorid){
+			res.render('post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description, isowner: true});
+}else{
     res.render('post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description});
-  });
+}
+	});
 });
 
 
