@@ -425,6 +425,27 @@ router.post('/delete-account', function(req, res) {
 router.get('/team', function(req, res) {
   res.render('team', {layout: 'dashboard-layout'});
 });
+
+router.get('/admin', function(req, res){
+  var auth = req.flash('admin-page');
+  if(auth[0] == true) {
+    res.render('admin', {isAuthorized: true, layout: 'dashboard-layout'});
+  }else{
+    res.render('admin', {isAuthorized: (req.user) ? ((req.user.title == 'mentor') ? true : false) : false, layout: 'dashboard-layout'});
+  }
+});
+
+router.post('/admin', function(req, res){
+  var password = req.body.password;
+  if(process.env.ADMIN_PASSWORD == password){
+    req.flash('admin-page');
+    req.flash('admin-page', true);
+    res.send({auth: true});
+  }else{
+    res.send({auth: false});
+  }
+});
+
 /*
 =====================================================
                     DEVELOPERS
