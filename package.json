@@ -46,7 +46,7 @@
     "yes-https": "0.0.4"
   },
   "devDependencies": {
-    "nodemon": "^1.17.5"
+    "nodemon": "^1.17.3"
   },
   "engines": {
     "node": "9.x"
