@@ -13,7 +13,12 @@
       <a class="list-group-item list-group-item-action flex-column align-items-start active">
         <div class="d-flex w-100 justify-content-between">
           <h3>{{post.question}}</h3>
+
           <small>{{post.author}}</small>
+
+          {{#if isowner}}
+          <button class="btn btn-danger btn-lg" type="button" name="button" >Delete</button>
+          {{/if}}
         </div>
       </a>
 
@@ -160,5 +165,4 @@
       });
     }
   </script>
-
 </body>

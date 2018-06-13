@@ -101,7 +101,7 @@ router.post('/post', upload.array('file'), function(req, res) {
   var description = req.body.description;
   var author = req.user.username;
 	var prog_lang = req.body.programming;
-
+  var authorid=req.user._id;
   var questionInvalid = false;
   var descriptionInvalid = false;
 
@@ -127,6 +127,7 @@ router.post('/post', upload.array('file'), function(req, res) {
     newPost.question = question;
     newPost.description = description;
     newPost.author = author;
+		newPost.authorid=authorid;
 		newPost.prog_lang = prog_lang;
 
     for (var i = 0; i < req.files.length; i++) {
@@ -206,8 +207,12 @@ router.get('/:id', function(req, res) {
     // console.log('');
     // console.log("Type of description: " + typeof description);
     // console.log(description);
+		if(req.user._id==post.authorid){
+			res.render('post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description, isowner: true});
+}else{
     res.render('post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description});
-  });
+}
+	});
 });
 
 
