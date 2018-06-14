@@ -17,11 +17,10 @@
           <small>{{post.author}}</small>
 
           {{#if isowner}}
-          <button class="btn btn-warning btn-lg" type="button" name="button" >Delete</button>
+          <button class="btn btn-warning btn-lg" id="delete" type="button" name="button" >Delete</button>
           {{/if}}
         </div>
       </a>
-
       <a class="list-group-item list-group-item-action flex-column align-items-start">
         <div class="d-flex w-100 justify-content-between">
           <p class="mb-1" id="description"><div id="post-view-editor" class="noborder"></div></p>
@@ -163,6 +162,16 @@
         timestamp = moment(timestamp, "MM-DD");
         $(this).text("Posted " + timestamp.format("MMM D"));
       });
+
+      $('#delete').on('click', function(event) {
+        var answer2 = JSON.stringify(answerEditor.getContents().ops);
+        var post_url2 = "/community/{{post.id}}/delete";
+        var thepost='ah';
+        $.post(post_url2, {deletedpost:"thepost"}, function(url2) {
+        });
+      });
+
     }
+
   </script>
 </body>

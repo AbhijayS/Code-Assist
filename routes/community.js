@@ -214,10 +214,13 @@ router.get('/:id', function(req, res) {
 }
 	});
 });
+router.post('/:id/delete', function(req, res){
+	console.log(req.params.id);
 
+	res.send("end");
+});
 
-router.post('/:id/answer', function(req, res) {
-
+router.post('/:id/answer', function(req, res){
   var postID = req.params.id;
   // console.log("Id: " + postID);
   var message = req.body.answer;
