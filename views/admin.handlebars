@@ -1,0 +1,51 @@
+@@ -0,0 +1,50 @@
+<body>
+  {{#if isAuthorized}}
+  <div class="jumbotron jumbotron-title text-center">
+    <h1>ADMIN PAGE</h1>
+    <a href={{env.HANGOUTS_LINK}} target="_blank"><button class="btn btn-success btn-lg" type="button" name="join-call">Join Hangouts Call</button></a>
+  </div>
+
+  {{else}}
+    <div class="jumbotron jumbotron-title">
+      <div class="jumbotron jumbotron-title text-center">
+        <h1>Authorization needed</h1>
+      </div>
+    </div>
+
+    <div class="container">
+      <form id="authorization">
+        <div class="form-group">
+          <label for="password">Enter a password</label>
+          <input type="password" class="form-control" id="password" placeholder="Password">
+        </div>
+        <div class="checkbox">
+          <label>
+            <input type="checkbox">I agree that I am a Code Assist Admin
+          </label>
+        </div>
+        <button type="submit" class="btn btn-primary" disabled>Submit</button>
+      </form>
+
+    </div>
+
+    <script type="text/javascript">
+      window.onload = function(){
+        $('input[type=checkbox]').click(function(){
+          $('button[type=submit]').attr('disabled', !this.checked);
+        });
+
+        $("#authorization").submit(function(event) {
+          event.preventDefault();
+          if($('input[type=checkbox]').prop('checked')){
+            $.post('/admin', {password: $('#password').val()}, function(data){
+              if(data.auth == true){
+                window.location.replace('/admin');
+              }
+            });
+          }
+        });
+      };
+    </script>
+  {{/if}}
+</body>
