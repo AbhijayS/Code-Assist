@@ -17,10 +17,11 @@
           <small>{{post.author}}</small>
 
           {{#if isowner}}
-        <a href="/community">  <button class="btn btn-warning btn-lg" id="delete" type="button" name="button" >Delete</button></a>
+            <a href="/community"><button class="btn btn-danger btn-lg" id="delete" type="button" name="button">Delete</button></a>
           {{/if}}
         </div>
       </a>
+
       <a class="list-group-item list-group-item-action flex-column align-items-start">
         <div class="d-flex w-100 justify-content-between">
           <p class="mb-1" id="description"><div id="post-view-editor" class="noborder"></div></p>
