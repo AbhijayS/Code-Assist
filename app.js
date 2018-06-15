@@ -16,6 +16,17 @@ var yes_https = require('yes-https');
 // Init App
 var app = express();
 
+// Set Port
+app.set('port', (process.env.PORT || 3000));
+
+var server = app.listen(app.get('port'), function(){
+  // console.log('Server started on port '+app.get('port'));
+});
+
+// server used in codehat.js, so that socket.io can be initialized
+module.exports.server = server;
+var codehat = require('./routes/codehat');
+
 app.use(yes_https());
 
 // Create App Instance
@@ -67,14 +78,8 @@ app.use('/', routes);
 // app.use('/users', users);
 app.use('/community', com);
 app.use('/mentor', men);
+app.use('/codehat', codehat);
 
 app.use(function(req, res, next){
   res.status(404).render('_404.handlebars', {layout: 'dashboard-layout'});
-});
-
-// Set Port
-app.set('port', (process.env.PORT || 3000));
-
-app.listen(app.get('port'), function(){
-	// console.log('Server started on port '+app.get('port'));
 });

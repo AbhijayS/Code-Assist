@@ -1,0 +1,49 @@
+html, body {
+	height: 100%;
+	margin: 0;
+}
+
+#editor {
+	height: 60%;
+	font-size: 14px;
+}
+
+#output {
+	min-height: 25%;
+	padding: 10px;
+	box-sizing: border-box;
+	width: 100%;
+	background-color: #f1f1f1;
+	resize: vertical;
+	border-color: rgb(210, 208, 208);
+}
+
+.outputError {
+	border-color: red;
+}
+
+#buttons {
+	width: 104px;
+	margin: 0 auto;
+	margin-top: 20px;
+	position: relative;
+}
+
+button {
+	width: 100px;
+	height: 40px;
+}
+
+button:enabled {
+	cursor: pointer;
+}
+
+#loadingWheel {
+	margin: 0 10px;
+	height: 40px;
+    display: inline-block;
+    vertical-align: top;
+
+    position: absolute;
+    left: 100%;
+}

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Realtime Java</title>
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.slim.js"></script>
+	<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link rel="stylesheet" href="/codehat/ace-collab-ext/ace-collab-ext.css"/>
+
+	<script src="/codehat/ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+	<script src="/codehat/ace-collab-ext/umd/ace-collab-ext.js" type="text/javascript" charset="utf-8"></script>
+</head>
+<body>
+
+<div id="editor"></div>
+<textarea id="output" readonly autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+<div id="buttons">
+	<button id="run">Run</button>
+	<img id="loadingWheel" src="https://www.shopirvinespectrumcenter.com/images/spinner.gif" style="display: none;">
+</div>
+
+<script>
+	var editor = ace.edit("editor");
+	editor.setTheme("ace/theme/textmate");
+	editor.getSession().setMode("ace/mode/java");
+	editor.setShowPrintMargin(false);
+	editor.$blockScrolling = Infinity;
+	editor.focus();
+</script>
+
+<script src="/codehat/script.js"></script>
+
+</body>
+</html>
