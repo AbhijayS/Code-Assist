@@ -12,10 +12,10 @@ var nodemailer = require('nodemailer');
 router.get('/', function(req, res){
     // console.log("Homepage: ");
     // console.log(req.isAuthenticated());
-    console.log('============================================');
-    console.log("User is isAuthenticated: " + req.isAuthenticated());
+    // console.log('============================================');
+    // console.log("User is isAuthenticated: " + req.isAuthenticated());
     var deleted = req.flash('account-deleted');
-    console.log("User Account Deleted: " + deleted);
+    // console.log("User Account Deleted: " + deleted);
 
     if(deleted == 'true')
     {
