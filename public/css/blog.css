@@ -90,7 +90,7 @@ Dashboard
   background-size: cover;
   background-position: 0% 75%;
   background-image: url("/images/blog3.jpg");
-  filter: blur(2px);
+  /* filter: blur(2px); */
 }
 
 #blog-main-text {
@@ -100,6 +100,19 @@ Dashboard
   z-index: 999;
   color: white;
   left: 40%;
+}
+
+#blog-main-body {
+  margin-top: 20px;
+}
+
+#blog-main-body .list-group-item {
+  transition: 0.5s;
+}
+
+#blog-main-body .list-group-item:hover {
+  background-color: #0d75e8;
+  color: white;
 }
 
 #blog-img{
