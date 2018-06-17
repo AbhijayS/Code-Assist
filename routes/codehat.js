@@ -12,6 +12,7 @@ router.get('/', function(req, res){
 
 var child_process = require('child_process');
 var exec = child_process.exec;
+var spawn = child_process.spawn;
 var fs = require('fs');
 var filePath = "./codehat_files/";
 var fileName = "Main";
@@ -21,17 +22,18 @@ var input = `public class ${fileName} {
 		
 	}
 }`;
-var compileError = false;
+var outputError = false;
 var output = "";
 
 var cursors = {};
 var selections = {};
+var runner;
 
 io.on('connection', function connection(socket) {
 	socket.emit("socketID", socket.id);
 	socket.emit("input", input);
 
-	if (compileError) {
+	if (outputError) {
 		socket.emit("outputError", output);
 	} else {
 		socket.emit("output", output);
@@ -65,7 +67,16 @@ io.on('connection', function connection(socket) {
 		// console.log(cursors);
 	});
 
+	socket.on("programInput", function(text) {
+		if (runner) {
+			runner.stdin.write(text+"\n");
+			// runner.stdin.end();
+		}
+	});
+
 	socket.on("run", function() {
+		output = "";
+		outputError = false;
 		socket.broadcast.emit("programRunning");
 		// console.log("Saving")
 		fs.writeFile(filePath + fileName + ".java", input, function(err) {
@@ -74,7 +85,7 @@ io.on('connection', function connection(socket) {
 			}
 			
 			// console.log("Compiling");
-			var child = exec('javac "' + filePath + fileName + '.java"', function(error, stdout, stderr) {
+			exec('javac "' + filePath + fileName + '.java"', function(error, stdout, stderr) {
 
 				if (error) {
 					console.log("Codehat - Compile Error Given");
@@ -84,25 +95,48 @@ io.on('connection', function connection(socket) {
 					console.log(result.replace(/\n$/, "")); //regex gets rid of newline character
 					
 					output = result;
-					compileError = true;
+					outputError = true;
 
 					io.sockets.emit("outputError", result);
+					io.sockets.emit("runFinished");
 					return false; //breaks out of function
 				}
+
+				io.sockets.emit("compileFinished");
 
 				// console.log("Running");
 				// console.log("-------");
 
-				var child2 = exec('java -cp "' + filePath + '" ' + fileName, function(error, stdout, stderr) {
+				runner = spawn('java', ['-cp', filePath, fileName]);
+
+				runner.stdout.on('data', function(data) {
+					output += data;
+					io.sockets.emit("output", data.toString());
+					process.stdout.write(data);
+				});
+
+				runner.stderr.on('data', function(data) {
+					output += data;
+					io.sockets.emit("outputError", data.toString());
+					outputError = true;
+					process.stdout.write(data);
+				});
+
+				runner.on('exit', function() {
+					io.sockets.emit("runFinished");
+					// console.log('Run Finished');
+				});
+
+/*				exec('java -cp "' + filePath + '" ' + fileName, function(error, stdout, stderr) {
 					// console.log(stdout.replace(/\n$/, "")); //regex gets rid of newline character
 					// console.log("-------");
 
 					output = stdout;
-					compileError = false;
+					outputError = false;
 
 					io.sockets.emit("output", stdout);
 					// console.log('Run Finished');
-				});
+				});*/
 
 			});
 

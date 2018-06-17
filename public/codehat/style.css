@@ -23,7 +23,11 @@ html, body {
 }
 
 .outputError {
-	border-color: red;
+	border-color: red !important;
+}
+
+#programInput {
+	width: 100%;
 }
 
 #buttons {

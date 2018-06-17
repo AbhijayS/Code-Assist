@@ -10,6 +10,8 @@ var AceRange = ace.require('ace/range').Range;
 
 var applyingChanges = false;
 
+$('#output').val("");
+
 $("input:file").change(function() {
 	let file = $(this)[0].files[0];
 	let reader = new FileReader();
@@ -18,6 +20,12 @@ $("input:file").change(function() {
 		let text = e.target.result;
 		editor.setValue(text, -1);
 	};
+});
+
+$("#programInputForm").submit(function(e) {
+	e.preventDefault();
+	socket.emit("programInput", $("#programInput").val());
+	$("#programInput").val("");
 });
 
 editor.getSession().on('change', function(event) {
@@ -68,17 +76,23 @@ socket.on("programRunning", function() {
 
 socket.on("output", function(text) {
 	$('#output').removeClass("outputError");
-	$('#output').val(text);
+	$('#output').val($('#output').val() + text);
+	$('#output').get(0).scrollTop = $('#output').get(0).scrollHeight;
+});
+
+socket.on("runFinished", function() {
 	$("#loadingWheel").hide();
 	$("#run").prop("disabled", false);
-	$('#output').get(0).scrollTop = $('#output').get(0).scrollHeight;
+	$("#programInput").prop("disabled", true);
+});
+
+socket.on("compileFinished", function() {
+	$("#programInput").prop("disabled", false);
 });
 
 socket.on("outputError", function(text) {
 	$('#output').addClass("outputError");
-	$('#output').val(text);
-	$("#loadingWheel").hide();
-	$("#run").prop("disabled", false);
+	$('#output').val($('#output').val() + text);
 })
 
 editor.session.selection.on('changeCursor', function(e) {

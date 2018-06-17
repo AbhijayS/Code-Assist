@@ -1,5 +1,10 @@
+import java.util.*;
 public class Main {
 	public static void main(String[] args) {
-		f
+        Scanner scan = new Scanner(System.in);
+        for (int i = 0; i < 3; i++) {
+            System.out.println("I like " + scan.next());   
+        }
+        
 	}
 }
