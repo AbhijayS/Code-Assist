@@ -49,11 +49,14 @@ var FileRefSchema = new Schema ({
 
 //Project Schema
 var ProjectSchema = new Schema({
-	owner:String,
-	ownerid:String,
-  userswithaccess: Array,
-	description: String,
-	name:String,
+	owner: String,
+	ownerid: String,
+  	userIdsWithAccess: [{
+  		type: String
+  	}],
+  	text: String,
+	// description: String,
+	// name: String,
 });
 // Post Schema
 var PostSchema = new Schema ({
@@ -75,7 +78,7 @@ var PostSchema = new Schema ({
 
 var AnswerSchema = new Schema ({
 	author: String,
-  answer: String,
+  	answer: String,
 	timestamp: {type: Date, default: Date.now}
   // ...
 });
@@ -85,13 +88,15 @@ var CommunitySchema = mongoose.model('CommunitySchema', CommunitySchema);
 var PostSchema = mongoose.model('PostSchema', PostSchema);
 var AnswerSchema = mongoose.model('AnswerSchema', AnswerSchema);
 var FileRefSchema = mongoose.model('FileRefSchema', FileRefSchema);
+var ProjectSchema = mongoose.model('ProjectSchema', ProjectSchema);
 
 module.exports = {
 	UserSchema: User,
 	CommunitySchema: CommunitySchema,
 	PostSchema: PostSchema,
 	AnswerSchema: AnswerSchema,
-	FileRefSchema: FileRefSchema
+	FileRefSchema: FileRefSchema,
+	ProjectSchema: ProjectSchema
 }
 
 CommunitySchema.findOne({}).populate('posts').exec(function(err, community) {

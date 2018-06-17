@@ -6,8 +6,49 @@ var server = require('../app').server;
 var socket = require('socket.io');
 var io = socket(server);
 
+var currentProjects = [];
+
+function projectActive(id) {
+	for (let i = 0; i < currentProjects.length; i++) {
+		if (currentProjects[i].id == id)
+			return true;
+	}
+	return false;
+}
+
 router.get('/', function(req, res){
-	res.render('codehat', {layout: false});
+	res.render('codehat', {layout: 'dashboard-layout'});
+});
+
+router.post('/', function(req, res){
+	var newProject = new User.ProjectSchema();
+	newProject.text = `public class Main {
+	public static void main(String[] args) {
+		
+	}
+}`
+
+	newProject.save(function(err) {
+      if(err) throw err;
+      console.log('new codehat project saved');
+    });
+
+    res.redirect("/codehat/" + newProject._id);
+});
+
+router.get('/:id', function(req, res) {
+  	var projectID = req.params.id;
+
+  	User.ProjectSchema.findOne({_id: projectID}).exec(function(err, project) {
+  		if (project) {
+			if (!projectActive(projectID))
+				currentProjects.push(new Project(project._id, project.text));
+
+			res.render('codehat-project', {layout: false, namespace: '/' + projectID});
+  		} else {
+  			res.send("Invalid project");
+  		}
+  	});
 });
 
 var child_process = require('child_process');
@@ -15,134 +56,151 @@ var exec = child_process.exec;
 var spawn = child_process.spawn;
 var fs = require('fs');
 var filePath = "./codehat_files/";
-var fileName = "Main";
 
-var input = `public class ${fileName} {
-	public static void main(String[] args) {
-		
-	}
-}`;
-var outputError = false;
-var output = "";
+function Project(id, input) {
+	let self = this;
+	this.id = id;
+	this.fileName = "Main";
 
-var cursors = {};
-var selections = {};
-var runner;
+	this.input = input;
 
-io.on('connection', function connection(socket) {
-	socket.emit("socketID", socket.id);
-	socket.emit("input", input);
+	this.outputError = false;
+	this.output = "";
 
-	if (outputError) {
-		socket.emit("outputError", output);
-	} else {
-		socket.emit("output", output);
-	}
+	this.cursors = {};
+	this.selections = {};
+	this.runner;
 
-	socket.on("input", function(text) { //updates stored input for people who join
-		input = text;
-	});
+	// nsp is the socket.io namespace
+	this.nsp = io.of('/'+this.id)
 
-	socket.on("change", function(event) { // emits changes to everyone
-		socket.broadcast.emit("change", event);
-	});
+	this.nsp.on('connection', function connection(socket) {
+		console.log("new codehat connection");
+		socket.emit("socketID", socket.id);
+		socket.emit("input", self.input);
 
-	socket.on("cursorChange", function(position) { // emits cursor changes
-		cursors[socket.id] = position;
-		io.sockets.emit("cursors", cursors);
-		// console.log(cursors)
-	});
-	
-	socket.on("selectionChange", function(range) { // emits cursor changes
-		selections[socket.id] = range;
-		io.sockets.emit("selections", selections);
-		// console.log(cursors)
-	});
-
-	socket.on("disconnect", function() {
-		delete cursors[socket.id];
-		delete selections[socket.id];
-		io.sockets.emit("deleteCursor", socket.id);
-		io.sockets.emit("deleteSelection", socket.id);
-		// console.log(cursors);
-	});
-
-	socket.on("programInput", function(text) {
-		if (runner) {
-			runner.stdin.write(text+"\n");
-			// runner.stdin.end();
+		if (self.outputError) {
+			socket.emit("outputError", self.output);
+		} else {
+			socket.emit("output", self.output);
 		}
-	});
 
-	socket.on("run", function() {
-		output = "";
-		outputError = false;
-		socket.broadcast.emit("programRunning");
-		// console.log("Saving")
-		fs.writeFile(filePath + fileName + ".java", input, function(err) {
-			if(err) {
-				return console.log(err);
-			}
-			
-			// console.log("Compiling");
-			exec('javac "' + filePath + fileName + '.java"', function(error, stdout, stderr) {
+		socket.on("input", function(text) { //updates stored input for people who join
+			self.input = text;
 
-				if (error) {
-					console.log("Codehat - Compile Error Given");
-					var BackSlashPath = filePath.replace(/\//g,"\\\\"); //changes forward slashes to double back slashes to be used with regex
-					var result = stderr.replace(new RegExp(BackSlashPath, "g"), ""); // takes out file path from error
+			//saving input text to database
+			User.ProjectSchema.findOne({_id: self.id}).exec(function(err, project) {
+				if (project) {
+					project.text = text;
 
-					console.log(result.replace(/\n$/, "")); //regex gets rid of newline character
-					
-					output = result;
-					outputError = true;
-
-					io.sockets.emit("outputError", result);
-					io.sockets.emit("runFinished");
-					return false; //breaks out of function
+					project.save(function (err) {
+						if (err) throw err;
+					});
 				}
+			});
+		});
 
-				io.sockets.emit("compileFinished");
+		socket.on("change", function(event) { // emits changes to everyone
+			socket.broadcast.emit("change", event);
+		});
 
-				// console.log("Running");
-				// console.log("-------");
+		socket.on("cursorChange", function(position) { // emits cursor changes
+			self.cursors[socket.id] = position;
+			self.nsp.emit("cursors", self.cursors);
+			// console.log(self.cursors)
+		});
+		
+		socket.on("selectionChange", function(range) { // emits cursor changes
+			self.selections[socket.id] = range;
+			self.nsp.emit("selections", self.selections);
+			// console.log(self.cursors)
+		});
 
-				runner = spawn('java', ['-cp', filePath, fileName]);
+		socket.on("disconnect", function() {
+			delete self.cursors[socket.id];
+			delete self.selections[socket.id];
+			self.nsp.emit("deleteCursor", socket.id);
+			self.nsp.emit("deleteSelection", socket.id);
+			// console.log(self.cursors);
+		});
 
-				runner.stdout.on('data', function(data) {
-					output += data;
-					io.sockets.emit("output", data.toString());
-					process.stdout.write(data);
-				});
+		socket.on("programInput", function(text) {
+			if (self.runner) {
+				self.runner.stdin.write(text+"\n");
+				// runner.stdin.end();
+			}
+		});
 
-				runner.stderr.on('data', function(data) {
-					output += data;
-					io.sockets.emit("outputError", data.toString());
-					outputError = true;
-					process.stdout.write(data);
-				});
+		socket.on("run", function() {
+			self.output = "";
+			self.outputError = false;
+			socket.broadcast.emit("programRunning");
+			// console.log("Saving")
+			fs.writeFile(filePath + self.fileName + ".java", self.input, function(err) {
+				if(err) {
+					return console.log(err);
+				}
+				
+				// console.log("Compiling");
+				exec('javac "' + filePath + self.fileName + '.java"', function(error, stdout, stderr) {
 
-				runner.on('exit', function() {
-					io.sockets.emit("runFinished");
-					// console.log('Run Finished');
-				});
+					if (error) {
+						console.log("Codehat - Compile Error Given");
+						var BackSlashPath = filePath.replace(/\//g,"\\\\"); //changes forward slashes to double back slashes to be used with regex
+						var result = stderr.replace(new RegExp(BackSlashPath, "g"), ""); // takes out file path from error
 
-/*				exec('java -cp "' + filePath + '" ' + fileName, function(error, stdout, stderr) {
-					// console.log(stdout.replace(/\n$/, "")); //regex gets rid of newline character
+						console.log(result.replace(/\n$/, "")); //regex gets rid of newline character
+						
+						self.output = result;
+						self.outputError = true;
+
+						self.nsp.emit("outputError", result);
+						self.nsp.emit("runFinished");
+						return false; //breaks out of function
+					}
+
+					self.nsp.emit("compileFinished");
+
+					// console.log("Running");
 					// console.log("-------");
 
-					output = stdout;
-					outputError = false;
+					self.runner = spawn('java', ['-cp', filePath, self.fileName]);
 
-					io.sockets.emit("output", stdout);
-					// console.log('Run Finished');
-				});*/
+					self.runner.stdout.on('data', function(data) {
+						self.output += data;
+						self.nsp.emit("output", data.toString());
+						process.stdout.write(data);
+					});
+
+					self.runner.stderr.on('data', function(data) {
+						self.output += data;
+						self.nsp.emit("outputError", data.toString());
+						self.outputError = true;
+						process.stdout.write(data);
+					});
+
+					self.runner.on('exit', function() {
+						self.nsp.emit("runFinished");
+						// console.log('Run Finished');
+					});
+
+	/*				exec('java -cp "' + filePath + '" ' + self.fileName, function(error, stdout, stderr) {
+						// console.log(stdout.replace(/\n$/, "")); //regex gets rid of newline character
+						// console.log("-------");
+
+						self.output = stdout;
+						self.outputError = false;
+
+						self.nsp.emit("output", stdout);
+						// console.log('Run Finished');
+					});*/
+
+				});
 
 			});
-
 		});
 	});
-});
 
+}
 
 module.exports = router;

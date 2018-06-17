@@ -1,4 +1,4 @@
-var socket = io.connect();
+// var socket = io.connect();
 var socketID;
 
 var editor = ace.edit("editor");
@@ -44,6 +44,7 @@ socket.on("change", function(event) {
 });
 
 socket.on("input", function(text) { // only for people just joining
+	console.log(text);
 	applyingChanges = true;
 	editor.setValue(text, -1);
 	applyingChanges = false;
