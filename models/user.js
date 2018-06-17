@@ -47,6 +47,15 @@ var FileRefSchema = new Schema ({
 	fileID: Schema.Types.ObjectId
 });
 
+//Project Schema
+var ProjectSchema = new Schema({
+	owner:String,
+	ownerid:String,
+  userswithaccess: Array,
+	description: String,
+	name:String,
+});
+// Post Schema
 var PostSchema = new Schema ({
 	author: String,
 	authorid:String,
