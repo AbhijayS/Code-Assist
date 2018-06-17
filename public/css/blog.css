@@ -35,9 +35,14 @@ body{
 
 .navbar-brand {
   color: black;
+  transition-property: border;
+  transition: ease 0.2s;
 }
 
 .navbar-brand:hover {
+  border-bottom-width: 5px;
+  border-bottom-color: #0d75e8;
+  border-bottom-style: solid;
   color: #0d75e8;
 }
 
@@ -111,8 +116,8 @@ Dashboard
 }
 
 #blog-main-body .list-group-item:hover {
-  background-color: #0d75e8;
-  color: white;
+  /* background-color: #0d75e8; */
+  color: black;
 }
 
 #blog-img{
