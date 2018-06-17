@@ -437,6 +437,26 @@ router.get('/team', function(req, res) {
 });
 /*
 =====================================================
+                        BLOG
+=====================================================
+*/
+
+router.get('/blog', function(req, res){
+  res.render('blog', {layout: 'blog-layout'});
+})
+
+router.get('/blog/:name', function(req, res){
+  res.render(req.params.name, {layout: 'blog-layout'}, function(err){
+    if(err){
+      res.redirect('/urldoesntexist');
+    }else{
+      res.render(req.params.name, {layout: 'blog-layout'});
+    }
+  });
+})
+
+/*
+=====================================================
                     DEVELOPERS
 =====================================================
 */
