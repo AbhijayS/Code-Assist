@@ -59,7 +59,9 @@ io.on('connection', function connection(socket) {
 
 	socket.on("disconnect", function() {
 		delete cursors[socket.id];
+		delete selections[socket.id];
 		io.sockets.emit("deleteCursor", socket.id);
+		io.sockets.emit("deleteSelection", socket.id);
 		// console.log(cursors);
 	});
 

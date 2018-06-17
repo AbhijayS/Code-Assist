@@ -10,6 +10,16 @@ var AceRange = ace.require('ace/range').Range;
 
 var applyingChanges = false;
 
+$("input:file").change(function() {
+	let file = $(this)[0].files[0];
+	let reader = new FileReader();
+	reader.readAsText(file);
+	reader.onload = function(e) {
+		let text = e.target.result;
+		editor.setValue(text, -1);
+	};
+});
+
 editor.getSession().on('change', function(event) {
     if (applyingChanges) { // prevents applyDelta from being detected as another change
         return;
@@ -108,5 +118,11 @@ socket.on("cursors", function(cursors) {
 socket.on("deleteCursor", function(id) {
 	if (curMgr._cursors[id]) {
 		curMgr.removeCursor(id);
+	}
+});
+
+socket.on("deleteSelection", function(id) {
+	if (selMgr._selections[id]) {
+		selMgr.removeSelection(id);
 	}
 });

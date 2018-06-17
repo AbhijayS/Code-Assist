@@ -8,6 +8,10 @@ html, body {
 	font-size: 14px;
 }
 
+#topBar {
+	margin: 10px;
+}
+
 #output {
 	min-height: 25%;
 	padding: 10px;
@@ -29,7 +33,7 @@ html, body {
 	position: relative;
 }
 
-button {
+#run {
 	width: 100px;
 	height: 40px;
 }
@@ -46,4 +50,8 @@ button:enabled {
 
     position: absolute;
     left: 100%;
+}
+
+[hidden] {
+	display: none !important;
 }
