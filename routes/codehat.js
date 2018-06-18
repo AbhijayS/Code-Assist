@@ -24,7 +24,7 @@ router.post('/', function(req, res){
 	var newProject = new User.ProjectSchema();
 	newProject.text = `public class Main {
 	public static void main(String[] args) {
-		
+
 	}
 }`
 
@@ -38,13 +38,29 @@ router.post('/', function(req, res){
 
 router.get('/:id', function(req, res) {
   	var projectID = req.params.id;
-
   	User.ProjectSchema.findOne({_id: projectID}).exec(function(err, project) {
   		if (project) {
-			if (!projectActive(projectID))
-				currentProjects.push(new Project(project._id, project.text));
+				var useraccesslevel=0;
+	     if(req.user){
+				 var accessedusers=project.userIdsWithAccess;
+				 for(var counter1=0;counter1<accessedusers.length;counter1++){
+					 if(accessedusers[counter1]==req.user._id){
+						 useraccesslevel=1;
+					 }
+					 console.log(accessedusers[counter1]);
 
-			res.render('codehat-project', {layout: false, namespace: '/' + projectID});
+				 }
+				   console.log(accessedusers);
+
+				 	if(project.ownerid==req.user._id){
+						useraccesslevel=2;
+					}
+				 console.log("user connecting to codehat project with access level "+useraccesslevel);
+			if (!projectActive(projectID)){
+				currentProjects.push(new Project(project._id, project.text));
+		   	}
+      }
+			res.render('codehat-project', {layout: false, namespace: '/' + projectID, clearance:useraccesslevel});
   		} else {
   			res.send("Invalid project");
   		}
@@ -109,7 +125,7 @@ function Project(id, input) {
 			self.nsp.emit("cursors", self.cursors);
 			// console.log(self.cursors)
 		});
-		
+
 		socket.on("selectionChange", function(range) { // emits cursor changes
 			self.selections[socket.id] = range;
 			self.nsp.emit("selections", self.selections);
@@ -140,7 +156,7 @@ function Project(id, input) {
 				if(err) {
 					return console.log(err);
 				}
-				
+
 				// console.log("Compiling");
 				exec('javac "' + filePath + self.fileName + '.java"', function(error, stdout, stderr) {
 
@@ -150,7 +166,7 @@ function Project(id, input) {
 						var result = stderr.replace(new RegExp(BackSlashPath, "g"), ""); // takes out file path from error
 
 						console.log(result.replace(/\n$/, "")); //regex gets rid of newline character
-						
+
 						self.output = result;
 						self.outputError = true;
 
