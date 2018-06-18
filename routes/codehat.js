@@ -21,13 +21,15 @@ router.get('/', function(req, res){
 });
 
 router.post('/', function(req, res){
-	var newProject = new User.ProjectSchema();
-	newProject.text = `public class Main {
+	if(req.user){
+		var newProject = new User.ProjectSchema();
+		newProject.ownerid=req.user._id;
+		newProject.text = `public class Main {
 	public static void main(String[] args) {
 
 	}
 }`
-
+}
 	newProject.save(function(err) {
       if(err) throw err;
       console.log('new codehat project saved');
