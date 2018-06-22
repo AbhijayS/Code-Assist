@@ -8,6 +8,27 @@ html, body {
 	font-size: 14px;
 }
 
+/* styling for tab input */
+.hiddenSpan {
+	display: none;
+	white-space: pre;
+}
+
+.fileName {
+	outline: none;
+	border: none;
+	cursor: pointer;
+	min-width: 54.5px;
+	width: 54.5px;
+}
+
+.fileName, .hiddenSpan {
+	font: inherit;
+	margin: 0;
+	padding: 0;
+}
+/*----------*/
+
 #topBar {
 	margin: 10px;
 }

@@ -29,7 +29,7 @@ router.post('/', function(req, res){
 
 	}
 }`
-}
+	}
 	newProject.save(function(err) {
       if(err) throw err;
       console.log('new codehat project saved');
@@ -42,26 +42,27 @@ router.get('/:id', function(req, res) {
   	var projectID = req.params.id;
   	User.ProjectSchema.findOne({_id: projectID}).exec(function(err, project) {
   		if (project) {
-				var useraccesslevel=0;
-	     if(req.user){
-				 var accessedusers=project.userIdsWithAccess;
-				 for(var counter1=0;counter1<accessedusers.length;counter1++){
-					 if(accessedusers[counter1]==req.user._id){
-						 useraccesslevel=1;
-					 }
-					 console.log(accessedusers[counter1]);
-
-				 }
-				   console.log(accessedusers);
-
-				 	if(project.ownerid==req.user._id){
-						useraccesslevel=2;
+			var useraccesslevel=0;
+			if(req.user){
+				var accessedusers=project.userIdsWithAccess;
+				for(var counter1=0;counter1<accessedusers.length;counter1++){
+					if(accessedusers[counter1]==req.user._id){
+						useraccesslevel=1;
 					}
-				 console.log("user connecting to codehat project with access level "+useraccesslevel);
-			if (!projectActive(projectID)){
-				currentProjects.push(new Project(project._id, project.text));
-		   	}
-      }
+					console.log(accessedusers[counter1]);
+
+				}
+				console.log(accessedusers);
+
+			 	if(project.ownerid==req.user._id){
+					useraccesslevel=2;
+				}
+				console.log("user connecting to codehat project with access level "+useraccesslevel);
+				
+				if (!projectActive(projectID)){
+					currentProjects.push(new Project(project._id, project.text));
+			   	}
+		    }
 			res.render('codehat-project', {layout: false, namespace: '/' + projectID, clearance:useraccesslevel});
   		} else {
   			res.send("Invalid project");
@@ -73,14 +74,21 @@ var child_process = require('child_process');
 var exec = child_process.exec;
 var spawn = child_process.spawn;
 var fs = require('fs');
-var filePath = "./codehat_files/";
+// var filePath = "./codehat_files/";
 
 function Project(id, input) {
-	let self = this;
+	var self = this;
 	this.id = id;
 	this.fileName = "Main";
+	this.filePath = "./codehat_files/" + id + "/";
 
 	this.input = input;
+	// create folder for project if it doesn't exist yet
+	if (!fs.existsSync(this.filePath)) {
+		fs.mkdirSync(this.filePath);
+	}
+
+	this.files = [];
 
 	this.outputError = false;
 	this.output = "";
@@ -154,17 +162,17 @@ function Project(id, input) {
 			self.outputError = false;
 			socket.broadcast.emit("programRunning");
 			// console.log("Saving")
-			fs.writeFile(filePath + self.fileName + ".java", self.input, function(err) {
+			fs.writeFile(self.filePath + self.fileName + ".java", self.input, function(err) {
 				if(err) {
 					return console.log(err);
 				}
 
 				// console.log("Compiling");
-				exec('javac "' + filePath + self.fileName + '.java"', function(error, stdout, stderr) {
+				exec('javac "' + self.filePath + self.fileName + '.java"', function(error, stdout, stderr) {
 
 					if (error) {
 						console.log("Codehat - Compile Error Given");
-						var BackSlashPath = filePath.replace(/\//g,"\\\\"); //changes forward slashes to double back slashes to be used with regex
+						var BackSlashPath = self.filePath.replace(/\//g,"\\\\"); //changes forward slashes to double back slashes to be used with regex
 						var result = stderr.replace(new RegExp(BackSlashPath, "g"), ""); // takes out file path from error
 
 						console.log(result.replace(/\n$/, "")); //regex gets rid of newline character
@@ -182,7 +190,7 @@ function Project(id, input) {
 					// console.log("Running");
 					// console.log("-------");
 
-					self.runner = spawn('java', ['-cp', filePath, self.fileName]);
+					self.runner = spawn('java', ['-cp', self.filePath, self.fileName]);
 
 					self.runner.stdout.on('data', function(data) {
 						self.output += data;
@@ -201,17 +209,6 @@ function Project(id, input) {
 						self.nsp.emit("runFinished");
 						// console.log('Run Finished');
 					});
-
-	/*				exec('java -cp "' + filePath + '" ' + self.fileName, function(error, stdout, stderr) {
-						// console.log(stdout.replace(/\n$/, "")); //regex gets rid of newline character
-						// console.log("-------");
-
-						self.output = stdout;
-						self.outputError = false;
-
-						self.nsp.emit("output", stdout);
-						// console.log('Run Finished');
-					});*/
 
 				});
 

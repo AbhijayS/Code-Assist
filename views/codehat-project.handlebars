@@ -11,23 +11,41 @@
 	<script src="/codehat/ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 	<script src="/codehat/ace-collab-ext/umd/ace-collab-ext.js" type="text/javascript" charset="utf-8"></script>
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"
+integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+crossorigin="anonymous"></script>
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
 </head>
 <body>
 <div id="topBar">
-	<label class="btn btn-primary">
+	<label class="btn btn-primary mb-0">
 		Upload File<input type="file" accept=".java" hidden>
 	</label>
+	<button id="newFileBtn" class="btn btn-primary">New File</button>
 </div>
 
+<ul class="nav nav-tabs" id="fileTabs">
+  <li class="nav-item">
+    <a class="nav-link active" data-toggle="tab" href="">
+    	<span class="hiddenSpan"></span>
+    	<input class="fileName" placeholder="untitled" autocomplete="off" spellcheck="false" type="text">
+    </a>
+  </li>
+</ul>
+
 <div id="editor"></div>
+
 <textarea id="output" readonly autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
 <form id="programInputForm">
 	<input disabled id="programInput" type="text" autocomplete="off">
 </form>
 <div id="buttons">
 	<button class="btn btn-primary" id="run">Run</button>
-	<img id="loadingWheel" src="https://www.shopirvinespectrumcenter.com/images/spinner.gif" style="display: none;">
+	<img id="loadingWheel" src="/codehat/images/spinner.gif" style="display: none;">
 </div>
 
 <script>
@@ -39,16 +57,8 @@
 	editor.focus();
 </script>
 
-<script
-
-src="https://code.jquery.com/jquery-3.3.1.min.js"
-integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-
 <script type="text/javascript">
-  alert('{{user.username}}'+' is your username and you have a clearance of level '+{{clearance}});
+  console.log('{{user.username}}'+' is your username and you have a clearance of level '+{{clearance}});
 	var socket = io('{{namespace}}');
 </script>
 <script src="/codehat/script.js"></script>

@@ -2,6 +2,10 @@
 var socketID;
 
 var editor = ace.edit("editor");
+
+var editorSessions = [];
+editorSessions.push(editor.getSession());
+
 var doc = editor.getSession().getDocument();
 
 const curMgr = new AceCollabExt.AceMultiCursorManager(editor.getSession());
@@ -22,6 +26,43 @@ $("input:file").change(function() {
 	};
 });
 
+// new file being created
+$("#newFileBtn").click(function() {
+	let newTabIndex = $(".nav-item").length;
+	$("#fileTabs").append('<li class="nav-item"><a class="nav-link" data-toggle="tab" href=""><span class="hiddenSpan"></span><input class="fileName" placeholder="untitled" autocomplete="off" spellcheck="false" type="text"></a></li>');
+
+	initFileTabs();
+
+	editorSessions[newTabIndex] = ace.createEditSession('', "ace/mode/java");
+});
+
+initFileTabs();
+function initFileTabs() {
+	$(".nav-item").click(function() {
+		let sessionIndex = $(".nav-item").index($(this));
+		editor.setSession(editorSessions[sessionIndex]);
+		// console.log($(".nav-item").index($(this)));
+	});
+	// To auto resize fileName tabs
+	$('.fileName').on('input', function() {
+		$(this).siblings('.hiddenSpan').text($(this).val());
+		$(this).width($(this).siblings('.hiddenSpan').width());
+	});
+	$(".fileName").on('keydown', function(e) {
+	    if (e.keyCode == 13) {
+	        $(this).prop("readonly", true);
+	    }
+	});
+	$(".fileName").blur(function() {
+		if ($(this).val().length > 0)
+			$(this).prop("readonly", true);
+	});
+	$(".fileName").dblclick(function() {
+		$(this).prop("readonly", false);
+	});
+}
+
+
 $("#programInputForm").submit(function(e) {
 	e.preventDefault();
 	socket.emit("programInput", $("#programInput").val());
@@ -29,6 +70,7 @@ $("#programInputForm").submit(function(e) {
 });
 
 editor.getSession().on('change', function(event) {
+	console.log("change")
     if (applyingChanges) { // prevents applyDelta from being detected as another change
         return;
     }
@@ -44,7 +86,7 @@ socket.on("change", function(event) {
 });
 
 socket.on("input", function(text) { // only for people just joining
-	console.log(text);
+	// console.log(text);
 	applyingChanges = true;
 	editor.setValue(text, -1);
 	applyingChanges = false;
