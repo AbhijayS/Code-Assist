@@ -31,6 +31,10 @@ var UserSchema = new Schema({
 		private_posts: [{
 			type: Schema.Types.ObjectId,
 			ref: 'PostSchema'
+		}],
+
+		projectsWithAccess:[{
+			type: String;
 		}]
 });
 
@@ -55,6 +59,9 @@ var ProjectSchema = new Schema({
   		type: String
   	}],
   	text: String,
+		chatHistory:[{
+			type: String
+		}],
 	// description: String,
 	// name: String,
 });
