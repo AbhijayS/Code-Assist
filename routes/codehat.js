@@ -1,5 +1,6 @@
 var express = require('express');
 var path = require('path');
+var async = require('async');
 var router = express.Router();
 var User = require('../models/user');
 var server = require('../app').server;
@@ -96,6 +97,24 @@ function File(fileName, text) {
 	this.selections = {};
 }
 
+function saveAllFiles(filePath, files) {
+	async.each(files, function(file, callback) {
+		fs.writeFile(filePath + file.fileName, file.text, function(err) {
+			if (err) {
+				console.log(err);
+			}
+
+			callback();
+		});
+	}, function (err) {
+		if (err) {
+			console.log('A file failed to save');
+		} else {
+			console.log('All files have been saved successfully');
+		}
+	});
+}
+
 function Project(id, files) {
 	var self = this;
 	this.id = id;
@@ -129,17 +148,6 @@ function Project(id, files) {
 		} else {
 			socket.emit("output", self.output);
 		}
-
-/*		//saving input text to database
-		User.ProjectSchema.findOne({_id: self.id}).exec(function(err, project) {
-			if (project) {
-				project.text = text;
-
-				project.save(function (err) {
-					if (err) throw err;
-				});
-			}
-		});*/
 
 		socket.on("updateFile", function(text, fileIndex) {
 			self.files[fileIndex].text = text;
@@ -245,63 +253,63 @@ function Project(id, files) {
 				return false;
 			}
 
+			if (!fs.existsSync(self.filePath)) {
+				fs.mkdirSync(self.filePath);
+			}
+
 			self.output = "";
 			self.outputError = false;
 			socket.broadcast.emit("programRunning");
 			// console.log("Saving")
-			fs.writeFile(self.filePath + file.fileName, file.text, function(err) {
-				if(err) {
-					return console.log(err);
+			saveAllFiles(self.filePath, self.files);
+
+			// console.log("Compiling");
+			exec('javac "' + file.fileName, {cwd: self.filePath}, function(error, stdout, stderr) {
+
+				if (error) {
+					console.log("Codehat - Compile Error Given");
+					var BackSlashPath = self.filePath.replace(/\//g,"\\\\"); //changes forward slashes to double back slashes to be used with regex
+					var result = stderr.replace(new RegExp(BackSlashPath, "g"), ""); // takes out file path from error
+
+					console.log(result.replace(/\n$/, "")); //regex gets rid of newline character
+
+					self.output = result;
+					self.outputError = true;
+
+					self.nsp.emit("outputError", result);
+					self.nsp.emit("runFinished");
+					return false; //breaks out of function
 				}
 
-				// console.log("Compiling");
-				exec('javac "' + self.filePath + file.fileName, function(error, stdout, stderr) {
+				self.nsp.emit("compileFinished");
 
-					if (error) {
-						console.log("Codehat - Compile Error Given");
-						var BackSlashPath = self.filePath.replace(/\//g,"\\\\"); //changes forward slashes to double back slashes to be used with regex
-						var result = stderr.replace(new RegExp(BackSlashPath, "g"), ""); // takes out file path from error
+				// console.log("Running");
+				// console.log("-------");
 
-						console.log(result.replace(/\n$/, "")); //regex gets rid of newline character
+				// file name without file extension
+				var fileNameNoExt = path.parse(file.fileName).name;
+				self.runner = spawn('java', [fileNameNoExt], {cwd: self.filePath});
 
-						self.output = result;
-						self.outputError = true;
+				self.runner.stdout.on('data', function(data) {
+					self.output += data;
+					self.nsp.emit("output", data.toString());
+					process.stdout.write(data);
+				});
 
-						self.nsp.emit("outputError", result);
-						self.nsp.emit("runFinished");
-						return false; //breaks out of function
-					}
+				self.runner.stderr.on('data', function(data) {
+					self.output += data;
+					self.nsp.emit("outputError", data.toString());
+					self.outputError = true;
+					process.stdout.write(data);
+				});
 
-					self.nsp.emit("compileFinished");
-
-					// console.log("Running");
-					// console.log("-------");
-
-					// file name without file extension
-					var fileNameNoExt = path.parse(file.fileName).name;
-					self.runner = spawn('java', ['-cp', self.filePath, fileNameNoExt]);
-
-					self.runner.stdout.on('data', function(data) {
-						self.output += data;
-						self.nsp.emit("output", data.toString());
-						process.stdout.write(data);
-					});
-
-					self.runner.stderr.on('data', function(data) {
-						self.output += data;
-						self.nsp.emit("outputError", data.toString());
-						self.outputError = true;
-						process.stdout.write(data);
-					});
-
-					self.runner.on('exit', function() {
-						self.nsp.emit("runFinished");
-						// console.log('Run Finished');
-					});
-
+				self.runner.on('exit', function() {
+					self.nsp.emit("runFinished");
+					// console.log('Run Finished');
 				});
 
 			});
+
 		});
 	});
 
