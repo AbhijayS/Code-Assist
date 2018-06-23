@@ -46,9 +46,12 @@ router.post('/', function(req, res){
 		  if(err) throw err;
 		  console.log('new codehat project saved');
 		});
+    	res.redirect("/codehat/" + newProject._id);
+	} else {
+		req.flash('origin');
+		req.flash('origin', '/codehat');
+		res.redirect("/login");
 	}
-
-    res.redirect("/codehat/" + newProject._id);
 });
 
 router.get('/:id', function(req, res) {
@@ -88,7 +91,7 @@ var child_process = require('child_process');
 var exec = child_process.exec;
 var spawn = child_process.spawn;
 var fs = require('fs');
-// var filePath = "./codehat_files/";
+// var folderPath = "./codehat_files/";
 
 function File(fileName, text) {
 	this.fileName = fileName;
@@ -97,15 +100,19 @@ function File(fileName, text) {
 	this.selections = {};
 }
 
-function saveAllFiles(filePath, files) {
+function saveAllFiles(folderPath, files) {
 	async.each(files, function(file, callback) {
-		fs.writeFile(filePath + file.fileName, file.text, function(err) {
-			if (err) {
-				console.log(err);
-			}
+		if (file.fileName) {
+			fs.writeFile(folderPath + file.fileName, file.text, function(err) {
+				if (err) {
+					console.log(err);
+				}
 
+				callback();
+			});
+		} else {
 			callback();
-		});
+		}
 	}, function (err) {
 		if (err) {
 			console.log('A file failed to save');
@@ -118,11 +125,11 @@ function saveAllFiles(filePath, files) {
 function Project(id, files) {
 	var self = this;
 	this.id = id;
-	this.filePath = "./codehat_files/" + id + "/";
+	this.folderPath = "./codehat_files/" + id + "/";
 
 	// create folder for project if it doesn't exist yet
-	if (!fs.existsSync(this.filePath)) {
-		fs.mkdirSync(this.filePath);
+	if (!fs.existsSync(this.folderPath)) {
+		fs.mkdirSync(this.folderPath);
 	}
 
 	this.files = [];
@@ -209,6 +216,44 @@ function Project(id, files) {
 			});
 		});
 
+		socket.on("deleteFile", function(fileIndex) {
+			// Delete File from system
+			var filePath = self.folderPath + files[fileIndex].fileName;
+			if (fs.existsSync(filePath)) {
+				fs.unlink(filePath, function(error) {
+					if (error) {
+						console.log(error);
+					}
+				});		
+			}
+			var fileNameNoExt = path.parse(files[fileIndex].fileName).name;
+			var classFilePath = self.folderPath + fileNameNoExt + ".class";
+			if (path.extname(files[fileIndex].fileName) == ".java" && fs.existsSync(classFilePath)) {
+				fs.unlink(classFilePath, function(error) {
+					if (error) {
+						console.log(error);
+					}
+				});		
+			}
+
+			User.ProjectSchema.findOne({_id: self.id}).exec(function(err, project) {
+				User.ProjectFileSchema.find({_id: project.files[fileIndex]}).remove(function(error) {
+					if (error) {
+						console.log(error);
+					}
+
+					project.files.splice(fileIndex, 1);
+
+					project.save(function(err) {
+					  if(err) throw err;
+					});	
+				});
+			});
+
+			self.files.splice(fileIndex, 1);
+			socket.broadcast.emit("deleteFile", fileIndex);
+		});
+
 		socket.on("cursorChange", function(position, fileIndex) { // emits cursor changes
 			// console.log(fileIndex);
 			self.files[fileIndex].cursors[socket.id] = position;
@@ -241,6 +286,12 @@ function Project(id, files) {
 		socket.on("run", function(fileIndex) {
 			var file = self.files[fileIndex];
 
+			if (!file) {
+				self.nsp.emit("outputError", "No file selected");
+				self.nsp.emit("runFinished");
+				return false;
+			}
+
 			if (!file.fileName) {
 				self.nsp.emit("outputError", "Please enter a file name");
 				self.nsp.emit("runFinished");
@@ -253,22 +304,22 @@ function Project(id, files) {
 				return false;
 			}
 
-			if (!fs.existsSync(self.filePath)) {
-				fs.mkdirSync(self.filePath);
+			if (!fs.existsSync(self.folderPath)) {
+				fs.mkdirSync(self.folderPath);
 			}
 
 			self.output = "";
 			self.outputError = false;
 			socket.broadcast.emit("programRunning");
 			// console.log("Saving")
-			saveAllFiles(self.filePath, self.files);
+			saveAllFiles(self.folderPath, self.files);
 
 			// console.log("Compiling");
-			exec('javac "' + file.fileName, {cwd: self.filePath}, function(error, stdout, stderr) {
+			exec('javac "' + file.fileName, {cwd: self.folderPath}, function(error, stdout, stderr) {
 
 				if (error) {
 					console.log("Codehat - Compile Error Given");
-					var BackSlashPath = self.filePath.replace(/\//g,"\\\\"); //changes forward slashes to double back slashes to be used with regex
+					var BackSlashPath = self.folderPath.replace(/\//g,"\\\\"); //changes forward slashes to double back slashes to be used with regex
 					var result = stderr.replace(new RegExp(BackSlashPath, "g"), ""); // takes out file path from error
 
 					console.log(result.replace(/\n$/, "")); //regex gets rid of newline character
@@ -288,7 +339,7 @@ function Project(id, files) {
 
 				// file name without file extension
 				var fileNameNoExt = path.parse(file.fileName).name;
-				self.runner = spawn('java', [fileNameNoExt], {cwd: self.filePath});
+				self.runner = spawn('java', [fileNameNoExt], {cwd: self.folderPath});
 
 				self.runner.stdout.on('data', function(data) {
 					self.output += data;

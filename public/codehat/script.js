@@ -39,21 +39,16 @@ socket.on("addFile", function(fileName, text) {
 });
 
 function addFile(fileName, text) {
-  	if ($(".nav-item").length == 0) { // if no tabs exist yet
-  		$("#editor").css('visibility', 'visible');
+	if (fileName) {
+		$("#fileTabs").append(`<li class="nav-item"><a class="nav-link" data-toggle="tab" href=""><span class="hiddenSpan"></span><input readonly class="fileName" value="${fileName}" placeholder="untitled" autocomplete="off" spellcheck="false" type="text"></a><button class="close">&times;</button></li>`);
+	} else {
+		$("#fileTabs").append('<li class="nav-item"><a class="nav-link" data-toggle="tab" href=""><span class="hiddenSpan"></span><input class="fileName" placeholder="untitled" autocomplete="off" spellcheck="false" type="text"></a><button class="close">&times;</button></li>');
+	}
 
-		if (fileName) {
-			$("#fileTabs").append(`<li class="nav-item"><a class="nav-link active" data-toggle="tab" href=""><span class="hiddenSpan"></span><input class="fileName" value="${fileName}" placeholder="untitled" autocomplete="off" spellcheck="false" type="text"></a></li>`);
-		} else {
-			$("#fileTabs").append('<li class="nav-item"><a class="nav-link active" data-toggle="tab" href=""><span class="hiddenSpan"></span><input class="fileName" placeholder="untitled" autocomplete="off" spellcheck="false" type="text"></a></li>');
-		}
-  	} else {
-		if (fileName) {
-			$("#fileTabs").append(`<li class="nav-item"><a class="nav-link" data-toggle="tab" href=""><span class="hiddenSpan"></span><input class="fileName" value="${fileName}" placeholder="untitled" autocomplete="off" spellcheck="false" type="text"></a></li>`);
-		} else {
-			$("#fileTabs").append('<li class="nav-item"><a class="nav-link" data-toggle="tab" href=""><span class="hiddenSpan"></span><input class="fileName" placeholder="untitled" autocomplete="off" spellcheck="false" type="text"></a></li>');
-		}
-  	}
+	if ($(".nav-item").length == 1) { // if file was first to be added
+  		$("#editor").css('visibility', 'visible');
+  		$(".nav-link").eq(0).addClass("active");
+	}
 
 
 	initFileTabs();
@@ -65,6 +60,13 @@ function addFile(fileName, text) {
 	}
 
 	var sessionIndex = editorSessions.length-1;
+	$(".nav-item .close").eq(sessionIndex).click(function() {
+		if(confirm("Are you sure you want to delete this file?")) {
+			deleteFile(sessionIndex);
+			socket.emit("deleteFile", sessionIndex);
+		}
+	});
+
 	editorSessions[sessionIndex].session.on('change', function(event) {
 		if (applyingChanges) { 
 			// prevents fileChange from another user from being detected as a change made by you
@@ -93,8 +95,36 @@ socket.on("fileChange", function(event, sessionIndex) {
 	applyingChanges = false;
 });
 
+socket.on("deleteFile", function(fileIndex) {
+	deleteFile(fileIndex);
+});
+
+function deleteFile(fileIndex) {
+	if ($(".nav-link").eq(fileIndex).hasClass("active")) {
+		$(".nav-item").eq(fileIndex).remove();
+		editorSessions.splice(fileIndex, 1);
+
+		if ($(".nav-link").length > 0) {
+  			$(".nav-link").eq(0).addClass("active");
+  			editor.setSession(editorSessions[0].session);
+  		}
+	} else {
+		$(".nav-item").eq(fileIndex).remove();
+		editorSessions.splice(fileIndex, 1);
+	}
+	// console.log("deleted: " + fileIndex);
+
+	if ($(".nav-link").length == 0) {
+		$("#editor").css('visibility', 'hidden');
+	}
+}
+
 function initFileTabs() {
-	$(".nav-item").click(function() {
+	$(".nav-item").click(function(e) {
+		// prevents delete button from triggering tab switch
+		if (e.target.getAttribute("class") == "close")
+			return;
+
 		var sessionIndex = $(".nav-item").index($(this));
 		editor.setSession(editorSessions[sessionIndex].session);
 		// console.log($(".nav-item").index($(this)));
@@ -120,12 +150,12 @@ function initFileTabs() {
 	    }
 	});
 	$(".fileName").blur(function() {
-		if ($(this).val().length > 0) {
-			$(this).prop("readonly", true);
+		// if ($(this).val().length > 0) {
+			
+		$(this).prop("readonly", true);
 
-			var sessionIndex = $(".fileName").index($(this));
-	        socket.emit("fileRenamed", $(this).val(), sessionIndex);
-		}
+		var sessionIndex = $(".fileName").index($(this));
+        socket.emit("fileRenamed", $(this).val(), sessionIndex);
 	});
 	$(".fileName").dblclick(function() {
 		$(this).prop("readonly", false);

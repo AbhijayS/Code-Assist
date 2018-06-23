@@ -19,14 +19,30 @@ html, body {
 	outline: none;
 	border: none;
 	cursor: pointer;
-	min-width: 54.5px;
-	width: 54.5px;
+	min-width: 55px;
+	width: 55px;
+}
+
+.close {
+	margin-top: -42px;
+	margin-right: 5px;
+	font-size: 18px !important;
+	outline: none !important;
+	color: #a2a2a2 !important;
+}
+
+.close:hover {
+	color: red !important;
 }
 
 .fileName, .hiddenSpan {
 	font: inherit;
 	margin: 0;
 	padding: 0;
+}
+
+.nav-link {
+	padding-right: 1.5rem !important;
 }
 /*----------*/
 
