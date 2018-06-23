@@ -1,4 +1,5 @@
 var express = require('express');
+var path = require('path');
 var router = express.Router();
 var User = require('../models/user');
 var server = require('../app').server;
@@ -7,6 +8,12 @@ var socket = require('socket.io');
 var io = socket(server);
 
 var currentProjects = [];
+
+var starterProgram = `public class Main {
+	public static void main(String[] args) {
+
+	}
+}`;
 
 function projectActive(id) {
 	for (let i = 0; i < currentProjects.length; i++) {
@@ -23,24 +30,29 @@ router.get('/', function(req, res){
 router.post('/', function(req, res){
 	if(req.user){
 		var newProject = new User.ProjectSchema();
-		newProject.ownerid=req.user._id;
-		newProject.text = `public class Main {
-	public static void main(String[] args) {
+		newProject.ownerid = req.user._id;
 
+		var newProjectFile = new User.ProjectFileSchema();
+		newProjectFile.fileName = "Main.java";
+		newProjectFile.text = starterProgram;
+		newProjectFile.save(function(err) {
+			if(err) throw err;
+			// saved
+		});
+		newProject.files.push(newProjectFile);
+
+		newProject.save(function(err) {
+		  if(err) throw err;
+		  console.log('new codehat project saved');
+		});
 	}
-}`
-	}
-	newProject.save(function(err) {
-      if(err) throw err;
-      console.log('new codehat project saved');
-    });
 
     res.redirect("/codehat/" + newProject._id);
 });
 
 router.get('/:id', function(req, res) {
   	var projectID = req.params.id;
-  	User.ProjectSchema.findOne({_id: projectID}).exec(function(err, project) {
+  	User.ProjectSchema.findOne({_id: projectID}).populate('files').exec(function(err, project) {
   		if (project) {
 			var useraccesslevel=0;
 			if(req.user){
@@ -60,7 +72,8 @@ router.get('/:id', function(req, res) {
 				console.log("user connecting to codehat project with access level "+useraccesslevel);
 				
 				if (!projectActive(projectID)){
-					currentProjects.push(new Project(project._id, project.text));
+					// currentProjects.push(new Project(project._id, project.text));
+					currentProjects.push(new Project(project._id, project.files));
 			   	}
 		    }
 			res.render('codehat-project', {layout: false, namespace: '/' + projectID, clearance:useraccesslevel});
@@ -76,25 +89,31 @@ var spawn = child_process.spawn;
 var fs = require('fs');
 // var filePath = "./codehat_files/";
 
-function Project(id, input) {
+function File(fileName, text) {
+	this.fileName = fileName;
+	this.text = text;
+	this.cursors = {};
+	this.selections = {};
+}
+
+function Project(id, files) {
 	var self = this;
 	this.id = id;
-	this.fileName = "Main";
 	this.filePath = "./codehat_files/" + id + "/";
 
-	this.input = input;
 	// create folder for project if it doesn't exist yet
 	if (!fs.existsSync(this.filePath)) {
 		fs.mkdirSync(this.filePath);
 	}
 
 	this.files = [];
-
+	for (var i = 0; i < files.length; i++) {
+		this.files.push(new File(files[i].fileName, files[i].text));
+	}
+	
 	this.outputError = false;
 	this.output = "";
 
-	this.cursors = {};
-	this.selections = {};
 	this.runner;
 
 	// nsp is the socket.io namespace
@@ -103,7 +122,7 @@ function Project(id, input) {
 	this.nsp.on('connection', function connection(socket) {
 		console.log("new codehat connection");
 		socket.emit("socketID", socket.id);
-		socket.emit("input", self.input);
+		socket.emit("files", self.files);
 
 		if (self.outputError) {
 			socket.emit("outputError", self.output);
@@ -111,42 +130,96 @@ function Project(id, input) {
 			socket.emit("output", self.output);
 		}
 
-		socket.on("input", function(text) { //updates stored input for people who join
-			self.input = text;
+/*		//saving input text to database
+		User.ProjectSchema.findOne({_id: self.id}).exec(function(err, project) {
+			if (project) {
+				project.text = text;
 
-			//saving input text to database
-			User.ProjectSchema.findOne({_id: self.id}).exec(function(err, project) {
-				if (project) {
-					project.text = text;
+				project.save(function (err) {
+					if (err) throw err;
+				});
+			}
+		});*/
 
-					project.save(function (err) {
-						if (err) throw err;
-					});
-				}
+		socket.on("updateFile", function(text, fileIndex) {
+			self.files[fileIndex].text = text;
+
+			// saving file changes to database
+			User.ProjectSchema.findOne({_id: self.id}).populate('files').exec(function(err, project) {
+				project.files[fileIndex].text = text;
+
+				project.files[fileIndex].save(function (err) {
+					if (err) throw err;
+				});
 			});
 		});
 
-		socket.on("change", function(event) { // emits changes to everyone
-			socket.broadcast.emit("change", event);
+		socket.on("fileChange", function(event, sessionIndex) { // emits changes to everyone
+			socket.broadcast.emit("fileChange", event, sessionIndex);
 		});
 
-		socket.on("cursorChange", function(position) { // emits cursor changes
-			self.cursors[socket.id] = position;
-			self.nsp.emit("cursors", self.cursors);
-			// console.log(self.cursors)
+		socket.on("fileRenamed", function(newFileName, fileIndex) {
+			self.files[fileIndex].fileName = newFileName;
+			socket.broadcast.emit("renameFile", newFileName, fileIndex);
+
+			// saving new file name to database
+			User.ProjectSchema.findOne({_id: self.id}).populate('files').exec(function(err, project) {
+				project.files[fileIndex].fileName = newFileName;
+
+				project.files[fileIndex].save(function (err) {
+					if (err) throw err;
+				});
+			});
 		});
 
-		socket.on("selectionChange", function(range) { // emits cursor changes
-			self.selections[socket.id] = range;
-			self.nsp.emit("selections", self.selections);
-			// console.log(self.cursors)
+		socket.on("fileAdded", function(fileName, text) {
+			if (fileName && text) {
+				self.files.push(new File(fileName, text));
+			} else {
+				self.files.push(new File());
+			}
+			socket.broadcast.emit("addFile", fileName, text);
+
+			// adding new file to project in database
+			User.ProjectSchema.findOne({_id: self.id}).exec(function(err, project) {
+				var newProjectFile = new User.ProjectFileSchema();
+
+				if (fileName && text) {
+					newProjectFile.fileName = fileName;
+					newProjectFile.text = text;
+				}
+
+				newProjectFile.save(function(err) {
+					if(err) throw err;
+					// saved
+				});
+				project.files.push(newProjectFile);
+
+				project.save(function(err) {
+				  if(err) throw err;
+				});
+			});
+		});
+
+		socket.on("cursorChange", function(position, fileIndex) { // emits cursor changes
+			// console.log(fileIndex);
+			self.files[fileIndex].cursors[socket.id] = position;
+			self.nsp.emit("cursors", self.files[fileIndex].cursors, fileIndex);
+		});
+
+		socket.on("selectionChange", function(range, fileIndex) { // emits cursor changes
+			self.files[fileIndex].selections[socket.id] = range;
+			self.nsp.emit("selections", self.files[fileIndex].selections, fileIndex);
 		});
 
 		socket.on("disconnect", function() {
-			delete self.cursors[socket.id];
-			delete self.selections[socket.id];
-			self.nsp.emit("deleteCursor", socket.id);
-			self.nsp.emit("deleteSelection", socket.id);
+			for (var i = 0; i < self.files.length; i++) {
+				delete self.files[i].cursors[socket.id];
+				delete self.files[i].selections[socket.id];	
+			}
+
+			self.nsp.emit("deleteCursors", socket.id);
+			self.nsp.emit("deleteSelections", socket.id);
 			// console.log(self.cursors);
 		});
 
@@ -157,18 +230,32 @@ function Project(id, input) {
 			}
 		});
 
-		socket.on("run", function() {
+		socket.on("run", function(fileIndex) {
+			var file = self.files[fileIndex];
+
+			if (!file.fileName) {
+				self.nsp.emit("outputError", "Please enter a file name");
+				self.nsp.emit("runFinished");
+				return false;
+			}
+
+			if (path.extname(file.fileName) != ".java") {
+				self.nsp.emit("outputError", "File extension must be .java to run");
+				self.nsp.emit("runFinished");
+				return false;
+			}
+
 			self.output = "";
 			self.outputError = false;
 			socket.broadcast.emit("programRunning");
 			// console.log("Saving")
-			fs.writeFile(self.filePath + self.fileName + ".java", self.input, function(err) {
+			fs.writeFile(self.filePath + file.fileName, file.text, function(err) {
 				if(err) {
 					return console.log(err);
 				}
 
 				// console.log("Compiling");
-				exec('javac "' + self.filePath + self.fileName + '.java"', function(error, stdout, stderr) {
+				exec('javac "' + self.filePath + file.fileName, function(error, stdout, stderr) {
 
 					if (error) {
 						console.log("Codehat - Compile Error Given");
@@ -190,7 +277,9 @@ function Project(id, input) {
 					// console.log("Running");
 					// console.log("-------");
 
-					self.runner = spawn('java', ['-cp', self.filePath, self.fileName]);
+					// file name without file extension
+					var fileNameNoExt = path.parse(file.fileName).name;
+					self.runner = spawn('java', ['-cp', self.filePath, fileNameNoExt]);
 
 					self.runner.stdout.on('data', function(data) {
 						self.output += data;

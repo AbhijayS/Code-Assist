@@ -34,7 +34,7 @@ var UserSchema = new Schema({
 		}],
 
 		projectsWithAccess:[{
-			type: String;
+			type: String
 		}]
 });
 
@@ -51,6 +51,10 @@ var FileRefSchema = new Schema ({
 	fileID: Schema.Types.ObjectId
 });
 
+var ProjectFileSchema = new Schema ({
+	fileName: String,
+	text: String
+});
 //Project Schema
 var ProjectSchema = new Schema({
 	owner: String,
@@ -58,13 +62,17 @@ var ProjectSchema = new Schema({
   	userIdsWithAccess: [{
   		type: String
   	}],
-  	text: String,
-		chatHistory:[{
-			type: String
-		}],
+  	files: [{
+		type: Schema.Types.ObjectId,
+		ref: 'ProjectFileSchema'
+  	}],
+	chatHistory:[{
+		type: String
+	}],
 	// description: String,
 	// name: String,
 });
+
 // Post Schema
 var PostSchema = new Schema ({
 	author: String,
@@ -96,6 +104,7 @@ var PostSchema = mongoose.model('PostSchema', PostSchema);
 var AnswerSchema = mongoose.model('AnswerSchema', AnswerSchema);
 var FileRefSchema = mongoose.model('FileRefSchema', FileRefSchema);
 var ProjectSchema = mongoose.model('ProjectSchema', ProjectSchema);
+var ProjectFileSchema = mongoose.model('ProjectFileSchema', ProjectFileSchema);
 
 module.exports = {
 	UserSchema: User,
@@ -103,7 +112,8 @@ module.exports = {
 	PostSchema: PostSchema,
 	AnswerSchema: AnswerSchema,
 	FileRefSchema: FileRefSchema,
-	ProjectSchema: ProjectSchema
+	ProjectSchema: ProjectSchema,
+	ProjectFileSchema: ProjectFileSchema
 }
 
 CommunitySchema.findOne({}).populate('posts').exec(function(err, community) {

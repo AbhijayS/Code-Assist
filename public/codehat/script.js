@@ -4,12 +4,13 @@ var socketID;
 var editor = ace.edit("editor");
 
 var editorSessions = [];
-editorSessions.push(editor.getSession());
 
-var doc = editor.getSession().getDocument();
+function EditorSession(session) {
+	this.session = session;
+	this.curMgr = new AceCollabExt.AceMultiCursorManager(session);
+	this.selMgr = new AceCollabExt.AceMultiSelectionManager(session);
+}
 
-const curMgr = new AceCollabExt.AceMultiCursorManager(editor.getSession());
-const selMgr = new AceCollabExt.AceMultiSelectionManager(editor.getSession());
 var AceRange = ace.require('ace/range').Range;
 
 var applyingChanges = false;
@@ -22,25 +23,80 @@ $("input:file").change(function() {
 	reader.readAsText(file);
 	reader.onload = function(e) {
 		let text = e.target.result;
-		editor.setValue(text, -1);
+		addFile(file.name, text);
+		socket.emit("fileAdded", file.name, text);
 	};
 });
 
 // new file being created
 $("#newFileBtn").click(function() {
-	let newTabIndex = $(".nav-item").length;
-	$("#fileTabs").append('<li class="nav-item"><a class="nav-link" data-toggle="tab" href=""><span class="hiddenSpan"></span><input class="fileName" placeholder="untitled" autocomplete="off" spellcheck="false" type="text"></a></li>');
+	addFile();
+	socket.emit("fileAdded");
+});
+
+socket.on("addFile", function(fileName, text) {
+	addFile(fileName, text);
+});
+
+function addFile(fileName, text) {
+  	if ($(".nav-item").length == 0) { // if no tabs exist yet
+  		$("#editor").css('visibility', 'visible');
+
+		if (fileName) {
+			$("#fileTabs").append(`<li class="nav-item"><a class="nav-link active" data-toggle="tab" href=""><span class="hiddenSpan"></span><input class="fileName" value="${fileName}" placeholder="untitled" autocomplete="off" spellcheck="false" type="text"></a></li>`);
+		} else {
+			$("#fileTabs").append('<li class="nav-item"><a class="nav-link active" data-toggle="tab" href=""><span class="hiddenSpan"></span><input class="fileName" placeholder="untitled" autocomplete="off" spellcheck="false" type="text"></a></li>');
+		}
+  	} else {
+		if (fileName) {
+			$("#fileTabs").append(`<li class="nav-item"><a class="nav-link" data-toggle="tab" href=""><span class="hiddenSpan"></span><input class="fileName" value="${fileName}" placeholder="untitled" autocomplete="off" spellcheck="false" type="text"></a></li>`);
+		} else {
+			$("#fileTabs").append('<li class="nav-item"><a class="nav-link" data-toggle="tab" href=""><span class="hiddenSpan"></span><input class="fileName" placeholder="untitled" autocomplete="off" spellcheck="false" type="text"></a></li>');
+		}
+  	}
+
 
 	initFileTabs();
 
-	editorSessions[newTabIndex] = ace.createEditSession('', "ace/mode/java");
+	if (text) {
+		editorSessions.push(new EditorSession(ace.createEditSession(text, "ace/mode/java")));
+	} else {
+		editorSessions.push(new EditorSession(ace.createEditSession('', "ace/mode/java")));
+	}
+
+	var sessionIndex = editorSessions.length-1;
+	editorSessions[sessionIndex].session.on('change', function(event) {
+		if (applyingChanges) { 
+			// prevents fileChange from another user from being detected as a change made by you
+			return;
+		}
+
+		// session index should be the same as file index
+		socket.emit("updateFile", editor.getValue(), sessionIndex);
+		socket.emit("fileChange", event, sessionIndex);
+	});
+	editorSessions[sessionIndex].session.selection.on('changeCursor', function(e) {
+		socket.emit("cursorChange", editor.getCursorPosition(), sessionIndex);
+	});
+	editorSessions[sessionIndex].session.selection.on('changeSelection', function(e) {
+		// console.log(editor.selection.getRange());
+		socket.emit("selectionChange", editor.selection.getRange(), sessionIndex);
+	});
+
+	if (editorSessions.length == 1)
+		editor.setSession(editorSessions[0].session);
+}
+
+socket.on("fileChange", function(event, sessionIndex) {
+	applyingChanges = true;
+	editorSessions[sessionIndex].session.getDocument().applyDelta(event);
+	applyingChanges = false;
 });
 
-initFileTabs();
 function initFileTabs() {
 	$(".nav-item").click(function() {
-		let sessionIndex = $(".nav-item").index($(this));
-		editor.setSession(editorSessions[sessionIndex]);
+		var sessionIndex = $(".nav-item").index($(this));
+		editor.setSession(editorSessions[sessionIndex].session);
 		// console.log($(".nav-item").index($(this)));
 	});
 	// To auto resize fileName tabs
@@ -48,14 +104,28 @@ function initFileTabs() {
 		$(this).siblings('.hiddenSpan').text($(this).val());
 		$(this).width($(this).siblings('.hiddenSpan').width());
 	});
+	// initially resize tabs to fit fileName
+	$('.fileName').each(function() {
+		$(this).siblings('.hiddenSpan').text($(this).val());
+		$(this).width($(this).siblings('.hiddenSpan').width());
+	});
+
+
 	$(".fileName").on('keydown', function(e) {
 	    if (e.keyCode == 13) {
 	        $(this).prop("readonly", true);
+
+			var sessionIndex = $(".fileName").index($(this));
+	        socket.emit("fileRenamed", $(this).val(), sessionIndex);
 	    }
 	});
 	$(".fileName").blur(function() {
-		if ($(this).val().length > 0)
+		if ($(this).val().length > 0) {
 			$(this).prop("readonly", true);
+
+			var sessionIndex = $(".fileName").index($(this));
+	        socket.emit("fileRenamed", $(this).val(), sessionIndex);
+		}
 	});
 	$(".fileName").dblclick(function() {
 		$(this).prop("readonly", false);
@@ -69,27 +139,43 @@ $("#programInputForm").submit(function(e) {
 	$("#programInput").val("");
 });
 
-editor.getSession().on('change', function(event) {
-	console.log("change")
-    if (applyingChanges) { // prevents applyDelta from being detected as another change
-        return;
-    }
+socket.on("files", function(files) { // only for when client first joins
+	// console.log(files);
+	for (var i = 0; i < files.length; i++) {
+		addFile(files[i].fileName, files[i].text);
 
-	socket.emit("input", editor.getValue());
-	socket.emit("change", event);
+		// setup current cursors and selections
+		var curMgr = editorSessions[i].curMgr;
+		var cursors = files[i].cursors;
+		for (var id in cursors) {
+			if (curMgr._cursors[id]) {
+				curMgr.setCursor(id, {row: cursors[id].row, column: cursors[id].column});
+			} else if (id !== socketID){
+				curMgr.addCursor(id, "User", "purple", {row: cursors[id].row, column: cursors[id].column});
+			}
+		}
+
+		var selMgr = editorSessions[i].selMgr;
+		var selections = files[i].selections;
+		for (var id in selections) {
+			if (selMgr._selections[id]) {
+				selMgr.setSelection(id, new AceRange(selections[id].start.row, selections[id].start.column, selections[id].end.row, selections[id].end.column));
+			} else if (id !== socketID){
+				selMgr.addSelection(id, "User", "purple", [new AceRange(selections[id].start.row, selections[id].start.column, selections[id].end.row, selections[id].end.column)]);
+			}
+		}
+	}
+
 });
 
-socket.on("change", function(event) {
-	applyingChanges = true;
-	doc.applyDelta(event);
-	applyingChanges = false;
-});
+socket.on("renameFile", function(newFileName, fileIndex) {
+	$('.fileName').eq(fileIndex).val(newFileName);
 
-socket.on("input", function(text) { // only for people just joining
-	// console.log(text);
-	applyingChanges = true;
-	editor.setValue(text, -1);
-	applyingChanges = false;
+	// initially resize tabs to fit fileName
+	$('.fileName').each(function() {
+		$(this).siblings('.hiddenSpan').text($(this).val());
+		$(this).width($(this).siblings('.hiddenSpan').width());
+	});
 });
 
 $("#run").click(function() {
@@ -103,7 +189,8 @@ $(document).keydown(function(e) {
 });
 
 function runProgram() {
-	socket.emit("run");
+	var fileIndex = $(".nav-link").index($(".nav-link.active"));
+	socket.emit("run", fileIndex);
 	$("#loadingWheel").show();
 	$("#run").prop("disabled", true);
 	$('#output').removeClass("outputError");
@@ -136,33 +223,26 @@ socket.on("compileFinished", function() {
 socket.on("outputError", function(text) {
 	$('#output').addClass("outputError");
 	$('#output').val($('#output').val() + text);
-})
-
-editor.session.selection.on('changeCursor', function(e) {
-	socket.emit("cursorChange", editor.getCursorPosition())
 });
 
-editor.session.selection.on('changeSelection', function(e) {
-	// console.log(editor.selection.getRange());
-	socket.emit("selectionChange", editor.selection.getRange());
-});
-
-socket.on("selections", function(selections) {
-	for (var id in selections) {
-		if (selMgr._selections[id]) {
-			selMgr.setSelection(id, new AceRange(selections[id].start.row, selections[id].start.column, selections[id].end.row, selections[id].end.column));
-		} else if (id !== socketID){
-//			curMgr.addCursor(id, "User", "purple", {row: cursors[id].start, column: cursors[id].column});
-			selMgr.addSelection(id, "User", "purple", [new AceRange(selections[id].start.row, selections[id].start.column, selections[id].end.row, selections[id].end.column)]);
-		}
-	}
-});
 
 socket.on("socketID", function(id) {
 	socketID = id;
 });
 
-socket.on("cursors", function(cursors) {
+socket.on("selections", function(selections, sessionIndex) {
+	var selMgr = editorSessions[sessionIndex].selMgr;
+	for (var id in selections) {
+		if (selMgr._selections[id]) {
+			selMgr.setSelection(id, new AceRange(selections[id].start.row, selections[id].start.column, selections[id].end.row, selections[id].end.column));
+		} else if (id !== socketID){
+			selMgr.addSelection(id, "User", "purple", [new AceRange(selections[id].start.row, selections[id].start.column, selections[id].end.row, selections[id].end.column)]);
+		}
+	}
+});
+
+socket.on("cursors", function(cursors, sessionIndex) {
+	var curMgr = editorSessions[sessionIndex].curMgr;
 	for (var id in cursors) {
 		if (curMgr._cursors[id]) {
 			curMgr.setCursor(id, {row: cursors[id].row, column: cursors[id].column});
@@ -172,14 +252,20 @@ socket.on("cursors", function(cursors) {
 	}
 });
 
-socket.on("deleteCursor", function(id) {
-	if (curMgr._cursors[id]) {
-		curMgr.removeCursor(id);
+socket.on("deleteCursors", function(id) {
+	for (var i = 0; i < editorSessions.length; i++) {
+		var curMgr = editorSessions[i].curMgr;
+		if (curMgr._cursors[id]) {
+			curMgr.removeCursor(id);
+		}
 	}
 });
 
-socket.on("deleteSelection", function(id) {
-	if (selMgr._selections[id]) {
-		selMgr.removeSelection(id);
+socket.on("deleteSelections", function(id) {
+	for (var i = 0; i < editorSessions.length; i++) {
+		var selMgr = editorSessions[i].selMgr;
+		if (selMgr._selections[id]) {
+			selMgr.removeSelection(id);
+		}
 	}
 });
