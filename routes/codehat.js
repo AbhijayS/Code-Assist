@@ -218,23 +218,26 @@ function Project(id, files) {
 
 		socket.on("deleteFile", function(fileIndex) {
 			// Delete File from system
-			var filePath = self.folderPath + files[fileIndex].fileName;
-			if (fs.existsSync(filePath)) {
-				fs.unlink(filePath, function(error) {
-					if (error) {
-						console.log(error);
-					}
-				});		
+			if (files[fileIndex].fileName) {
+				var filePath = self.folderPath + files[fileIndex].fileName;
+				if (fs.existsSync(filePath)) {
+					fs.unlink(filePath, function(error) {
+						if (error) {
+							console.log(error);
+						}
+					});		
+				}
+				var fileNameNoExt = path.parse(files[fileIndex].fileName).name;
+				var classFilePath = self.folderPath + fileNameNoExt + ".class";
+				if (path.extname(files[fileIndex].fileName) == ".java" && fs.existsSync(classFilePath)) {
+					fs.unlink(classFilePath, function(error) {
+						if (error) {
+							console.log(error);
+						}
+					});		
+				}
 			}
-			var fileNameNoExt = path.parse(files[fileIndex].fileName).name;
-			var classFilePath = self.folderPath + fileNameNoExt + ".class";
-			if (path.extname(files[fileIndex].fileName) == ".java" && fs.existsSync(classFilePath)) {
-				fs.unlink(classFilePath, function(error) {
-					if (error) {
-						console.log(error);
-					}
-				});		
-			}
+
 
 			User.ProjectSchema.findOne({_id: self.id}).exec(function(err, project) {
 				User.ProjectFileSchema.find({_id: project.files[fileIndex]}).remove(function(error) {
