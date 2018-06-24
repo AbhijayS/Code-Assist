@@ -11,6 +11,13 @@ function EditorSession(session) {
 	this.selMgr = new AceCollabExt.AceMultiSelectionManager(session);
 }
 
+function getSessionIndex(session) {
+	for (var i = 0; i < editorSessions.length; i++) {
+		if (editorSessions[i].session == session)
+			return i;
+	}
+}
+
 var AceRange = ace.require('ace/range').Range;
 
 var applyingChanges = false;
@@ -40,9 +47,9 @@ socket.on("addFile", function(fileName, text) {
 
 function addFile(fileName, text) {
 	if (fileName) {
-		$("#fileTabs").append(`<li class="nav-item"><a class="nav-link" data-toggle="tab" href=""><span class="hiddenSpan"></span><input readonly class="fileName" value="${fileName}" placeholder="untitled" autocomplete="off" spellcheck="false" type="text"></a><button class="close">&times;</button></li>`);
+		$("#fileTabs").append(`<li class="nav-item"><a class="nav-link" data-toggle="tab" href=""><span class="hiddenSpan"></span><input maxlength="100" readonly class="fileName" value="${fileName}" placeholder="untitled" autocomplete="off" spellcheck="false" type="text"></a><button class="close">&times;</button></li>`);
 	} else {
-		$("#fileTabs").append('<li class="nav-item"><a class="nav-link" data-toggle="tab" href=""><span class="hiddenSpan"></span><input class="fileName" placeholder="untitled" autocomplete="off" spellcheck="false" type="text"></a><button class="close">&times;</button></li>');
+		$("#fileTabs").append('<li class="nav-item"><a class="nav-link" data-toggle="tab" href=""><span class="hiddenSpan"></span><input maxlength="100" class="fileName" placeholder="untitled" autocomplete="off" spellcheck="false" type="text"></a><button class="close">&times;</button></li>');
 	}
 
 	if ($(".nav-item").length == 1) { // if file was first to be added
@@ -61,9 +68,10 @@ function addFile(fileName, text) {
 
 	var sessionIndex = editorSessions.length-1;
 	$(".nav-item .close").eq(sessionIndex).click(function() {
+		var fileIndex = $(".close").index($(this));
 		if(confirm("Are you sure you want to delete this file?")) {
-			deleteFile(sessionIndex);
-			socket.emit("deleteFile", sessionIndex);
+			deleteFile(fileIndex);
+			socket.emit("deleteFile", fileIndex);
 		}
 	});
 
@@ -72,17 +80,19 @@ function addFile(fileName, text) {
 			// prevents fileChange from another user from being detected as a change made by you
 			return;
 		}
+		var fileIndex = getSessionIndex(editor.session);
 
 		// session index should be the same as file index
-		socket.emit("updateFile", editor.getValue(), sessionIndex);
-		socket.emit("fileChange", event, sessionIndex);
+		socket.emit("updateFile", editor.getValue(), fileIndex);
+		socket.emit("fileChange", event, fileIndex);
 	});
 	editorSessions[sessionIndex].session.selection.on('changeCursor', function(e) {
-		socket.emit("cursorChange", editor.getCursorPosition(), sessionIndex);
+		var fileIndex = getSessionIndex(editor.session);
+		socket.emit("cursorChange", editor.getCursorPosition(), fileIndex);
 	});
 	editorSessions[sessionIndex].session.selection.on('changeSelection', function(e) {
-		// console.log(editor.selection.getRange());
-		socket.emit("selectionChange", editor.selection.getRange(), sessionIndex);
+		var fileIndex = getSessionIndex(editor.session);
+		socket.emit("selectionChange", editor.selection.getRange(), fileIndex);
 	});
 
 	if (editorSessions.length == 1)
@@ -112,7 +122,6 @@ function deleteFile(fileIndex) {
 		$(".nav-item").eq(fileIndex).remove();
 		editorSessions.splice(fileIndex, 1);
 	}
-	// console.log("deleted: " + fileIndex);
 
 	if ($(".nav-link").length == 0) {
 		$("#editor").css('visibility', 'hidden');
@@ -127,7 +136,6 @@ function initFileTabs() {
 
 		var sessionIndex = $(".nav-item").index($(this));
 		editor.setSession(editorSessions[sessionIndex].session);
-		// console.log($(".nav-item").index($(this)));
 	});
 	// To auto resize fileName tabs
 	$('.fileName').on('input', function() {
@@ -142,7 +150,7 @@ function initFileTabs() {
 
 
 	$(".fileName").on('keydown', function(e) {
-	    if (e.keyCode == 13) {
+	    if (e.keyCode == 13 && $(this).val().length > 0) {
 	        $(this).prop("readonly", true);
 
 			var sessionIndex = $(".fileName").index($(this));
@@ -150,9 +158,11 @@ function initFileTabs() {
 	    }
 	});
 	$(".fileName").blur(function() {
-		// if ($(this).val().length > 0) {
-			
-		$(this).prop("readonly", true);
+		if ($(this).val().length > 0) {
+			$(this).prop("readonly", true);
+		} else {
+			$(this).prop("readonly", false);
+		}
 
 		var sessionIndex = $(".fileName").index($(this));
         socket.emit("fileRenamed", $(this).val(), sessionIndex);
@@ -170,7 +180,6 @@ $("#programInputForm").submit(function(e) {
 });
 
 socket.on("files", function(files) { // only for when client first joins
-	// console.log(files);
 	for (var i = 0; i < files.length; i++) {
 		addFile(files[i].fileName, files[i].text);
 
