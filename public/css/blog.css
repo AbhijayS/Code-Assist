@@ -65,6 +65,38 @@ body{
   margin-left: 1%;
 }
 
+#mc-embedded-subscribe-form {
+  font-family: 'Nunito', sans-serif;
+}
+
+#mce-EMAIL {
+  margin-right: 0 !important;
+  width: 100% !important;
+}
+
+#mc-embedded-subscribe {
+  width: 100% !important;
+  background-color: #036fe2 !important;
+}
+
+#mc-embedded-subscribe:hover {
+  background-color: #007bff !important;
+}
+
+#opt-in-1 {
+  width: 50%;
+  height: 190px;
+  margin: auto;
+  background-size: cover;
+  /* background-position: 0% 75%; */
+  background-image: url("/images/limited-edition.png");
+
+}
+
+.opt-in {
+  box-shadow: 0 8px 6px -6px black !important;
+}
+
 /*
 ========================================
 Dashboard
@@ -113,6 +145,10 @@ Dashboard
 
 #blog-main-body .list-group-item {
   transition: 0.5s;
+}
+
+#blog-main-body #all-post-container {
+  width: 100% !important;
 }
 
 #blog-main-body .list-group-item:hover {
