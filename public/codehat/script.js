@@ -1,6 +1,7 @@
 // var socket = io.connect();
 var socketID;
 
+var modelist = ace.require("ace/ext/modelist");
 var editor = ace.edit("editor");
 
 var editorSessions = [];
@@ -46,11 +47,21 @@ socket.on("addFile", function(fileName, text) {
 });
 
 function addFile(fileName, text) {
+	var newTab;
 	if (fileName) {
-		$("#fileTabs").append(`<li class="nav-item"><a class="nav-link" data-toggle="tab" href=""><span class="hiddenSpan"></span><input maxlength="100" readonly class="fileName" value="${fileName}" placeholder="untitled" autocomplete="off" spellcheck="false" type="text"></a><button class="close">&times;</button></li>`);
+		newTab = $(`<li class="nav-item" data-toggle="popover"><a class="nav-link" data-toggle="tab" href=""><span class="hiddenSpan"></span><input maxlength="100" readonly class="fileName" value="${fileName}" placeholder="untitled" autocomplete="off" spellcheck="false" type="text"></a><button class="close">&times;</button></li>`);
 	} else {
-		$("#fileTabs").append('<li class="nav-item"><a class="nav-link" data-toggle="tab" href=""><span class="hiddenSpan"></span><input maxlength="100" class="fileName" placeholder="untitled" autocomplete="off" spellcheck="false" type="text"></a><button class="close">&times;</button></li>');
+		newTab = $('<li class="nav-item" data-toggle="popover"><a class="nav-link" data-toggle="tab" href=""><span class="hiddenSpan"></span><input maxlength="100" class="fileName" placeholder="untitled" autocomplete="off" spellcheck="false" type="text"></a><button class="close">&times;</button></li>');
 	}
+
+	$("#fileTabs").append(newTab);
+	newTab.popover({
+		trigger: 'manual',
+		title: "<span style='color:red'>Invalid File Name</span>",
+		content: 'File names must be unique and they may not include the following characters: <strong>" * : < > ? / \\ |</strong>',
+		placement: 'right',
+		html: true
+	});
 
 	if ($(".nav-item").length == 1) { // if file was first to be added
   		$("#editor").css('visibility', 'visible');
@@ -58,13 +69,19 @@ function addFile(fileName, text) {
 	}
 
 
-	initFileTabs();
+	initFileTab(newTab);
 
-	if (text) {
-		editorSessions.push(new EditorSession(ace.createEditSession(text, "ace/mode/java")));
+	if (!text)
+		text = '';
+
+	var mode;
+	if (fileName) {
+		mode = modelist.getModeForPath(fileName).mode;
 	} else {
-		editorSessions.push(new EditorSession(ace.createEditSession('', "ace/mode/java")));
+		mode = '';
 	}
+
+	editorSessions.push(new EditorSession(ace.createEditSession(text, mode)));
 
 	var sessionIndex = editorSessions.length-1;
 	$(".nav-item .close").eq(sessionIndex).click(function() {
@@ -99,6 +116,11 @@ function addFile(fileName, text) {
 		editor.setSession(editorSessions[0].session);
 }
 
+function setSessionMode(newFileName, fileIndex) {
+	var mode = modelist.getModeForPath(newFileName).mode;
+	editorSessions[fileIndex].session.setMode(mode);
+}
+
 socket.on("fileChange", function(event, sessionIndex) {
 	applyingChanges = true;
 	editorSessions[sessionIndex].session.getDocument().applyDelta(event);
@@ -128,8 +150,16 @@ function deleteFile(fileIndex) {
 	}
 }
 
-function initFileTabs() {
-	$(".nav-item").click(function(e) {
+function validFileName(name) {
+	var pattern = /^(?!^(PRN|AUX|CLOCK\$|NUL|CON|COM\d|LPT\d|\..*)(\..+)?$)[^\x00-\x1f\\?*:\";|/]+$/i;
+	var uniqueFile = $(".fileName").filter(function() {return this.value == name}).length <= 1;
+
+	return pattern.test(name) && uniqueFile;
+}
+
+function initFileTab(newTab) {
+	var fileNameInput = newTab.find(".fileName");
+	newTab.click(function(e) {
 		// prevents delete button from triggering tab switch
 		if (e.target.getAttribute("class") == "close")
 			return;
@@ -138,40 +168,64 @@ function initFileTabs() {
 		editor.setSession(editorSessions[sessionIndex].session);
 	});
 	// To auto resize fileName tabs
-	$('.fileName').on('input', function() {
+	fileNameInput.on('input', function() {
 		$(this).siblings('.hiddenSpan').text($(this).val());
 		$(this).width($(this).siblings('.hiddenSpan').width());
 	});
 	// initially resize tabs to fit fileName
-	$('.fileName').each(function() {
+	fileNameInput.each(function() {
 		$(this).siblings('.hiddenSpan').text($(this).val());
 		$(this).width($(this).siblings('.hiddenSpan').width());
 	});
 
+	var enterPressed = false;
+	fileNameInput.on('keyup', function(e) {
+		if (e.keyCode == 13) {
+			enterPressed = false;
+		}
+	});
 
-	$(".fileName").on('keydown', function(e) {
-	    if (e.keyCode == 13 && $(this).val().length > 0) {
-	        $(this).prop("readonly", true);
+	fileNameInput.on('keydown', function(e) {
+	    if (!enterPressed && e.keyCode == 13 && $(this).val().length > 0) {
+	    	enterPressed = true;
+	    	if (validFileName($(this).val())) {
+	    		newTab.popover('hide');
+		        $(this).prop("readonly", true);
 
-			var sessionIndex = $(".fileName").index($(this));
-	        socket.emit("fileRenamed", $(this).val(), sessionIndex);
+				var sessionIndex = $(".fileName").index($(this));
+		        socket.emit("fileRenamed", $(this).val(), sessionIndex);
+		    	setSessionMode($(this).val(), sessionIndex);		
+	    	} else {
+				// $(this).val("");
+	    		// alert("Invalid file name");
+	    		newTab.popover('show');
+	    	}
 	    }
 	});
-	$(".fileName").blur(function() {
-		if ($(this).val().length > 0) {
-			$(this).prop("readonly", true);
-		} else {
-			$(this).prop("readonly", false);
-		}
 
-		var sessionIndex = $(".fileName").index($(this));
-        socket.emit("fileRenamed", $(this).val(), sessionIndex);
+
+	fileNameInput.blur(function() {
+		if (validFileName($(this).val())) {
+			newTab.popover('hide');
+			if ($(this).val().length > 0) {
+				$(this).prop("readonly", true);
+			} else {
+				$(this).prop("readonly", false);
+			}
+
+			var sessionIndex = $(".fileName").index($(this));
+			setSessionMode($(this).val(), sessionIndex);
+	        socket.emit("fileRenamed", $(this).val(), sessionIndex);	
+		} else {
+			// $(this).val("");
+			// alert("Invalid file Name")
+			newTab.popover('show');
+		}
 	});
-	$(".fileName").dblclick(function() {
+	fileNameInput.dblclick(function() {
 		$(this).prop("readonly", false);
 	});
 }
-
 
 $("#programInputForm").submit(function(e) {
 	e.preventDefault();
@@ -208,7 +262,10 @@ socket.on("files", function(files) { // only for when client first joins
 });
 
 socket.on("renameFile", function(newFileName, fileIndex) {
+	$('[data-toggle="popover"]').popover('hide');
+
 	$('.fileName').eq(fileIndex).val(newFileName);
+	setSessionMode(newFileName, fileIndex);
 
 	// initially resize tabs to fit fileName
 	$('.fileName').each(function() {
