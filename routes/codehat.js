@@ -16,7 +16,19 @@ var javaStarter = `public class Main {
 
 	}
 }`;
-
+//add someone to a project by id
+function addToProject(id, user) {
+	user.findOne({id:id},function(err, addedproject) {
+	if(err) throw err;
+});
+if(addedproject){
+	addedproject.userIdsWithAccess.push(user)
+	addedproject.save(function(err) {
+		if(err) throw err;
+		// saved
+	});
+}
+}
 function projectActive(id) {
 	for (let i = 0; i < currentProjects.length; i++) {
 		if (currentProjects[i].id == id)
@@ -76,7 +88,7 @@ router.get('/:id', function(req, res) {
 					useraccesslevel=2;
 				}
 				console.log("user connecting to codehat project with access level "+useraccesslevel);
-				
+
 				if (!projectActive(projectID)){
 					// currentProjects.push(new Project(project._id, project.text));
 					currentProjects.push(new Project(project._id, project.files));
@@ -139,7 +151,7 @@ function Project(id, files) {
 	for (var i = 0; i < files.length; i++) {
 		this.files.push(new File(files[i].fileName, files[i].text));
 	}
-	
+
 	this.outputError = false;
 	this.output = "";
 
@@ -235,7 +247,7 @@ function Project(id, files) {
 						if (error) {
 							console.log(error);
 						}
-					});		
+					});
 				}
 				var fileNameNoExt = path.parse(files[fileIndex].fileName).name;
 				var classFilePath = self.folderPath + fileNameNoExt + ".class";
@@ -244,7 +256,7 @@ function Project(id, files) {
 						if (error) {
 							console.log(error);
 						}
-					});		
+					});
 				}
 			}
 
@@ -259,7 +271,7 @@ function Project(id, files) {
 
 					project.save(function(err) {
 					  if(err) throw err;
-					});	
+					});
 				});
 			});
 
@@ -281,7 +293,7 @@ function Project(id, files) {
 		socket.on("disconnect", function() {
 			for (var i = 0; i < self.files.length; i++) {
 				delete self.files[i].cursors[socket.id];
-				delete self.files[i].selections[socket.id];	
+				delete self.files[i].selections[socket.id];
 			}
 
 			self.nsp.emit("deleteCursors", socket.id);
