@@ -188,7 +188,7 @@ function initFileTab(newTab) {
 	fileNameInput.on('keydown', function(e) {
 	    if (!enterPressed && e.keyCode == 13 && $(this).val().length > 0) {
 	    	enterPressed = true;
-	    	if (validFileName($(this).val())) {
+	    	if ($(this).val() == "" || validFileName($(this).val())) {
 	    		newTab.popover('hide');
 		        $(this).prop("readonly", true);
 
@@ -205,7 +205,7 @@ function initFileTab(newTab) {
 
 
 	fileNameInput.blur(function() {
-		if (validFileName($(this).val())) {
+		if ($(this).val() == "" || validFileName($(this).val())) {
 			newTab.popover('hide');
 			if ($(this).val().length > 0) {
 				$(this).prop("readonly", true);
@@ -312,7 +312,7 @@ socket.on("runFinished", function() {
 	$("#programInput").prop("disabled", true);
 });
 
-socket.on("compileFinished", function() {
+socket.on("readyForInput", function() {
 	$("#programInput").prop("disabled", false);
 });
 
