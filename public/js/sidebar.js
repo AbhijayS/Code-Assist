@@ -17,7 +17,7 @@ $( document ).ready(function() {
   var MC_FORM = `
   <div id="mc-sidebar" class="text-center">
     <div class="jumbotron text-center">
-      <h1>Top 5 Self-Learning Tools</h1>
+      <h1>FREE Cheat-Sheet</h1>
     </div>
 
     <div class="container-fluid text-center">
@@ -61,24 +61,17 @@ $( document ).ready(function() {
   $('#campaign-1-ad').click(function(event) {
     event.preventDefault();
     if($( window ).width() >= 400 && $( window ).height() >= 400){
-      scroll = $(window).scrollTop();
-
-      $(window).scrollTop(0);
-      // $('#sidebar').toggleClass('overlay');
-      // document.documentElement.style.overflow = 'hidden';
-
-      $('html').append(exitBtn);
       $('html').append(MC_FORM);
+      $(window).css("background-color: grey");
+      $(document).mouseup(function(e){
+          var container = $("#mc-sidebar");
 
-      $('.close-button').click(function(event) {
-        event.preventDefault();
-        $(window).scrollTop(scroll);
-        // $('#sidebar').toggleClass('overlay');
-        // document.documentElement.style.overflow = 'auto';
-        $('.close-button').remove();
-        $('#mc-sidebar').remove();
+          // if the target of the click isn't the container nor a descendant of the container
+          if (!container.is(e.target) && container.has(e.target).length === 0)
+          {
+              $("#mc-sidebar").remove();
+          }
       });
-
     }else{
       window.open('http://eepurl.com/dzb5Sz', '_blank');
     }
