@@ -65,21 +65,21 @@ body{
   margin-left: 1%;
 }
 
-#mc-embedded-subscribe-form {
+#blog-main-body #mc-embedded-subscribe-form {
   font-family: Nunito; sans-serif;
 }
 
-#mce-EMAIL {
+#blog-main-body #mce-EMAIL {
   margin-right: 0 !important;
   width: 100% !important;
 }
 
-#mc-embedded-subscribe {
+#blog-main-body #mc-embedded-subscribe {
   width: 100% !important;
   background-color: #036fe2 !important;
 }
 
-#mc-embedded-subscribe:hover {
+#blog-main-body #mc-embedded-subscribe:hover {
   background-color: #007bff !important;
 }
 
@@ -101,6 +101,26 @@ body{
   margin-bottom: 20%;
 }
 
+.exit-btn {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  transition: all .25s ease-out;
+  background-color: #3e3e3e;
+  z-index : 99999;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  text-align: center;
+  font-size: 60px;
+  font-weight: bold;
+  font-family: 'Nunito';
+  color: white;
+}
+
+.exit-btn:hover {
+  background-color: #fff;
+}
 /*
 ========================================
 Dashboard
@@ -230,14 +250,15 @@ Dashboard
   font-style: italic;
 }
 
-#goodies {
+#sidebar {
+  position: absolute;
   left: 100%;
-  transition: 0.5s ease-in;
 }
 
 .overlay {
-  position: absolute;
+  transition: 0.5s ease-in;
   background-color: #007bff;
+  /* background: linear-gradient(to right, #007bff, #434343ff); */
   top: 0;
   left: 0 !important;
   width: 100%;
@@ -246,54 +267,128 @@ Dashboard
   position: fixed;
   overflow: hidden;
 }
+.close-button {
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  overflow: hidden;
+  z-index: 99999;
+  top: 20px;
+  left: 20px;
+  font-family: 'Nunito';
+}
 
-.open-close-button {
-  display: inline-block;
-  width: 2em;
-  height: 2em;
-  border: 0.1em solid #f4d6d7;
-  margin: 2em 45%;
-  font-size: 3em;
-  border-radius: 50%;
-  position: absolute;
-  -moz-transition: 0.5s;
-  -o-transition: 0.5s;
-  -webkit-transition: 0.5s;
-  transition: 0.5s;
-  -moz-transform: translateZ(0);
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
+.close-button > div {
+  position: relative;
 }
-.open-close-button:before {
-  content: "";
-  display: block;
-  position: absolute;
-  background-color: #f4d6d7;
-  width: 80%;
-  height: 6%;
-  left: 10%;
-  top: 47%;
+.close-button-block {
+  width: 40px;
+  height: 20px;
+  position: relative;
+  overflow: hidden;
 }
-.open-close-button:after {
-  content: "";
-  display: block;
+.close-button-block:before, .close-button-block:after {
+  content: '';
   position: absolute;
-  background-color: #f4d6d7;
-  width: 6%;
-  height: 80%;
-  left: 47%;
+  bottom: 0;
+  left: calc(55% - 4px);
+  display: block;
+  width: 4px;
+  height: 25px;
+  -webkit-transform-origin: bottom center;
+          transform-origin: bottom center;
+  background: white;
+  transition: all ease-out 280ms;
+}
+.close-button-block:last-of-type {
+  -webkit-transform: rotate(180deg);
+          transform: rotate(180deg);
+}
+.close-button .in .close-button-block:before {
+  transition-delay: 280ms;
+  -webkit-transform: translateX(20px) translateY(-20px) rotate(45deg);
+          transform: translateX(20px) translateY(-20px) rotate(45deg);
+}
+.close-button .in .close-button-block:after {
+  transition-delay: 280ms;
+  -webkit-transform: translateX(-22px) translateY(-22px) rotate(-45deg);
+          transform: translateX(-22px) translateY(-22px) rotate(-45deg);
+}
+.close-button .out {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.close-button .out .close-button-block:before {
+  -webkit-transform: translateX(-5px) translateY(5px) rotate(45deg);
+          transform: translateX(-5px) translateY(5px) rotate(45deg);
+}
+.close-button .out .close-button-block:after {
+  -webkit-transform: translateX(5px) translateY(5px) rotate(-45deg);
+          transform: translateX(5px) translateY(5px) rotate(-45deg);
+}
+.close-button:hover .in .close-button-block:before {
+  -webkit-transform: translateX(-5px) translateY(5px) rotate(45deg);
+          transform: translateX(-5px) translateY(5px) rotate(45deg);
+}
+.close-button:hover .in .close-button-block:after {
+  -webkit-transform: translateX(5px) translateY(5px) rotate(-45deg);
+          transform: translateX(5px) translateY(5px) rotate(-45deg);
+}
+.close-button:hover .out .close-button-block:before {
+  -webkit-transform: translateX(-20px) translateY(20px) rotate(45deg);
+          transform: translateX(-20px) translateY(20px) rotate(45deg);
+}
+.close-button:hover .out .close-button-block:after {
+  -webkit-transform: translateX(20px) translateY(20px) rotate(-45deg);
+          transform: translateX(20px) translateY(20px) rotate(-45deg);
+}
+
+#mc-sidebar {
+  position: fixed;
   top: 10%;
+  left: 20%;
+  right: 20%;
+  z-index: 9999;
+  font-family: 'Nunito';
+  background-color: white;
+  border-radius: 10px;
+  padding-bottom: 3%;
 }
-.open-close-button.open {
-  background-color: #f4d6d7;
-  -moz-transform: rotate(225deg);
-  -ms-transform: rotate(225deg);
-  -webkit-transform: rotate(225deg);
-  transform: rotate(225deg);
+
+#mc-sidebar .jumbotron {
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
 }
-.open-close-button.open:after {
-  background-color: #c9353b;
+
+#mc-sidebar #mc_embed_signup {
+  font-family: 'Nunito' !important;
 }
-.open-close-button.open:before {
-  background-color: #c9353b;
+
+#mc-sidebar #mc-embedded-subscribe-form {
+  margin: auto !important;
+  text-align: center !important;
+}
+
+#mc-sidebar #mce-EMAIL, #mc-embedded-subscribe {
+  width: 100% !important;
+  height: 50px !important;
+}
+
+#mc-sidebar #mc-embedded-subscribe {
+  background-color: #434343ff !important;
+}
+
+#mc-sidebar #mc-embedded-subscribe:hover {
+  background-color: #007bff !important;
+}
+
+#mc-campaign-1-pic {
+  margin: auto;
+  background-image: url('/images/limited-edition.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 100%;
+  height: 300px;
+  background-position: 50% 0;
 }
