@@ -1,0 +1,31 @@
+@import url('https://fonts.googleapis.com/css?family=Nunito:300,300i,400,700');
+body {
+  font-family: 'Nunito', sans-serif;
+}
+
+#sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 75px;
+  min-height: 100vh;
+  background: linear-gradient(#00bcd4, #007bff);
+  z-index: -1;
+  padding-top: 60px;
+}
+
+#sidebar li{
+  background: transparent;
+  border: none;
+  border-radius: none;
+  text-align: left;
+  padding: 0;
+  padding-left: 15px;
+  font-size: 40px;
+  color: #fff8f0;
+  margin: 25px 0;
+}
+
+.hide {
+  display: none;
+}
