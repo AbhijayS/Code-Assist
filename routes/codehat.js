@@ -312,8 +312,8 @@ function Project(id, files) {
 				return false;
 			}
 
-			if (fileExt != ".java" && fileExt != ".py") {
-				self.nsp.emit("outputError", "Currently only .java and .py files are able to be compiled/run");
+			if (fileExt != ".java" && fileExt != ".py" && fileExt != ".cpp") {
+				self.nsp.emit("outputError", "Currently only .java, .py, and .cpp files are able to be compiled/run");
 				self.nsp.emit("runFinished");
 				return false;
 			}
@@ -335,15 +335,12 @@ function Project(id, files) {
 
 						if (error) {
 							console.log("Codehat - Compile Error Given");
-							var BackSlashPath = self.folderPath.replace(/\//g,"\\\\"); //changes forward slashes to double back slashes to be used with regex
-							var result = stderr.replace(new RegExp(BackSlashPath, "g"), ""); // takes out file path from error
+							console.log(stderr.replace(/\n$/, "")); //regex gets rid of newline character
 
-							console.log(result.replace(/\n$/, "")); //regex gets rid of newline character
-
-							self.output = result;
+							self.output = stderr;
 							self.outputError = true;
 
-							self.nsp.emit("outputError", result);
+							self.nsp.emit("outputError", stderr);
 							self.nsp.emit("runFinished");
 							return false; //breaks out of function
 						}
@@ -374,7 +371,6 @@ function Project(id, files) {
 							self.nsp.emit("runFinished");
 							// console.log('Run Finished');
 						});
-
 					});
 					break;
 				case ".py":
@@ -398,6 +394,45 @@ function Project(id, files) {
 						self.nsp.emit("runFinished");
 						// console.log('Run Finished');
 					});
+					break;
+				case ".cpp":
+					exec('g++ "' + file.fileName, {cwd: self.folderPath}, function(error, stdout, stderr) {
+
+						if (error) {
+							console.log("Codehat - Compile Error Given");
+							console.log(stderr.replace(/\n$/, "")); //regex gets rid of newline character
+
+							self.output = stderr;
+							self.outputError = true;
+
+							self.nsp.emit("outputError", stderr);
+							self.nsp.emit("runFinished");
+							return false; //breaks out of function
+						}
+
+						// file name without file extension
+						self.runner = spawn('a.exe', {cwd: self.folderPath});
+						self.nsp.emit("readyForInput");
+
+						self.runner.stdout.on('data', function(data) {
+							self.output += data;
+							self.nsp.emit("output", data.toString()+"\n");
+							console.log(data.toString());
+						});
+
+						self.runner.stderr.on('data', function(data) {
+							self.output += data;
+							self.nsp.emit("outputError", data.toString()+"\n");
+							self.outputError = true;
+							console.log(data.toString());
+						});
+
+						self.runner.on('exit', function() {
+							self.nsp.emit("runFinished");
+							// console.log('Run Finished');
+						});
+					});
+					break;
 			}
 
 		});
