@@ -60,16 +60,19 @@ var ProjectFileSchema = new Schema ({
 //Project Schema
 var ProjectSchema = new Schema({
 	name: String,
-	owner: String,
-	ownerid: String,
+	owner: {
+		type: Schema.Types.ObjectId,
+		ref: 'UserSchema'
+	},
 
-	userIdsWithAccess: [{ // Users other than the owner ==> Level 0: View; Level 1: Edit; Level 2: Owner
-		type: String
+	usersWithAccess: [{ // Users including the owner ==> Level 0: View; Level 1: Edit; Level 2: Owner
+		type: Schema.Types.ObjectId,
+		ref: 'UserSchema'
 	}],
 
 	files: [{
-	type: Schema.Types.ObjectId,
-	ref: 'ProjectFileSchema'
+		type: Schema.Types.ObjectId,
+		ref: 'ProjectFileSchema'
 	}],
 
 	chatHistory:[{
