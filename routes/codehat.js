@@ -51,7 +51,9 @@ router.post('/', function(req, res){
 	if(req.user){
 		var newProject = new User.ProjectSchema();
 		newProject.name = req.body.project_name;
-		newProject.ownerid = req.user._id;
+		newProject.owner = req.user;
+		newProject.usersWithAccess.push(req.user);
+		
 		newProject.status = "new";
 
 		var newProjectFile = new User.ProjectFileSchema();
@@ -83,31 +85,30 @@ router.post('/', function(req, res){
 router.get('/:id', function(req, res) {
 	if(req.user) {
 		var projectID = req.params.id;
-		User.ProjectSchema.findOne({_id: projectID}).populate('files').exec(function(err, project) {
+		User.ProjectSchema.findOne({_id: projectID}).populate(['files', 'usersWithAccess', 'owner']).exec(function(err, project) {
 			if (project) {
-				if(project.userIdsWithAccess.includes(req.user._id) || (req.user._id == project.ownerid)) {
-					var useraccesslevel=0;
-					var accessedusers=project.userIdsWithAccess;
-					for(var counter1=0;counter1<accessedusers.length;counter1++){
-						if(accessedusers[counter1]==req.user._id){
-							useraccesslevel=1;
-						}
-						// console.log(accessedusers[counter1]);
+				var userAccessLevel = 0;
+				for (var i = 0; i < project.usersWithAccess.length; i++) {
+					if (project.usersWithAccess._id == req.user._id)
+						userAccessLevel = 1;
+				}
 
-					}
-					// console.log(accessedusers);
+				if (req.user._id.equals(project.owner._id)) {
+					userAccessLevel = 2;
+				}
 
-					if(project.ownerid==req.user._id){
-						useraccesslevel=2;
-					}
-					console.log("user connecting to codehat project with access level "+useraccesslevel);
+				if (userAccessLevel != 0) {
+
+					// console.log(project.usersWithAccess);
+
+					console.log("user connecting to codehat project with access level "+userAccessLevel);
 
 					if (!projectActive(projectID)){
 						// currentProjects.push(new Project(project._id, project.text));
 						currentProjects.push(new Project(project._id, project.files));
 					}
-					accessedusers.push(req.user._id);
-					res.render('codehat-project', {layout: 'codehat-project-layout', namespace: '/' + projectID, clearance:useraccesslevel, project: project, users: accessedusers});
+					
+					res.render('codehat-project', {layout: 'codehat-project-layout', namespace: '/' + projectID, clearance:userAccessLevel, project: project, users: project.usersWithAccess});
 
 				} else{
 					res.send("You don't have access to this project");
