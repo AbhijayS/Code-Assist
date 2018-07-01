@@ -2,6 +2,7 @@
 
 body {
   font-family: 'Nunito', sans-serif !important;
+  background-color: #eeeeee54;
 }
 
 nav {
@@ -14,7 +15,8 @@ nav {
   left: 0;
   width: 75px;
   min-height: 100vh;
-  background: linear-gradient(#00bcd4, #007bff);
+  background: linear-gradient(#009688, #007bff);
+  box-shadow: 8px 2px 20px 1px rgba(0,0,0,.14);
   z-index: 5;
   padding-top: 60px;
 }
@@ -28,12 +30,14 @@ nav {
   padding-left: 15px;
   font-size: 40px;
   color: #fff8f0;
-  margin: 25px 0;
+  margin: 38px 0;
   font-weight: 200;
+  transition: 0.3s;
 }
 
 #sidebar li:hover {
   cursor: pointer;
+  background-color: #0000001a;
 }
 
 .hide {
@@ -43,7 +47,7 @@ nav {
 #sidebar #exit-btn {
   position: fixed;
   bottom: 15px;
-  left: 15px;
+  width: 75px;
   border-top: 3px solid white;
   padding-top: 5px;
 }
@@ -173,20 +177,24 @@ button:enabled {
 */
 
 #projects {
-  margin-left: 150px;
-  margin-top: 20px;
+  margin-left: 75px;
 }
 
 #projects .card {
   border-radius: 20px;
   width: 200px;
-  height: 200px;
-  /* box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); */
+  height: 220px;
+  box-shadow: 6px 4px 19px 0px rgba(0,0,0,.14);
+  border: none;
   transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+  opacity: 0.92;
   /* border-bottom: 1px solid #007bff; */
 }
+
 #projects .card:hover {
-  box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+  box-shadow: 0px 0px 1px 7px rgba(0,0,0,.14);
+  opacity: 1;
+  color: #007bff;
 }
 
 #projects .card .card-body {
@@ -195,6 +203,34 @@ button:enabled {
 
 #projects .card button {
   border-radius: 20px;
+}
+
+#projects .card .card-footer {
+  background-color: #007bff;
+  color: white;
+  border-radius: 2px 2px 20px 20px;
+}
+
+#projects .card-link {
+  margin: 10px 30px 30px 10px;
+}
+#projects .container-fluid {
+  padding: 40px 40px 20px 100px;
+
+}
+#projects .flex-container {
+  margin: 0;
+  list-style: none;
+
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+
+  -webkit-flex-flow: row wrap;
+  /* justify-content: space-evenly; */
+  align-items: flex-start;
 }
 
 /*
@@ -212,7 +248,6 @@ button:enabled {
   background-color: #6c757d;
   z-index: 9;
   opacity: 0.8;
-
 }
 
 #settings #box {
@@ -264,21 +299,21 @@ button:enabled {
 ====================
   ParticleJS
 ====================
-*/
+
 canvas {
   display: block;
   vertical-align: bottom;
-} /* ---- particles.js container ---- */
+}
 #particles-js {
   position: absolute;
   width: 100%;
   height: 100%;
-  background-color: #FEFEFA;
+  background-color: #eeeeee54;
   background-image: url("");
   background-repeat: no-repeat;
   background-size: cover;
   background-position: 50% 50%;
-} /* ---- stats.js ---- */
+}
 .count-particles {
   background: #000022;
   position: absolute;
@@ -310,3 +345,4 @@ canvas {
 .count-particles {
   border-radius: 0 0 3px 3px;
 }
+*/
