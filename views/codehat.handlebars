@@ -1,12 +1,38 @@
-<!-- Side Bar -->
-<div id="sidebar">
-  <ul class="list-group">
-    <li class="list-group-item"><i class="fas fa-plus"></i></li>
-    <li class="list-group-item"><i class="far fa-comment-alt"></i></li>
-    <li class="list-group-item"><i class="fas fa-sliders-h"></i></li>
-  </ul>
-</div>
+<div id="particles-js"></div>
+{{#if projects}}
+  <div id="projects">
+    <div class="container">
+      {{#each projects}}
+        <a href="/codehat/{{this._id}}" style="text-decoration: none;">
+          <div class="card">
+            <div class="card-body text-center">
+              A
+            </div>
+            <button type="button" class="btn btn-primary">
+              {{this.name}}
+              <!-- <span class="sr-only">unread messages</span> -->
+            </button>
+          </div>
+        </a>
+      {{/each}}
+    </div>
+  </div>
+{{else}}
+  <div id="codehat-start" class="container px-5 text-center">
+    <h1 class="display-4 text-secondary">Welcome to Code Hat</h1>
+    <hr>
+    <br>
 
+    <div class="container">
+      <form class="form-inline text-center justify-content-center" method="post" action="">
+        <div class="form-group">
+          <input type="text" class="mr-1 form-control" name="project_name" id="project_name" placeholder="Project Name">
+          <button type="submit" class="btn btn-outline-success"><i class="fas fa-plus"></i><span> Start New Project</span></button>
+        </div>
+      </form>
+    </div>
+  </div>
+{{/if}}
 <script
   src="/js/codehat-dash.js"
 ></script>

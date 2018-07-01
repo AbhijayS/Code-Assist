@@ -1,6 +1,11 @@
 @import url('https://fonts.googleapis.com/css?family=Nunito:300,300i,400,700');
+
 body {
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Nunito', sans-serif !important;
+}
+
+nav {
+  z-index: 6;
 }
 
 #sidebar {
@@ -10,7 +15,7 @@ body {
   width: 75px;
   min-height: 100vh;
   background: linear-gradient(#00bcd4, #007bff);
-  z-index: -1;
+  z-index: 5;
   padding-top: 60px;
 }
 
@@ -24,8 +29,284 @@ body {
   font-size: 40px;
   color: #fff8f0;
   margin: 25px 0;
+  font-weight: 200;
+}
+
+#sidebar li:hover {
+  cursor: pointer;
 }
 
 .hide {
   display: none;
+}
+
+#sidebar #exit-btn {
+  position: fixed;
+  bottom: 15px;
+  left: 15px;
+  border-top: 3px solid white;
+  padding-top: 5px;
+}
+
+
+
+#codehat-start {
+  position: fixed;
+  top: 160px;
+  left: 120px;
+}
+
+
+/*
+===========================
+    Project Text Editor
+===========================
+*/
+
+html, body {
+	height: 100%;
+	margin: 0;
+}
+
+#code-editor {
+  height: 100%;
+}
+
+#code-editor #editor {
+	height: 60%;
+	font-size: 14px;
+}
+
+/* styling for tab input */
+.hiddenSpan {
+	display: none;
+	white-space: pre;
+}
+
+.fileName {
+	outline: none;
+	border: none;
+	cursor: pointer;
+	min-width: 55px;
+	width: 55px;
+}
+
+.close {
+	margin-top: -42px;
+	margin-right: 5px;
+	font-size: 18px !important;
+	outline: none !important;
+	color: #a2a2a2 !important;
+}
+
+.close:hover {
+	color: red !important;
+}
+
+.fileName, .hiddenSpan {
+	font: inherit;
+	margin: 0;
+	padding: 0;
+}
+
+.nav-link {
+	padding-right: 1.5rem !important;
+}
+/*----------*/
+
+#topBar {
+	margin: 10px;
+}
+
+#output {
+	min-height: 25%;
+	padding: 10px;
+	box-sizing: border-box;
+	width: 100%;
+	background-color: #f1f1f1;
+	resize: vertical;
+	border-color: rgb(210, 208, 208);
+}
+
+.outputError {
+	border-color: red !important;
+}
+
+#programInput {
+	width: 100%;
+}
+
+#buttons {
+	width: 104px;
+	margin: 0 auto;
+	margin-top: 20px;
+	position: relative;
+}
+
+#run {
+	width: 100px;
+	height: 40px;
+}
+
+button:enabled {
+	cursor: pointer;
+}
+
+#loadingWheel {
+	margin: 0 10px;
+	height: 40px;
+    display: inline-block;
+    vertical-align: top;
+
+    position: absolute;
+    left: 100%;
+}
+
+[hidden] {
+	display: none !important;
+}
+
+/*
+======================
+  Projects Homepage
+======================
+*/
+
+#projects {
+  margin-left: 150px;
+  margin-top: 20px;
+}
+
+#projects .card {
+  border-radius: 20px;
+  width: 200px;
+  height: 200px;
+  /* box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); */
+  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+  /* border-bottom: 1px solid #007bff; */
+}
+#projects .card:hover {
+  box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+}
+
+#projects .card .card-body {
+  font-size: 72px;
+}
+
+#projects .card button {
+  border-radius: 20px;
+}
+
+/*
+=======================
+    Project Settings
+=======================
+*/
+
+#settings {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #6c757d;
+  z-index: 9;
+  opacity: 0.8;
+
+}
+
+#settings #box {
+  opacity: 1;
+  top: 80px;
+  left: 10%;
+  right: 10%;
+  height: 80%;
+  background-color: white;
+  border-radius: 20px;
+  position: fixed;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+#settings .title {
+  font-weight: 700;
+}
+
+.close {
+  margin: 0;
+  vertical-align: middle;
+}
+
+#settings #add-more-emails:hover {
+  color: #007bff;
+  cursor: pointer;
+}
+
+#close-settings {
+  position: fixed;
+  top: 80px;
+  left: calc(10%);
+  font-size: 40px;
+  color: #4e4a4a;
+  opacity: 1;
+  z-index: 10;
+  transition: 0.5s;
+}
+
+#close-settings:hover {
+  color: black;
+  cursor: pointer;
+  transform: rotate(90deg);
+}
+
+
+/*
+====================
+  ParticleJS
+====================
+*/
+canvas {
+  display: block;
+  vertical-align: bottom;
+} /* ---- particles.js container ---- */
+#particles-js {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: #FEFEFA;
+  background-image: url("");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: 50% 50%;
+} /* ---- stats.js ---- */
+.count-particles {
+  background: #000022;
+  position: absolute;
+  top: 48px;
+  left: 0;
+  width: 80px;
+  color: #13e8e9;
+  font-size: 0.8em;
+  text-align: left;
+  text-indent: 4px;
+  line-height: 14px;
+  padding-bottom: 2px;
+  font-family: Helvetica, Arial, sans-serif;
+  font-weight: bold;
+}
+.js-count-particles {
+  font-size: 1.1em;
+}
+#stats,
+.count-particles {
+  -webkit-user-select: none;
+  margin-top: 5px;
+  margin-left: 5px;
+}
+#stats {
+  border-radius: 3px 3px 0 0;
+  overflow: hidden;
+}
+.count-particles {
+  border-radius: 0 0 3px 3px;
 }

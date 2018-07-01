@@ -1,63 +1,107 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<title>CodeHat</title>
-	<link rel="stylesheet" type="text/css" href="style.css">
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.slim.js"></script>
-	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<link rel="stylesheet" href="/codehat/ace-collab-ext/ace-collab-ext.css"/>
+<div id="code-editor">
+	<div id="topBar">
+		<label class="btn btn-primary mb-0">
+			Upload File<input type="file" accept=".java,.py,.dat,.txt" hidden>
+		</label>
+		<button id="newFileBtn" class="btn btn-primary">New File</button>
+	</div>
+	<ul class="nav nav-tabs" id="fileTabs">
 
-	<script src="/codehat/ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
-	<script src="/codehat/ace-builds/src-noconflict/ext-modelist.js"></script>
-	<script src="/codehat/ace-collab-ext/umd/ace-collab-ext.js" type="text/javascript" charset="utf-8"></script>
+	</ul>
 
-<script src="https://code.jquery.com/jquery-3.3.1.min.js"
-integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-crossorigin="anonymous"></script>
+	<div id="editor"></div>
 
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-
-</head>
-<body>
-<div id="topBar">
-	<label class="btn btn-primary mb-0">
-		Upload File<input type="file" accept=".java,.py,.dat,.txt" hidden>
-	</label>
-	<button id="newFileBtn" class="btn btn-primary">New File</button>
+	<textarea id="output" readonly autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+	<form id="programInputForm">
+		<input disabled id="programInput" type="text" autocomplete="off">
+	</form>
+	<div id="buttons">
+		<button class="btn btn-primary" id="run">Run</button>
+		<img id="loadingWheel" src="/codehat/images/spinner.gif" style="display: none;">
+	</div>
 </div>
 
-<ul class="nav nav-tabs" id="fileTabs">
 
-</ul>
+<!-- Settings Section -->
+<i id="close-settings" class="far fa-times-circle"></i>
+<div id="settings">
+	<div id="box" class="p-5">
+		<div id="sharing" class="mb-5">
+			<h1 class="title mb-4" style="font-weight: 200;">Invite Members to <span style="font-weight: 700;">{{project.name}}</span></h1>
+			<hr>
+			<div class="container">
+				<form>
+					<div class="form-group">
+						<div class="row">
 
-<div id="editor"></div>
+							<div class="col-sm-10 offset-sm-1">
+								<label for="exampleInputEmail1" style="font-weight: bold;">Email address</label>
+							</div>
+						</div>
 
-<textarea id="output" readonly autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
-<form id="programInputForm">
-	<input disabled id="programInput" type="text" autocomplete="off">
-</form>
-<div id="buttons">
-	<button class="btn btn-primary" id="run">Run</button>
-	<img id="loadingWheel" src="/codehat/images/spinner.gif" style="display: none;">
+						<div class="row mb-2">
+							<div class="col-sm-10 offset-sm-1">
+								<input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+							</div>
+						</div>
+
+						<div id="send-options" class="row">
+							<div class="col-sm-3 offset-sm-1">
+								<div id="add-more-emails"><i class="fas fa-plus-circle"></i> Add More</div>
+							</div>
+
+							<div class="col-sm-7">
+								<button class="btn btn-success ml-auto" type="button" name="button" style="display: block !important;">Send Invitations</button>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+
+		<div id="members">
+			<h1 style="font-weight: 200;">Members with Access</h1>
+			<div class="container">
+				<table class="table table-hover">
+					<!-- <thead>
+						<tr>
+							<th scope="col">#</th>
+							<th scope="col">First</th>
+							<th scope="col">Last</th>
+							<th scope="col">Handle</th>
+						</tr>
+					</thead> -->
+					<tbody>
+						{{#each users}}
+							<tr>
+								<td>{{this}}</td>
+								<td>
+									<select class="custom-select mr-sm-2" id="inlineFormCustomSelect">
+						        <option selected>Choose...</option>
+						        <option value="1">One</option>
+						        <option value="2">Two</option>
+						        <option value="3">Three</option>
+						      </select>
+								</td>
+								<td>
+									<button class="btn btn-danger" type="button" name="button">Delete User</button>
+								</td>
+							</tr>
+						{{/each}}
+						<!-- <tr>
+							<td>Jacob</td>
+							<td>Thornton</td>
+							<td>@fat</td>
+						</tr>
+						<tr>
+							<td colspan="2">Larry the Bird</td>
+							<td>@twitter</td>
+						</tr> -->
+					</tbody>
+				</table>
+			</div>
+
+		</div>
+	</div>
 </div>
-
-<script>
-	var editor = ace.edit("editor");
-	editor.setTheme("ace/theme/textmate");
-	editor.getSession().setMode("ace/mode/java");
-	editor.setShowPrintMargin(false);
-	editor.$blockScrolling = Infinity;
-	editor.focus();
-</script>
-
-<script type="text/javascript">
-  console.log('{{user.username}}'+' is your username and you have a clearance of level '+{{clearance}});
-	var socket = io('{{namespace}}');
-</script>
-<script src="/codehat/script.js"></script>
-
-</body>
-</html>

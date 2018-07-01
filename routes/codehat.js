@@ -26,30 +26,54 @@ function projectActive(id) {
 }
 
 router.get('/', function(req, res){
-	res.render('codehat', {layout: 'codehat-layout'});
+	if(req.user) {
+		User.UserSchema.findOne({_id: req.user._id}).populate('projectsWithAccess').exec(function(err, user) {
+			if(err) throw err;
+			var projects = [];
+			for(var i = 0; i < user.projectsWithAccess.length; i++) {
+				projects.push(user.projectsWithAccess[i]);
+			}
+			if(user.projectsWithAccess.length > 0){
+				res.render('codehat', {layout: 'codehat-layout', projects: projects});
+			}else{
+				res.render('codehat', {layout: 'codehat-layout'});
+			}
+		});
+	}else{
+		req.flash('origin');
+		req.flash('origin', '/codehat');
+		res.redirect("/login");
+
+	}
 });
 
 router.post('/', function(req, res){
 	if(req.user){
 		var newProject = new User.ProjectSchema();
+		newProject.name = req.body.project_name;
 		newProject.ownerid = req.user._id;
+		newProject.status = "new";
 
 		var newProjectFile = new User.ProjectFileSchema();
 		newProjectFile.fileName = "";
 		newProjectFile.text = "";
-		// newProjectFile.text = javaStarter;
 		newProjectFile.save(function(err) {
 			if(err) throw err;
 			// saved
 		});
 		newProject.files.push(newProjectFile);
-
 		newProject.save(function(err) {
 		  if(err) throw err;
 		  console.log('new codehat project saved');
 		});
-    	res.redirect("/codehat/" + newProject._id);
-	} else {
+		console.log('Project ID: ' + newProject._id);
+		req.user.projectsWithAccess.push(newProject._id);
+		console.log(req.user.projectsWithAccess);
+		req.user.save(function(err) {
+      if(err) throw err;
+    });
+  	res.redirect("/codehat/" + newProject._id);
+	}else {
 		req.flash('origin');
 		req.flash('origin', '/codehat');
 		res.redirect("/login");
@@ -57,36 +81,46 @@ router.post('/', function(req, res){
 });
 
 router.get('/:id', function(req, res) {
-  	var projectID = req.params.id;
-  	User.ProjectSchema.findOne({_id: projectID}).populate('files').exec(function(err, project) {
-  		if (project) {
-			var useraccesslevel=0;
-			if(req.user){
-				var accessedusers=project.userIdsWithAccess;
-				for(var counter1=0;counter1<accessedusers.length;counter1++){
-					if(accessedusers[counter1]==req.user._id){
-						useraccesslevel=1;
+	if(req.user) {
+		var projectID = req.params.id;
+		User.ProjectSchema.findOne({_id: projectID}).populate('files').exec(function(err, project) {
+			if (project) {
+				if(project.userIdsWithAccess.includes(req.user._id) || (req.user._id == project.ownerid)) {
+					var useraccesslevel=0;
+					var accessedusers=project.userIdsWithAccess;
+					for(var counter1=0;counter1<accessedusers.length;counter1++){
+						if(accessedusers[counter1]==req.user._id){
+							useraccesslevel=1;
+						}
+						// console.log(accessedusers[counter1]);
+
 					}
-					console.log(accessedusers[counter1]);
+					// console.log(accessedusers);
 
+					if(project.ownerid==req.user._id){
+						useraccesslevel=2;
+					}
+					console.log("user connecting to codehat project with access level "+useraccesslevel);
+
+					if (!projectActive(projectID)){
+						// currentProjects.push(new Project(project._id, project.text));
+						currentProjects.push(new Project(project._id, project.files));
+					}
+					accessedusers.push(req.user._id);
+					res.render('codehat-project', {layout: 'codehat-project-layout', namespace: '/' + projectID, clearance:useraccesslevel, project: project, users: accessedusers});
+
+				} else{
+					res.send("You don't have access to this project");
 				}
-				console.log(accessedusers);
-
-			 	if(project.ownerid==req.user._id){
-					useraccesslevel=2;
-				}
-				console.log("user connecting to codehat project with access level "+useraccesslevel);
-
-				if (!projectActive(projectID)){
-					// currentProjects.push(new Project(project._id, project.text));
-					currentProjects.push(new Project(project._id, project.files));
-			   	}
-		    }
-			res.render('codehat-project', {layout: false, namespace: '/' + projectID, clearance:useraccesslevel});
-  		} else {
-  			res.send("Invalid project");
-  		}
-  	});
+			} else {
+				res.send("Project Not Found");
+			}
+		});
+	}else{
+		req.flash('origin');
+		req.flash('origin', '/codehat/'+req.params.id);
+		res.redirect("/login");
+	}
 });
 
 var child_process = require('child_process');

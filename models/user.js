@@ -34,7 +34,8 @@ var UserSchema = new Schema({
 		}],
 
 		projectsWithAccess:[{
-			type: String
+			type: Schema.Types.ObjectId,
+			ref: 'ProjectSchema'
 		}]
 });
 
@@ -55,20 +56,27 @@ var ProjectFileSchema = new Schema ({
 	fileName: String,
 	text: String
 });
+
 //Project Schema
 var ProjectSchema = new Schema({
+	name: String,
 	owner: String,
 	ownerid: String,
-  	userIdsWithAccess: [{
-  		type: String
-  	}],
-  	files: [{
-		type: Schema.Types.ObjectId,
-		ref: 'ProjectFileSchema'
-  	}],
+
+	userIdsWithAccess: [{ // Users other than the owner ==> Level 0: View; Level 1: Edit; Level 2: Owner
+		type: String
+	}],
+
+	files: [{
+	type: Schema.Types.ObjectId,
+	ref: 'ProjectFileSchema'
+	}],
+
 	chatHistory:[{
 		type: String
 	}],
+	status: String, // new, using, unused, deleted
+
 	// description: String,
 	// name: String,
 });
