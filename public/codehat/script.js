@@ -63,9 +63,9 @@ function addFile(fileName, text) {
 		html: true
 	});
 
-	if ($(".nav-item").length == 1) { // if file was first to be added
+	if ($("#code-editor .nav-item").length == 1) { // if file was first to be added
   		$("#editor").css('visibility', 'visible');
-  		$(".nav-link").eq(0).addClass("active");
+  		$("#code-editor .nav-link").eq(0).addClass("active");
 	}
 
 
@@ -84,7 +84,7 @@ function addFile(fileName, text) {
 	editorSessions.push(new EditorSession(ace.createEditSession(text, mode)));
 
 	var sessionIndex = editorSessions.length-1;
-	$(".nav-item .close").eq(sessionIndex).click(function() {
+	$("#code-editor .nav-item .close").eq(sessionIndex).click(function() {
 		var fileIndex = $(".close").index($(this));
 		if(confirm("Are you sure you want to delete this file?")) {
 			deleteFile(fileIndex);
@@ -132,20 +132,20 @@ socket.on("deleteFile", function(fileIndex) {
 });
 
 function deleteFile(fileIndex) {
-	if ($(".nav-link").eq(fileIndex).hasClass("active")) {
-		$(".nav-item").eq(fileIndex).remove();
+	if ($("#code-editor .nav-link").eq(fileIndex).hasClass("active")) {
+		$("#code-editor .nav-item").eq(fileIndex).remove();
 		editorSessions.splice(fileIndex, 1);
 
-		if ($(".nav-link").length > 0) {
-  			$(".nav-link").eq(0).addClass("active");
+		if ($("#code-editor .nav-link").length > 0) {
+  			$("#code-editor .nav-link").eq(0).addClass("active");
   			editor.setSession(editorSessions[0].session);
   		}
 	} else {
-		$(".nav-item").eq(fileIndex).remove();
+		$("#code-editor .nav-item").eq(fileIndex).remove();
 		editorSessions.splice(fileIndex, 1);
 	}
 
-	if ($(".nav-link").length == 0) {
+	if ($("#code-editor .nav-link").length == 0) {
 		$("#editor").css('visibility', 'hidden');
 	}
 }
@@ -164,7 +164,7 @@ function initFileTab(newTab) {
 		if (e.target.getAttribute("class") == "close")
 			return;
 
-		var sessionIndex = $(".nav-item").index($(this));
+		var sessionIndex = $("#code-editor .nav-item").index($(this));
 		editor.setSession(editorSessions[sessionIndex].session);
 	});
 	// To auto resize fileName tabs
@@ -285,7 +285,7 @@ $(document).keydown(function(e) {
 });
 
 function runProgram() {
-	var fileIndex = $(".nav-link").index($(".nav-link.active"));
+	var fileIndex = $("#code-editor .nav-link").index($("#code-editor .nav-link.active"));
 	socket.emit("run", fileIndex);
 	$("#loadingWheel").show();
 	$("#run").prop("disabled", true);

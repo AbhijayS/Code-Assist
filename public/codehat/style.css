@@ -24,8 +24,8 @@ html, body {
 }
 
 .close {
-	margin-top: -42px;
-	margin-right: 5px;
+	margin-top: -42px !important;
+	margin-right: 5px !important;
 	font-size: 18px !important;
 	outline: none !important;
 	color: #a2a2a2 !important;
