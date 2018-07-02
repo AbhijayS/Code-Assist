@@ -7,6 +7,7 @@ body {
 
 nav {
   z-index: 6;
+  background-color: #eee;
 }
 
 #sidebar {
@@ -21,7 +22,7 @@ nav {
   padding-top: 60px;
 }
 
-#sidebar li{
+#sidebar li {
   background: transparent;
   border: none;
   border-radius: none;
@@ -33,10 +34,15 @@ nav {
   margin: 38px 0;
   font-weight: 200;
   transition: 0.3s;
+  max-width: 75px;
 }
 
 #sidebar li:hover {
   cursor: pointer;
+  background-color: #0000001a;
+}
+
+#sidebar li.select {
   background-color: #0000001a;
 }
 
@@ -60,7 +66,25 @@ nav {
   left: 120px;
 }
 
+#sidebar .sidebar-box {
+  background: linear-gradient(#009688, #007bff);
+  box-shadow: 8px 2px 20px 1px rgba(0,0,0,.14);
+  position: fixed;
+  width: 0px;
+  height: 100%;
+  top: 0;
+  left: 75px;
+  transition: 0.5s;
+  opacity: 0.8;
+  overflow: hidden;
+}
 
+#sidebar .sidebar-box .content {
+  margin-top: 56px;
+  padding-top: 53px;
+  color: white;
+
+}
 /*
 ===========================
     Project Text Editor
@@ -178,6 +202,7 @@ button:enabled {
 
 #projects {
   margin-left: 75px;
+  transition: 0.5s cubic-bezier(0.55, 0.06, 0.68, 0.19);
 }
 
 #projects .card {
