@@ -51,9 +51,9 @@ router.post('/', function(req, res){
 	if(req.user){
 		var newProject = new User.ProjectSchema();
 		newProject.name = req.body.project_name;
-		newProject.owner = req.user;
-		newProject.usersWithAccess.push(req.user);
-		
+		newProject.owner = req.user._id;
+		// newProject.usersWithAccess.push(req.user);
+
 		newProject.status = "new";
 
 		var newProjectFile = new User.ProjectFileSchema();
@@ -83,23 +83,24 @@ router.post('/', function(req, res){
 });
 
 router.get('/:id', function(req, res) {
-	if(req.user) {
 		var projectID = req.params.id;
 		User.ProjectSchema.findOne({_id: projectID}).populate(['files', 'usersWithAccess', 'owner']).exec(function(err, project) {
+			if(req.user) {
 			if (project) {
 				var userAccessLevel = 0;
 				for (var i = 0; i < project.usersWithAccess.length; i++) {
-					if (project.usersWithAccess._id == req.user._id)
+					// console.log(typeof req.user._id);
+					// console.log(typeof project.usersWithAccess[i].id);
+					if (project.usersWithAccess[i].id === req.user.id)
 						userAccessLevel = 1;
 				}
 
-				if (req.user._id.equals(project.owner._id)) {
+				if (req.user._id.equals(project.owner.id)) {
 					userAccessLevel = 2;
 				}
-
+				// console.log(userAccessLevel);
 				if (userAccessLevel != 0) {
 
-					// console.log(project.usersWithAccess);
 
 					console.log("user connecting to codehat project with access level "+userAccessLevel);
 
@@ -107,8 +108,8 @@ router.get('/:id', function(req, res) {
 						// currentProjects.push(new Project(project._id, project.text));
 						currentProjects.push(new Project(project._id, project.files));
 					}
-					
-					res.render('codehat-project', {layout: 'codehat-project-layout', namespace: '/' + projectID, clearance:userAccessLevel, project: project, users: project.usersWithAccess});
+					console.log(project.owner.id == req.user.id ? true : false);
+					res.render('codehat-project', {layout: 'codehat-project-layout', namespace: '/' + projectID, clearance:userAccessLevel, project: project, users: project.usersWithAccess, owner: project.owner, isowner: project.owner.id == req.user.id ? true : false});
 
 				} else{
 					res.send("You don't have access to this project");
@@ -116,7 +117,17 @@ router.get('/:id', function(req, res) {
 			} else {
 				res.send("Project Not Found");
 			}
-		});
+		}else{
+			req.flash('origin');
+			req.flash('origin', '/codehat/'+req.params.id);
+			res.redirect("/login");
+		}
+	});
+});
+
+router.post('/share', function(req, res) {
+	if(req.user) {
+		
 	}else{
 		req.flash('origin');
 		req.flash('origin', '/codehat/'+req.params.id);

@@ -36,7 +36,8 @@ var UserSchema = new Schema({
 		projectsWithAccess:[{
 			type: Schema.Types.ObjectId,
 			ref: 'ProjectSchema'
-		}]
+		}],
+		e_link: String
 });
 
 var CommunitySchema = new Schema ({

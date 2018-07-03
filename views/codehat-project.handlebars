@@ -73,22 +73,53 @@
 						</tr>
 					</thead> -->
 					<tbody>
-						{{#each users}}
+						<tr class="table-info">
+							<td>{{owner.username}}</td>
+							<td>
+								<p class="text-right">Owner</p>
+							</td>
+							<td>
+								<!-- <button class="btn btn-danger" type="button" name="button">Delete User</button> -->
+							</td>
+						</tr>
+
+						{{#if isowner}}
+							{{#each users}}
 							<tr>
-								<td>{{this.username}}</td>
-								<td>
-									<select class="custom-select mr-sm-2" id="inlineFormCustomSelect">
-						        <option selected>Choose...</option>
-						        <option value="1">One</option>
-						        <option value="2">Two</option>
-						        <option value="3">Three</option>
-						      </select>
+								<td style="width: 33.33%">{{this.username}}</td>
+								<td style="width: 33.33%">
+									<select class="custom-select" id="inlineFormCustomSelect">
+										<option selected>Choose...</option>
+										<option value="1">One</option>
+										<option value="2">Two</option>
+										<option value="3">Three</option>
+									</select>
 								</td>
-								<td>
+								<td class="text-right" style="width: 33.33%">
+									<button class="btn btn-danger" type="button" name="button">Delete User</button>
+									<button type="button" class="btn btn-warning">Transfer Ownership</button>
+								</td>
+							</tr>
+							{{/each}}
+
+						{{else}}
+							{{#each users}}
+							<tr>
+								<td style="width: 33.33%">{{this.username}}</td>
+								<td style="width: 33.33%">
+									<select class="custom-select" id="inlineFormCustomSelect">
+										<option selected>Choose...</option>
+										<option value="1">One</option>
+										<option value="2">Two</option>
+										<option value="3">Three</option>
+									</select>
+								</td>
+								<td class="text-right" style="width: 33.33%">
 									<button class="btn btn-danger" type="button" name="button">Delete User</button>
 								</td>
 							</tr>
-						{{/each}}
+							{{/each}}
+						{{/if}}
 						<!-- <tr>
 							<td>Jacob</td>
 							<td>Thornton</td>
