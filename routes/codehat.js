@@ -5,6 +5,10 @@ var router = express.Router();
 var User = require('../models/user');
 var server = require('../app').server;
 var upload = require('../database').upload;
+var uniqid = require('uniqid');
+
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 var socket = require('socket.io');
 var io = socket(server);
@@ -44,6 +48,80 @@ router.get('/', function(req, res){
 		req.flash('origin', '/codehat');
 		res.redirect("/login");
 
+	}
+});
+
+router.post('/share', function(req, res){
+	var email = req.body.email;
+	var projectID = req.body.projectID;
+	console.log(projectID);
+
+	User.UserSchema.findOne({email: email}, function(err, user) {
+		if (user) {
+			var e_link = projectID + "/" + uniqid();
+			user.e_link = e_link;
+			user.save(function(err) {
+				if(err) throw err;
+			});
+			console.log(user.email);
+			const output = `
+				<p>Hi ${user.username},</p>
+				<p>You have been invited to a CodeHat project</p>
+
+				<h3><a href="http://localhost:8080/codehat/invite/${e_link}">Accept invitation</a></h3>
+			`;
+			const msg = {
+				to: user.email,
+				from: `Code Assist <${process.env.SENDER_EMAIL}>`,
+				subject: "You're invited to a new project",
+				html: output
+			};
+
+			sgMail.send(msg);
+
+			res.send("User found");
+		} else {
+			res.send("No user found");
+		}
+	});
+});
+
+router.get('/invite/:projectID/:randomID', function(req, res){
+	var projectID = req.params.projectID;
+	var randomID = req.params.randomID;
+	var e_link = projectID + "/" + randomID;
+
+	if (req.user) {
+		if (req.user.e_link == e_link) {
+			User.UserSchema.findOne({_id: req.user._id}, function(err, user) {
+				// remove e_link from user
+				user.e_link = undefined;
+
+				User.ProjectSchema.findOne({_id: projectID}, function(err, project) {
+					if (project) {
+						user.projectsWithAccess.push(project);
+						user.save(function(err) {
+							if(err) throw err;
+						});
+
+						project.usersWithAccess.push(user);
+						project.save(function(err) {
+							if(err) throw err;
+
+							res.redirect("/codehat/" + projectID);
+						});
+
+					}
+				});
+			});
+
+		} else {
+			res.redirect("/codehat/" + projectID);
+		}
+	} else {
+		req.flash('origin');
+		req.flash('origin', '/codehat/invite/' + e_link);
+		res.redirect("/login");
 	}
 });
 
