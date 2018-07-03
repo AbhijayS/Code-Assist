@@ -39,7 +39,7 @@ $("input:file").change(function() {
 // new file being created
 $("#newFileBtn").click(function() {
 	addFile();
-	socket.emit("fileAdded");
+	socket.emit("fileAdded", "", "");
 });
 
 socket.on("addFile", function(fileName, text) {
