@@ -48,37 +48,67 @@ router.get('/', function(req, res){
 });
 
 router.post('/', function(req, res){
-	if(req.user){
-		var newProject = new User.ProjectSchema();
-		newProject.name = req.body.project_name;
-		newProject.owner = req.user._id;
-		// newProject.usersWithAccess.push(req.user);
+	var data = {
+		auth: true,
+		message: '',
+		url: ''
+	};
+	var project_name = req.body.project_name;
+	console.log("Received Name: " + project_name);
+	if(req.user) {
+		User.UserSchema.findOne({_id: req.user._id}).populate('projectsWithAccess').exec(function(err, user) {
+			var projects = user.projectsWithAccess;
+			// console.log(projects);
+			for(var i = 0; i < projects.length; i++) {
+				console.log("Checking Name: " + projects[i].name);
+				if(projects[i].name == project_name) {
+					data.auth = false;
+					data.message = "is-invalid";
+					console.log("invalid");
+				}
+			}
+			if(!data.auth == false) {
+				console.log("Valid");
+				var newProject = new User.ProjectSchema();
+				newProject.name = req.body.project_name;
+				newProject.owner = req.user._id;
+				// newProject.usersWithAccess.push(req.user);
 
-		newProject.status = "new";
+				newProject.status = "new";
 
-		var newProjectFile = new User.ProjectFileSchema();
-		newProjectFile.fileName = "";
-		newProjectFile.text = "";
-		newProjectFile.save(function(err) {
-			if(err) throw err;
-			// saved
+				var newProjectFile = new User.ProjectFileSchema();
+				newProjectFile.fileName = "";
+				newProjectFile.text = "";
+				newProjectFile.save(function(err) {
+					if(err) throw err;
+					// saved
+				});
+				newProject.files.push(newProjectFile);
+				newProject.save(function(err) {
+					if(err) throw err;
+				});
+				// console.log('Project ID: ' + newProject._id);
+				user.projectsWithAccess.push(newProject._id);
+				// console.log(req.user.projectsWithAccess);
+				user.save(function(err) {
+					if(err) throw err;
+					console.log('new codehat project saved');
+				});
+				data.auth = true;
+				data.message = 'is-valid';
+				data.url = "/codehat/" + newProject.id;
+			}
+			console.log("Data:\n" + data.auth + '\n' + data.url + '\n' + data.message);
+			res.send(data);
 		});
-		newProject.files.push(newProjectFile);
-		newProject.save(function(err) {
-		  if(err) throw err;
-		  console.log('new codehat project saved');
-		});
-		console.log('Project ID: ' + newProject._id);
-		req.user.projectsWithAccess.push(newProject._id);
-		console.log(req.user.projectsWithAccess);
-		req.user.save(function(err) {
-      if(err) throw err;
-    });
-  	res.redirect("/codehat/" + newProject._id);
 	}else {
+		data.auth = false;
+		data.url = "/login"
+		data.message = '';
 		req.flash('origin');
 		req.flash('origin', '/codehat');
-		res.redirect("/login");
+		console.log("Data:\n" + data.auth + '\n' + data.url + '\n' + data.message);
+		res.send(data);
 	}
 });
 
@@ -86,20 +116,20 @@ router.get('/:id', function(req, res) {
 		var projectID = req.params.id;
 		User.ProjectSchema.findOne({_id: projectID}).populate(['files', 'usersWithAccess', 'owner']).exec(function(err, project) {
 			if(req.user) {
-			if (project) {
-				var userAccessLevel = 0;
-				for (var i = 0; i < project.usersWithAccess.length; i++) {
-					// console.log(typeof req.user._id);
-					// console.log(typeof project.usersWithAccess[i].id);
-					if (project.usersWithAccess[i].id === req.user.id)
-						userAccessLevel = 1;
-				}
+				if (project) {
+					var userAccessLevel = 0;
+					for (var i = 0; i < project.usersWithAccess.length; i++) {
+						// console.log(typeof req.user._id);
+						// console.log(typeof project.usersWithAccess[i].id);
+						if (project.usersWithAccess[i].id === req.user.id)
+							userAccessLevel = 1;
+					}
 
-				if (req.user._id.equals(project.owner.id)) {
-					userAccessLevel = 2;
-				}
-				// console.log(userAccessLevel);
-				if (userAccessLevel != 0) {
+					if (req.user._id.equals(project.owner.id)) {
+						userAccessLevel = 2;
+					}
+					// console.log(userAccessLevel);
+					if (userAccessLevel != 0) {
 
 
 					console.log("user connecting to codehat project with access level "+userAccessLevel);
@@ -114,7 +144,7 @@ router.get('/:id', function(req, res) {
 				} else{
 					res.send("You don't have access to this project");
 				}
-			} else {
+			}else {
 				res.send("Project Not Found");
 			}
 		}else{
@@ -127,7 +157,7 @@ router.get('/:id', function(req, res) {
 
 router.post('/share', function(req, res) {
 	if(req.user) {
-		
+
 	}else{
 		req.flash('origin');
 		req.flash('origin', '/codehat/'+req.params.id);

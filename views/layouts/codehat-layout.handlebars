@@ -33,7 +33,7 @@
     <div id="sidebar">
       <div id="create-project-box" class="sidebar-box">
         <div class="content container">
-          <form class="" method="post" action="">
+          <form class="createNewProject" novalidate>
             <div class="container">
               <h3>Create New Project</h3>
               <hr>
@@ -41,6 +41,9 @@
                 <div class="col-12">
                   <div class="form-group">
                     <input type="text" class="form-control" name="project_name" id="project_name" placeholder="Project Name" required>
+                    <div class="text-light invalid-feedback">
+                      Project with this name already exists
+                    </div>
                   </div>
                 </div>
 
@@ -67,9 +70,18 @@
     {{{body}}}
 
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.min.js"
+      integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+      crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script
+      src="/js/codehat-dash.js"
+    ></script>
+    <script type="text/javascript">
+
+    </script>
     <!-- <script src="http://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script> -->
     <!-- <script src="http://threejs.org/examples/js/libs/stats.min.js"></script> -->
     <!-- <script type="text/javascript">

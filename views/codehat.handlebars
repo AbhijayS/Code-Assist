@@ -60,15 +60,16 @@
 
     <p class="lead"><span style="text-primary">New to Code Assist? </span>Collaborate on a problem Today</p>
     <div class="container">
-      <form class="form-inline text-center justify-content-center" method="post" action="">
+      <form class="createNewProject form-inline text-center justify-content-center" novalidate>
         <div class="form-group">
           <input type="text" class="mr-1 form-control btn-lg" name="project_name" id="project_name" placeholder="Project Name" required>
+          <div class="text-light invalid-feedback">
+            Please choose a username.
+          </div>
+
           <button type="submit" class="btn btn-outline-success btn-lg"><i class="fas fa-plus"></i><span> Start New Project</span></button>
         </div>
       </form>
     </div>
   </div>
 {{/if}}
-<script
-  src="/js/codehat-dash.js"
-></script>

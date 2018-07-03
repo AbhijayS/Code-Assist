@@ -18,4 +18,22 @@ function() {
     $('#projects').css({'margin-left' : '75px'});
     $('#sidebar .sidebar-box#global-chat-box').width() == 0 ? $('#sidebar .sidebar-box#global-chat-box').width('100%') : $('#sidebar .sidebar-box#global-chat-box').width(0);
   });
+
+  $('.createNewProject').submit(function(event) {
+    var form = $(this);
+    event.preventDefault();
+    console.log('clicked');
+    $.post('/codehat/', {project_name: $(this).find('input').val()}, function(data){
+      if(data.auth) {
+        window.location.replace(data.url);
+      }else{
+        if(data.url == '') {
+          console.log(data.message);
+          form.find('input').toggleClass(data.message);
+        }else {
+          window.location.replace(data.url);
+        }
+      }
+    });
+  });
 };
