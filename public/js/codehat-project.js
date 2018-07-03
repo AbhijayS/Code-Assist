@@ -13,7 +13,7 @@ $(document).ready(function() {
         </div>
 
         <div class="col-sm-10">
-          <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+          <input type="email" class="form-control" name="emailInput" aria-describedby="emailHelp" placeholder="Enter email">
         </div>
       </div>
       `);
