@@ -5,6 +5,7 @@ var router = express.Router();
 var User = require('../models/user');
 var server = require('../app').server;
 var upload = require('../database').upload;
+var uniqid = require('uniqid');
 
 var socket = require('socket.io');
 var io = socket(server);
@@ -33,16 +34,6 @@ router.post('/', function(req, res){
 	if(req.user){
 		var newProject = new User.ProjectSchema();
 		newProject.ownerid = req.user._id;
-
-/*		var newProjectFile = new User.ProjectFileSchema();
-		newProjectFile.fileName = "";
-		newProjectFile.text = "";
-		// newProjectFile.text = javaStarter;
-		newProjectFile.save(function(err) {
-			if(err) throw err;
-			// saved
-		});
-		newProject.files.push(newProjectFile);*/
 
 		newProject.save(function(err) {
 		  if(err) throw err;
@@ -95,8 +86,9 @@ var spawn = child_process.spawn;
 var fs = require('fs');
 // var folderPath = "./codehat_files/";
 
-function File(fileName, text) {
+function File(fileName, text, untitledName) {
 	this.fileName = fileName;
+	this.untitledName = untitledName;
 	this.text = text;
 	this.cursors = {};
 	this.selections = {};
@@ -130,16 +122,28 @@ function Project(id) {
 	this.id = id;
 	this.folderPath = "./codehat_files/" + id + "/";
 
-/*	// create folder for project if it doesn't exist yet
-	if (!fs.existsSync(this.folderPath)) {
-		fs.mkdirSync(this.folderPath);
-	}
 	this.files = [];
-	for (var i = 0; i < files.length; i++) {
-		this.files.push(new File(files[i].fileName, files[i].text));
-	}*/
 
-	this.files = [];
+	this.addUntitledFile = function() {
+		if (!fs.existsSync(self.folderPath + "untitled_files")) {
+			fs.mkdirSync(self.folderPath + "untitled_files");
+		}
+
+		var untitledName = "untitled_" + uniqid() + ".txt";
+		self.files.push(new File("", "", untitledName));
+		fs.writeFile(self.folderPath + "untitled_files/" + untitledName, "", function(err) {
+			if (err)
+				console.log(err);
+		});
+
+		// add untitled file to file namelist in database
+		User.ProjectSchema.findOne({_id: self.id}).exec(function(err, project) {
+			project.fileNames.push(untitledName);
+			project.save(function(err) {
+				if (err) console.log(err);
+			});
+		});
+	};
 
 	if (fs.existsSync(this.folderPath)) {
 		// get array of fileNames from database
@@ -147,21 +151,26 @@ function Project(id) {
 			var fileNames = project.fileNames;
 
 			// add existing files to project
-			fs.readdir(self.folderPath, function(err, filenames) {
-				if (err) {
-					console.log(err);
+			async.eachSeries(fileNames, function(filename, callback) {
+				// if file has a name
+				if (fs.existsSync(self.folderPath + filename)) {
+					fs.readFile(self.folderPath + filename, {encoding: 'utf-8'}, function(err, text){
+						if (err) {
+							console.log(err);
+						}
+						self.files.push(new File(filename, text));
+						callback();
+					});
+				} else if (fs.existsSync(self.folderPath + "untitled_files/" + filename)) {
+					// add untitled file to project
+					fs.readFile(self.folderPath + "untitled_files/" + filename, {encoding: 'utf-8'}, function(err, text){
+						if (err) {
+							console.log(err);
+						}
+						self.files.push(new File("", text, filename));
+						callback();
+					});
 				}
-				filenames.forEach(function(filename, index) {
-					// if filename is in array
-					if (fileNames.indexOf(filename) != -1) {
-						fs.readFile(self.folderPath + filename, {encoding: 'utf-8'}, function(err, text){
-							if (err) {
-								console.log(err);
-							}
-							self.files.push(new File(filename, text));
-						});
-					}
-				});
 			});
 
 		});
@@ -169,7 +178,7 @@ function Project(id) {
 	} else {
 		// create folder for project if it doesn't exist yet
 		fs.mkdirSync(this.folderPath);
-		this.files.push(new File("", ""));
+		self.addUntitledFile();
 	}
 	
 	this.outputError = false;
@@ -199,21 +208,17 @@ function Project(id) {
 				clearTimeout(file.saveTimeout);
 
 			file.saveTimeout = setTimeout(function() {
-/*				// saving file changes to database
-				User.ProjectSchema.findOne({_id: self.id}).populate('files').exec(function(err, project) {
-					project.files[fileIndex].text = text;
-
-					project.files[fileIndex].save(function (err) {
-						if (err) throw err;
-					});
-				});*/
-
 				if (file.fileName) {
 					console.log("saving")
 					fs.writeFile(self.folderPath + file.fileName, text, function(err) {
 						if (err)
 							console.log(err);
 					});		
+				} else {
+					fs.writeFile(self.folderPath + "untitled_files/" + file.untitledName, text, function(err) {
+						if (err)
+							console.log(err);
+					});	
 				}
 			}, 1000);
 		});
@@ -223,14 +228,6 @@ function Project(id) {
 		});
 
 		socket.on("fileRenamed", function(newFileName, fileIndex) {
-/*			// saving new file name to database
-			User.ProjectSchema.findOne({_id: self.id}).populate('files').exec(function(err, project) {
-				project.files[fileIndex].fileName = newFileName;
-
-				project.files[fileIndex].save(function (err) {
-					if (err) throw err;
-				});
-			});*/
 			var oldFileName = self.files[fileIndex].fileName;
 
 			if (oldFileName && fs.existsSync(self.folderPath + oldFileName)) {
@@ -247,46 +244,64 @@ function Project(id) {
 						var index = project.fileNames.indexOf(oldFileName);
 						if (index != -1) {
 							project.fileNames[index] = newFileName;
+							project.markModified("fileNames");
+							project.save(function(err) {
+								if (err) console.log(err);
+							});
 						}
-						project.markModified("fileNames");
-						project.save(function(err) {
-							if (err) console.log(err);
-						});
 					});
 				} else {
-					// delete file because it's now untitled
-					fs.unlink(self.folderPath + oldFileName, function(error) {
-						if (error) {
-							console.log(error);
-						}
+					// move file from main folder to untitled folder
+
+					// recreates untitled_files folder just in case
+					if (!fs.existsSync(self.folderPath + "untitled_files")) {
+						fs.mkdirSync(self.folderPath + "untitled_files");
+					}
+
+					// get untitled file name
+					var untitledName = "untitled_" + uniqid() + ".txt";
+					self.files[fileIndex].untitledName = untitledName;
+
+					fs.rename(self.folderPath + oldFileName, self.folderPath + "untitled_files/" + untitledName, function(err) {
+						if (err)
+							console.log(err);
 					});
 
-					// delete file Name from database
+					// update database file name
 					User.ProjectSchema.findOne({_id: self.id}).exec(function(err, project) {
 						var index = project.fileNames.indexOf(oldFileName);
 						if (index != -1) {
-							project.fileNames.splice(index, 1);
-						}
+							project.fileNames[index] = untitledName;
+							project.markModified("fileNames");
 
-						project.save(function(err) {
-							if (err) console.log(err);
-						});
-					});	
+							project.save(function(err) {
+								if (err) console.log(err);
+							});
+						}
+					});
+
 				}
 
 			} else if (newFileName) {
-				// create file
-				fs.writeFile(self.folderPath + newFileName, self.files[fileIndex].text, function(err) {
+				var untitledName = self.files[fileIndex].untitledName;
+				// move file from untitled folder to main folder
+				fs.rename(self.folderPath + "untitled_files/" + untitledName, self.folderPath + newFileName, function(err) {
 					if (err)
 						console.log(err);
 				});
 
 				User.ProjectSchema.findOne({_id: self.id}).exec(function(err, project) {
-					project.fileNames.push(newFileName);
-					project.save(function(err) {
-						if (err) console.log(err);
-					});
+					var index = project.fileNames.indexOf(untitledName);
+					if (index != -1) {
+						project.fileNames[index] = newFileName;
+						project.markModified("fileNames");
+
+						project.save(function(err) {
+							if (err) console.log(err);
+						});
+					}
 				});
+				self.files[fileIndex].untitledName = null;
 			}
 
 			self.files[fileIndex].fileName = newFileName;
@@ -294,11 +309,11 @@ function Project(id) {
 		});
 
 		socket.on("fileAdded", function(fileName, text) {
-			self.files.push(new File(fileName, text));
 
 			socket.broadcast.emit("addFile", fileName, text);
 
 			if (fileName) {
+				self.files.push(new File(fileName, text));
 				fs.writeFile(self.folderPath + fileName, text, function(err) {
 					if (err)
 						console.log(err);
@@ -310,27 +325,11 @@ function Project(id) {
 						if (err) console.log(err);
 					});
 				});
+			} else {
+				// if untitled file is added
+				self.addUntitledFile();
 			}
 
-/*			// adding new file to project in database
-			User.ProjectSchema.findOne({_id: self.id}).exec(function(err, project) {
-				var newProjectFile = new User.ProjectFileSchema();
-
-				if (fileName && text) {
-					newProjectFile.fileName = fileName;
-					newProjectFile.text = text;
-				}
-
-				newProjectFile.save(function(err) {
-					if(err) throw err;
-					// saved
-				});
-				project.files.push(newProjectFile);
-
-				project.save(function(err) {
-				  if(err) throw err;
-				});
-			});*/
 		});
 
 		socket.on("deleteFile", function(fileIndex) {
@@ -370,22 +369,31 @@ function Project(id) {
 						if (err) console.log(err);
 					});
 				});
-			}
+			} else {
+				// delete untitled file
+				var untitledName = self.files[fileIndex].untitledName;
 
+				var filePath = self.folderPath + "untitled_files/" + untitledName;
+				if (fs.existsSync(filePath)) {
+					fs.unlink(filePath, function(error) {
+						if (error) {
+							console.log(error);
+						}
+					});		
+				}
 
-/*			User.ProjectSchema.findOne({_id: self.id}).exec(function(err, project) {
-				User.ProjectFileSchema.find({_id: project.files[fileIndex]}).remove(function(error) {
-					if (error) {
-						console.log(error);
+				// delete file Name from database
+				User.ProjectSchema.findOne({_id: self.id}).exec(function(err, project) {
+					var index = project.fileNames.indexOf(untitledName);
+					if (index != -1) {
+						project.fileNames.splice(index, 1);
 					}
 
-					project.files.splice(fileIndex, 1);
-
 					project.save(function(err) {
-					  if(err) throw err;
-					});	
+						if (err) console.log(err);
+					});
 				});
-			});*/
+			}
 
 			self.files.splice(fileIndex, 1);
 			socket.broadcast.emit("deleteFile", fileIndex);
