@@ -112,8 +112,13 @@ function addFile(fileName, text) {
 		socket.emit("selectionChange", editor.selection.getRange(), fileIndex);
 	});
 
-	if (editorSessions.length == 1)
+	if (editorSessions.length == 1) {
 		editor.setSession(editorSessions[0].session);
+		if (fileName) {
+			$("#downloadFileBtn").removeClass("disabled");
+			$("#downloadFileBtn").attr("href", "/codehat/" + projectID + "/file/" + 0);
+		}
+	}
 }
 
 function setSessionMode(newFileName, fileIndex) {
@@ -147,6 +152,7 @@ function deleteFile(fileIndex) {
 
 	if ($(".nav-link").length == 0) {
 		$("#editor").css('visibility', 'hidden');
+		$("#downloadFileBtn").addClass("disabled");	
 	}
 }
 
@@ -166,6 +172,13 @@ function initFileTab(newTab) {
 
 		var sessionIndex = $(".nav-item").index($(this));
 		editor.setSession(editorSessions[sessionIndex].session);
+
+		$("#downloadFileBtn").attr("href", "/codehat/" + projectID + "/file/" + sessionIndex);
+		if(fileNameInput.val().length == 0) {
+			$("#downloadFileBtn").addClass("disabled");
+		} else {
+			$("#downloadFileBtn").removeClass("disabled");
+		}
 	});
 	// To auto resize fileName tabs
 	fileNameInput.on('input', function() {
@@ -195,6 +208,12 @@ function initFileTab(newTab) {
 				var sessionIndex = $(".fileName").index($(this));
 		        socket.emit("fileRenamed", $(this).val(), sessionIndex);
 		    	setSessionMode($(this).val(), sessionIndex);		
+
+				if(fileNameInput.val().length == 0) {
+					$("#downloadFileBtn").addClass("disabled");
+				} else {
+					$("#downloadFileBtn").removeClass("disabled");
+				}
 	    	} else {
 				// $(this).val("");
 	    		// alert("Invalid file name");
@@ -215,7 +234,13 @@ function initFileTab(newTab) {
 
 			var sessionIndex = $(".fileName").index($(this));
 			setSessionMode($(this).val(), sessionIndex);
-	        socket.emit("fileRenamed", $(this).val(), sessionIndex);	
+	        socket.emit("fileRenamed", $(this).val(), sessionIndex);
+
+			if(fileNameInput.val().length == 0) {
+				$("#downloadFileBtn").addClass("disabled");
+			} else {
+				$("#downloadFileBtn").removeClass("disabled");
+			}	
 		} else {
 			// $(this).val("");
 			// alert("Invalid file Name")

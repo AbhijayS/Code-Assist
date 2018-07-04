@@ -24,9 +24,10 @@ crossorigin="anonymous"></script>
 <body>
 <div id="topBar">
 	<label class="btn btn-primary mb-0">
-		Upload File<input type="file" accept=".java,.py,.dat,.txt" hidden>
+		Upload File<input type="file" accept=".java,.py,.cpp,.dat,.txt,.html,.css,.js" hidden>
 	</label>
 	<button id="newFileBtn" class="btn btn-primary">New File</button>
+	<a id="downloadFileBtn" class="btn btn-primary disabled" href="#">Download File</a>
 </div>
 
 <ul class="nav nav-tabs" id="fileTabs">
@@ -47,15 +48,17 @@ crossorigin="anonymous"></script>
 <script>
 	var editor = ace.edit("editor");
 	editor.setTheme("ace/theme/textmate");
-	editor.getSession().setMode("ace/mode/java");
 	editor.setShowPrintMargin(false);
 	editor.$blockScrolling = Infinity;
 	editor.focus();
 </script>
 
 <script type="text/javascript">
+
   console.log('{{user.username}}'+' is your username and you have a clearance of level '+{{clearance}});
-	var socket = io('{{namespace}}');
+  var socket = io('{{namespace}}');
+
+  var projectID = "{{project._id}}";
 </script>
 <script src="/codehat/script.js"></script>
 

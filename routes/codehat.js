@@ -73,9 +73,27 @@ router.get('/:id', function(req, res) {
 					currentProjects.push(new Project(project._id));
 				}
 			}
-			res.render('codehat-project', {layout: false, namespace: '/' + projectID, clearance:useraccesslevel});
+			res.render('codehat-project', {layout: false, namespace: '/' + projectID, clearance:useraccesslevel, project: project});
 		} else {
 			res.send("Invalid project");
+		}
+	});
+});
+
+router.get('/:id/file/:fileIndex', function(req, res) {
+	var projectID = req.params.id;
+	var fileIndex = req.params.fileIndex;
+
+	User.ProjectSchema.findOne({_id: projectID}, function(err, project) {
+		if (project.fileNames[fileIndex]) {
+			var file = "./codehat_files/" + projectID + "/" + project.fileNames[fileIndex];
+			if (fs.existsSync(file)) {
+				res.download(file);
+			} else {
+				res.end();
+			}
+		} else {
+			res.end();
 		}
 	});
 });
