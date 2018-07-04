@@ -55,6 +55,11 @@ router.post('/share', function(req, res){
 	var emails = req.body.emailInput;
 	var projectID = req.body.projectID;
 
+	// in case only one email given
+	if (!Array.isArray(emails)) {
+		emails = [emails];
+	}
+
 	console.log("Share post request ----------------")
 	console.log("projectID: " + projectID);
 
