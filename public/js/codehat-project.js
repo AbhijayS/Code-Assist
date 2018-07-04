@@ -45,11 +45,12 @@ $(document).ready(function() {
     for(var i = 0; i < form.find("input[name=emailInput]").length; i++) {
       toSend.push($(form.find("input[name=emailInput]")[i]).val());
     }
-
-    $.post('/codehat/share', {emailInput: toSend}, function(data){
+    console.log(window.location.pathname.split('/')[2]);
+    $.post('/codehat/share', {emailInput: toSend, projectID: window.location.pathname.split('/')[2]}, function(data){
       if(data.length == 0) {
-        if($('#close-settings #emailsSent').hasClass('hide'))
-          $('#close-settings #emailsSent').toggleClass('hide');
+        console.log("Success");
+        if($('#settings #emailsSent').hasClass('hide'))
+          $('#settings #emailsSent').toggleClass('hide');
 
       }else{
         for(var i = 0; i < data.length; i++) {
