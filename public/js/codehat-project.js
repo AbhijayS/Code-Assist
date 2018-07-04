@@ -14,6 +14,9 @@ $(document).ready(function() {
 
         <div class="col-sm-10">
           <input type="email" class="form-control" name="emailInput" aria-describedby="emailHelp" placeholder="Enter email">
+          <div class="text-danger invalid-feedback">
+            Member with this email could not be found
+          </div>
         </div>
       </div>
       `);
@@ -34,4 +37,28 @@ $(document).ready(function() {
     $('#settings').show();
     $('#close-settings').show();
   });
+
+  $('#share-project').submit(function(event) {
+    event.preventDefault();
+    var form = $(this);
+    var toSend = [];
+    for(var i = 0; i < form.find("input[name=emailInput]").length; i++) {
+      toSend.push($(form.find("input[name=emailInput]")[i]).val());
+    }
+
+    $.post('/codehat/share', {emailInput: toSend}, function(data){
+      if(data.length == 0) {
+        if($('#close-settings #emailsSent').hasClass('hide'))
+          $('#close-settings #emailsSent').toggleClass('hide');
+
+      }else{
+        for(var i = 0; i < data.length; i++) {
+          console.log(data[i]);
+          var temp = data[i];
+          $(form.find("input[name=emailInput]").get(toSend.indexOf(temp))).addClass('is-invalid');
+        }
+      }
+    });
+
+  })
 });

@@ -27,11 +27,18 @@
 <i id="close-settings" class="far fa-times-circle"></i>
 <div id="settings">
 	<div id="box" class="p-5">
+		<div class="alert alert-success alert-dismissible fade show hide" role="alert">
+		  <strong>Holy guacamole!</strong> You should check in on some of those fields below.
+		  <button type="button" class="close" onclick="$('.alert').alert('close')" aria-label="Close">
+		    <span aria-hidden="true">&times;</span>
+		  </button>
+		</div>
+
 		<div id="sharing" class="mb-5">
 			<h1 class="title mb-4" style="font-weight: 200;">Invite Members to <span style="font-weight: 700;">{{project.name}}</span></h1>
 			<hr>
 			<div class="container">
-				<form>
+				<form id="share-project" novalidate>
 					<div class="form-group">
 						<div class="row">
 
@@ -42,7 +49,10 @@
 
 						<div class="row mb-2">
 							<div class="col-sm-10 offset-sm-1">
-								<input type="email" class="form-control" name="emailInput" aria-describedby="emailHelp" placeholder="Enter email">
+								<input id="exampleInputEmail1" type="email" class="form-control" name="emailInput" aria-describedby="emailHelp" placeholder="Enter email" required>
+								<div class="text-danger invalid-feedback">
+				          Member with this email could not be found
+				        </div>
 							</div>
 						</div>
 
@@ -52,7 +62,7 @@
 							</div>
 
 							<div class="col-sm-7">
-								<button class="btn btn-success ml-auto" type="button" name="button" style="display: block !important;">Send Invitations</button>
+								<button class="btn btn-success ml-auto" type="submit" name="button" style="display: block !important;">Send Invitations</button>
 							</div>
 						</div>
 					</div>

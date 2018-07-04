@@ -22,13 +22,13 @@ function() {
   $('.createNewProject').submit(function(event) {
     var form = $(this);
     event.preventDefault();
-    console.log('clicked');
+    // console.log('clicked');
     $.post('/codehat/', {project_name: $(this).find('input').val()}, function(data){
       if(data.auth) {
         window.location.replace(data.url);
       }else{
         if(data.url == '') {
-          console.log(data.message);
+          // console.log(data.message);
           form.find('input').toggleClass(data.message);
         }else {
           window.location.replace(data.url);
