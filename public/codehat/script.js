@@ -163,10 +163,14 @@ function deleteFile(fileIndex) {
   			editor.setSession(editorSessions[0].session);
 
   			updateHtmlPreviewWindow(0);
+
+  			$("#downloadFileBtn").attr("href", "/codehat/" + projectID + "/file/" + 0);
   		}
 	} else {
 		$(".nav-item").eq(fileIndex).remove();
 		editorSessions.splice(fileIndex, 1);
+
+		$("#downloadFileBtn").attr("href", "/codehat/" + projectID + "/file/" + getSessionIndex(editor.session));
 	}
 
 	if ($(".nav-link").length == 0) {
