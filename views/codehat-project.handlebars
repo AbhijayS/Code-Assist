@@ -56,8 +56,26 @@ crossorigin="anonymous"></script>
 <script type="text/javascript">
   console.log('{{user.username}}'+' is your username and you have a clearance of level '+{{clearance}});
 	var socket = io('{{namespace}}');
+	alert('{{namespace}}');
 </script>
 <script src="/codehat/script.js"></script>
 
 </body>
+<form action="">
+	<input id="msg" autocomplete="off" /><button>Send</button>
+</form>
+<script>
+$(function () {
+    $('form').submit(function(){
+      socket.emit('chat','{{user.username}}'+" :: "+$('#msg').val());
+      $('#msg').val('');
+      return false;
+    });
+	socket.on('broadcastchat',function(msg){
+		alert(msg);
+		$('#messages').append($('<li>').text(msg));
+		});
+	});
+</script>
+<ul id=messages></ul>
 </html>
