@@ -115,6 +115,7 @@ var fs = require('fs');
 function File(fileName, text, untitledName) {
 	this.fileName = fileName;
 	this.untitledName = untitledName;
+	this.htmlPreviewCode;
 	this.text = text;
 	this.cursors = {};
 	this.selections = {};
@@ -477,6 +478,13 @@ function Project(id) {
 				return false;
 			}
 
+			if (fileExt == ".html") {
+				socket.broadcast.emit("programRunning", fileIndex);
+				file.htmlPreviewCode = file.text;
+				self.nsp.emit("runFinished");
+				return false;
+			}
+
 			if (fileExt != ".java" && fileExt != ".py" && fileExt != ".cpp") {
 				self.nsp.emit("outputError", "Currently only .java, .py, and .cpp files are able to be compiled/run");
 				self.nsp.emit("runFinished");
@@ -489,7 +497,7 @@ function Project(id) {
 
 			self.output = "";
 			self.outputError = false;
-			socket.broadcast.emit("programRunning");
+			socket.broadcast.emit("programRunning", fileIndex);
 			// console.log("Saving")
 			saveAllFiles(self.folderPath, self.files);
 

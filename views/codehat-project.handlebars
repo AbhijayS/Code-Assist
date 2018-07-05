@@ -34,7 +34,14 @@ crossorigin="anonymous"></script>
 
 </ul>
 
-<div id="editor"></div>
+<div id="editorContainer" class="container-fluid">
+	<div class="row">
+		<div class="col-sm" id="editor"></div>
+		<div class="col-sm" id="previewContainer" style="display: none;">
+			<iframe id="htmlPreview"></iframe>
+		</div>
+	</div>
+</div>
 
 <textarea id="output" readonly autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
 <form id="programInputForm">
