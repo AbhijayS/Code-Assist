@@ -24,18 +24,25 @@
 
 
 <!-- Settings Section -->
-<i id="close-settings" class="far fa-times-circle"></i>
+<!-- <i id="close-settings" class="far fa-times-circle"></i> -->
 <div id="settings">
-	<div id="box" class="p-5">
-		<div id="emailsSent" class="alert alert-success alert-dismissible fade show hide" role="alert">
-		  Email Invitations sent successfully
-		  <button type="button" class="close" onclick="$('.alert').alert('close')" aria-label="Close">
-		    <span aria-hidden="true">&times;</span>
-		  </button>
-		</div>
-
+	<div id="box" class="mx-auto p-5" style="max-width: 1100px;">
 		<div id="sharing" class="mb-5">
-			<h1 class="title mb-4" style="font-weight: 200;">Invite Members to <span style="font-weight: 700;">{{project.name}}</span></h1>
+
+			<h1 class="title mb-4" style="font-weight: 200;">Invite Members to<input id="change-project-name" type="text" class="form-control" value="{{project.name}}" style="
+				    display: inline;
+				    vertical-align: baseline;
+				    font-weight: 400;
+						width: auto;
+						font-size: inherit;
+						border: none;
+						width: 250px;
+			" required>
+			<span class="text-secondary lead" style="
+			font-size: 1rem;
+			">
+			(Click to Change)</span></h1>
+
 			<hr>
 			<div class="container">
 				<form id="share-project" novalidate>
@@ -70,10 +77,11 @@
 			</div>
 		</div>
 
-		<div id="members">
+		<!-- <div id="members"> -->
 			<h1 style="font-weight: 200;">Members with Access</h1>
+			<hr>
 			<div class="container">
-				<table class="table table-hover">
+				<table class="mx-auto table table-hover" style="overflow-y: scroll; width: 82%;">
 					<!-- <thead>
 						<tr>
 							<th scope="col">#</th>
@@ -143,6 +151,6 @@
 				</table>
 			</div>
 
-		</div>
+		<!-- </div> -->
 	</div>
 </div>

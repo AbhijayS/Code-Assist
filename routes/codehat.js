@@ -63,43 +63,107 @@ router.post('/share', function(req, res){
 	console.log("Share post request ----------------")
 	console.log("projectID: " + projectID);
 
+	// var failedEmails = [];
+	//
+	// async.each(emails, function(email, callback) {
+	// 	User.UserSchema.findOne({email: email}, function(err, user) {
+	// 		if (user) {
+	// 			var e_link = projectID + "/" + uniqid();
+	// 			user.e_link = e_link;
+	// 			user.save(function(err) {
+	// 				if(err) throw err;
+	// 			});
+	//
+	// 			// callback(true);
+	//
+	// 			console.log("sharing with: " + user.email);
+	// 			const output = `
+	// 				<p>Hi ${user.username},</p>
+	// 				<p>You have been invited to a CodeHat project</p>
+	//
+	// 				<h3><a href="http://localhost:8080/codehat/invite/${e_link}">Accept invitation</a></h3>
+	// 				<!-- <h3><a href="https://codeassist.org/codehat/invite/${e_link}">Accept invitation</a></h3> -->
+	// 			`;
+	// 			const msg = {
+	// 				to: user.email,
+	// 				from: `Code Assist <${process.env.SENDER_EMAIL}>`,
+	// 				subject: "You're invited to a new project",
+	// 				html: output
+	// 			};
+	//
+	// 			sgMail.send(msg);
+	// 		} else {
+	// 			failedEmails.push(email);
+	// 		}
+	// 		callback();
+	// 	});
+	// }, function() {
+	// 	console.log("Failed emails: " + failedEmails);
+	// 	res.send(failedEmails);
+	// });
+
 	var failedEmails = [];
-
-	async.each(emails, function(email, callback) {
-		User.UserSchema.findOne({email: email}, function(err, user) {
-			if (user) {
-				var e_link = projectID + "/" + uniqid();
-				user.e_link = e_link;
-				user.save(function(err) {
-					if(err) throw err;
+	async.parallel([
+			function(callback) {
+				async.each(emails, function(email, checkCallback) {
+					User.UserSchema.findOne({email: email}, function(err, user) {
+						if(err) checkCallback(err);
+						if(!user) {
+							failedEmails.push(email);
+						}
+						checkCallback();
+					});
+				}, function(err) {
+					callback(err);
 				});
-
-				// callback(true);
-
-				console.log("sharing with: " + user.email);
-				const output = `
-					<p>Hi ${user.username},</p>
-					<p>You have been invited to a CodeHat project</p>
-
-					<h3><a href="http://localhost:8080/codehat/invite/${e_link}">Accept invitation</a></h3>
-				`;
-				const msg = {
-					to: user.email,
-					from: `Code Assist <${process.env.SENDER_EMAIL}>`,
-					subject: "You're invited to a new project",
-					html: output
-				};
-
-				sgMail.send(msg);
-			} else {
-				failedEmails.push(email);
 			}
-			callback();
-		});
-	}, function() {
-		console.log("Failed emails: " + failedEmails);
-		res.send(failedEmails);	
+	],
+	// optional callback
+	function(err) {
+		if(err) throw err;
+		if(failedEmails.length == 0) {
+			var sentEmails = [];
+			async.each(emails, function(email, finalCallback) {
+				User.UserSchema.findOne({email: email}, function(err, user) {
+					if(err) finalCallback(err);
+
+					if(!sentEmails.includes(email)) {
+						var e_link = projectID + "/" + uniqid();
+						user.e_link = e_link;
+						user.save(function(err) {
+							if(err) throw err;
+						});
+
+						console.log("sharing with: " + user.email);
+						const output = `
+						<p>Hi ${user.username},</p>
+						<p>You have been invited to a CodeHat project</p>
+
+						<h3><a href="http://localhost:8080/codehat/invite/${e_link}">Accept invitation</a></h3>
+						<!-- <h3><a href="https://codeassist.org/codehat/invite/${e_link}">Accept invitation</a></h3> -->
+						`;
+						const msg = {
+							to: user.email,
+							from: `Code Assist <${process.env.SENDER_EMAIL}>`,
+							subject: "You're invited to a new project",
+							html: output
+						};
+						sentEmails.push(email);
+						sgMail.send(msg);
+					}
+					finalCallback();
+				});
+			}, function(err) {
+				if(err) throw err;
+				console.log("All Emails sent successfully");
+				res.send([]);
+			});
+		}else{
+			console.log("Failed emails: " + failedEmails);
+			res.send(failedEmails);
+		}
 	});
+
 });
 
 router.get('/invite/:projectID/:randomID', function(req, res){
@@ -255,6 +319,38 @@ router.post('/share', function(req, res) {
 	}else{
 		req.flash('origin');
 		req.flash('origin', '/codehat/'+req.params.id);
+		res.redirect("/login");
+	}
+});
+
+router.post('/:id/change-project-name', function(req, res) {
+	var projectID = req.params.id;
+	console.log("--------- Changing Project name ---------");
+	if(req.user) {
+		User.ProjectSchema.findOne({_id: projectID}, function(err, project) {
+			var data = {
+				auth: false,
+				message: ""
+			}
+			console.log("Old Name: " + project.name);
+			var newName = req.body.newName;
+			if(newName.length >= 3) {
+				console.log("Valid");
+				project.name = newName;
+				project.save(function(err){if(err) throw err;});
+				console.log("New Name: " + project.name);
+				data.auth = true;
+				data.message = "is-valid";
+			}else{
+				console.log("InValid");
+				data.auth = false;
+				data.message = "is-invalid";
+			}
+			res.send(data);
+		});
+	}else{
+		req.flash('origin');
+		req.flash('origin', '/codehat/'+projectID);
 		res.redirect("/login");
 	}
 });

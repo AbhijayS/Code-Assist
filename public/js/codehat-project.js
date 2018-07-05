@@ -28,9 +28,20 @@ $(document).ready(function() {
     });
   });
 
-  $('#close-settings').click(function() {
-    $('#settings').hide();
-    $(this).hide();
+  // $('#close-settings').click(function() {
+  //   $('#settings').hide();
+  //   $(this).hide();
+  // });
+
+  $(document).mouseup(function(e)
+  {
+      var container = $("#box");
+
+      // if the target of the click isn't the container nor a descendant of the container
+      if (!container.is(e.target) && container.has(e.target).length === 0)
+      {
+          $('#settings').hide();
+      }
   });
 
   $('#settings-btn').click(function() {
@@ -45,21 +56,52 @@ $(document).ready(function() {
     for(var i = 0; i < form.find("input[name=emailInput]").length; i++) {
       toSend.push($(form.find("input[name=emailInput]")[i]).val());
     }
-    console.log(window.location.pathname.split('/')[2]);
-    $.post('/codehat/share', {emailInput: toSend, projectID: window.location.pathname.split('/')[2]}, function(data){
-      if(data.length == 0) {
+    // console.log(window.location.pathname.split('/')[2]);
+    $.post('/codehat/share', {emailInput: toSend, projectID: window.location.pathname.split('/')[2]}, function(data) {
+      console.log("Data Length: " + data.length);
+      if(!data || data.length == 0) {
         console.log("Success");
-        if($('#settings #emailsSent').hasClass('hide'))
-          $('#settings #emailsSent').toggleClass('hide');
-
+        var emailsSent = $(`
+        <div id="emailsSent" class="alert alert-success alert-dismissible fade show" role="alert">
+          Email Invitations sent successfully
+          <button type="button" class="close" onclick="$('.alert').alert('close')" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        `);
+        $('#settings #box').prepend((emailsSent));
+        for(var i = 0; i < form.find("input[name=emailInput]").length; i++) {
+          var temp = form.find("input[name=emailInput]");
+          temp.removeClass();
+          temp.addClass('form-control');
+          temp.addClass("is-valid");
+        }
+        
       }else{
+        for(var i = 0; i < form.find("input[name=emailInput]").length; i++) {
+          var temp = form.find("input[name=emailInput]");
+          temp.removeClass();
+          temp.addClass('form-control');
+          temp.addClass("is-valid");
+        }
         for(var i = 0; i < data.length; i++) {
-          console.log(data[i]);
+          // console.log(data[i]);
           var temp = data[i];
           $(form.find("input[name=emailInput]").get(toSend.indexOf(temp))).addClass('is-invalid');
         }
       }
     });
 
-  })
+  });
+  $("#settings #change-project-name").change(function() {
+    var input_field = $(this);
+    $.post(window.location.pathname+'/change-project-name', {newName: $(this).val()}, function(data) {
+      // console.log(input_field.attr('class'));
+      input_field.removeClass();
+      input_field.addClass('form-control');
+      input_field.css({'border' : ''});
+      input_field.addClass(data.message);
+    });
+  });
+
 });
