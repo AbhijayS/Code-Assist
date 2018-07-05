@@ -158,8 +158,8 @@ function Project(id, files) {
 	this.runner;
 
 	// nsp is the socket.io namespace
-	this.nsp = io.of('/'+self.id)
-console.log(self.id);
+	this.nsp = io.of('/'+this.id)
+
 	this.nsp.on('connection', function connection(socket) {
 		console.log("new codehat connection");
 		socket.emit("socketID", socket.id);
@@ -171,8 +171,8 @@ console.log(self.id);
 			socket.emit("output", self.output);
 		}
 		socket.on("chat",function(msg){
-			console.log(msg+'  ');
-			socket.emit('broadcastchat',msg)
+			//console.log(msg+'  ');
+			this.nsp.emit('broadcastchat',msg)
 		});
 		socket.on("updateFile", function(text, fileIndex) {
 			var file = self.files[fileIndex];
@@ -193,7 +193,7 @@ console.log(self.id);
 				});
 			}, 1000);
 		});
-		console.log('ci')
+
 		socket.on("fileChange", function(event, sessionIndex) { // emits changes to everyone
 			socket.broadcast.emit("fileChange", event, sessionIndex);
 		});
@@ -417,6 +417,7 @@ console.log(self.id);
 
 		});
 	});
+
 }
 
 module.exports = router;

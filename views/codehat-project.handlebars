@@ -56,7 +56,7 @@ crossorigin="anonymous"></script>
 <script type="text/javascript">
   console.log('{{user.username}}'+' is your username and you have a clearance of level '+{{clearance}});
 	var socket = io('{{namespace}}');
-	alert('{{namespace}}');
+//alert('{{namespace}}');
 </script>
 <script src="/codehat/script.js"></script>
 
@@ -72,7 +72,7 @@ $(function () {
       return false;
     });
 	socket.on('broadcastchat',function(msg){
-		alert(msg);
+	//	alert(msg);
 		$('#messages').append($('<li>').text(msg));
 		});
 	});
