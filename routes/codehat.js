@@ -80,6 +80,7 @@ router.get('/:id', function(req, res) {
 	});
 });
 
+// for file downloading
 router.get('/:id/file/:fileIndex', function(req, res) {
 	var projectID = req.params.id;
 	var fileIndex = req.params.fileIndex;
@@ -87,8 +88,15 @@ router.get('/:id/file/:fileIndex', function(req, res) {
 	User.ProjectSchema.findOne({_id: projectID}, function(err, project) {
 		if (project.fileNames[fileIndex]) {
 			var file = "./codehat_files/" + projectID + "/" + project.fileNames[fileIndex];
-			if (fs.existsSync(file)) {
-				res.download(file);
+
+			var projectObject = getCurrentProject(projectID);
+			if (projectObject && fs.existsSync(file)) {
+				fs.writeFile(file, projectObject.files[fileIndex].text, function(err) {
+					if (err)
+						console.log(err);
+
+					res.download(file);
+				});			
 			} else {
 				res.end();
 			}
@@ -133,6 +141,13 @@ function saveAllFiles(folderPath, files) {
 			console.log('All files have been saved successfully');
 		}
 	});
+}
+
+function getCurrentProject(id) {
+	for (var i = 0; i < currentProjects.length; i++) {
+		if (currentProjects[i].id == id)
+			return currentProjects[i];
+	}
 }
 
 function Project(id) {
