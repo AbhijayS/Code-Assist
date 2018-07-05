@@ -441,6 +441,13 @@ function Project(id, files) {
 					project.files[fileIndex].save(function (err) {
 						if (err) throw err;
 					});
+
+					// save last last_modified
+					var today = new Date();
+					project.last_modified = today.getDate();
+					project.save(function(err) {
+						if(err) throw err;
+					});
 				});
 			}, 1000);
 		});
