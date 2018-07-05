@@ -284,11 +284,11 @@ button:enabled {
 #settings .title {
   font-weight: 700;
 }
-
+/* 
 .close {
   margin: 0;
   vertical-align: middle;
-}
+} */
 
 #settings #add-more-emails:hover {
   color: #007bff;
