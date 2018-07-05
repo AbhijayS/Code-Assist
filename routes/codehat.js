@@ -16,7 +16,7 @@ var javaStarter = `public class Main {
 
 	}
 }`;
-//add someone to a project by id
+//add someone to a project by id.
 function addToProject(id, user) {
 	user.findOne({id:id},function(err, addedproject) {
 	if(err) throw err;
