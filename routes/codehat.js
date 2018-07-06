@@ -86,27 +86,27 @@ router.get('/:id/file/:fileIndex', function(req, res) {
 	var projectID = req.params.id;
 	var fileIndex = req.params.fileIndex;
 
-	User.ProjectSchema.findOne({_id: projectID}, function(err, project) {
-		if (project.fileNames[fileIndex]) {
-			var file = "./codehat_files/" + projectID + "/" + project.fileNames[fileIndex];
+	var projectObject = getCurrentProject(projectID);
+	if (projectObject && projectObject.files[fileIndex] && projectObject.files[fileIndex].fileName) {
+		var fileName = projectObject.files[fileIndex].fileName;
+		var file = "./codehat_files/" + projectID + "/" + fileName;
 
-			var projectObject = getCurrentProject(projectID);
-			if (projectObject && fs.existsSync(file)) {
-				fs.writeFile(file, projectObject.files[fileIndex].text, function(err) {
-					if (err)
-						console.log(err);
+		if (fs.existsSync(file)) {
+			fs.writeFile(file, projectObject.files[fileIndex].text, function(err) {
+				if (err)
+					console.log(err);
 
-					res.download(file);
-				});			
-			} else {
-				res.end();
-			}
+				res.download(file);
+			});			
 		} else {
 			res.end();
 		}
-	});
+	} else {
+		res.end();
+	}
 });
 
+// for downloading project .zip file
 router.get('/:id/downloadAll', function(req, res) {
 	var projectID = req.params.id;
 	var projectDir = "./codehat_files/" + projectID + "/";
@@ -132,14 +132,45 @@ router.get('/:id/downloadAll', function(req, res) {
 
 });
 
-// to make html sources accessible
-router.get('/:id/:fileName', function(req, res) {
+// to host html file previews
+router.get('/:id/htmlPreview/:fileIndex/', function(req, res) {
+	var projectID = req.params.id;
+	var fileIndex = req.params.fileIndex;
+
+	var projectObject = getCurrentProject(projectID);
+
+	if (projectObject) {
+		var file = projectObject.files[fileIndex];
+		if (file && file.htmlPreviewCode) {
+			res.send(file.htmlPreviewCode);
+		} else {
+			res.end();
+		}
+	} else {
+		res.end();
+	}
+});
+
+// to provide iframe sources
+router.get('/:id/htmlPreview/:fileIndex/:fileName', function(req, res) {
 	var projectID = req.params.id;
 	var fileName = req.params.fileName;
 
-	var file = "./codehat_files/" + projectID + "/" + fileName;
-	if (fs.existsSync(file)) {
-		res.download(file);
+	var projectObject = getCurrentProject(projectID);
+	if (projectObject && projectObject.getFileByName(fileName)) {
+		var file = projectObject.getFileByName(fileName);
+		var filePath = "./codehat_files/" + projectID + "/" + file.fileName;
+
+		if (fs.existsSync(filePath)) {
+			fs.writeFile(filePath, file.text, function(err) {
+				if (err)
+					console.log(err);
+
+				res.download(filePath);
+			});			
+		} else {
+			res.end();
+		}
 	} else {
 		res.end();
 	}
@@ -196,6 +227,13 @@ function Project(id) {
 	this.folderPath = "./codehat_files/" + id + "/";
 
 	this.files = [];
+
+	this.getFileByName = function(fileName) {
+		for (var i = 0; i < this.files.length; i++) {
+			if (this.files[i].fileName == fileName)
+				return this.files[i];
+		}
+	}
 
 	this.addUntitledFile = function() {
 		if (!fs.existsSync(self.folderPath + "untitled_files")) {

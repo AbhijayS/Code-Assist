@@ -21,6 +21,11 @@ html, body {
 #htmlPreview {
 	height: 100%;
 	width: 100%;
+	border: none;
+}
+
+#previewContainer {
+	padding-left: 0;
 	border: 1px solid rgb(210, 208, 208);
 }
 
