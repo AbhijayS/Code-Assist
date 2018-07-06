@@ -24,24 +24,16 @@ crossorigin="anonymous"></script>
 <body>
 <div id="topBar">
 	<label class="btn btn-primary mb-0">
-		Upload File<input type="file" accept=".java,.py,.cpp,.dat,.txt,.html,.css,.js" hidden>
+		Upload File<input type="file" accept=".java,.py,.dat,.txt" hidden>
 	</label>
 	<button id="newFileBtn" class="btn btn-primary">New File</button>
-	<a id="downloadFileBtn" class="btn btn-primary disabled" href="#">Download File</a>
 </div>
 
 <ul class="nav nav-tabs" id="fileTabs">
 
 </ul>
 
-<div id="editorContainer" class="container-fluid">
-	<div class="row">
-		<div class="col-sm" id="editor"></div>
-		<div class="col-sm" id="previewContainer" style="display: none;">
-			<iframe id="htmlPreview"></iframe>
-		</div>
-	</div>
-</div>
+<div id="editor"></div>
 
 <textarea id="output" readonly autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
 <form id="programInputForm">
@@ -55,19 +47,35 @@ crossorigin="anonymous"></script>
 <script>
 	var editor = ace.edit("editor");
 	editor.setTheme("ace/theme/textmate");
+	editor.getSession().setMode("ace/mode/java");
 	editor.setShowPrintMargin(false);
 	editor.$blockScrolling = Infinity;
 	editor.focus();
 </script>
 
 <script type="text/javascript">
-
   console.log('{{user.username}}'+' is your username and you have a clearance of level '+{{clearance}});
-  var socket = io('{{namespace}}');
-
-  var projectID = "{{project._id}}";
+	var socket = io('{{namespace}}');
+//alert('{{namespace}}');
 </script>
 <script src="/codehat/script.js"></script>
 
 </body>
+<form action="">
+	<input id="msg" autocomplete="off" /><button>Send</button>
+</form>
+<script>
+$(function () {
+    $('form').submit(function(){
+      socket.emit('chat','{{user.username}}'+" :: "+$('#msg').val());
+      $('#msg').val('');
+      return false;
+    });
+	socket.on('broadcastchat',function(msg){
+	//	alert(msg);
+		$('#messages').append($('<li>').text(msg));
+		});
+	});
+</script>
+<ul id=messages></ul>
 </html>
