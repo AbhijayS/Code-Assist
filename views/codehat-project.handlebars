@@ -28,6 +28,7 @@ crossorigin="anonymous"></script>
 	</label>
 	<button id="newFileBtn" class="btn btn-primary">New File</button>
 	<a id="downloadFileBtn" class="btn btn-primary disabled" href="#">Download File</a>
+	<a id="downloadAllFiles" class="btn btn-primary" href="downloadAll">Download Project as .ZIP</a>
 </div>
 
 <ul class="nav nav-tabs" id="fileTabs">
@@ -64,8 +65,6 @@ crossorigin="anonymous"></script>
 
   console.log('{{user.username}}'+' is your username and you have a clearance of level '+{{clearance}});
   var socket = io('{{namespace}}');
-
-  var projectID = "{{project._id}}";
 </script>
 <script src="/codehat/script.js"></script>
 

@@ -124,7 +124,7 @@ function addFile(fileName, text, htmlPreviewCode) {
 		editor.setSession(editorSessions[0].session);
 		if (fileName) {
 			$("#downloadFileBtn").removeClass("disabled");
-			$("#downloadFileBtn").attr("href", "/codehat/" + projectID + "/file/" + 0);
+			$("#downloadFileBtn").attr("href", "file/" + 0);
 
 			if (fileName.split('.').pop() == "html") {
 				$("#previewContainer").show();
@@ -164,13 +164,13 @@ function deleteFile(fileIndex) {
 
   			updateHtmlPreviewWindow(0);
 
-  			$("#downloadFileBtn").attr("href", "/codehat/" + projectID + "/file/" + 0);
+  			$("#downloadFileBtn").attr("href", "file/" + 0);
   		}
 	} else {
 		$(".nav-item").eq(fileIndex).remove();
 		editorSessions.splice(fileIndex, 1);
 
-		$("#downloadFileBtn").attr("href", "/codehat/" + projectID + "/file/" + getSessionIndex(editor.session));
+		$("#downloadFileBtn").attr("href", "file/" + getSessionIndex(editor.session));
 	}
 
 	if ($(".nav-link").length == 0) {
@@ -200,7 +200,7 @@ function initFileTab(newTab) {
 		var sessionIndex = $(".nav-item").index($(this));
 		editor.setSession(editorSessions[sessionIndex].session);
 
-		$("#downloadFileBtn").attr("href", "/codehat/" + projectID + "/file/" + sessionIndex);
+		$("#downloadFileBtn").attr("href", "file/" + sessionIndex);
 		if(fileNameInput.val().length == 0) {
 			$("#downloadFileBtn").addClass("disabled");
 		} else {

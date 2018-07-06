@@ -6,6 +6,7 @@ var User = require('../models/user');
 var server = require('../app').server;
 var upload = require('../database').upload;
 var uniqid = require('uniqid');
+var zip = new require('node-zip')();
 
 var socket = require('socket.io');
 var io = socket(server);
@@ -104,6 +105,31 @@ router.get('/:id/file/:fileIndex', function(req, res) {
 			res.end();
 		}
 	});
+});
+
+router.get('/:id/downloadAll', function(req, res) {
+	var projectID = req.params.id;
+	var projectDir = "./codehat_files/" + projectID + "/";
+
+	User.ProjectSchema.findOne({_id: projectID}, function(err, project) {
+		async.each(project.fileNames, function(fileName, callback) {
+			if (fs.existsSync(projectDir + fileName)) {
+				fs.readFile(projectDir + fileName, {encoding: 'utf-8'}, function(err, text) {
+					if (err) {
+						console.log(err);
+					}
+
+					zip.file(fileName, text);
+					callback();	
+				});
+			}
+		}, function() {
+			var data = zip.generate({base64: false, compression:'DEFLATE'});
+			res.set('Content-Disposition', 'attachment; filename="Project_Files.zip"');
+			res.end(data, 'binary')	;
+		});
+	});
+
 });
 
 // to make html sources accessible
