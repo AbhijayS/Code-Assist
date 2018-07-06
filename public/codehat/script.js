@@ -6,6 +6,8 @@ var editor = ace.edit("editor");
 
 var editorSessions = [];
 
+var htmlPreviewDoc = $("#htmlPreview").get(0).contentWindow.document;
+
 function EditorSession(session) {
 	this.session = session;
 	this.curMgr = new AceCollabExt.AceMultiCursorManager(session);
@@ -39,7 +41,7 @@ $("input:file").change(function() {
 // new file being created
 $("#newFileBtn").click(function() {
 	addFile();
-	socket.emit("fileAdded");
+	socket.emit("fileAdded", "", "");
 });
 
 socket.on("addFile", function(fileName, text) {
@@ -93,7 +95,7 @@ function addFile(fileName, text) {
 	});
 
 	editorSessions[sessionIndex].session.on('change', function(event) {
-		if (applyingChanges) { 
+		if (applyingChanges) {
 			// prevents fileChange from another user from being detected as a change made by you
 			return;
 		}
@@ -112,8 +114,15 @@ function addFile(fileName, text) {
 		socket.emit("selectionChange", editor.selection.getRange(), fileIndex);
 	});
 
-	if (editorSessions.length == 1)
+	if (editorSessions.length == 1) {
 		editor.setSession(editorSessions[0].session);
+		if (fileName) {
+			$("#downloadFileBtn").removeClass("disabled");
+			$("#downloadFileBtn").attr("href", "file/" + 0);
+
+			updateHtmlPreviewWindow(0);
+		}
+	}
 }
 
 function setSessionMode(newFileName, fileIndex) {
@@ -139,14 +148,25 @@ function deleteFile(fileIndex) {
 		if ($("#code-editor .nav-link").length > 0) {
   			$("#code-editor .nav-link").eq(0).addClass("active");
   			editor.setSession(editorSessions[0].session);
+
+  			updateHtmlPreviewWindow(0);
+
+  			$("#downloadFileBtn").attr("href", "file/" + 0);
   		}
 	} else {
 		$("#code-editor .nav-item").eq(fileIndex).remove();
 		editorSessions.splice(fileIndex, 1);
+
+		$("#downloadFileBtn").attr("href", "file/" + getSessionIndex(editor.session));
 	}
 
 	if ($("#code-editor .nav-link").length == 0) {
 		$("#editor").css('visibility', 'hidden');
+		$("#previewContainer").hide();
+
+		$("#downloadFileBtn").addClass("disabled");
+
+		$("#htmlPreview").attr("src", "about:blank");
 	}
 }
 
@@ -160,12 +180,21 @@ function validFileName(name) {
 function initFileTab(newTab) {
 	var fileNameInput = newTab.find(".fileName");
 	newTab.click(function(e) {
+		var sessionIndex = $("#code-editor .nav-item").index($(this));
+		updateHtmlPreviewWindow(sessionIndex);
 		// prevents delete button from triggering tab switch
 		if (e.target.getAttribute("class") == "close")
 			return;
 
-		var sessionIndex = $("#code-editor .nav-item").index($(this));
 		editor.setSession(editorSessions[sessionIndex].session);
+
+		$("#downloadFileBtn").attr("href", "file/" + sessionIndex);
+		if(fileNameInput.val().length == 0) {
+			$("#downloadFileBtn").addClass("disabled");
+		} else {
+			$("#downloadFileBtn").removeClass("disabled");
+		}
+
 	});
 	// To auto resize fileName tabs
 	fileNameInput.on('input', function() {
@@ -194,7 +223,15 @@ function initFileTab(newTab) {
 
 				var sessionIndex = $(".fileName").index($(this));
 		        socket.emit("fileRenamed", $(this).val(), sessionIndex);
-		    	setSessionMode($(this).val(), sessionIndex);		
+		    	setSessionMode($(this).val(), sessionIndex);
+
+		    	updateHtmlPreviewWindow(sessionIndex);
+
+				if(fileNameInput.val().length == 0) {
+					$("#downloadFileBtn").addClass("disabled");
+				} else {
+					$("#downloadFileBtn").removeClass("disabled");
+				}
 	    	} else {
 				// $(this).val("");
 	    		// alert("Invalid file name");
@@ -214,8 +251,16 @@ function initFileTab(newTab) {
 			}
 
 			var sessionIndex = $(".fileName").index($(this));
+	        socket.emit("fileRenamed", $(this).val(), sessionIndex);
 			setSessionMode($(this).val(), sessionIndex);
-	        socket.emit("fileRenamed", $(this).val(), sessionIndex);	
+
+	        updateHtmlPreviewWindow(sessionIndex);
+
+			if(fileNameInput.val().length == 0) {
+				$("#downloadFileBtn").addClass("disabled");
+			} else {
+				$("#downloadFileBtn").removeClass("disabled");
+			}
 		} else {
 			// $(this).val("");
 			// alert("Invalid file Name")
@@ -267,6 +312,9 @@ socket.on("renameFile", function(newFileName, fileIndex) {
 	$('.fileName').eq(fileIndex).val(newFileName);
 	setSessionMode(newFileName, fileIndex);
 
+	if (getSessionIndex(editor.session) == fileIndex)
+		updateHtmlPreviewWindow(fileIndex);
+
 	// initially resize tabs to fit fileName
 	$('.fileName').each(function() {
 		$(this).siblings('.hiddenSpan').text($(this).val());
@@ -284,20 +332,53 @@ $(document).keydown(function(e) {
 	}
 });
 
+function reloadIframe(fileIndex, text) {
+	$("#htmlPreview").get(0).contentDocument.location.reload(true);
+}
+
+function updateHtmlPreviewWindow(fileIndex) {
+	if ($(".fileName").eq(fileIndex).val().split('.').pop() == "html") {
+
+		if ($("#htmlPreview").attr("src") != "htmlPreview/" + fileIndex + "/") {
+			$("#htmlPreview").hide();
+			$("#htmlPreview").attr("src", "htmlPreview/" + fileIndex + "/");
+
+			$('#htmlPreview').on('load', function() {
+				$("#htmlPreview").show();
+			});
+		}
+
+		$("#previewContainer").show();
+	} else {
+		$("#previewContainer").hide();
+	}
+}
+
 function runProgram() {
 	var fileIndex = $("#code-editor .nav-link").index($("#code-editor .nav-link.active"));
+	var fileName = $(".nav-link.active").find(".fileName").val();
 	socket.emit("run", fileIndex);
 	$("#loadingWheel").show();
 	$("#run").prop("disabled", true);
 	$('#output').removeClass("outputError");
 	$('#output').val("");
+
+	if (fileName.split('.').pop() == "html") {
+		reloadIframe();
+	}
 }
 
-socket.on("programRunning", function() {
+socket.on("programRunning", function(fileIndex) {
 	$("#loadingWheel").show();
 	$("#run").prop("disabled", true);
 	$('#output').removeClass("outputError");
 	$('#output').val("");
+
+	var fileName = $(".fileName").eq(fileIndex).val();
+
+	if (fileName.split('.').pop() == "html" && getSessionIndex(editor.session) == fileIndex) {
+		reloadIframe();
+	}
 });
 
 socket.on("output", function(text) {
