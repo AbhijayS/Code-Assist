@@ -60,22 +60,27 @@ function() {
   });
 
 
+  var contextMenu = $(`
+    <div class="dropdown-menu">
+      <a class="dropdown-item" href="#">
+      <i class="fas fa-plus-circle"></i>
+      <span> Create New Project</span>
+      </a>
+    </div>
+    `);
   // Context Menu
   $( "#projects .flex-container" ).contextmenu(function(e) {
 
     e.preventDefault();
-
-    var contextMenu = $(`
-      <div class="dropdown-menu">
-        <a class="dropdown-item" href="#">Action</a>
-        <a class="dropdown-item" href="#">Another action</a>
-      </div>
-    `);
     contextMenu.css({
       "top": e.pageY + "px",
       "left": e.pageX + "px"
     });
 
     $('#projects').append(contextMenu);
+  });
+
+  $(window).click(function() {
+    contextMenu.remove();
   });
 };

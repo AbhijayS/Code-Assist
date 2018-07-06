@@ -258,6 +258,35 @@ button:enabled {
 #projects .dropdown-menu {
   position: absolute;
   display: block;
+  border: none;
+  top: 305px;
+  left: 484px;
+  background-color: rgba(218, 218, 218, 0.3);
+  transition: 0.4s;
+}
+
+#projects .dropdown-menu:hover {
+  background-color: rgba(218, 218, 218, 0.49);
+}
+
+#projects .dropdown-menu:hover > * {
+  color: #007bff !important;
+}
+
+#projects .dropdown-menu .dropdown-item {
+  color: #3e515a;
+}
+
+#projects .dropdown-menu .dropdown-item:hover {
+  background-color: inherit;
+}
+
+#projects .dropdown-menu .dropdown-item:active {
+  background-color: inherit;
+}
+
+#projects .dropdown-menu .dropdown-item:focus {
+  background-color: inherit;
 }
 /*
 =======================
