@@ -1,7 +1,7 @@
 var express = require('express');
 var path = require('path');
 var async = require('async');
-var router = express.Router();
+var router = express.Router({'strict' : true});
 var User = require('../models/user');
 var server = require('../app').server;
 var upload = require('../database').upload;
@@ -47,7 +47,7 @@ router.post('/', function(req, res){
 	}
 });
 
-router.get('/:id', function(req, res) {
+router.get('/:id/', function(req, res) {
 	var projectID = req.params.id;
 	User.ProjectSchema.findOne({_id: projectID}).exec(function(err, project) {
 		if (project) {
@@ -104,6 +104,19 @@ router.get('/:id/file/:fileIndex', function(req, res) {
 			res.end();
 		}
 	});
+});
+
+// to make html sources accessible
+router.get('/:id/:fileName', function(req, res) {
+	var projectID = req.params.id;
+	var fileName = req.params.fileName;
+
+	var file = "./codehat_files/" + projectID + "/" + fileName;
+	if (fs.existsSync(file)) {
+		res.download(file);
+	} else {
+		res.end();
+	}
 });
 
 var child_process = require('child_process');
