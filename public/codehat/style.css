@@ -4,9 +4,24 @@ html, body {
 }
 
 #editor {
-	height: 60%;
+	height: 100%;
 	font-size: 14px;
 	visibility: hidden;
+}
+
+#editorContainer {
+	height: 60%;
+	padding: 0;
+}
+
+#editorContainer .row {
+	height: 100%;
+}
+
+#htmlPreview {
+	height: 100%;
+	width: 100%;
+	border: 1px solid rgb(210, 208, 208);
 }
 
 /* styling for tab input */
