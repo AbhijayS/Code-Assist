@@ -7,8 +7,6 @@
     <link href="https://fonts.googleapis.com/css?family=Nunito:300,300i,400,700" rel="stylesheet">
 
     <link rel="stylesheet" type="text/css" href="/css/codehat.css">
-    <link rel="stylesheet" type="text/css" href="/codehat/style.css">
-
 
     <!-- Project Files Layout -->
     <link rel="stylesheet" href="/codehat/ace-collab-ext/ace-collab-ext.css"/>
@@ -67,7 +65,7 @@
     <script>
     	var editor = ace.edit("editor");
     	editor.setTheme("ace/theme/textmate");
-    	// editor.getSession().setMode("ace/mode/java");
+    	editor.getSession().setMode("ace/mode/java");
     	editor.setShowPrintMargin(false);
     	editor.$blockScrolling = Infinity;
     	editor.focus();

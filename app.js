@@ -13,8 +13,6 @@ var men = require('./routes/mentor');
 var session = require('cookie-session');
 var yes_https = require('yes-https');
 // var quill = require('quill');
-var toSlash = require('express-to-slash');
-
 // Init App
 var app = express();
 
@@ -80,9 +78,7 @@ app.use('/', routes);
 // app.use('/users', users);
 app.use('/community', com);
 app.use('/mentor', men);
-
-app.use('/codehat/', codehat);
-app.use('/codehat/', toSlash('/codehat/'));
+app.use('/codehat', codehat);
 
 app.use(function(req, res, next){
   res.status(404).render('_404.handlebars', {layout: 'dashboard-layout'});

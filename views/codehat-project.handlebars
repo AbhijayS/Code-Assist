@@ -1,26 +1,16 @@
-<div id="code-editor">
 
+<div id="code-editor">
 	<div id="topBar">
 		<label class="btn btn-primary mb-0">
-			Upload File<input type="file" accept=".java,.py,.cpp,.dat,.txt,.html,.css,.js" hidden>
+			Upload File<input type="file" accept=".java,.py,.dat,.txt" hidden>
 		</label>
 		<button id="newFileBtn" class="btn btn-primary">New File</button>
-		<a id="downloadFileBtn" class="btn btn-primary disabled" href="#">Download File</a>
-		<a id="downloadAllFiles" class="btn btn-primary" href="downloadAll">Download Project as .ZIP</a>
 	</div>
-
 	<ul class="nav nav-tabs" id="fileTabs">
 
 	</ul>
 
-	<div id="editorContainer" class="container-fluid">
-		<div class="row">
-			<div class="col-sm" id="editor"></div>
-			<div class="col-sm" id="previewContainer" style="display: none;">
-				<iframe id="htmlPreview"></iframe>
-			</div>
-		</div>
-	</div>
+	<div id="editor"></div>
 
 	<textarea id="output" readonly autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
 	<form id="programInputForm">
@@ -30,8 +20,8 @@
 		<button class="btn btn-primary" id="run">Run</button>
 		<img id="loadingWheel" src="/codehat/images/spinner.gif" style="display: none;">
 	</div>
-
 </div>
+
 
 <!-- Settings Section -->
 <!-- <i id="close-settings" class="far fa-times-circle"></i> -->

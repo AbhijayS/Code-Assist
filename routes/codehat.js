@@ -1,7 +1,7 @@
 var express = require('express');
 var path = require('path');
 var async = require('async');
-var router = express.Router({'strict' : true});
+var router = express.Router();
 var User = require('../models/user');
 var server = require('../app').server;
 var upload = require('../database').upload;
@@ -9,7 +9,6 @@ var uniqid = require('uniqid');
 
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-var zip = new require('node-zip')();
 
 var socket = require('socket.io');
 var io = socket(server);
@@ -75,6 +74,45 @@ router.post('/share', function(req, res){
 
 	console.log("Share post request ----------------")
 	console.log("projectID: " + projectID);
+
+	// var failedEmails = [];
+	//
+	// async.each(emails, function(email, callback) {
+	// 	User.UserSchema.findOne({email: email}, function(err, user) {
+	// 		if (user) {
+	// 			var e_link = projectID + "/" + uniqid();
+	// 			user.e_link = e_link;
+	// 			user.save(function(err) {
+	// 				if(err) throw err;
+	// 			});
+	//
+	// 			// callback(true);
+	//
+	// 			console.log("sharing with: " + user.email);
+	// 			const output = `
+	// 				<p>Hi ${user.username},</p>
+	// 				<p>You have been invited to a CodeHat project</p>
+	//
+	// 				<h3><a href="http://localhost:8080/codehat/invite/${e_link}">Accept invitation</a></h3>
+	// 				<!-- <h3><a href="https://codeassist.org/codehat/invite/${e_link}">Accept invitation</a></h3> -->
+	// 			`;
+	// 			const msg = {
+	// 				to: user.email,
+	// 				from: `Code Assist <${process.env.SENDER_EMAIL}>`,
+	// 				subject: "You're invited to a new project",
+	// 				html: output
+	// 			};
+	//
+	// 			sgMail.send(msg);
+	// 		} else {
+	// 			failedEmails.push(email);
+	// 		}
+	// 		callback();
+	// 	});
+	// }, function() {
+	// 	console.log("Failed emails: " + failedEmails);
+	// 	res.send(failedEmails);
+	// });
 
 	var failedEmails = [];
 	async.parallel([
@@ -200,15 +238,25 @@ router.post('/', function(req, res){
 				}
 			}
 			if(!data.auth == false) {
+				console.log("Valid");
 				var newProject = new User.ProjectSchema();
-				newProject.name = project_name;
+				newProject.name = req.body.project_name;
 				newProject.owner = req.user._id;
+				// newProject.usersWithAccess.push(req.user);
+
 				newProject.status = "new";
 
-				newProject.save(function(err) {
-				  if(err) throw err;
+				var newProjectFile = new User.ProjectFileSchema();
+				newProjectFile.fileName = "";
+				newProjectFile.text = "";
+				newProjectFile.save(function(err) {
+					if(err) throw err;
+					// saved
 				});
-
+				newProject.files.push(newProjectFile);
+				newProject.save(function(err) {
+					if(err) throw err;
+				});
 				// console.log('Project ID: ' + newProject._id);
 				user.projectsWithAccess.push(newProject._id);
 				// console.log(req.user.projectsWithAccess);
@@ -277,99 +325,45 @@ router.get('/:id', function(req, res) {
 	});
 });
 
+router.post('/share', function(req, res) {
+	if(req.user) {
 
-// for file downloading
-router.get('/:id/file/:fileIndex', function(req, res) {
-	var projectID = req.params.id;
-	var fileIndex = req.params.fileIndex;
-
-	var projectObject = getCurrentProject(projectID);
-	if (projectObject && projectObject.files[fileIndex] && projectObject.files[fileIndex].fileName) {
-		var fileName = projectObject.files[fileIndex].fileName;
-		var file = "./codehat_files/" + projectID + "/" + fileName;
-
-		if (fs.existsSync(file)) {
-			fs.writeFile(file, projectObject.files[fileIndex].text, function(err) {
-				if (err)
-					console.log(err);
-
-				res.download(file);
-			});
-		} else {
-			res.end();
-		}
-	} else {
-		res.end();
+	}else{
+		req.flash('origin');
+		req.flash('origin', '/codehat/'+req.params.id);
+		res.redirect("/login");
 	}
 });
 
-// for downloading project .zip file
-router.get('/:id/downloadAll', function(req, res) {
+router.post('/:id/change-project-name', function(req, res) {
 	var projectID = req.params.id;
-	var projectDir = "./codehat_files/" + projectID + "/";
-
-	User.ProjectSchema.findOne({_id: projectID}, function(err, project) {
-		async.each(project.fileNames, function(fileName, callback) {
-			if (fs.existsSync(projectDir + fileName)) {
-				fs.readFile(projectDir + fileName, {encoding: 'utf-8'}, function(err, text) {
-					if (err) {
-						console.log(err);
-					}
-
-					zip.file(fileName, text);
-					callback();
-				});
+	console.log("--------- Changing Project name ---------");
+	if(req.user) {
+		User.ProjectSchema.findOne({_id: projectID}, function(err, project) {
+			var data = {
+				auth: false,
+				message: ""
 			}
-		}, function() {
-			var data = zip.generate({base64: false, compression:'DEFLATE'});
-			res.set('Content-Disposition', 'attachment; filename="Project_Files.zip"');
-			res.end(data, 'binary')	;
+			console.log("Old Name: " + project.name);
+			var newName = req.body.newName;
+			if(newName.length >= 3) {
+				console.log("Valid");
+				project.name = newName;
+				project.save(function(err){if(err) throw err;});
+				console.log("New Name: " + project.name);
+				data.auth = true;
+				data.message = "is-valid";
+			}else{
+				console.log("InValid");
+				data.auth = false;
+				data.message = "is-invalid";
+			}
+			res.send(data);
 		});
-	});
-
-});
-
-// to host html file previews
-router.get('/:id/htmlPreview/:fileIndex/', function(req, res) {
-	var projectID = req.params.id;
-	var fileIndex = req.params.fileIndex;
-
-	var projectObject = getCurrentProject(projectID);
-
-	if (projectObject) {
-		var file = projectObject.files[fileIndex];
-		if (file && file.htmlPreviewCode) {
-			res.send(file.htmlPreviewCode);
-		} else {
-			res.end();
-		}
-	} else {
-		res.end();
-	}
-});
-
-// to provide iframe sources
-router.get('/:id/htmlPreview/:fileIndex/:fileName', function(req, res) {
-	var projectID = req.params.id;
-	var fileName = req.params.fileName;
-
-	var projectObject = getCurrentProject(projectID);
-	if (projectObject && projectObject.getFileByName(fileName)) {
-		var file = projectObject.getFileByName(fileName);
-		var filePath = "./codehat_files/" + projectID + "/" + file.fileName;
-
-		if (fs.existsSync(filePath)) {
-			fs.writeFile(filePath, file.text, function(err) {
-				if (err)
-					console.log(err);
-
-				res.download(filePath);
-			});
-		} else {
-			res.end();
-		}
-	} else {
-		res.end();
+	}else{
+		req.flash('origin');
+		req.flash('origin', '/codehat/'+projectID);
+		res.redirect("/login");
 	}
 });
 
@@ -379,10 +373,8 @@ var spawn = child_process.spawn;
 var fs = require('fs');
 // var folderPath = "./codehat_files/";
 
-function File(fileName, text, untitledName) {
+function File(fileName, text) {
 	this.fileName = fileName;
-	this.untitledName = untitledName;
-	this.htmlPreviewCode;
 	this.text = text;
 	this.cursors = {};
 	this.selections = {};
@@ -411,82 +403,19 @@ function saveAllFiles(folderPath, files) {
 	});
 }
 
-function getCurrentProject(id) {
-	for (var i = 0; i < currentProjects.length; i++) {
-		if (currentProjects[i].id == id)
-			return currentProjects[i];
-	}
-}
-
-function Project(id) {
+function Project(id, files) {
 	var self = this;
 	this.id = id;
 	this.folderPath = "./codehat_files/" + id + "/";
 
-	this.files = [];
-
-	this.getFileByName = function(fileName) {
-		for (var i = 0; i < this.files.length; i++) {
-			if (this.files[i].fileName == fileName)
-				return this.files[i];
-		}
+	// create folder for project if it doesn't exist yet
+	if (!fs.existsSync(this.folderPath)) {
+		fs.mkdirSync(this.folderPath);
 	}
 
-	this.addUntitledFile = function() {
-		if (!fs.existsSync(self.folderPath + "untitled_files")) {
-			fs.mkdirSync(self.folderPath + "untitled_files");
-		}
-
-		var untitledName = "untitled_" + uniqid() + ".txt";
-		self.files.push(new File("", "", untitledName));
-		fs.writeFile(self.folderPath + "untitled_files/" + untitledName, "", function(err) {
-			if (err)
-				console.log(err);
-		});
-
-		// add untitled file to file namelist in database
-		User.ProjectSchema.findOne({_id: self.id}).exec(function(err, project) {
-			project.fileNames.push(untitledName);
-			project.save(function(err) {
-				if (err) console.log(err);
-			});
-		});
-	};
-
-	if (fs.existsSync(this.folderPath)) {
-		// get array of fileNames from database
-		User.ProjectSchema.findOne({_id: self.id}, {'fileNames': true}).exec(function(err, project) {
-			var fileNames = project.fileNames;
-
-			// add existing files to project
-			async.eachSeries(fileNames, function(filename, callback) {
-				// if file has a name
-				if (fs.existsSync(self.folderPath + filename)) {
-					fs.readFile(self.folderPath + filename, {encoding: 'utf-8'}, function(err, text){
-						if (err) {
-							console.log(err);
-						}
-						self.files.push(new File(filename, text));
-						callback();
-					});
-				} else if (fs.existsSync(self.folderPath + "untitled_files/" + filename)) {
-					// add untitled file to project
-					fs.readFile(self.folderPath + "untitled_files/" + filename, {encoding: 'utf-8'}, function(err, text){
-						if (err) {
-							console.log(err);
-						}
-						self.files.push(new File("", text, filename));
-						callback();
-					});
-				}
-			});
-
-		});
-
-	} else {
-		// create folder for project if it doesn't exist yet
-		fs.mkdirSync(this.folderPath);
-		self.addUntitledFile();
+	this.files = [];
+	for (var i = 0; i < files.length; i++) {
+		this.files.push(new File(files[i].fileName, files[i].text));
 	}
 
 	this.outputError = false;
@@ -500,7 +429,6 @@ function Project(id) {
 	this.nsp.on('connection', function connection(socket) {
 		console.log("new codehat connection");
 		socket.emit("socketID", socket.id);
-		console.log(self.files);
 		socket.emit("files", self.files);
 
 		if (self.outputError) {
@@ -517,26 +445,23 @@ function Project(id) {
 				clearTimeout(file.saveTimeout);
 
 			file.saveTimeout = setTimeout(function() {
-				// save last last_modified
-				var today = new Date();
-				console.log(today.toString());
-				project.last_modified = today.toString();
-				project.save(function(err) {
-					if(err) throw err;
-				});
+				console.log("saving")
+				// saving file changes to database
+				User.ProjectSchema.findOne({_id: self.id}).populate('files').exec(function(err, project) {
+					project.files[fileIndex].text = text;
 
-				if (file.fileName) {
-					console.log("saving")
-					fs.writeFile(self.folderPath + file.fileName, text, function(err) {
-						if (err)
-							console.log(err);
+					project.files[fileIndex].save(function (err) {
+						if (err) throw err;
 					});
-				} else {
-					fs.writeFile(self.folderPath + "untitled_files/" + file.untitledName, text, function(err) {
-						if (err)
-							console.log(err);
+
+					// save last last_modified
+					var today = new Date();
+					console.log(today.toString());
+					project.last_modified = today.toString();
+					project.save(function(err) {
+						if(err) throw err;
 					});
-				}
+				});
 			}, 1000);
 		});
 
@@ -545,116 +470,52 @@ function Project(id) {
 		});
 
 		socket.on("fileRenamed", function(newFileName, fileIndex) {
-			var oldFileName = self.files[fileIndex].fileName;
-
-			if (oldFileName && fs.existsSync(self.folderPath + oldFileName)) {
-
-				if (newFileName) {
-					// rename existing file
-					fs.rename(self.folderPath + oldFileName, self.folderPath + newFileName, function(err) {
-						if (err)
-							console.log(err);
-					});
-
-					// rename file in database
-					User.ProjectSchema.findOne({_id: self.id}).exec(function(err, project) {
-						var index = project.fileNames.indexOf(oldFileName);
-						if (index != -1) {
-							project.fileNames[index] = newFileName;
-							project.markModified("fileNames");
-							project.save(function(err) {
-								if (err) console.log(err);
-							});
-						}
-					});
-				} else {
-					// move file from main folder to untitled folder
-
-					// recreates untitled_files folder just in case
-					if (!fs.existsSync(self.folderPath + "untitled_files")) {
-						fs.mkdirSync(self.folderPath + "untitled_files");
-					}
-
-					// get untitled file name
-					var untitledName = "untitled_" + uniqid() + ".txt";
-					self.files[fileIndex].untitledName = untitledName;
-
-					fs.rename(self.folderPath + oldFileName, self.folderPath + "untitled_files/" + untitledName, function(err) {
-						if (err)
-							console.log(err);
-					});
-
-					// update database file name
-					User.ProjectSchema.findOne({_id: self.id}).exec(function(err, project) {
-						var index = project.fileNames.indexOf(oldFileName);
-						if (index != -1) {
-							project.fileNames[index] = untitledName;
-							project.markModified("fileNames");
-
-							project.save(function(err) {
-								if (err) console.log(err);
-							});
-						}
-					});
-
-				}
-
-			} else if (newFileName) {
-				var untitledName = self.files[fileIndex].untitledName;
-				// move file from untitled folder to main folder
-				fs.rename(self.folderPath + "untitled_files/" + untitledName, self.folderPath + newFileName, function(err) {
-					if (err)
-						console.log(err);
-				});
-
-				User.ProjectSchema.findOne({_id: self.id}).exec(function(err, project) {
-					var index = project.fileNames.indexOf(untitledName);
-					if (index != -1) {
-						project.fileNames[index] = newFileName;
-						project.markModified("fileNames");
-
-						project.save(function(err) {
-							if (err) console.log(err);
-						});
-					}
-				});
-				self.files[fileIndex].untitledName = null;
-			}
-
 			self.files[fileIndex].fileName = newFileName;
 			socket.broadcast.emit("renameFile", newFileName, fileIndex);
+
+			// saving new file name to database
+			User.ProjectSchema.findOne({_id: self.id}).populate('files').exec(function(err, project) {
+				project.files[fileIndex].fileName = newFileName;
+
+				project.files[fileIndex].save(function (err) {
+					if (err) throw err;
+				});
+			});
 		});
 
 		socket.on("fileAdded", function(fileName, text) {
-
+			if (fileName && text) {
+				self.files.push(new File(fileName, text));
+			} else {
+				self.files.push(new File());
+			}
 			socket.broadcast.emit("addFile", fileName, text);
 
-			if (fileName) {
-				self.files.push(new File(fileName, text));
-				fs.writeFile(self.folderPath + fileName, text, function(err) {
-					if (err)
-						console.log(err);
-				});
+			// adding new file to project in database
+			User.ProjectSchema.findOne({_id: self.id}).exec(function(err, project) {
+				var newProjectFile = new User.ProjectFileSchema();
 
-				User.ProjectSchema.findOne({_id: self.id}).exec(function(err, project) {
-					project.fileNames.push(fileName);
-					project.save(function(err) {
-						if (err) console.log(err);
-					});
-				});
-			} else {
-				// if untitled file is added
-				self.addUntitledFile();
-			}
+				if (fileName && text) {
+					newProjectFile.fileName = fileName;
+					newProjectFile.text = text;
+				}
 
+				newProjectFile.save(function(err) {
+					if(err) throw err;
+					// saved
+				});
+				project.files.push(newProjectFile);
+
+				project.save(function(err) {
+				  if(err) throw err;
+				});
+			});
 		});
 
 		socket.on("deleteFile", function(fileIndex) {
 			// Delete File from system
-			if (self.files[fileIndex].fileName) {
-				var fileName = self.files[fileIndex].fileName;
-
-				var filePath = self.folderPath + fileName;
+			if (files[fileIndex].fileName) {
+				var filePath = self.folderPath + files[fileIndex].fileName;
 				if (fs.existsSync(filePath)) {
 					fs.unlink(filePath, function(error) {
 						if (error) {
@@ -662,55 +523,31 @@ function Project(id) {
 						}
 					});
 				}
-
-				if (path.extname(fileName) == ".java") {
-					// also delete class file if it exists
-					var classFilePath = self.folderPath + path.parse(fileName).name + ".class";
-					if (fs.existsSync(classFilePath)) {
-						fs.unlink(classFilePath, function(error) {
-							if (error) {
-								console.log(error);
-							}
-						});
-					}
-				}
-
-				// delete file Name from database
-				User.ProjectSchema.findOne({_id: self.id}).exec(function(err, project) {
-					var index = project.fileNames.indexOf(fileName);
-					if (index != -1) {
-						project.fileNames.splice(index, 1);
-					}
-
-					project.save(function(err) {
-						if (err) console.log(err);
-					});
-				});
-			} else {
-				// delete untitled file
-				var untitledName = self.files[fileIndex].untitledName;
-
-				var filePath = self.folderPath + "untitled_files/" + untitledName;
-				if (fs.existsSync(filePath)) {
-					fs.unlink(filePath, function(error) {
+				var fileNameNoExt = path.parse(files[fileIndex].fileName).name;
+				var classFilePath = self.folderPath + fileNameNoExt + ".class";
+				if (path.extname(files[fileIndex].fileName) == ".java" && fs.existsSync(classFilePath)) {
+					fs.unlink(classFilePath, function(error) {
 						if (error) {
 							console.log(error);
 						}
 					});
 				}
+			}
 
-				// delete file Name from database
-				User.ProjectSchema.findOne({_id: self.id}).exec(function(err, project) {
-					var index = project.fileNames.indexOf(untitledName);
-					if (index != -1) {
-						project.fileNames.splice(index, 1);
+
+			User.ProjectSchema.findOne({_id: self.id}).exec(function(err, project) {
+				User.ProjectFileSchema.find({_id: project.files[fileIndex]}).remove(function(error) {
+					if (error) {
+						console.log(error);
 					}
+
+					project.files.splice(fileIndex, 1);
 
 					project.save(function(err) {
 					  if(err) throw err;
 					});
 				});
-			}
+			});
 
 			self.files.splice(fileIndex, 1);
 			socket.broadcast.emit("deleteFile", fileIndex);
@@ -761,15 +598,8 @@ function Project(id) {
 				return false;
 			}
 
-			if (fileExt == ".html") {
-				socket.broadcast.emit("programRunning", fileIndex);
-				file.htmlPreviewCode = file.text;
-				self.nsp.emit("runFinished");
-				return false;
-			}
-
-			if (fileExt != ".java" && fileExt != ".py" && fileExt != ".cpp") {
-				self.nsp.emit("outputError", "Currently only .java, .py, and .cpp files are able to be compiled/run");
+			if (fileExt != ".java" && fileExt != ".py") {
+				self.nsp.emit("outputError", "Currently only .java and .py files are able to be compiled/run");
 				self.nsp.emit("runFinished");
 				return false;
 			}
@@ -780,7 +610,7 @@ function Project(id) {
 
 			self.output = "";
 			self.outputError = false;
-			socket.broadcast.emit("programRunning", fileIndex);
+			socket.broadcast.emit("programRunning");
 			// console.log("Saving")
 			saveAllFiles(self.folderPath, self.files);
 
@@ -791,12 +621,15 @@ function Project(id) {
 
 						if (error) {
 							console.log("Codehat - Compile Error Given");
-							console.log(stderr.replace(/\n$/, "")); //regex gets rid of newline character
+							var BackSlashPath = self.folderPath.replace(/\//g,"\\\\"); //changes forward slashes to double back slashes to be used with regex
+							var result = stderr.replace(new RegExp(BackSlashPath, "g"), ""); // takes out file path from error
 
-							self.output = stderr;
+							console.log(result.replace(/\n$/, "")); //regex gets rid of newline character
+
+							self.output = result;
 							self.outputError = true;
 
-							self.nsp.emit("outputError", stderr);
+							self.nsp.emit("outputError", result);
 							self.nsp.emit("runFinished");
 							return false; //breaks out of function
 						}
@@ -827,6 +660,7 @@ function Project(id) {
 							self.nsp.emit("runFinished");
 							// console.log('Run Finished');
 						});
+
 					});
 					break;
 				case ".py":
@@ -850,45 +684,6 @@ function Project(id) {
 						self.nsp.emit("runFinished");
 						// console.log('Run Finished');
 					});
-					break;
-				case ".cpp":
-					exec('g++ "' + file.fileName, {cwd: self.folderPath}, function(error, stdout, stderr) {
-
-						if (error) {
-							console.log("Codehat - Compile Error Given");
-							console.log(stderr.replace(/\n$/, "")); //regex gets rid of newline character
-
-							self.output = stderr;
-							self.outputError = true;
-
-							self.nsp.emit("outputError", stderr);
-							self.nsp.emit("runFinished");
-							return false; //breaks out of function
-						}
-
-						// file name without file extension
-						self.runner = spawn('a.exe', {cwd: self.folderPath});
-						self.nsp.emit("readyForInput");
-
-						self.runner.stdout.on('data', function(data) {
-							self.output += data;
-							self.nsp.emit("output", data.toString()+"\n");
-							console.log(data.toString());
-						});
-
-						self.runner.stderr.on('data', function(data) {
-							self.output += data;
-							self.nsp.emit("outputError", data.toString()+"\n");
-							self.outputError = true;
-							console.log(data.toString());
-						});
-
-						self.runner.on('exit', function() {
-							self.nsp.emit("runFinished");
-							// console.log('Run Finished');
-						});
-					});
-					break;
 			}
 
 		});
