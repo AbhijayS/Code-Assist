@@ -36,4 +36,46 @@ function() {
       }
     });
   });
+
+  // Date Modifications
+  $('.date-modified').each(function() {
+
+    var timestamp = new Date($(this).find('.moment-timestamp').text());
+    console.log(timestamp);
+    timestamp = moment(timestamp, "MM-DD");
+    $(this).find('.moment-timestamp').text(timestamp.format("MMM D"));
+  });
+
+
+  // Display project info
+  $('#projects .card').mouseover(function() {
+    // $(this).find('.card-footer .project-info').removeClass('hide');
+    $(this).find('.card-footer .project-info').show();
+    $(this).find('.card-body').toggleClass('py-0');
+  });
+
+  $('#projects .card').mouseout(function() {
+    $(this).find('.card-footer .project-info').hide();
+    $(this).find('.card-body').toggleClass('py-0');
+  });
+
+
+  // Context Menu
+  $( "#projects .flex-container" ).contextmenu(function(e) {
+
+    e.preventDefault();
+
+    var contextMenu = $(`
+      <div class="dropdown-menu">
+        <a class="dropdown-item" href="#">Action</a>
+        <a class="dropdown-item" href="#">Another action</a>
+      </div>
+    `);
+    contextMenu.css({
+      "top": e.pageY + "px",
+      "left": e.pageX + "px"
+    });
+
+    $('#projects').append(contextMenu);
+  });
 };

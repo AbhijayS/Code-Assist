@@ -255,6 +255,10 @@ button:enabled {
   align-items: flex-start;
 }
 
+#projects .dropdown-menu {
+  position: absolute;
+  display: block;
+}
 /*
 =======================
     Project Settings
@@ -284,7 +288,7 @@ button:enabled {
 #settings .title {
   font-weight: 700;
 }
-/* 
+/*
 .close {
   margin: 0;
   vertical-align: middle;

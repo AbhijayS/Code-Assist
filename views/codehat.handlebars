@@ -11,7 +11,19 @@
               A
             </div>
             <div class="card-footer">
-              {{this.name}}
+              <div>
+                {{this.name}}
+              </div>
+              <!-- <br> -->
+              <div class="project-info text-light hide" style="font-size: 12px;">
+                <div class="owner">
+                  Owner: {{this.owner.username}}
+                </div>
+
+                <div class="date-modified">
+                  Last Modified: <span class="moment-timestamp">{{this.last_modified}}</span>
+                </div>
+              </div>
             </div>
           </div>
         </a>

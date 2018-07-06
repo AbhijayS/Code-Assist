@@ -31,7 +31,19 @@ function projectActive(id) {
 
 router.get('/', function(req, res){
 	if(req.user) {
-		User.UserSchema.findOne({_id: req.user._id}).populate('projectsWithAccess').exec(function(err, user) {
+		// User.
+	  // findOne({ name: 'Val' }).
+	  // populate({
+	  //   path: 'friends',
+	  //   // Get friends of friends - populate the 'friends' array for every friend
+	  //   populate: { path: 'friends' }
+	  // });
+		User.UserSchema.findOne({_id: req.user._id}).
+		populate({
+			path: 'projectsWithAccess',
+			populate: {path: 'owner'}
+		}).
+		exec(function(err, user) {
 			if(err) throw err;
 			var projects = [];
 			for(var i = 0; i < user.projectsWithAccess.length; i++) {
@@ -444,7 +456,8 @@ function Project(id, files) {
 
 					// save last last_modified
 					var today = new Date();
-					project.last_modified = today.getDate();
+					console.log(today.toString());
+					project.last_modified = today.toString();
 					project.save(function(err) {
 						if(err) throw err;
 					});
