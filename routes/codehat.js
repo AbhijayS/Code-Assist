@@ -437,6 +437,11 @@ function Project(id, files) {
 			socket.emit("output", self.output);
 		}
 
+		socket.on("chat",function(msg){
+			console.log("Message: " + msg);
+			this.nsp.emit('broadcastchat',msg);
+		});
+
 		socket.on("updateFile", function(text, fileIndex) {
 			var file = self.files[fileIndex];
 			file.text = text;

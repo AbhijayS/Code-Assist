@@ -57,7 +57,12 @@
       </div>
 
       <div id="global-chat-box" class="sidebar-box" style="opacity: 1;">
-
+        <div class="content container">
+          <ul id="messages"></ul>
+          <form id="submit-messages">
+            <input id="msg" autocomplete="off" /><button>Send</button>
+          </form>
+        </div>
       </div>
       <ul class="list-group">
         <li id="create-project" class="list-group-item"><i class="fas fa-plus"></i></li>
@@ -78,6 +83,22 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.slim.js"></script>
     <script src="/js/codehat-dash.js"></script>
+    <script type="text/javascript">
+      var socket = io('{{namespace}}');
+      $(function () {
+        $('#global-chat-box #submit-messages').submit(function(){
+          socket.emit('chat', $(this).find('#msg').val());
+          console.log($(this).find('#msg').val());
+          $(this).find('#msg').val('');
+          return false;
+        });
+        socket.on('broadcastchat', function(msg){
+          console.log(msg);
+          $('#global-chat-box #messages').append($('<li>').text(msg));
+        });
+      });
+    </script>
   </body>
 </html>
