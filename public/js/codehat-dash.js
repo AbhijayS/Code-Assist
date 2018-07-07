@@ -22,7 +22,7 @@ function() {
   $('.createNewProject').submit(function(event) {
     var form = $(this);
     event.preventDefault();
-    // console.log('clicked');
+    console.log('clicked');
     $.post('/codehat/', {project_name: $(this).find('input').val()}, function(data){
       if(data.auth) {
         window.location.replace(data.url);
@@ -62,25 +62,84 @@ function() {
 
   var contextMenu = $(`
     <div class="dropdown-menu">
-      <a class="dropdown-item" href="#">
-      <i class="fas fa-plus-circle"></i>
-      <span> Create New Project</span>
+      <a class="dropdown-item toggle">
+        <i class="fas fa-plus-circle"></i>
+        <span> Create New Project</span>
+      </a>
+
+      <a class="dropdown-item hide">
+        <form class="createNewProject">
+          <div class="form-group">
+            <input type="text" class="form-control" id="exampleInputEmail1" placeholder="Project name">
+            <div class="text-danger invalid-feedback">
+              Project with this name already exists
+            </div>
+          </div>
+          <button type="submit" name="button" class="btn btn-primary btn-block">Create Project</button>
+        </form>
       </a>
     </div>
     `);
   // Context Menu
-  $( "#projects .flex-container" ).contextmenu(function(e) {
+  $( "#projects" ).contextmenu(function(e) {
 
     e.preventDefault();
     contextMenu.css({
       "top": e.pageY + "px",
       "left": e.pageX + "px"
     });
-
     $('#projects').append(contextMenu);
   });
 
-  $(window).click(function() {
-    contextMenu.remove();
+  $(window).click(function(event) {
+    var target = $(event.target);
+    if(!(target.is(contextMenu) || contextMenu.has(target).length)) {
+      contextMenu.find('a').last().attr("class", "dropdown-item hide");
+      contextMenu.remove();
+    }else{
+      if(target.is(contextMenu.find('.toggle')) || target.parent().is(contextMenu.find('.toggle'))) {
+        contextMenu.find('a').last().toggleClass('hide');
+      }else if(target.is(contextMenu.find('button'))) {
+        event.preventDefault();
+        $.post('/codehat/', {project_name: contextMenu.find('input').val()}, function(data){
+          if(data.auth) {
+            window.location.replace(data.url);
+          }else{
+            if(data.url == '') {
+              // console.log(data.message);
+              contextMenu.find('input').toggleClass(data.message);
+            }else {
+              window.location.replace(data.url);
+            }
+          }
+        });
+      }
+    }
   });
+
+  // $(window).click(function(event) {
+  //   var item = $(event.target);
+  //   if(item.hasClass('dropdown-menu') || item.parent().hasClass('dropdown-menu') || item.parent().parent().hasClass('dropdown-menu') || item.parent().parent().parent().hasClass('dropdown-menu'))
+  //   {
+  //     if(item.parent().hasClass('dropdown-menu') && item.parent().children().length == 1) {
+  //       contextMenu.append($(`
+  //         <a class="dropdown-item" href="#">
+  //         <form class="createNewProject">
+  //         <div class="form-group">
+  //         <input type="text" class="form-control" id="exampleInputEmail1" placeholder="Project name">
+  //         </div>
+  //         <button type="submit" name="button" class="btn btn-primary btn-block">Create Project</button>
+  //         </form>
+  //         </a>
+  //         `));
+  //         console.log(contextMenu);
+  //       }else{
+  //         contextMenu.find('a').last().remove();
+  //       }
+  //   }else{
+  //     console.log("OUT");
+  //     if(item.)
+  //     contextMenu.remove();
+  //   }
+  // });
 };

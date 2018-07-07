@@ -3,8 +3,8 @@
     <div class="container-fluid">
       <h1 class="text-secondary">Projects</h1>
       <hr>
-      {{#each projects}}
       <div class="flex-container">
+        {{#each projects}}
         <a class="card-link" href="/codehat/{{this._id}}" style="text-decoration: none;">
           <div class="card">
             <div class="card-body text-center">
@@ -27,8 +27,8 @@
             </div>
           </div>
         </a>
+        {{/each}}
       </div>
-      {{/each}}
     </div>
   </div>
 {{else}}

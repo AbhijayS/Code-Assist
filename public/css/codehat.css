@@ -261,16 +261,20 @@ button:enabled {
   border: none;
   top: 305px;
   left: 484px;
-  background-color: rgba(218, 218, 218, 0.3);
+  background-color: rgba(218, 218, 218);
   transition: 0.4s;
 }
 
 #projects .dropdown-menu:hover {
-  background-color: rgba(218, 218, 218, 0.49);
+  background-color: #efefef;
 }
 
-#projects .dropdown-menu:hover > * {
+/* #projects .dropdown-menu:hover > * {
   color: #007bff !important;
+} */
+
+#projects .dropdown-menu .toggle {
+  cursor: pointer;
 }
 
 #projects .dropdown-menu .dropdown-item {
