@@ -7,8 +7,8 @@
         {{#each projects}}
         <a class="card-link" href="/codehat/{{this._id}}" style="text-decoration: none;">
           <div class="card">
-            <div class="card-body text-center">
-              A
+            <div class="card-body text-center" onload="firstLetter()">
+              {{this.name}}
             </div>
             <div class="card-footer">
               <div>

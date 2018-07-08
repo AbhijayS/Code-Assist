@@ -40,14 +40,10 @@
     <!-- Side Bar -->
     <div id="sidebar">
       <ul class="list-group">
-        {{#if namespace}}
-        <li class="list-group-item"><i class="far fa-file-code"></i></li>
-        {{else}}
-        <li class="list-group-item"><i class="fas fa-plus"></i></li>
-        {{/if}}
-        <li class="list-group-item"><i class="far fa-comment-alt"></i></li>
-        <li id="settings-btn" class="list-group-item"><i class="fas fa-sliders-h"></i></li>
-        <li><i id="exit-btn" class="fas fa-sign-out-alt"></i></li>
+        <li id="view-directory" class="list-group-item"><i class="far fa-file-code"></i></li>
+        <li id="global-chat" class="list-group-item"><i class="far fa-comment-alt"></i></li>
+        <li id="global-settings" class="list-group-item"><i class="fas fa-sliders-h"></i></li>
+        <a href="/codehat"><li id="exit-btn"><i class="fas fa-sign-out-alt"></i></li></a>
       </ul>
     </div>
 

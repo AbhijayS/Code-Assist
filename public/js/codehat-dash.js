@@ -19,6 +19,11 @@ function() {
     $('#sidebar .sidebar-box#global-chat-box').width() == 0 ? $('#sidebar .sidebar-box#global-chat-box').width('100%') : $('#sidebar .sidebar-box#global-chat-box').width(0);
   });
 
+  function firstLetter() {
+    console.log($(this));
+    $(this).text($(this).text().substring(0, 1));
+  }
+
   $('.createNewProject').submit(function(event) {
     var form = $(this);
     event.preventDefault();
