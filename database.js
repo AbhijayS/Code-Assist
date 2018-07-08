@@ -16,6 +16,7 @@ var database = process.env.DB_HOST_TEST;
 // **************************************
 
 mongoose.connect(database);
+console.log("Using Database: " + database);
 var conn = mongoose.connection;
 
 conn.once('open', () => {

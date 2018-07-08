@@ -1,12 +1,15 @@
 $(document).ready(function() {
   // display or remove settings
-  if($('#settings #status').text() == "new") {
-    $('#settings').attr('class', '');
-    $.post(window.location.pathname + "/change-status", {status: "using"}, function(data) {
-      console.log(data);
+  // Please do not modify the following fields. There could be unintended consequences.
+  if($('#status').text() == "new") {
+    $('#settings').show();
+    $.post(window.location.pathname + "/change-status", {newStatus: "using"}, function(data) {
+      if(!(data.auth == true)) {
+        window.location.replace(data.url);
+      }
     });
   }else{
-    $('#settings').attr('class', 'hide');
+    $('#settings').hide();
   }
 
 

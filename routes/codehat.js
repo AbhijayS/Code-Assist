@@ -368,8 +368,39 @@ router.post('/:id/change-project-name', function(req, res) {
 });
 
 router.post('/:id/change-status', function(req, res) {
-	console.log("change status");
-	res.send('okay')
+	var data = {
+		auth: true,
+		url: "",
+		message: ""
+	};
+	var projectID = req.params.id;
+	console.log(projectID);
+	User.ProjectSchema.findOne({_id: projectID}, function(err, project) {
+		if(err){
+			throw err;
+		}
+
+		if(req.user) {
+			if(project) {
+				data.auth = true;
+				data.message = "Changing";
+				project.status = req.body.newStatus;
+				console.log("Changing");
+				project.save(function(err) {
+					if(err) throw err;
+				});
+			}else {
+				console.log("Project not found");
+			}
+		}else{
+			console.log("User not found");
+			data.auth = false;
+			data.message = "Cannot find User";
+			req.flash('origin');
+			req.flash('origin', '/codehat/'+projectID);
+			data.url = "/login";
+		}
+	});
 });
 
 var child_process = require('child_process');
