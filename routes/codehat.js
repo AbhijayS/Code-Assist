@@ -367,6 +367,11 @@ router.post('/:id/change-project-name', function(req, res) {
 	}
 });
 
+router.post('/:id/change-status', function(req, res) {
+	console.log("change status");
+	res.send('okay')
+});
+
 var child_process = require('child_process');
 var exec = child_process.exec;
 var spawn = child_process.spawn;
@@ -450,7 +455,6 @@ function Project(id, files) {
 				clearTimeout(file.saveTimeout);
 
 			file.saveTimeout = setTimeout(function() {
-				console.log("saving")
 				// saving file changes to database
 				User.ProjectSchema.findOne({_id: self.id}).populate('files').exec(function(err, project) {
 					project.files[fileIndex].text = text;
@@ -465,6 +469,7 @@ function Project(id, files) {
 					project.last_modified = today.toString();
 					project.save(function(err) {
 						if(err) throw err;
+						console.log("saving");
 					});
 				});
 			}, 1000);

@@ -103,6 +103,7 @@ html, body {
 #code-editor #editor {
 	height: 60%;
 	font-size: 14px;
+  visibility: hidden;
 }
 
 /* styling for tab input */

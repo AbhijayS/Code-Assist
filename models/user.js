@@ -81,7 +81,7 @@ var ProjectSchema = new Schema({
 	chatHistory:[{
 		type: String
 	}],
-	status: String, // new, using, unused, deleted
+	status: String, // new, using, unused
 
 	// description: String,
 	// name: String,

@@ -1,4 +1,15 @@
 $(document).ready(function() {
+  // display or remove settings
+  if($('#settings #status').text() == "new") {
+    $('#settings').attr('class', '');
+    $.post(window.location.pathname + "/change-status", {status: "using"}, function(data) {
+      console.log(data);
+    });
+  }else{
+    $('#settings').attr('class', 'hide');
+  }
+
+
   $('#code-editor').css({
     'margin-left' : $('#sidebar').width()
   });
@@ -76,7 +87,7 @@ $(document).ready(function() {
           temp.addClass('form-control');
           temp.addClass("is-valid");
         }
-        
+
       }else{
         for(var i = 0; i < form.find("input[name=emailInput]").length; i++) {
           var temp = form.find("input[name=emailInput]");
@@ -103,5 +114,4 @@ $(document).ready(function() {
       input_field.addClass(data.message);
     });
   });
-
 });
