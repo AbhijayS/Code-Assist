@@ -14,11 +14,12 @@ $("#startCall").click(function() {
 	webrtc.startLocalVideo();
 	webrtc.joinRoom(namespace);
 	muted = false;
+	$("#localVideo").show();
 });
 
 $("#endCall").click(function() {
 	webrtc.stopLocalVideo();
-	webrtc.leaveRoom(namespace);
+	webrtc.leaveRoom();
 	muted = null;
 	$("#localVideo").hide();
 });
