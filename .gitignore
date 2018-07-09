@@ -1,2 +1,4 @@
 .env
 Procfile
+/node_modules
+/codehat_files

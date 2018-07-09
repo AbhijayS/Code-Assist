@@ -61,6 +61,7 @@ var ProjectFileSchema = new Schema ({
 //Project Schema
 var ProjectSchema = new Schema({
 	name: String,
+	thumbnail: String,
 	date_created: {type: Date, default: Date.now},
 	last_modified: {type: Date, default: Date.now},
 	owner: {

@@ -65,7 +65,7 @@ function() {
   });
 
 
-  var contextMenu = $(`
+  var defaultContextMenu = $(`
     <div class="dropdown-menu">
       <a class="dropdown-item toggle">
         <i class="fas fa-plus-circle"></i>
@@ -75,7 +75,7 @@ function() {
       <a class="dropdown-item hide">
         <form class="createNewProject">
           <div class="form-group">
-            <input type="text" class="form-control" id="exampleInputEmail1" placeholder="Project name">
+            <input type="text" class="form-control" placeholder="Project name" autocomplete="off">
             <div class="text-danger invalid-feedback">
               Project with this name already exists
             </div>
@@ -84,35 +84,100 @@ function() {
         </form>
       </a>
     </div>
-    `);
-  // Context Menu
-  $( "#projects" ).contextmenu(function(e) {
+  `);
 
-    e.preventDefault();
-    contextMenu.css({
-      "top": e.pageY + "px",
-      "left": e.pageX + "px"
-    });
-    $('#projects').append(contextMenu);
+  var projectContextMenu = $(`
+    <div class="dropdown-menu" id="project-menu">
+      <a class="dropdown-item toggle" onclick="$('#rename-project').toggleClass('hide');">
+        Rename Project
+      </a>
+      <a id="rename-project" class="dropdown-item hide">
+        <input type="text" class="form-control" placeholder="New Name" autocomplete="off">
+      </a>
+
+      <hr>
+      <a class="dropdown-item">
+        <form class="delete-Project">
+          <button type="submit" name="button" class="btn btn-danger btn-block">Delete Project</button>
+        </form>
+      </a>
+    </div>
+  `);
+
+  $( "body" ).contextmenu(function(event) {
+    event.preventDefault();
+  });
+  // Context Menu
+  $( "#projects" ).contextmenu(function(event) {
+    var target = $(event.target);
+    event.preventDefault();
+
+    if(target.is($('.card')) || $('.card').has(target).length) {
+      console.log("Clicked Card");
+      $('.dropdown-menu').remove();
+      projectContextMenu.css({
+        "top": event.pageY + "px",
+        "left": event.pageX + "px"
+      });
+      projectContextMenu.find('#rename-project input').attr('placeholder', target.closest('.card').find('.card-footer .project-name').text().trim());
+      $('#projects').append(projectContextMenu);
+
+      //change project name
+      $('#projects #rename-project input').change(function(){
+        var name = $(this).val();
+        console.log("Name changed: " + name);
+        $.post('/codehat/change-project-name', {oldName: target.closest('.card').find('.card-footer .project-name').text().trim(), newName: name}, function(data) {
+          console.log("Server: " + data.message);
+        });
+      });
+    }else{
+      if(!(target.is(defaultContextMenu) || target.is(projectContextMenu) || defaultContextMenu.has(target).length || projectContextMenu.has(target).length))
+      {
+        $('.dropdown-menu').remove();
+        // console.log("Clicked");
+        var viewportWidth = $(window).width();
+        var viewportHeight = $(window).height();
+        var mouseX = event.pageX;
+        var mouseY = event.pageY;
+        var menuWidth = 210;
+        var menuHeight = 150;
+        var menuX = mouseX;
+        var menuY = mouseY;
+
+        if(mouseX+menuWidth >= viewportWidth){
+          menuX = mouseX-menuWidth;
+        }
+        if(mouseY+menuHeight >= viewportHeight){
+          menuY = mouseY-menuHeight;
+        }
+
+        defaultContextMenu.css({
+          "top": menuY + "px",
+          "left": menuX + "px"
+        });
+        $('#projects').append(defaultContextMenu);
+      }
+    }
   });
 
   $(window).click(function(event) {
     var target = $(event.target);
-    if(!(target.is(contextMenu) || contextMenu.has(target).length)) {
-      contextMenu.find('a').last().attr("class", "dropdown-item hide");
-      contextMenu.remove();
+    if(!(target.is(defaultContextMenu) || target.is(projectContextMenu) || defaultContextMenu.has(target).length || projectContextMenu.has(target).length)) {
+      defaultContextMenu.find('a').last().attr("class", "dropdown-item hide");
+      defaultContextMenu.remove();
+      projectContextMenu.remove();
     }else{
-      if(target.is(contextMenu.find('.toggle')) || target.parent().is(contextMenu.find('.toggle'))) {
-        contextMenu.find('a').last().toggleClass('hide');
-      }else if(target.is(contextMenu.find('button'))) {
+      if(target.is(defaultContextMenu.find('.toggle')) || target.parent().is(defaultContextMenu.find('.toggle'))) {
+        defaultContextMenu.find('a').last().toggleClass('hide');
+      }else if(target.is(defaultContextMenu.find('button'))) {
         event.preventDefault();
-        $.post('/codehat/', {project_name: contextMenu.find('input').val()}, function(data){
+        $.post('/codehat/', {project_name: defaultContextMenu.find('input').val()}, function(data){
           if(data.auth) {
             window.location.replace(data.url);
           }else{
             if(data.url == '') {
               // console.log(data.message);
-              contextMenu.find('input').toggleClass(data.message);
+              defaultContextMenu.find('input').toggleClass(data.message);
             }else {
               window.location.replace(data.url);
             }
@@ -127,7 +192,7 @@ function() {
   //   if(item.hasClass('dropdown-menu') || item.parent().hasClass('dropdown-menu') || item.parent().parent().hasClass('dropdown-menu') || item.parent().parent().parent().hasClass('dropdown-menu'))
   //   {
   //     if(item.parent().hasClass('dropdown-menu') && item.parent().children().length == 1) {
-  //       contextMenu.append($(`
+  //       defaultContextMenu.append($(`
   //         <a class="dropdown-item" href="#">
   //         <form class="createNewProject">
   //         <div class="form-group">
@@ -137,14 +202,14 @@ function() {
   //         </form>
   //         </a>
   //         `));
-  //         console.log(contextMenu);
+  //         console.log(defaultContextMenu);
   //       }else{
-  //         contextMenu.find('a').last().remove();
+  //         defaultContextMenu.find('a').last().remove();
   //       }
   //   }else{
   //     console.log("OUT");
   //     if(item.)
-  //     contextMenu.remove();
+  //     defaultContextMenu.remove();
   //   }
   // });
 };

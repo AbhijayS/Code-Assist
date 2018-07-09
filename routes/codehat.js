@@ -240,8 +240,9 @@ router.post('/', function(req, res){
 			if(!data.auth == false) {
 				console.log("Valid");
 				var newProject = new User.ProjectSchema();
-				newProject.name = req.body.project_name;
+				newProject.name = project_name.trim();
 				newProject.owner = req.user._id;
+				newProject.thumbnail = project_name.trim().substring(0, 1);
 				// newProject.usersWithAccess.push(req.user);
 
 				newProject.status = "new";
@@ -365,6 +366,38 @@ router.post('/:id/change-project-name', function(req, res) {
 		req.flash('origin', '/codehat/'+projectID);
 		res.redirect("/login");
 	}
+});
+
+router.post('/change-project-name', function(req, res) {
+	var projectName = req.body.oldName;
+	var newName = req.body.newName;
+
+	var data = {
+		auth: false,
+		url: "",
+		message: ""
+	};
+	User.ProjectSchema.findOne({name: projectName}, function(err, project) {
+		if(req.user) {
+			if(newName.length >= 3) {
+				project.name = newName;
+				project.save(function(err) {
+					if(err) throw err;
+				});
+				data.auth = true;
+				data.message = "is-valid";
+			}else{
+				data.auth = false;
+				data.message = "is-invalid";
+			}
+			res.send(data);
+		}else{
+			req.flash('origin');
+			req.flash('origin', '/codehat/');
+			res.redirect("/login");
+		}
+	});
+
 });
 
 router.post('/:id/change-status', function(req, res) {

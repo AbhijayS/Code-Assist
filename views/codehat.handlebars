@@ -7,11 +7,11 @@
         {{#each projects}}
         <a class="card-link" href="/codehat/{{this._id}}" style="text-decoration: none;">
           <div class="card">
-            <div class="card-body text-center" onload="firstLetter()">
-              {{this.name}}
+            <div class="card-body text-center">
+              {{this.thumbnail}}
             </div>
             <div class="card-footer">
-              <div>
+              <div class="project-name">
                 {{this.name}}
               </div>
               <!-- <br> -->
