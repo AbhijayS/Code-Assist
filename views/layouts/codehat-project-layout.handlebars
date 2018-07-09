@@ -22,6 +22,10 @@
 
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/fontawesome.css" integrity="sha384-ozJwkrqb90Oa3ZNb+yKFW2lToAWYdTiF1vt8JiH5ptTGHTGcN7qdoR1F95e0kYyG" crossorigin="anonymous">
 
+    <!-- WebRTC -->
+    <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script> 
+    <script src="https://simplewebrtc.com/latest-v3.js"></script>
+
     <title>Code HAT</title>
   </head>
   <body>
@@ -42,6 +46,7 @@
       <ul class="list-group">
         {{#if namespace}}
         <li class="list-group-item"><i class="far fa-file-code"></i></li>
+        <li id="videochat-btn" class="list-group-item"><i class="fas fa-video"></i></li>
         {{else}}
         <li class="list-group-item"><i class="fas fa-plus"></i></li>
         {{/if}}
@@ -73,9 +78,11 @@
 
     <script type="text/javascript">
       console.log('{{user.username}}'+' is your username and you have a clearance of level '+{{clearance}});
-    	var socket = io('{{namespace}}');
+        var namespace = '{{namespace}}';
+    	var socket = io(namespace);
     </script>
     <script src="/codehat/script.js"></script>
+    <script src="/js/codehat-webrtc.js"></script>
     <script src="/js/codehat-project.js"></script>
   </body>
 </html>

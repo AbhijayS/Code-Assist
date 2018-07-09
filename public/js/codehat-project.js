@@ -1,6 +1,6 @@
 $(document).ready(function() {
-  $('#code-editor').css({
-    'margin-left' : $('#sidebar').width()
+  $('#editorContainer').css({
+    'padding-left' : $('#sidebar').width()
   });
 
   $('#add-more-emails').click(function() {
@@ -47,6 +47,10 @@ $(document).ready(function() {
   $('#settings-btn').click(function() {
     $('#settings').show();
     $('#close-settings').show();
+  });
+
+  $('#videochat-btn').click(function() {
+    $('#videoChat').toggle();
   });
 
   $('#share-project').submit(function(event) {

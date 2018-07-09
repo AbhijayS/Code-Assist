@@ -1,24 +1,39 @@
 
-<div id="code-editor">
-	<div id="topBar">
-		<label class="btn btn-primary mb-0">
-			Upload File<input type="file" accept=".java,.py,.dat,.txt" hidden>
-		</label>
-		<button id="newFileBtn" class="btn btn-primary">New File</button>
-	</div>
-	<ul class="nav nav-tabs" id="fileTabs">
+<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script> 
+<script src="https://simplewebrtc.com/latest-v3.js"></script> 
+<div id="editorContainer" class="container-fluid">
+	<div class="row">
+		<div id="code-editor-col" class="col">
+			<div id="code-editor">
+				<div id="topBar">
+					<label class="btn btn-primary mb-0">
+						Upload File<input type="file" accept=".java,.py,.dat,.txt" hidden>
+					</label>
+					<button id="newFileBtn" class="btn btn-primary">New File</button>
+				</div>
+				<ul class="nav nav-tabs" id="fileTabs">
 
-	</ul>
+				</ul>
 
-	<div id="editor"></div>
+				<div id="editor"></div>
 
-	<textarea id="output" readonly autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
-	<form id="programInputForm">
-		<input disabled id="programInput" type="text" autocomplete="off">
-	</form>
-	<div id="buttons">
-		<button class="btn btn-primary" id="run">Run</button>
-		<img id="loadingWheel" src="/codehat/images/spinner.gif" style="display: none;">
+				<textarea id="output" readonly autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+				<form id="programInputForm">
+					<input disabled id="programInput" type="text" autocomplete="off">
+				</form>
+				<div id="buttons">
+					<button class="btn btn-primary" id="run">Run</button>
+					<img id="loadingWheel" src="/codehat/images/spinner.gif" style="display: none;">
+				</div>
+			</div>
+		</div>
+		<div id="videoChat" class="col-5">
+			<div id="remotesVideos"></div>
+			<video id="localVideo"></video>
+			<button id="startCall" class="btn btn-success">Call</button>
+			<button id="endCall" class="btn btn-danger">Hang Up</button>
+			<button id="muteAudio" class="btn btn-danger">Mute</button>
+		</div>
 	</div>
 </div>
 

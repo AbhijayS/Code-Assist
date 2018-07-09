@@ -31,7 +31,7 @@ nav {
   padding-left: 15px;
   font-size: 40px;
   color: #fff8f0;
-  margin: 38px 0;
+  margin: 30px 0;
   font-weight: 200;
   transition: 0.3s;
   max-width: 75px;
@@ -103,6 +103,19 @@ html, body {
 #code-editor #editor {
 	height: 60%;
 	font-size: 14px;
+}
+
+#editorContainer {
+  padding: 0;
+}
+
+#editorContainer .row {
+  margin: 0;
+}
+
+#code-editor-col {
+  padding-left: 0;
+  padding-right: 0;
 }
 
 /* styling for tab input */
@@ -189,6 +202,21 @@ button:enabled {
 
 [hidden] {
 	display: none !important;
+}
+
+/*
+======================
+  Video Chat
+======================
+*/
+
+#localVideo {
+  width: 170px;
+  float: right;
+}
+
+#remotesVideos video {
+  width: 100%;
 }
 
 /*
