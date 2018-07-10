@@ -285,7 +285,7 @@ router.post('/', function(req, res){
 
 router.get('/:id', function(req, res) {
 		var projectID = req.params.id;
-		User.ProjectSchema.findOne({_id: projectID}).populate(['files', 'usersWithAccess', 'owner']).exec(function(err, project) {
+		User.ProjectSchema.findOne({_id: projectID}).populate(['files', 'usersWithAccess', 'owner', 'chatHistory']).exec(function(err, project) {
 			if(req.user) {
 				if (project) {
 					var userAccessLevel = 0;
@@ -506,10 +506,37 @@ function Project(id, files) {
 			socket.emit("output", self.output);
 		}
 
-		socket.on("chat",function(msg){
-			console.log("Message: " + msg);
-			this.nsp.emit('broadcastchat',msg);
-		});
+		//chat handler
+		socket.on("chat",function(msg,chatterid,chatter){
+					//console.log(msg+'  ');
+					var NewChatMessage = new User.ChatSchema();
+					NewChatMessage.authorid=chatterid;
+					NewChatMessage.author=chatter;
+					NewChatMessage.message=msg;
+					NewChatMessage.date=new Date();
+
+//save the new message to the database
+					NewChatMessage.save(function(error){
+						console.log(self.id);
+						User.ProjectSchema.findOne({_id:self.id}).exec(function(error, project){
+							project.chatHistory.push(NewChatMessage._id);
+							console.log(project);
+								project.save(function(error){
+									chatdatanamespace.emit('broadcastchat',NewChatMessage);
+
+									if(error){
+										console.log(error);
+									}
+								});
+							if(error){
+								console.log(error);
+							}
+						});
+						if(error){
+							console.log(error);
+						}
+					});
+				});
 
 		socket.on("updateFile", function(text, fileIndex) {
 			var file = self.files[fileIndex];
