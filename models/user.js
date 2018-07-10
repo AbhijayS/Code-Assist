@@ -8,6 +8,15 @@ var Schema = mongoose.Schema;
 // mongoose.connect(process.env.DB_HOST_TEST);
 var db = mongoose.connection;
 
+// Chat Schema
+var ChatSchema = new Schema({
+	authorid: String,
+	author:String,
+	message:String,
+	date:String,
+	projectid:String,
+});
+
 // User Schema
 var UserSchema = new Schema({
 		username: {
@@ -80,7 +89,8 @@ var ProjectSchema = new Schema({
 	}],
 
 	chatHistory:[{
-		type: String
+	  type: Schema.Types.ObjectId,
+	  ref:'ChatSchema'
 	}],
 	status: String, // new, using, unused
 
@@ -120,6 +130,8 @@ var AnswerSchema = mongoose.model('AnswerSchema', AnswerSchema);
 var FileRefSchema = mongoose.model('FileRefSchema', FileRefSchema);
 var ProjectSchema = mongoose.model('ProjectSchema', ProjectSchema);
 var ProjectFileSchema = mongoose.model('ProjectFileSchema', ProjectFileSchema);
+var ChatSchema = mongoose.model('ChatSchema', ChatSchema);
+
 
 module.exports = {
 	UserSchema: User,
@@ -128,7 +140,8 @@ module.exports = {
 	AnswerSchema: AnswerSchema,
 	FileRefSchema: FileRefSchema,
 	ProjectSchema: ProjectSchema,
-	ProjectFileSchema: ProjectFileSchema
+	ProjectFileSchema: ProjectFileSchema,
+	ChatSchema: ChatSchema
 }
 
 CommunitySchema.findOne({}).populate('posts').exec(function(err, community) {

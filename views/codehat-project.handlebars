@@ -147,3 +147,23 @@
 		<!-- </div> -->
 	</div>
 </div>
+
+<div class="">
+	<script type="text/javascript">
+		{{#each project.chatHistory}}
+			$('#messages').append($('<li>').text('{{author}}'+' : '+'{{message}}'));
+		{{/each}}
+		$(function () {
+		    $('form').submit(function(){
+		        socket.emit('chat', $('#msg').val(),'{{user._id}}','{{user.username}}');
+		        $('#msg').val('');
+		        return false;
+		    });
+		    socket.on('broadcastchat', function(msg){
+		        $('#messages').append($('<li>').text(msg.author+' : '+msg.message));
+		    });
+		});
+	</script>
+	
+
+</div>
