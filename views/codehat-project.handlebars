@@ -1,4 +1,4 @@
-<div id="status" hidden>{{project.status}}</div> <!-- Project status one of: new, using, unused -->
+<div id="status">{{project.status}}</div> <!-- Project status one of: new, using, unused -->
 
 <div id="code-editor">
 	<div id="topBar">
@@ -149,7 +149,7 @@
 </div>
 
 <div class="">
-	<script type="text/javascript">
+	<!-- <script type="text/javascript">
 		{{#each project.chatHistory}}
 			$('#messages').append($('<li>').text('{{author}}'+' : '+'{{message}}'));
 		{{/each}}
@@ -163,7 +163,6 @@
 		        $('#messages').append($('<li>').text(msg.author+' : '+msg.message));
 		    });
 		});
-	</script>
-	
+	</script> -->
 
 </div>
