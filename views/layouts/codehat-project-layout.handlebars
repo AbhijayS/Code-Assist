@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css?family=Nunito:300,300i,400,700" rel="stylesheet">
 
     <link rel="stylesheet" type="text/css" href="/css/codehat.css">
-
+    <link rel="stylesheet" href="/codehat/style.css">
     <!-- Project Files Layout -->
     <link rel="stylesheet" href="/codehat/ace-collab-ext/ace-collab-ext.css"/>
     <script src="/codehat/ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
@@ -58,14 +58,15 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.slim.js"></script>
 
-    <script>
+
+    <!-- <script>
     	var editor = ace.edit("editor");
     	editor.setTheme("ace/theme/textmate");
     	editor.getSession().setMode("ace/mode/java");
     	editor.setShowPrintMargin(false);
     	editor.$blockScrolling = Infinity;
     	editor.focus();
-    </script>
+    </script> -->
 
     <script type="text/javascript">
       console.log('{{user.username}}'+' is your username and you have a clearance of level '+{{clearance}});

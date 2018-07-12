@@ -17,6 +17,15 @@ $(document).ready(function() {
     'margin-left' : $('#sidebar').width()
   });
 
+  // code editor
+  var editor = ace.edit("editor");
+  editor.setTheme("ace/theme/textmate");
+  editor.getSession().setMode("ace/mode/java");
+  editor.setShowPrintMargin(false);
+  editor.$blockScrolling = Infinity;
+  editor.focus();
+
+
   $('#add-more-emails').click(function() {
     var addEmail = $(`
       <div class="row mb-2">
