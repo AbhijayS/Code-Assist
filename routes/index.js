@@ -435,6 +435,10 @@ router.post('/delete-account', function(req, res) {
 router.get('/team', function(req, res) {
   res.render('team', {layout: 'dashboard-layout'});
 });
+
+router.get('/forgotpass',function(req,res){
+  res.render('forgotpass',{layout:'layout'})
+});
 /*
 =====================================================
                         BLOG
