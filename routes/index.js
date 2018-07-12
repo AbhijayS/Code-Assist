@@ -436,8 +436,13 @@ router.get('/team', function(req, res) {
   res.render('team', {layout: 'dashboard-layout'});
 });
 
+//password forget functions
 router.get('/forgotpass',function(req,res){
   res.render('forgotpass',{layout:'layout'})
+});
+
+router.post('/resetpass',function(req,res){
+  console.log(req.body.code);
 });
 /*
 =====================================================

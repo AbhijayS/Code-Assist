@@ -1,3 +1,25 @@
+
 <body>
-<input></input>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  <form action="">
+    <input id="resetcode" autocomplete="off"/>
+  </form>
+  <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+<script>
+$(function(){
+  $('form').submit(function(){
+    $.post('/resetpass',{code:$('#resetcode').val()},function(res){
+      alert(res);
+    });
+    return false;
+  });
+});
+</script>
 </body>
