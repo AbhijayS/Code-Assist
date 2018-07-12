@@ -494,6 +494,8 @@ function Project(id, files) {
 
 	// nsp is the socket.io namespace
 	this.nsp = io.of('/'+this.id)
+	var chatdatanamespace=this.nsp;
+	this.nsp = io.of('/'+this.id)
 
 	this.nsp.on('connection', function connection(socket) {
 		console.log("new codehat connection");

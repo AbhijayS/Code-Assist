@@ -1,4 +1,4 @@
-<div id="status">{{project.status}}</div> <!-- Project status one of: new, using, unused -->
+<div id="status" hidden>{{project.status}}</div> <!-- Project status one of: new, using, unused -->
 
 <!-- <div id="topBar">
 	<label class="btn btn-primary mb-0">
@@ -37,9 +37,21 @@
 			</div>
 		</div>
 
-		<div class="col-sm-4">
-			Chat
+		<div class="col-sm-4" id="chat-ui">
+			<ul id="all-messages" style="list-style-type: none;">
+				{{#each project.chatHistory}}
+					<li>
+						<span style="font-weight: bold;">{{author}}</span>
+						{{message}}
+					</li>
+				{{/each}}
+			</ul>
+			<form id="send-message-form">
+			 	<input id="msg" autocomplete="off" placeholder="Message">
+				<button type="submit" class="btn btn-primary">Send</button>
+			</form>
 		</div>
+
 	</div>
 </div>
 
@@ -167,24 +179,4 @@
 
 		<!-- </div> -->
 	</div>
-</div>
-
-
-<div class="">
-	<!-- <script type="text/javascript">
-		{{#each project.chatHistory}}
-			$('#messages').append($('<li>').text('{{author}}'+' : '+'{{message}}'));
-		{{/each}}
-		$(function () {
-		    $('form').submit(function(){
-		        socket.emit('chat', $('#msg').val(),'{{user._id}}','{{user.username}}');
-		        $('#msg').val('');
-		        return false;
-		    });
-		    socket.on('broadcastchat', function(msg){
-		        $('#messages').append($('<li>').text(msg.author+' : '+msg.message));
-		    });
-		});
-	</script> -->
-
 </div>

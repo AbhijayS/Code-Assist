@@ -8,6 +8,14 @@ var LocalStrategy = require('passport-local').Strategy;
 var passport = require('passport');
 var nodemailer = require('nodemailer');
 
+// Get current user
+router.post('/current-user', function(req, res) {
+  if(req.user)
+    res.send(req.user);
+  else
+    res.send(null);
+});
+
 // Get Homepage
 router.get('/', function(req, res){
     // console.log("Homepage: ");

@@ -1,6 +1,8 @@
-$(document).ready(function() {
+window.onload =
+function() {
   // display or remove settings
   // Please do not modify the following fields. There could be unintended consequences.
+  console.log($('#status').text());
   if($('#status').text() == "new") {
     $('#settings').show();
     $.post(window.location.pathname + "/change-status", {newStatus: "using"}, function(data) {
@@ -19,11 +21,35 @@ $(document).ready(function() {
 
   // code editor
   var editor = ace.edit("editor");
-  editor.setTheme("ace/theme/textmate");
-  editor.getSession().setMode("ace/mode/java");
-  editor.setShowPrintMargin(false);
-  editor.$blockScrolling = Infinity;
-  editor.focus();
+	editor.setTheme("ace/theme/textmate");
+	editor.setShowPrintMargin(false);
+	editor.$blockScrolling = Infinity;
+	editor.focus();
+  console.log("Editor Imported");
+
+
+  //socket io
+  $('#chat-ui #send-message-form').submit(function(event){
+    event.preventDefault();
+    var form = $(this);
+    var message = $('#chat-ui #send-message-form #msg');
+
+    $.post("/current-user", function(user) {
+      console.log("Sending: " + message.val());
+      if(user){
+        console.log("User: " + user.username);
+        socket.emit('chat', message.val(),user._id,user.username);
+        message.val('');
+      }else{
+        console.log("Message failed");
+      }
+    });
+  });
+  socket.on('broadcastchat', function(msg){
+    console.log("Broadcasted: " + msg);
+    $('#chat-ui #all-messages').append($('<li>').text(msg.author+' : '+msg.message));
+  });
+  console.log("Chat loaded");
 
 
   $('#add-more-emails').click(function() {
@@ -126,4 +152,4 @@ $(document).ready(function() {
       input_field.addClass(data.message);
     });
   });
-});
+};
