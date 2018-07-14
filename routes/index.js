@@ -443,7 +443,15 @@ router.get('/forgotpass',function(req,res){
 });
 
 router.post('/resetpass',function(req,res){
+  if(req.body.username){
   console.log(req.body.code+"   "+req.body.username);
+  User.UserSchema.findOne({username:req.body.username},function(err,user){
+    if(req.body.code==user.forgotpasscode){
+      console.log("let user reset their password");
+      res.send("activatereset")
+    }
+  });
+}
 });
 
 router.post('/sendpassresetemail',function(req,res){

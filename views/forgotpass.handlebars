@@ -8,31 +8,49 @@
   <br>
   <br>
   <br>
-  <h3>Code</h3>
-  <form action="" id='codeform'>
-    <input id="resetcode" autocomplete="off"/>
-  </form>
   <h3>Email</h3>
   <form action="" id='emailform'>
     <input id="email" autocomplete="off"/>
   </form>
+  <form action="" id='codeform'>
+    <h3>Code</h3>
+    <input id="resetcode" autocomplete="off"/>
+  </form>
+  <form action="" id='passresetform'>
+  <h3>New Password</h3>
+    <input id="newpassword" autocomplete="off"/>
+  <h3>Confirm New Password</h3>
+    <input id="confirmnewpassword" autocomplete="off"/>
+  </form>
   <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 <script>
 $(function(){
+  $('#codeform').hide();
+  $('#passresetform').hide();
   $('#codeform').submit(function(){
-    $.post('/resetpass',{code:$('#resetcode').val(), username:oof},function(res){
-      alert(res);
+    $.post('/resetpass',{code:$('#resetcode').val(), username:usernm},function(res){
+      if(res="activatereset"){
+        $('#passresetform').show();
+      }
     });
     return false;
   });
-var oof;
+var usernm;
   $('#emailform').submit(function(){
 
     $.post('/sendpassresetemail',{email:$('#email').val()},function(res){
-      oof=res;
+      if(usernm!="undefined"){
+        $('#codeform').show();
+        usernm=res;
+      }
     });
     return false;
   });
+
+  $('#passresetform').submit(function(){
+
+  });
+
 });
 </script>
 </body>
