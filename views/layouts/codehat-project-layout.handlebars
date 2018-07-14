@@ -22,9 +22,8 @@
 
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/fontawesome.css" integrity="sha384-ozJwkrqb90Oa3ZNb+yKFW2lToAWYdTiF1vt8JiH5ptTGHTGcN7qdoR1F95e0kYyG" crossorigin="anonymous">
 
-    <!-- WebRTC -->
-    <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script> 
-    <script src="https://simplewebrtc.com/latest-v3.js"></script>
+    <!-- EasyRTC -->
+    <link rel="stylesheet" type="text/css" href="/easyrtc/easyrtc.css" />
 
     <title>Code HAT</title>
   </head>
@@ -67,6 +66,9 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.slim.js"></script>
 
+    <!-- EasyRTC -->
+    <script type="text/javascript" src="/easyrtc/easyrtc.js"></script>
+
     <script>
     	var editor = ace.edit("editor");
     	editor.setTheme("ace/theme/textmate");
@@ -80,6 +82,7 @@
       console.log('{{user.username}}'+' is your username and you have a clearance of level '+{{clearance}});
         var namespace = '{{namespace}}';
     	var socket = io(namespace);
+        var username = '{{user.username}}';
     </script>
     <script src="/codehat/script.js"></script>
     <script src="/js/codehat-webrtc.js"></script>

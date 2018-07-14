@@ -6,16 +6,7 @@ var User = require('../models/user');
 var server = require('../app').server;
 var upload = require('../database').upload;
 var uniqid = require('uniqid');
-
-// setting up signaling server for simpleWebRTC
-var signalServerApp = express();
-var config = require('getconfig');
-var sockets = require('../signalmaster/sockets');
-var signalServer = signalServerApp.listen(8888, function(){
-  // console.log('webrtc signaling server started on port ' + (8888));
-});
-sockets(signalServer, config);
-
+var easyrtc_server = require('../easyrtc/easyrtc_server_setup');
 
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);

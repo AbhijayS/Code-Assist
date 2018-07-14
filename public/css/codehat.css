@@ -107,10 +107,12 @@ html, body {
 
 #editorContainer {
   padding: 0;
+  height: 100%;
 }
 
 #editorContainer .row {
   margin: 0;
+  height: 100%;
 }
 
 #code-editor-col {
