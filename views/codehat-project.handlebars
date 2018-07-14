@@ -31,21 +31,9 @@
             <strong>Connected users:</strong>
             <div id="otherClients"></div>
           </div>
-          <div id="videos">
-            <video  autoplay="autoplay" id="selfVideo" class="easyrtcMirror"></video>
-            <!-- each caller video needs to be in it"s own div so
-               it"s close button can be positioned correctly
-            -->
-            <div style="position:relative;float:left;">
-              <video  autoplay="autoplay" id="callerVideo" class="callerVideo"></video>
-            </div> <br>
-            <div style="position:relative;float:left;">
-              <video  autoplay="autoplay" id="callerVideo2" class="callerVideo"></video>
-            </div>
-            <div style="position:relative;float:left;">
-              <video  autoplay="autoplay" id="callerVideo3" class="callerVideo"></video>
-            </div>
-          </div>
+			<div id="videos">
+				<video autoplay="autoplay" id="selfVideo" class="easyrtcMirror"></video>
+			</div>
 
 			<button id="joinCall" class="btn btn-success">Join Call</button>
 			{{!-- <button id="endCall" class="btn btn-danger">Hang Up</button> --}}

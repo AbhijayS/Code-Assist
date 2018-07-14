@@ -24,7 +24,7 @@ option.appIceServers = [                                    // Array of STUN and
 
 
 // Room Options
-option.roomDefaultEnable    = true;                         // Enables connections joining a default room if it is not initially specified. If false, than a connection initially may be in no room.
+option.roomDefaultEnable    = false;                         // Enables connections joining a default room if it is not initially specified. If false, than a connection initially may be in no room.
 option.roomDefaultName      = "default";                    // The default room a connection joins if it is not initially specified.
 option.roomAutoCreateEnable = true;                         // Enables the creation of rooms from the API. Occurs when client joins a nonexistent room.
 option.roomDefaultFieldObj  = null;                         // Default fields which are set when a room is created. In form of {"fieldName":{fieldValue:<JsonObj>, fieldOption:{isShared:<boolean>}}[, ...]}

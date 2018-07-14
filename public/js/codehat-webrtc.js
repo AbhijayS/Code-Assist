@@ -3,11 +3,33 @@ easyrtc.setSocketUrl(":8888");
 var selfEasyrtcid = "";
 var connected = false;
 var readyToJoinCall = false;
- 
+
+easyrtc.setStreamAcceptor(function(callerEasyrtcid, stream) {
+	var newVideo = $(`<video autoplay="autoplay" id="video_${callerEasyrtcid}" class="callerVideo"></video>`);
+	$("#videos").append(newVideo);
+
+	easyrtc.setVideoObjectSrc(newVideo.get(0), stream);
+});
+
+easyrtc.setOnStreamClosed(function (callerEasyrtcid) {
+	$("video_" + callerEasyrtcid).remove();
+});
+
 easyrtc.enableDebug(false);
-easyrtc.setRoomOccupantListener(convertListToButtons);
+easyrtc.setRoomOccupantListener(RoomOccupantListener);
 easyrtc.setUsername(username);
-easyrtc.easyApp("Video_Conference", "selfVideo", ["callerVideo"], loginSuccess, loginFailure);
+
+easyrtc.initMediaSource(
+	function() {       // success callback
+		var selfVideo = document.getElementById("selfVideo");
+		easyrtc.setVideoObjectSrc(selfVideo, easyrtc.getLocalStream());
+		
+		// easyrtc.connect("Video_Conference", connectSuccess, connectFailure);
+	}, function(errmesg) {
+        console.log(errmesg);
+    }
+);
+ 
  
 function clearConnectList() {
 	otherClientDiv = document.getElementById("otherClients");
@@ -18,17 +40,29 @@ function clearConnectList() {
 
 $("#joinCall").click(function() {
 	if (!connected) {
-		easyrtc.joinRoom(namespace.substring(1), null, function(roomName) {
-			console.log("connnected to " + roomName);
-			readyToJoinCall = true;
-		});
+		easyrtc.connect("Video_Conference", connectSuccess, connectFailure);
 	}
 });
+
+function connectSuccess(easyrtcid, roomOwner) {
+	selfEasyrtcid = easyrtcid;
+	document.getElementById("iam").innerHTML = "I am " + easyrtc.cleanId(easyrtcid);
+
+	easyrtc.joinRoom(namespace.substring(1), null, function(roomName) {
+		console.log("connnected to " + roomName);
+		readyToJoinCall = true;
+	});
+}
  
-function convertListToButtons (roomName, occupants, isPrimary) {
+function connectFailure(errorCode, errorText) {
+	easyrtc.showError(errorCode, errorText);
+}
+ 
+function RoomOccupantListener(roomName, occupants, isPrimary) {
 	clearConnectList();
 	var otherClientDiv = document.getElementById("otherClients");
 	for(var easyrtcid in occupants) {
+		// add id buttons
 		var button = document.createElement("button");
 		button.onclick = function(easyrtcid) {
 			return function() {
@@ -64,16 +98,6 @@ function convertListToButtons (roomName, occupants, isPrimary) {
 		readyToJoinCall = false;
 		connected = true;
 	}
-}
- 
- 
-function loginSuccess(easyrtcid) {
-	selfEasyrtcid = easyrtcid;
-	document.getElementById("iam").innerHTML = "I am " + easyrtc.cleanId(easyrtcid);
-}
- 
-function loginFailure(errorCode, message) {
-	easyrtc.showError(errorCode, message);
 }
 
 easyrtc.setAcceptChecker(function(easyrtcid, callback) {
