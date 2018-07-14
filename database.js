@@ -12,7 +12,7 @@ require('dotenv').config();
 //Database Connection
 
 // ***** USE DB_HOST when deploying *****
-var database = process.env.DB_HOST;
+var database = process.env.DB_HOST_TEST;
 // **************************************
 
 mongoose.connect(database);

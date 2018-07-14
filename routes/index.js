@@ -6,7 +6,8 @@ var path = require('path');
 var User = require('../models/user');
 var LocalStrategy = require('passport-local').Strategy;
 var passport = require('passport');
-var nodemailer = require('nodemailer');
+//var nodemailer = require('nodemailer');
+const sgMail = require('@sendgrid/mail');
 var passwordresetarray=new Array();
 // Get Homepage
 router.get('/', function(req, res){
@@ -453,12 +454,47 @@ router.post('/sendpassresetemail',function(req,res){
       console.log(err);
     }
     if(user){
+      console.log("this is a valid email");
+
     //Generate random number to serve as the reset codeform
-    var passresetnumber=Math.floor(Math.random()*9999999)+1000000;
-    user.forgotpassdata.lastattempt=new Date();
-    user.forgotpassdata.passresetnumber;
-    res.send("this is a valid email");
-    }
+      var passresetnumber=Math.floor(Math.random()*9999999)+1000000;
+      user.forgotpasslastattempt=new Date();
+      user.forgotpasscode=passresetnumber;
+      user.save(function(err){
+        if(err){
+          console.log(err);
+        }
+
+      res.send("this is a valid email");
+
+      const output = `
+        <p>Hi ${user.username},</p>
+        <p>Password reset</p>
+        <h2>New Question Details<h2>
+        <hr>
+
+        <h3>Question</h3>
+        <p>This is the code to reset your password</p>
+        <h3>Description</h3>
+        <strong><p>${passresetnumber}</p></strong>
+
+        <h3>Contact details</h3>
+        <ul>
+          <li>User's Name: ${user.username}</li>
+          <li>User's Email: ${user.email}</li>
+        </ul>
+      `;
+
+      const forgotpassmsg={
+        to:user.email,
+        from: `Code Assist <${process.env.SENDER_EMAIL}>`,
+        subject: 'Reset Your CodeAssist Password |',
+        html: output
+      }
+      sgMail.send(forgotpassmsg);
+      console.log("email sent to "+user.email);
+    });
+  }
   });
 });
 /*

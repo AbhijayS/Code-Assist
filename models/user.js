@@ -22,11 +22,8 @@ var UserSchema = new Schema({
 		},
 
 		title: String,
-		forgotpassdata:{
-			type: Object,
-			lastattempt:new Date(),
-			code:Math.floor(Math.random()*9999999)+1000000,
-		},
+		forgotpasslastattempt:{type:Date, default:new Date()},
+		forgotpasscode:{type:Number ,default:Math.floor(Math.random()*9999999)+1000000},
 		posts: [{
 			type: Schema.Types.ObjectId,
 			ref: 'PostSchema'
