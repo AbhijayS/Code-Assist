@@ -21,6 +21,7 @@
     <input id="newpassword" autocomplete="off"/>
   <h3>Confirm New Password</h3>
     <input id="confirmnewpassword" autocomplete="off"/>
+    <button inputtype='submit'>Reset Password</button>
   </form>
   <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 <script>
@@ -48,7 +49,12 @@ var usernm;
   });
 
   $('#passresetform').submit(function(){
-
+    if($('#newpassword').val()==$('#confirmnewpassword').val()&&$('#newpassword').val().length>=8){
+      $.post('/makenewpass',{username:usernm,newpass:$('#newpassword').val()},function(res){
+        alert(res);
+      });
+      return false;
+    }
   });
 
 });

@@ -2,13 +2,14 @@ var express = require('express');
 var router = express.Router();
 var expressValidator = require('express-validator');
 router.use(expressValidator());
+var bcrypt = require('bcryptjs');
 var path = require('path');
 var User = require('../models/user');
 var LocalStrategy = require('passport-local').Strategy;
 var passport = require('passport');
 //var nodemailer = require('nodemailer');
 const sgMail = require('@sendgrid/mail');
-var passwordresetarray=new Array();
+var saltRounds=10;
 // Get Homepage
 router.get('/', function(req, res){
     // console.log("Homepage: ");
@@ -444,7 +445,7 @@ router.get('/forgotpass',function(req,res){
 
 router.post('/resetpass',function(req,res){
   if(req.body.username){
-  console.log(req.body.code+"   "+req.body.username);
+//  console.log(req.body.code+"   "+req.body.username);
   User.UserSchema.findOne({username:req.body.username},function(err,user){
     if(req.body.code==user.forgotpasscode){
       console.log("let user reset their password");
@@ -454,8 +455,33 @@ router.post('/resetpass',function(req,res){
 }
 });
 
+//where the actual resetting happens
+router.post('/makenewpass',function(req,res){
+  if(req.body.username!="undefined"){
+    console.log(req.body.newpass+" "+req.body.username)
+    res.send("message recieved, making new password");
+      //encryption for the new password
+    User.UserSchema.findOne({username:req.body.username},function(err,user){
+      if(err){
+        console.log(err);
+      }
+      bcrypt.genSalt(saltRounds, function(err, salt) {
+  	     bcrypt.hash(req.body.newpass, salt, function(err, hash) {
+  	        console.log(hash);
+            user.password=hash;
+            user.save(function(err){
+              if(err){
+                console.log(err);
+              }
+            })
+  	     });
+  	   });
+    });
+
+  }
+});
 router.post('/sendpassresetemail',function(req,res){
-  console.log(req.body.email);
+//  console.log(req.body.email);
   //find the user that the person is trying to pass reset
   User.UserSchema.findOne({email:req.body.email},function(err,user){
     if(err){
