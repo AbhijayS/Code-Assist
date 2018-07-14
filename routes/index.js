@@ -7,7 +7,7 @@ var User = require('../models/user');
 var LocalStrategy = require('passport-local').Strategy;
 var passport = require('passport');
 var nodemailer = require('nodemailer');
-
+var passwordresetarray=new Array();
 // Get Homepage
 router.get('/', function(req, res){
     // console.log("Homepage: ");
@@ -443,6 +443,23 @@ router.get('/forgotpass',function(req,res){
 
 router.post('/resetpass',function(req,res){
   console.log(req.body.code);
+});
+
+router.post('/sendpassresetemail',function(req,res){
+  console.log(req.body.email);
+  //find the user that the person is trying to pass reset
+  User.UserSchema.findOne({email:req.body.email},function(err,user){
+    if(err){
+      console.log(err);
+    }
+    if(user){
+    //Generate random number to serve as the reset codeform
+    var passresetnumber=Math.floor(Math.random()*9999999)+1000000;
+    user.forgotpassdata.lastattempt=new Date();
+    user.forgotpassdata.passresetnumber;
+    res.send("this is a valid email");
+    }
+  });
 });
 /*
 =====================================================

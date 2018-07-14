@@ -8,14 +8,26 @@
   <br>
   <br>
   <br>
-  <form action="">
+  <h3>Code</h3>
+  <form action="" id='codeform'>
     <input id="resetcode" autocomplete="off"/>
+  </form>
+  <h3>Email</h3>
+  <form action="" id='emailform'>
+    <input id="email" autocomplete="off"/>
   </form>
   <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 <script>
 $(function(){
-  $('form').submit(function(){
+  $('#codeform').submit(function(){
     $.post('/resetpass',{code:$('#resetcode').val()},function(res){
+      alert(res);
+    });
+    return false;
+  });
+
+  $('#emailform').submit(function(){
+    $.post('/sendpassresetemail',{email:$('#email').val()},function(res){
       alert(res);
     });
     return false;
