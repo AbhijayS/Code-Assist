@@ -20,15 +20,16 @@
 <script>
 $(function(){
   $('#codeform').submit(function(){
-    $.post('/resetpass',{code:$('#resetcode').val()},function(res){
+    $.post('/resetpass',{code:$('#resetcode').val(), username:oof},function(res){
       alert(res);
     });
     return false;
   });
-
+var oof;
   $('#emailform').submit(function(){
+
     $.post('/sendpassresetemail',{email:$('#email').val()},function(res){
-      alert(res);
+      oof=res;
     });
     return false;
   });

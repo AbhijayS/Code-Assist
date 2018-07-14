@@ -443,7 +443,7 @@ router.get('/forgotpass',function(req,res){
 });
 
 router.post('/resetpass',function(req,res){
-  console.log(req.body.code);
+  console.log(req.body.code+"   "+req.body.username);
 });
 
 router.post('/sendpassresetemail',function(req,res){
@@ -465,17 +465,14 @@ router.post('/sendpassresetemail',function(req,res){
           console.log(err);
         }
 
-      res.send("this is a valid email");
+      res.send(user.username);
 
       const output = `
         <p>Hi ${user.username},</p>
         <p>Password reset</p>
         <h2>New Question Details<h2>
         <hr>
-
-        <h3>Question</h3>
-        <p>This is the code to reset your password</p>
-        <h3>Description</h3>
+        <h3>Use This Code To Reset Your Password</h3>
         <strong><p>${passresetnumber}</p></strong>
 
         <h3>Contact details</h3>
