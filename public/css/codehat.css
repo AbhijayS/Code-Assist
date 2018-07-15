@@ -209,8 +209,13 @@ button:enabled {
 */
 
 #selfVideo {
-  width: 170px;
+  width: 40%;
   float: right;
+}
+
+.onlyUserConnected {
+  width: 100% !important;
+  float: unset !important;
 }
 
 .peerVideo {
@@ -227,6 +232,28 @@ button:enabled {
 
 .ui-layout-center {
   padding: 0 !important;
+  overflow: hidden !important; /* remove this  *************** */
+}
+
+#callButtons, #connectButtons {
+  text-align: center;
+}
+
+#callButtons {
+  margin-top: 10px;
+}
+
+#callButtons button {
+  font-size: 20px;
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  margin: 0 2px;
+}
+
+#peerButtonContainer {
+  margin-left: 10px;
+  margin-bottom: 20px;
 }
 
 /*

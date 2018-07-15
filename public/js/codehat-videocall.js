@@ -17,6 +17,8 @@ easyrtc.setStreamAcceptor(function(callerEasyrtcid, stream) {
 	$("#peerVideos").append(newVideo);
 
 	easyrtc.setVideoObjectSrc(newVideo.get(0), stream);
+
+	checkOnlyUserConnected();
 });
 
 easyrtc.setOnStreamClosed(function (callerEasyrtcid) {
@@ -26,51 +28,73 @@ easyrtc.setOnStreamClosed(function (callerEasyrtcid) {
 
 		$(".peerVideo").eq(0).show();
 		$(".peerVideo").eq(0).addClass("active");
+
+		// highlight selected button
+		$("#peerButtons button").removeClass("btn-primary");
+		$("#peerButtons button").addClass("btn-secondary");
+		$("#peerButtons button").eq(0).removeClass("btn-secondary");
+		$("#peerButtons button").eq(0).addClass("btn-primary");
 	} else {
 		video.remove();	
 	}
+
+	checkOnlyUserConnected();
 });
+
+function checkOnlyUserConnected() {
+	// easyrtc.getConnectionCount()
+	if ($("#peerVideos").children().length > 0) {
+		$("#selfVideo").removeClass("onlyUserConnected");
+	} else {
+		$("#selfVideo").addClass("onlyUserConnected");
+	}
+}
 
 easyrtc.enableDebug(false);
 easyrtc.setRoomOccupantListener(RoomOccupantListener);
 easyrtc.setUsername(username);
 
-// easyrtc.enableVideo(false);
-easyrtc.initMediaSource(
-	function() {       // success callback
-		var selfVideo = document.getElementById("selfVideo");
-		easyrtc.setVideoObjectSrc(selfVideo, easyrtc.getLocalStream());
-	}, function(errmesg) {
-        console.log(errmesg);
-    }
-);
-
 $("#joinCallAudio").click(function() {
 	if (!connected) {
-		videoOff();
-		unMuteMic();
+		initVideo(function() {
+			videoOff();
+			unMuteMic();
 
-		joinCall();
+			joinCall();
+		});
 	}
 });
 
 $("#joinCallVideo").click(function() {
 	if (!connected) {
-		videoOn();
-		unMuteMic();
-		
-		joinCall();
+		initVideo(function() {
+			videoOn();
+			unMuteMic();
+
+			joinCall();
+		});
 	}
 });
+
+function initVideo(callback) {
+	easyrtc.initMediaSource(
+		function() {       // success callback
+			var selfVideo = document.getElementById("selfVideo");
+			easyrtc.setVideoObjectSrc(selfVideo, easyrtc.getLocalStream());
+			// $("#selfVideo").show();
+			callback();
+		}, function(errmesg) {
+	        console.log(errmesg);
+	    }
+	);
+}
 
 function joinCall() {
 	easyrtc.connect("Video_Conference", connectSuccess, connectFailure);
 
 	$("#joinCallAudio").hide();
 	$("#joinCallVideo").hide();
-	$("#hangUp").show();
-	$("#muteAudio").show();
-	$("#toggleVideo").show();
+	$("#callButtons").show();
 }
 
 $("#hangUp").click(function() {
@@ -78,20 +102,21 @@ $("#hangUp").click(function() {
 	selfEasyrtcid = "";
 	connected = false;
 	readyToJoinCall = false;
+	$("#selfVideo").hide();
+	easyrtc.enableCamera(false);
 
 	$("#peerButtons").empty();
 	$("#joinCallAudio").show();
 	$("#joinCallVideo").show();
-	$("#hangUp").hide();
-	$("#muteAudio").hide();
-	$("#toggleVideo").hide();
+	$("#callButtons").hide();
+	$("#callStatus").text("");
 });
 
 function connectSuccess(easyrtcid, roomOwner) {
 	selfEasyrtcid = easyrtcid;
 
 	easyrtc.joinRoom(namespace.substring(1), null, function(roomName) {
-		console.log("connnected to " + roomName);
+		// console.log("connnected to " + roomName);
 		readyToJoinCall = true;
 	});
 }
@@ -103,24 +128,20 @@ function connectFailure(errorCode, errorText) {
 function RoomOccupantListener(roomName, occupants, isPrimary) {
 	$("#peerButtons").empty();
 	for(var easyrtcid in occupants) {
-		// add id buttons
-		$("#peerButtons").append(`<button id="${easyrtcid}" class='btn btn-primary'>${easyrtc.idToName(easyrtcid)}</button>`)
+		// add peer buttons
+		if ($("#peerButtons button").length > 0) {
+			$("#peerButtons").append(`<button id="${easyrtcid}" class='btn btn-secondary'>${easyrtc.idToName(easyrtcid)}</button>`)
+		} else {
+			$("#peerButtons").append(`<button id="${easyrtcid}" class='btn btn-primary'>${easyrtc.idToName(easyrtcid)}</button>`)
+		}
 
 		if (readyToJoinCall) {
-			console.log("calling " + easyrtcid);
 			easyrtc.call(easyrtcid,
 			function(easyrtcid, mediaType){
-				console.log("Got mediaType " + mediaType + " from " + easyrtc.idToName(easyrtcid));
+				// console.log("Got mediaType " + mediaType + " from " + easyrtc.idToName(easyrtcid));
 			},
 			function(errorCode, errMessage){
 				console.log("call to  " + easyrtc.idToName(easyrtcid) + " failed:" + errMessage);
-			},
-			function(wasAccepted, easyrtcid){
-				if(wasAccepted) {
-					console.log("call accepted by " + easyrtc.idToName(easyrtcid));
-				} else {
-					console.log("call rejected" + easyrtc.idToName(easyrtcid));
-				}
 			});		
 		}
 
@@ -134,16 +155,33 @@ function RoomOccupantListener(roomName, occupants, isPrimary) {
 
 		$(".peerVideo").removeClass("active");
 		video.addClass("active");
+
+		// highlight selected button
+		$("#peerButtons button").removeClass("btn-primary");
+		$("#peerButtons button").addClass("btn-secondary");
+		$(this).removeClass("btn-secondary");
+		$(this).addClass("btn-primary");
 	});
 
 	if (readyToJoinCall) {
 		readyToJoinCall = false;
 		connected = true;
 	}
+
+	if (connected) {
+		if (Object.keys(occupants).length > 0) {
+			$("#callStatus").text("Users");
+		} else {
+			$("#callStatus").text("No Users Connected");
+		}
+	} else {
+		$("#callStatus").text("");
+	}
+
+	checkOnlyUserConnected();
 }
 
 easyrtc.setAcceptChecker(function(easyrtcid, callback) {
-	console.log("accepted call");
 	connected = true;
 	callback(true);
 });
@@ -159,17 +197,17 @@ $("#muteAudio").click(function() {
 function muteMic() {
 	muted = true;
 	easyrtc.enableMicrophone(false);
-	$("#muteAudio").text("Unmute");
-	$("#muteAudio").addClass("btn-success");
-	$("#muteAudio").removeClass("btn-danger");
+	$("#muteAudio").html('<i class="fas fa-microphone-slash">');
+	$("#muteAudio").removeClass("btn-success");
+	$("#muteAudio").addClass("btn-danger");
 }
 
 function unMuteMic() {
 	muted = false;
 	easyrtc.enableMicrophone(true);
-	$("#muteAudio").text("Mute");
-	$("#muteAudio").removeClass("btn-success");
-	$("#muteAudio").addClass("btn-danger");
+	$("#muteAudio").html('<i class="fas fa-microphone">');
+	$("#muteAudio").addClass("btn-success");
+	$("#muteAudio").removeClass("btn-danger");
 }
 
 $("#toggleVideo").click(function() {
@@ -183,15 +221,19 @@ $("#toggleVideo").click(function() {
 function videoOn() {
 	cameraDisabled = false;
 	easyrtc.enableCamera(true);
-	$("#toggleVideo").text("Turn Video Off");
-	$("#toggleVideo").removeClass("btn-success");
-	$("#toggleVideo").addClass("btn-danger");
+	$("#toggleVideo").html('<i class="fas fa-video">');
+	$("#toggleVideo").addClass("btn-success");
+	$("#toggleVideo").removeClass("btn-danger");
+
+	$("#selfVideo").show();
 }
 
 function videoOff() {
 	cameraDisabled = true;
 	easyrtc.enableCamera(false);
-	$("#toggleVideo").text("Turn Video On");
-	$("#toggleVideo").addClass("btn-success");
-	$("#toggleVideo").removeClass("btn-danger");
+	$("#toggleVideo").html('<i class="fas fa-video-slash"></i>');
+	$("#toggleVideo").removeClass("btn-success");
+	$("#toggleVideo").addClass("btn-danger");
+
+	$("#selfVideo").hide();
 }

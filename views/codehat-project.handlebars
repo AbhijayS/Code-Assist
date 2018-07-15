@@ -25,19 +25,24 @@
 		</div>
 		<div class="ui-layout-east">
 			<div id="videoChat">
-				<div id="connectControls">
-					<strong>Connected users:</strong>
+				<div id="peerButtonContainer">
+					<h5 id="callStatus"></h5>
 					<div id="peerButtons"></div>
 				</div>
-				<video autoplay="autoplay" id="selfVideo" class="easyrtcMirror" muted="muted"></video>
+				<video autoplay="autoplay" id="selfVideo" class="easyrtcMirror" muted="muted" style="display: none;"></video>
 				<div id="peerVideos">
 				</div>
 
-				<button id="joinCallAudio" class="btn btn-success">Join Call With Audio</button>
-				<button id="joinCallVideo" class="btn btn-success">Join Call With Video</button>
-				<button id="hangUp" class="btn btn-danger" style="display: none;">Hang Up</button>
-				<button id="muteAudio" class="btn btn-danger" style="display: none;">Mute</button>
-				<button id="toggleVideo" class="btn btn-danger" style="display: none;">Turn Video Off</button>
+				<div id="connectButtons">
+					<button id="joinCallAudio" class="btn btn-success">Join Call With Audio</button>
+					<button id="joinCallVideo" class="btn btn-success">Join Call With Video</button>
+				</div>
+
+				<div id="callButtons" style="display: none;">
+					<button id="muteAudio" class="btn btn-danger"><i class="fas fa-microphone"></i></button>
+					<button id="hangUp" class="btn btn-danger"><i class="fas fa-phone-slash"></i></button>
+					<button id="toggleVideo" class="btn btn-danger"><i class="fas fa-video"></i></button>
+				</div>
 			</div>
 		</div>
 </div>
