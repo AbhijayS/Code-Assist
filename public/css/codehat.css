@@ -94,7 +94,7 @@ nav {
 html, body {
 	height: 100%;
 	margin: 0;
-  overflow: auto;
+  /*overflow: auto;*/
 }
 
 #code-editor {
@@ -114,11 +114,6 @@ html, body {
 #editorContainer .row {
   margin: 0;
   height: 100%;
-}
-
-#code-editor-col {
-  padding-left: 0;
-  padding-right: 0;
 }
 
 /* styling for tab input */
@@ -224,6 +219,14 @@ button:enabled {
 
 #peerButtons button {
   margin-right: 4px;
+}
+
+.ui-layout-east {
+  padding: 10px 0 !important;
+}
+
+.ui-layout-center {
+  padding: 0 !important;
 }
 
 /*

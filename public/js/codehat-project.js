@@ -2,6 +2,7 @@ $(document).ready(function() {
   $('#editorContainer').css({
     'padding-left' : $('#sidebar').width()
   });
+  layout.resizeAll();
 
   $('#add-more-emails').click(function() {
     var addEmail = $(`
@@ -50,7 +51,7 @@ $(document).ready(function() {
   });
 
   $('#videochat-btn').click(function() {
-    $('#videoChat').toggle();
+    layout.toggle("east");
   });
 
   $('#share-project').submit(function(event) {
