@@ -232,7 +232,6 @@ button:enabled {
 
 .ui-layout-center {
   padding: 0 !important;
-  overflow: hidden !important; /* remove this  *************** */
 }
 
 #callButtons, #connectButtons {
