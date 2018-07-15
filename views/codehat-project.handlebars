@@ -25,19 +25,19 @@
 			</div>
 		</div>
 		<div id="videoChat" class="col-5">
-          <div id="connectControls">
-            <div id="iam">Not yet connected...</div>
-            <br />
-            <strong>Connected users:</strong>
-            <div id="otherClients"></div>
-          </div>
-			<div id="videos">
-				<video autoplay="autoplay" id="selfVideo" class="easyrtcMirror"></video>
+			<div id="connectControls">
+				<strong>Connected users:</strong>
+				<div id="peerButtons"></div>
+			</div>
+			<video autoplay="autoplay" id="selfVideo" class="easyrtcMirror" muted="muted"></video>
+			<div id="peerVideos">
 			</div>
 
-			<button id="joinCall" class="btn btn-success">Join Call</button>
-			{{!-- <button id="endCall" class="btn btn-danger">Hang Up</button> --}}
-			{{!-- <button id="muteAudio" class="btn btn-danger">Mute</button> --}}
+			<button id="joinCallAudio" class="btn btn-success">Join Call With Audio</button>
+			<button id="joinCallVideo" class="btn btn-success">Join Call With Video</button>
+			<button id="hangUp" class="btn btn-danger" style="display: none;">Hang Up</button>
+			<button id="muteAudio" class="btn btn-danger" style="display: none;">Mute</button>
+			<button id="toggleVideo" class="btn btn-danger" style="display: none;">Turn Video Off</button>
 		</div>
 	</div>
 </div>

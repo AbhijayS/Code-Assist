@@ -94,6 +94,7 @@ nav {
 html, body {
 	height: 100%;
 	margin: 0;
+  overflow: auto;
 }
 
 #code-editor {
@@ -212,13 +213,17 @@ button:enabled {
 ======================
 */
 
-#localVideo {
+#selfVideo {
   width: 170px;
   float: right;
 }
 
-#remotesVideos video {
+.peerVideo {
   width: 100%;
+}
+
+#peerButtons button {
+  margin-right: 4px;
 }
 
 /*

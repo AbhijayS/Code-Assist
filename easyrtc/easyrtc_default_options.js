@@ -52,7 +52,7 @@ option.demosPublicFolder    = "/demos";                     // Demos public fold
 
 
 // Log options - Only apply if internal 'log' event is used
-option.logLevel             = "debug";                       // The minimum log level to show. (debug|info|warning|error|none)
+option.logLevel             = "info";                       // The minimum log level to show. (debug|info|warning|error|none)
 option.logDateEnable        = false;                        // Display timestamp in each entry
 option.logErrorStackEnable  = true;                         // print the stack trace in logged errors when available
 option.logWarningStackEnable= true;                         // print the stack trace in logged warnings when available
