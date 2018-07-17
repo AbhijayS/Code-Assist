@@ -9,17 +9,16 @@
   </div>
 
   <div class="container" id="post-body">
-
-    <!-- Initial post -->
     <div id="descriptions_answers" class="list-group">
       <a class="list-group-item list-group-item-action flex-column align-items-start active">
         <div class="d-flex w-100 justify-content-between">
           <h3>{{post.question}}</h3>
+
           <small>{{post.author}}</small>
-          {{#if isowner}}
-            <button class="btn btn-danger btn-lg" type="button" name="button" >Delete</button>
-            <button type="button" class="btn btn-success btn-lg" name="create-codehat" onclick="createCodeHatProject()">Start a CodeHat Project</button>
-          {{/if}}
+
+          <!-- {{#if isowner}}
+          <button class="btn btn-danger btn-lg" type="button" name="button" >Delete</button>
+          {{/if}} -->
         </div>
       </a>
 
@@ -42,13 +41,13 @@
       <a class="list-group-item list-group-item-action flex-column align-items-start">
         <div class="d-flex w-100 justify-content-between">
           <small class="moment-timestamp">{{post.timestamp}}</small>
-          {{post.timestamp}}
+          <!-- {{post.timestamp}} -->
         </div>
       </a>
+
+<!-- {{post.description}} -->
+
     </div>
-
-
-    <!-- Other Answers -->
     <div class="list-group">
       {{#each post.answers}}
       <a class="list-group-item list-group-item-action flex-column align-items-start">

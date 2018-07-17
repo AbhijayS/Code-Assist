@@ -1,54 +1,15 @@
-{{#if projects}}
-  <div id="projects">
-    <div class="container-fluid">
-      <h1 class="text-secondary">Projects</h1>
-      <hr>
-      <div class="flex-container">
-        {{#each projects}}
-        <a class="card-link" href="/codehat/{{this._id}}" style="text-decoration: none;">
-          <div class="card">
-            <div class="card-body text-center">
-              {{this.thumbnail}}
-            </div>
-            <div class="card-footer">
-              <div class="project-name">
-                {{this.name}}
-              </div>
-              <!-- <br> -->
-              <div class="project-info text-light hide" style="font-size: 12px;">
-                <div class="owner">
-                  Owner: {{this.owner.username}}
-                </div>
-
-                <div class="date-modified">
-                  Last Modified: <span class="moment-timestamp">{{this.last_modified}}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </a>
-        {{/each}}
-      </div>
-    </div>
+<body>
+</div>
+  <div class="jumbotron jumbotron-title text-center" id="title">
+    <h1>Codehat</h1>
   </div>
-{{else}}
-  <div id="codehat-start" class="container px-5 text-center">
-    <h1 class="display-4 text-secondary">Welcome to Code Hat</h1>
-    <hr>
-    <br>
 
-    <p class="lead"><span style="text-primary">New to Code Assist? </span>Collaborate on a problem Today</p>
-    <div class="container">
-      <form class="createNewProject form-inline text-center justify-content-center" novalidate>
-        <div class="form-group">
-          <input type="text" class="mr-1 form-control btn-lg" name="project_name" id="project_name" placeholder="Project Name" required>
-          <div class="text-light invalid-feedback">
-            Please choose a username.
-          </div>
 
-          <button type="submit" class="btn btn-outline-success btn-lg"><i class="fas fa-plus"></i><span> Start New Project</span></button>
-        </div>
-      </form>
-    </div>
+
+  <div class="container" id="community-body">
+  	<form method="post">
+  		<button class="btn btn-primary">Create Codehat</button>
+  	</form>
   </div>
-{{/if}}
+
+</body>

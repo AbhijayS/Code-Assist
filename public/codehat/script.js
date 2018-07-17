@@ -6,6 +6,8 @@ var editor = ace.edit("editor");
 
 var editorSessions = [];
 
+var htmlPreviewDoc = $("#htmlPreview").get(0).contentWindow.document;
+
 function EditorSession(session) {
 	this.session = session;
 	this.curMgr = new AceCollabExt.AceMultiCursorManager(session);
@@ -39,7 +41,7 @@ $("input:file").change(function() {
 // new file being created
 $("#newFileBtn").click(function() {
 	addFile();
-	socket.emit("fileAdded");
+	socket.emit("fileAdded", "", "");
 });
 
 socket.on("addFile", function(fileName, text) {
@@ -63,9 +65,9 @@ function addFile(fileName, text) {
 		html: true
 	});
 
-	if ($("#code-editor .nav-item").length == 1) { // if file was first to be added
+	if ($(".nav-item").length == 1) { // if file was first to be added
   		$("#editor").css('visibility', 'visible');
-  		$("#code-editor .nav-link").eq(0).addClass("active");
+  		$(".nav-link").eq(0).addClass("active");
 	}
 
 
@@ -84,7 +86,7 @@ function addFile(fileName, text) {
 	editorSessions.push(new EditorSession(ace.createEditSession(text, mode)));
 
 	var sessionIndex = editorSessions.length-1;
-	$("#code-editor .nav-item .close").eq(sessionIndex).click(function() {
+	$(".nav-item .close").eq(sessionIndex).click(function() {
 		var fileIndex = $(".close").index($(this));
 		if(confirm("Are you sure you want to delete this file?")) {
 			deleteFile(fileIndex);
@@ -112,8 +114,15 @@ function addFile(fileName, text) {
 		socket.emit("selectionChange", editor.selection.getRange(), fileIndex);
 	});
 
-	if (editorSessions.length == 1)
+	if (editorSessions.length == 1) {
 		editor.setSession(editorSessions[0].session);
+		if (fileName) {
+			$("#downloadFileBtn").removeClass("disabled");
+			$("#downloadFileBtn").attr("href", "file/" + 0);
+
+			updateHtmlPreviewWindow(0);
+		}
+	}
 }
 
 function setSessionMode(newFileName, fileIndex) {
@@ -132,21 +141,33 @@ socket.on("deleteFile", function(fileIndex) {
 });
 
 function deleteFile(fileIndex) {
-	if ($("#code-editor .nav-link").eq(fileIndex).hasClass("active")) {
-		$("#code-editor .nav-item").eq(fileIndex).remove();
+	if ($(".nav-link").eq(fileIndex).hasClass("active")) {
+		$(".nav-item").eq(fileIndex).remove();
 		editorSessions.splice(fileIndex, 1);
 
-		if ($("#code-editor .nav-link").length > 0) {
-  			$("#code-editor .nav-link").eq(0).addClass("active");
+		if ($(".nav-link").length > 0) {
+			// set to first file tab
+  			$(".nav-link").eq(0).addClass("active");
   			editor.setSession(editorSessions[0].session);
+
+  			updateHtmlPreviewWindow(0);
+
+  			$("#downloadFileBtn").attr("href", "file/" + 0);
   		}
 	} else {
-		$("#code-editor .nav-item").eq(fileIndex).remove();
+		$(".nav-item").eq(fileIndex).remove();
 		editorSessions.splice(fileIndex, 1);
+
+		$("#downloadFileBtn").attr("href", "file/" + getSessionIndex(editor.session));
 	}
 
-	if ($("#code-editor .nav-link").length == 0) {
+	if ($(".nav-link").length == 0) {
 		$("#editor").css('visibility', 'hidden');
+		$("#previewContainer").hide();
+
+		$("#downloadFileBtn").addClass("disabled");
+
+		$("#htmlPreview").attr("src", "about:blank");
 	}
 }
 
@@ -160,12 +181,21 @@ function validFileName(name) {
 function initFileTab(newTab) {
 	var fileNameInput = newTab.find(".fileName");
 	newTab.click(function(e) {
+		var sessionIndex = $(".nav-item").index($(this));
+		updateHtmlPreviewWindow(sessionIndex);
 		// prevents delete button from triggering tab switch
 		if (e.target.getAttribute("class") == "close")
 			return;
 
-		var sessionIndex = $("#code-editor .nav-item").index($(this));
 		editor.setSession(editorSessions[sessionIndex].session);
+
+		$("#downloadFileBtn").attr("href", "file/" + sessionIndex);
+		if(fileNameInput.val().length == 0) {
+			$("#downloadFileBtn").addClass("disabled");
+		} else {
+			$("#downloadFileBtn").removeClass("disabled");
+		}
+
 	});
 	// To auto resize fileName tabs
 	fileNameInput.on('input', function() {
@@ -194,7 +224,15 @@ function initFileTab(newTab) {
 
 				var sessionIndex = $(".fileName").index($(this));
 		        socket.emit("fileRenamed", $(this).val(), sessionIndex);
-		    	setSessionMode($(this).val(), sessionIndex);		
+		    	setSessionMode($(this).val(), sessionIndex);	
+
+		    	updateHtmlPreviewWindow(sessionIndex);
+
+				if(fileNameInput.val().length == 0) {
+					$("#downloadFileBtn").addClass("disabled");
+				} else {
+					$("#downloadFileBtn").removeClass("disabled");
+				}
 	    	} else {
 				// $(this).val("");
 	    		// alert("Invalid file name");
@@ -214,8 +252,16 @@ function initFileTab(newTab) {
 			}
 
 			var sessionIndex = $(".fileName").index($(this));
+	        socket.emit("fileRenamed", $(this).val(), sessionIndex);
 			setSessionMode($(this).val(), sessionIndex);
-	        socket.emit("fileRenamed", $(this).val(), sessionIndex);	
+
+	        updateHtmlPreviewWindow(sessionIndex);
+
+			if(fileNameInput.val().length == 0) {
+				$("#downloadFileBtn").addClass("disabled");
+			} else {
+				$("#downloadFileBtn").removeClass("disabled");
+			}	
 		} else {
 			// $(this).val("");
 			// alert("Invalid file Name")
@@ -267,6 +313,9 @@ socket.on("renameFile", function(newFileName, fileIndex) {
 	$('.fileName').eq(fileIndex).val(newFileName);
 	setSessionMode(newFileName, fileIndex);
 
+	if (getSessionIndex(editor.session) == fileIndex)
+		updateHtmlPreviewWindow(fileIndex);
+
 	// initially resize tabs to fit fileName
 	$('.fileName').each(function() {
 		$(this).siblings('.hiddenSpan').text($(this).val());
@@ -284,20 +333,54 @@ $(document).keydown(function(e) {
 	}
 });
 
+function reloadIframe(fileIndex, text) {
+	$("#htmlPreview").get(0).contentDocument.location.reload(true);
+}
+
+function updateHtmlPreviewWindow(fileIndex) {
+	if ($(".fileName").eq(fileIndex).val().split('.').pop() == "html") {
+
+		if ($("#htmlPreview").attr("src") != "htmlPreview/" + fileIndex + "/") {
+			$("#htmlPreview").hide();
+			$("#htmlPreview").attr("src", "htmlPreview/" + fileIndex + "/");
+
+			$('#htmlPreview').on('load', function() {
+				$("#htmlPreview").show();
+			});
+		}
+
+		$("#previewContainer").show();
+	} else {
+		$("#previewContainer").hide();
+	}
+}
+
 function runProgram() {
-	var fileIndex = $("#code-editor .nav-link").index($("#code-editor .nav-link.active"));
+	var fileIndex = $(".nav-link").index($(".nav-link.active"));
+	var fileName = $(".nav-link.active").find(".fileName").val();
+
 	socket.emit("run", fileIndex);
 	$("#loadingWheel").show();
 	$("#run").prop("disabled", true);
 	$('#output').removeClass("outputError");
 	$('#output').val("");
+
+	if (fileName.split('.').pop() == "html") {
+		reloadIframe();
+	}
 }
 
-socket.on("programRunning", function() {
+socket.on("programRunning", function(fileIndex) {
 	$("#loadingWheel").show();
 	$("#run").prop("disabled", true);
 	$('#output').removeClass("outputError");
 	$('#output').val("");
+
+	var fileName = $(".fileName").eq(fileIndex).val();
+
+	if (fileName.split('.').pop() == "html" && getSessionIndex(editor.session) == fileIndex) {
+		reloadIframe();
+	}
 });
 
 socket.on("output", function(text) {

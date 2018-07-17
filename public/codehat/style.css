@@ -4,9 +4,29 @@ html, body {
 }
 
 #editor {
-	height: 60%;
+	height: 100%;
 	font-size: 14px;
-	/* visibility: hidden; */
+	visibility: hidden;
+}
+
+#editorContainer {
+	height: 60%;
+	padding: 0;
+}
+
+#editorContainer .row {
+	height: 100%;
+}
+
+#htmlPreview {
+	height: 100%;
+	width: 100%;
+	border: none;
+}
+
+#previewContainer {
+	padding-left: 0;
+	border: 1px solid rgb(210, 208, 208);
 }
 
 /* styling for tab input */
@@ -24,8 +44,8 @@ html, body {
 }
 
 .close {
-	margin-top: -42px !important;
-	margin-right: 5px !important;
+	margin-top: -42px;
+	margin-right: 5px;
 	font-size: 18px !important;
 	outline: none !important;
 	color: #a2a2a2 !important;

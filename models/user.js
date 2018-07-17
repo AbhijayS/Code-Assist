@@ -8,15 +8,6 @@ var Schema = mongoose.Schema;
 // mongoose.connect(process.env.DB_HOST_TEST);
 var db = mongoose.connection;
 
-// Chat Schema
-var ChatSchema = new Schema({
-	authorid: String,
-	author:String,
-	message:String,
-	date:String,
-	projectid:String,
-});
-
 // User Schema
 var UserSchema = new Schema({
 		username: {
@@ -43,10 +34,8 @@ var UserSchema = new Schema({
 		}],
 
 		projectsWithAccess:[{
-			type: Schema.Types.ObjectId,
-			ref: 'ProjectSchema'
-		}],
-		e_link: String
+			type: String
+		}]
 });
 
 var CommunitySchema = new Schema ({
@@ -62,38 +51,27 @@ var FileRefSchema = new Schema ({
 	fileID: Schema.Types.ObjectId
 });
 
-var ProjectFileSchema = new Schema ({
+/*var ProjectFileSchema = new Schema ({
 	fileName: String,
 	text: String
-});
-
+});*/
 //Project Schema
 var ProjectSchema = new Schema({
-	name: String,
-	thumbnail: String,
-	date_created: {type: Date, default: Date.now},
-	last_modified: {type: Date, default: Date.now},
-	owner: {
-		type: Schema.Types.ObjectId,
-		ref: 'UserSchema'
-	},
-
-	usersWithAccess: [{ // Users including the owner ==> Level 0: View; Level 1: Edit; Level 2: Owner
-		type: Schema.Types.ObjectId,
-		ref: 'UserSchema'
-	}],
-
-	files: [{
+	owner: String,
+	ownerid: String,
+  	userIdsWithAccess: [{
+  		type: String
+  	}],
+/*  	files: [{
 		type: Schema.Types.ObjectId,
 		ref: 'ProjectFileSchema'
-	}],
-
+  	}],*/
+  	fileNames: [{
+		type: String,
+  	}],
 	chatHistory:[{
-	  type: Schema.Types.ObjectId,
-	  ref:'ChatSchema'
+		type: String
 	}],
-	status: String, // new, using, unused
-
 	// description: String,
 	// name: String,
 });
@@ -129,9 +107,7 @@ var PostSchema = mongoose.model('PostSchema', PostSchema);
 var AnswerSchema = mongoose.model('AnswerSchema', AnswerSchema);
 var FileRefSchema = mongoose.model('FileRefSchema', FileRefSchema);
 var ProjectSchema = mongoose.model('ProjectSchema', ProjectSchema);
-var ProjectFileSchema = mongoose.model('ProjectFileSchema', ProjectFileSchema);
-var ChatSchema = mongoose.model('ChatSchema', ChatSchema);
-
+// var ProjectFileSchema = mongoose.model('ProjectFileSchema', ProjectFileSchema);
 
 module.exports = {
 	UserSchema: User,
@@ -140,8 +116,7 @@ module.exports = {
 	AnswerSchema: AnswerSchema,
 	FileRefSchema: FileRefSchema,
 	ProjectSchema: ProjectSchema,
-	ProjectFileSchema: ProjectFileSchema,
-	ChatSchema: ChatSchema
+	// ProjectFileSchema: ProjectFileSchema
 }
 
 CommunitySchema.findOne({}).populate('posts').exec(function(err, community) {

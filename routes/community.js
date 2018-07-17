@@ -177,21 +177,41 @@ router.post('/post', upload.array('file'), function(req, res) {
 
 router.get('/:id', function(req, res) {
   var postID = req.params.id;
+  // var newAnswer = new User.AnswerSchema({
+  //  answer: "MongoDB"
+  // });
+  // newAnswer.save(function(err) {
+  //  if(err) throw err;
+  // });
 
   User.PostSchema.findOne({_id: postID}).populate(['answers', 'files']).exec(function(err, post) {
+
     var allAnswers = post.answers;
     allAnswers.sort(function(date1,date2){
       if (date1 > date2) return -1;
       if (date1 < date2) return 1;
       return 0;
     });
+
+    // console.log(post);
+    //
+    // post.answers.push(newAnswer);
+    //
+    // post.save(function(err) {
+    //  if(err) throw err;
+    // });
     var today = moment(Date.now());
+    // console.log(today.format("MMM"));
+    // post.description.stringify = JSON.stringify(post.description);
     var description = post.description;
-		if(req.user._id == post.authorid){
+    // console.log('');
+    // console.log("Type of description: " + typeof description);
+    // console.log(description);
+		if(req.user._id==post.authorid){
 			res.render('post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description, isowner: true});
-		}else{
-	    res.render('post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description});
-		}
+}else{
+    res.render('post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description});
+}
 	});
 });
 
