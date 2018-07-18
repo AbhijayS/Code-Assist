@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:300,300i,400,700" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="/css/codehat.css">
+
+    <!-- Project Files Layout -->
+    <link rel="stylesheet" href="/codehat/ace-collab-ext/ace-collab-ext.css"/>
+    <script src="/codehat/ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/codehat/ace-builds/src-noconflict/ext-modelist.js"></script>
+    <script src="/codehat/ace-collab-ext/umd/ace-collab-ext.js" type="text/javascript" charset="utf-8"></script>
+
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/regular.css" integrity="sha384-avJt9MoJH2rB4PKRsJRHZv7yiFZn8LrnXuzvmZoD3fh1aL6aM6s0BBcnCvBe6XSD" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/solid.css" integrity="sha384-TbilV5Lbhlwdyc4RuIV/JhD8NR+BfMrvz4BL5QFa2we1hQu6wvREr3v6XSRfCTRp" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/fontawesome.css" integrity="sha384-ozJwkrqb90Oa3ZNb+yKFW2lToAWYdTiF1vt8JiH5ptTGHTGcN7qdoR1F95e0kYyG" crossorigin="anonymous">
+
+    <!-- EasyRTC -->
+    <link rel="stylesheet" type="text/css" href="/easyrtc/easyrtc.css" />
+
+    <title>Code HAT</title>
+  </head>
+  <body>
+    <!-- Navbar Template -->
+    <nav class="navbar navbar-dark bg-primary">
+      <a class="navbar-brand mx-auto" href="#">Code Assist</a>
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a href="#" class="nav-link">
+            <i class="far fa-user"></i>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Side Bar -->
+    <div id="sidebar">
+      <ul class="list-group">
+        {{#if namespace}}
+        <li class="list-group-item"><i class="far fa-file-code"></i></li>
+        <li id="videochat-btn" class="list-group-item"><i class="fas fa-video"></i></li>
+        {{else}}
+        <li class="list-group-item"><i class="fas fa-plus"></i></li>
+        {{/if}}
+        <li class="list-group-item"><i class="far fa-comment-alt"></i></li>
+        <li id="settings-btn" class="list-group-item"><i class="fas fa-sliders-h"></i></li>
+        <li><i id="exit-btn" class="fas fa-sign-out-alt"></i></li>
+      </ul>
+    </div>
+
+    {{{body}}}
+
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script
+    src="https://code.jquery.com/jquery-3.3.1.min.js"
+    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+    crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.slim.js"></script>
+
+    {{!-- jQuery UI Layout Plug-in --}}
+    <script type="text/javascript" src="/js/jquery-ui.js"></script>
+    <script type="text/javascript" src="/js/jquery.layout.js"></script>
+
+    <!-- EasyRTC -->
+    <script type="text/javascript" src="/easyrtc/easyrtc.js"></script>
+
+    <script>
+    	var editor = ace.edit("editor");
+    	editor.setTheme("ace/theme/textmate");
+    	editor.getSession().setMode("ace/mode/java");
+    	editor.setShowPrintMargin(false);
+    	editor.$blockScrolling = Infinity;
+    	editor.focus();
+    </script>
+
+    <script type="text/javascript">
+      console.log('{{user.username}}'+' is your username and you have a clearance of level '+{{clearance}});
+        var namespace = '{{namespace}}';
+    	var socket = io(namespace);
+        var username = '{{user.username}}';
+    </script>
+    <script src="/codehat/script.js"></script>
+    <script src="/js/codehat-videocall.js"></script>
+    <script>
+    var layout = $('#editorContainer').layout({
+        defaults: {
+            applyDefaultStyles: true,
+            resizeWhileDragging: true,
+            fxName: 0 // prevents close/open animation
+        },
+        east: {
+            initClosed: true,
+            size: "25%",
+            minSize: 200,
+            maxSize: "70%"
+        }
+    });
+    </script>
+    <script src="/js/codehat-project.js"></script>
+  </body>
+</html>

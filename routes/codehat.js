@@ -1,12 +1,19 @@
 var express = require('express');
 var path = require('path');
 var async = require('async');
-var router = express.Router({'strict' : true});
+var router = express.Router();
+// var router = express.Router({'strict' : true});
 var User = require('../models/user');
 var server = require('../app').server;
 var upload = require('../database').upload;
 var uniqid = require('uniqid');
+var mongoose = require('mongoose');
+
 var zip = new require('node-zip')();
+var easyrtc_server = require('../easyrtc/easyrtc_server_setup');
+
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 var socket = require('socket.io');
 var io = socket(server);
@@ -28,55 +35,290 @@ function projectActive(id) {
 }
 
 router.get('/', function(req, res){
-	res.render('codehat', {layout: 'dashboard-layout'});
+	if(req.user) {
+		// User.
+	  // findOne({ name: 'Val' }).
+	  // populate({
+	  //   path: 'friends',
+	  //   // Get friends of friends - populate the 'friends' array for every friend
+	  //   populate: { path: 'friends' }
+	  // });
+		User.UserSchema.findOne({_id: req.user._id}).
+		populate({
+			path: 'projectsWithAccess',
+			populate: {path: 'owner'}
+		}).
+		exec(function(err, user) {
+			if(err) throw err;
+			var projects = [];
+			for(var i = 0; i < user.projectsWithAccess.length; i++) {
+				projects.push(user.projectsWithAccess[i]);
+			}
+			if(user.projectsWithAccess.length > 0){
+				res.render('codehat', {layout: 'codehat-layout', projects: projects});
+			}else{
+				res.render('codehat', {layout: 'codehat-layout'});
+			}
+		});
+	}else{
+		req.flash('origin');
+		req.flash('origin', '/codehat');
+		res.redirect("/login");
+
+	}
 });
 
 router.post('/', function(req, res){
-	if(req.user){
-		var newProject = new User.ProjectSchema();
-		newProject.ownerid = req.user._id;
+	var data = {
+		auth: true,
+		message: '',
+		url: ''
+	};
+	var project_name = req.body.project_name;
+	console.log("Received Name: " + project_name);
+	if(req.user) {
+		User.UserSchema.findOne({_id: req.user._id}).populate('projectsWithAccess').exec(function(err, user) {
+			var projects = user.projectsWithAccess;
+			// console.log(projects);
+			for(var i = 0; i < projects.length; i++) {
+				console.log("Checking Name: " + projects[i].name);
+				if(projects[i].name == project_name) {
+					data.auth = false;
+					data.message = "is-invalid";
+					console.log("invalid");
+				}
+			}
+			if(!data.auth == false) {
+				console.log("Valid");
+				var newProject = new User.ProjectSchema();
+				newProject.name = project_name.trim();
+				newProject.owner = req.user._id;
+				newProject.thumbnail = project_name.trim().substring(0, 1);
+				// newProject.usersWithAccess.push(req.user);
 
-		newProject.save(function(err) {
-		  if(err) throw err;
-		  console.log('new codehat project saved');
+				newProject.status = "new";
+
+				newProject.save(function(err) {
+					if(err) throw err;
+				});
+				// console.log('Project ID: ' + newProject._id);
+				user.projectsWithAccess.push(newProject._id);
+				// console.log(req.user.projectsWithAccess);
+				user.save(function(err) {
+					if(err) throw err;
+					console.log('new codehat project saved');
+				});
+				data.auth = true;
+				data.message = 'is-valid';
+				data.url = "/codehat/" + newProject.id;
+			}
+			console.log("Data:\n" + data.auth + '\n' + data.url + '\n' + data.message);
+			res.send(data);
 		});
-		res.redirect("/codehat/" + newProject._id);
-	} else {
+	}else {
+		data.auth = false;
+		data.url = "/login"
+		data.message = '';
 		req.flash('origin');
 		req.flash('origin', '/codehat');
+		console.log("Data:\n" + data.auth + '\n' + data.url + '\n' + data.message);
+		res.send(data);
+	}
+});
+
+router.post('/share', function(req, res){
+	var emails = req.body.emailInput;
+	var projectID = req.body.projectID;
+
+	// in case only one email given
+	if (!Array.isArray(emails)) {
+		emails = [emails];
+	}
+
+	console.log("Share post request ----------------")
+	console.log("projectID: " + projectID);
+
+	// var failedEmails = [];
+	//
+	// async.each(emails, function(email, callback) {
+	// 	User.UserSchema.findOne({email: email}, function(err, user) {
+	// 		if (user) {
+	// 			var e_link = projectID + "/" + uniqid();
+	// 			user.e_link = e_link;
+	// 			user.save(function(err) {
+	// 				if(err) throw err;
+	// 			});
+	//
+	// 			// callback(true);
+	//
+	// 			console.log("sharing with: " + user.email);
+	// 			const output = `
+	// 				<p>Hi ${user.username},</p>
+	// 				<p>You have been invited to a CodeHat project</p>
+	//
+	// 				<h3><a href="http://localhost:8080/codehat/invite/${e_link}">Accept invitation</a></h3>
+	// 				<!-- <h3><a href="https://codeassist.org/codehat/invite/${e_link}">Accept invitation</a></h3> -->
+	// 			`;
+	// 			const msg = {
+	// 				to: user.email,
+	// 				from: `Code Assist <${process.env.SENDER_EMAIL}>`,
+	// 				subject: "You're invited to a new project",
+	// 				html: output
+	// 			};
+	//
+	// 			sgMail.send(msg);
+	// 		} else {
+	// 			failedEmails.push(email);
+	// 		}
+	// 		callback();
+	// 	});
+	// }, function() {
+	// 	console.log("Failed emails: " + failedEmails);
+	// 	res.send(failedEmails);
+	// });
+
+	var failedEmails = [];
+	async.parallel([
+			function(callback) {
+				async.each(emails, function(email, checkCallback) {
+					User.UserSchema.findOne({email: email}, function(err, user) {
+						if(err) checkCallback(err);
+						if(!user) {
+							failedEmails.push(email);
+						}
+						checkCallback();
+					});
+				}, function(err) {
+					callback(err);
+				});
+			}
+	],
+	// optional callback
+	function(err) {
+		if(err) throw err;
+		if(failedEmails.length == 0) {
+			var sentEmails = [];
+			async.each(emails, function(email, finalCallback) {
+				User.UserSchema.findOne({email: email}, function(err, user) {
+					if(err) finalCallback(err);
+
+					if(!sentEmails.includes(email)) {
+						var e_link = projectID + "/" + uniqid();
+						user.e_link = e_link;
+						user.save(function(err) {
+							if(err) throw err;
+						});
+
+						console.log("sharing with: " + user.email);
+						const output = `
+						<p>Hi ${user.username},</p>
+						<p>You have been invited to a CodeHat project</p>
+
+						<h3><a href="http://localhost:8080/codehat/invite/${e_link}">Accept invitation</a></h3>
+						<!-- <h3><a href="https://codeassist.org/codehat/invite/${e_link}">Accept invitation</a></h3> -->
+						`;
+						const msg = {
+							to: user.email,
+							from: `Code Assist <${process.env.SENDER_EMAIL}>`,
+							subject: "You're invited to a new project",
+							html: output
+						};
+						sentEmails.push(email);
+						sgMail.send(msg);
+					}
+					finalCallback();
+				});
+			}, function(err) {
+				if(err) throw err;
+				console.log("All Emails sent successfully");
+				res.send([]);
+			});
+		}else{
+			console.log("Failed emails: " + failedEmails);
+			res.send(failedEmails);
+		}
+	});
+
+});
+
+router.get('/invite/:projectID/:randomID', function(req, res){
+	var projectID = req.params.projectID;
+	var randomID = req.params.randomID;
+	var e_link = projectID + "/" + randomID;
+
+	if (req.user) {
+		if (req.user.e_link == e_link) {
+			User.UserSchema.findOne({_id: req.user._id}, function(err, user) {
+				// remove e_link from user
+				user.e_link = undefined;
+
+				User.ProjectSchema.findOne({_id: projectID}, function(err, project) {
+					if (project) {
+						user.projectsWithAccess.push(project);
+						user.save(function(err) {
+							if(err) throw err;
+						});
+
+						project.usersWithAccess.push(user);
+						project.save(function(err) {
+							if(err) throw err;
+
+							res.redirect("/codehat/" + projectID);
+						});
+
+					}
+				});
+			});
+
+		} else {
+			res.redirect("/codehat/" + projectID);
+		}
+	} else {
+		req.flash('origin');
+		req.flash('origin', '/codehat/invite/' + e_link);
 		res.redirect("/login");
 	}
 });
 
 router.get('/:id/', function(req, res) {
-	var projectID = req.params.id;
-	User.ProjectSchema.findOne({_id: projectID}).exec(function(err, project) {
-		if (project) {
-			var useraccesslevel=0;
-			if(req.user){
-				var accessedusers=project.userIdsWithAccess;
-				for(var counter1=0;counter1<accessedusers.length;counter1++){
-					if(accessedusers[counter1]==req.user._id){
-						useraccesslevel=1;
+		var projectID = req.params.id;
+		User.ProjectSchema.findOne({_id: projectID}).populate(['usersWithAccess', 'owner', 'chatHistory']).exec(function(err, project) {
+			if(req.user) {
+				if (project) {
+					var userAccessLevel = 0;
+					for (var i = 0; i < project.usersWithAccess.length; i++) {
+						// console.log(typeof req.user._id);
+						// console.log(typeof project.usersWithAccess[i].id);
+						if (project.usersWithAccess[i].id === req.user.id)
+							userAccessLevel = 1;
 					}
-					console.log(accessedusers[counter1]);
 
-				}
-				console.log(accessedusers);
+					if (req.user._id.equals(project.owner.id)) {
+						userAccessLevel = 2;
+					}
+					// console.log(userAccessLevel);
+					if (userAccessLevel != 0) {
 
-				if(project.ownerid==req.user._id){
-					useraccesslevel=2;
+
+					console.log("user connecting to codehat project with access level "+userAccessLevel);
+
+					if (!projectActive(projectID)){
+						// currentProjects.push(new Project(project._id, project.text));
+						currentProjects.push(new Project(project._id, project.files));
+					}
+					console.log(project.owner.id == req.user.id ? true : false);
+					res.render('codehat-project', {layout: 'codehat-project-layout', namespace: '/' + projectID, clearance:userAccessLevel, project: project, users: project.usersWithAccess, owner: project.owner, isowner: project.owner.id == req.user.id ? true : false});
+
+				} else{
+					res.send("You don't have access to this project");
 				}
-				console.log("user connecting to codehat project with access level "+useraccesslevel);
-				
-				if (!projectActive(projectID)){
-					// currentProjects.push(new Project(project._id, project.files));
-					currentProjects.push(new Project(project._id));
-				}
+			}else {
+				res.send("Project Not Found");
 			}
-			res.render('codehat-project', {layout: false, namespace: '/' + projectID, clearance:useraccesslevel, project: project});
-		} else {
-			res.send("Invalid project");
+		}else{
+			req.flash('origin');
+			req.flash('origin', '/codehat/'+req.params.id);
+			res.redirect("/login");
 		}
 	});
 });
@@ -97,7 +339,7 @@ router.get('/:id/file/:fileIndex', function(req, res) {
 					console.log(err);
 
 				res.download(file);
-			});			
+			});
 		} else {
 			res.end();
 		}
@@ -120,7 +362,7 @@ router.get('/:id/downloadAll', function(req, res) {
 					}
 
 					zip.file(fileName, text);
-					callback();	
+					callback();
 				});
 			}
 		}, function() {
@@ -167,7 +409,7 @@ router.get('/:id/htmlPreview/:fileIndex/:fileName', function(req, res) {
 					console.log(err);
 
 				res.download(filePath);
-			});			
+			});
 		} else {
 			res.end();
 		}
@@ -291,7 +533,7 @@ function Project(id) {
 		fs.mkdirSync(this.folderPath);
 		self.addUntitledFile();
 	}
-	
+
 	this.outputError = false;
 	this.output = "";
 
@@ -324,12 +566,12 @@ function Project(id) {
 					fs.writeFile(self.folderPath + file.fileName, text, function(err) {
 						if (err)
 							console.log(err);
-					});		
+					});
 				} else {
 					fs.writeFile(self.folderPath + "untitled_files/" + file.untitledName, text, function(err) {
 						if (err)
 							console.log(err);
-					});	
+					});
 				}
 			}, 1000);
 		});
@@ -348,7 +590,7 @@ function Project(id) {
 					fs.rename(self.folderPath + oldFileName, self.folderPath + newFileName, function(err) {
 						if (err)
 							console.log(err);
-					});	
+					});
 
 					// rename file in database
 					User.ProjectSchema.findOne({_id: self.id}).exec(function(err, project) {
@@ -454,7 +696,7 @@ function Project(id) {
 						if (error) {
 							console.log(error);
 						}
-					});		
+					});
 				}
 
 				if (path.extname(fileName) == ".java") {
@@ -466,7 +708,7 @@ function Project(id) {
 								console.log(error);
 							}
 						});
-					}	
+					}
 				}
 
 				// delete file Name from database
@@ -490,7 +732,7 @@ function Project(id) {
 						if (error) {
 							console.log(error);
 						}
-					});		
+					});
 				}
 
 				// delete file Name from database
@@ -524,7 +766,7 @@ function Project(id) {
 		socket.on("disconnect", function() {
 			for (var i = 0; i < self.files.length; i++) {
 				delete self.files[i].cursors[socket.id];
-				delete self.files[i].selections[socket.id];	
+				delete self.files[i].selections[socket.id];
 			}
 
 			self.nsp.emit("deleteCursors", socket.id);

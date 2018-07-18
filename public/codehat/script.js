@@ -1,3 +1,10 @@
+// redirect to slash url if needed
+var lastChar = window.location.href.substr(-1);
+if (lastChar != '/') {
+   var url = window.location.href + '/';
+	 window.location.replace(url);
+}
+
 // var socket = io.connect();
 var socketID;
 
@@ -6,7 +13,7 @@ var editor = ace.edit("editor");
 
 var editorSessions = [];
 
-var htmlPreviewDoc = $("#htmlPreview").get(0).contentWindow.document;
+// var htmlPreviewDoc = $("#htmlPreview").get(0).contentWindow.document;
 
 function EditorSession(session) {
 	this.session = session;
@@ -65,9 +72,9 @@ function addFile(fileName, text) {
 		html: true
 	});
 
-	if ($(".nav-item").length == 1) { // if file was first to be added
+	if ($("#code-editor .nav-item").length == 1) { // if file was first to be added
   		$("#editor").css('visibility', 'visible');
-  		$(".nav-link").eq(0).addClass("active");
+  		$("#code-editor .nav-link").eq(0).addClass("active");
 	}
 
 
@@ -86,7 +93,7 @@ function addFile(fileName, text) {
 	editorSessions.push(new EditorSession(ace.createEditSession(text, mode)));
 
 	var sessionIndex = editorSessions.length-1;
-	$(".nav-item .close").eq(sessionIndex).click(function() {
+	$("#code-editor .nav-item .close").eq(sessionIndex).click(function() {
 		var fileIndex = $(".close").index($(this));
 		if(confirm("Are you sure you want to delete this file?")) {
 			deleteFile(fileIndex);
@@ -95,7 +102,7 @@ function addFile(fileName, text) {
 	});
 
 	editorSessions[sessionIndex].session.on('change', function(event) {
-		if (applyingChanges) { 
+		if (applyingChanges) {
 			// prevents fileChange from another user from being detected as a change made by you
 			return;
 		}
@@ -141,13 +148,13 @@ socket.on("deleteFile", function(fileIndex) {
 });
 
 function deleteFile(fileIndex) {
-	if ($(".nav-link").eq(fileIndex).hasClass("active")) {
-		$(".nav-item").eq(fileIndex).remove();
+	if ($("#code-editor .nav-link").eq(fileIndex).hasClass("active")) {
+		$("#code-editor .nav-item").eq(fileIndex).remove();
 		editorSessions.splice(fileIndex, 1);
 
-		if ($(".nav-link").length > 0) {
+		if ($("#code-editor .nav-link").length > 0) {
 			// set to first file tab
-  			$(".nav-link").eq(0).addClass("active");
+  			$("#code-editor .nav-link").eq(0).addClass("active");
   			editor.setSession(editorSessions[0].session);
 
   			updateHtmlPreviewWindow(0);
@@ -155,13 +162,13 @@ function deleteFile(fileIndex) {
   			$("#downloadFileBtn").attr("href", "file/" + 0);
   		}
 	} else {
-		$(".nav-item").eq(fileIndex).remove();
+		$("#code-editor .nav-item").eq(fileIndex).remove();
 		editorSessions.splice(fileIndex, 1);
 
 		$("#downloadFileBtn").attr("href", "file/" + getSessionIndex(editor.session));
 	}
 
-	if ($(".nav-link").length == 0) {
+	if ($("#code-editor .nav-link").length == 0) {
 		$("#editor").css('visibility', 'hidden');
 		$("#previewContainer").hide();
 
@@ -181,7 +188,7 @@ function validFileName(name) {
 function initFileTab(newTab) {
 	var fileNameInput = newTab.find(".fileName");
 	newTab.click(function(e) {
-		var sessionIndex = $(".nav-item").index($(this));
+		var sessionIndex = $("#code-editor .nav-item").index($(this));
 		updateHtmlPreviewWindow(sessionIndex);
 		// prevents delete button from triggering tab switch
 		if (e.target.getAttribute("class") == "close")
@@ -224,7 +231,7 @@ function initFileTab(newTab) {
 
 				var sessionIndex = $(".fileName").index($(this));
 		        socket.emit("fileRenamed", $(this).val(), sessionIndex);
-		    	setSessionMode($(this).val(), sessionIndex);	
+		    	setSessionMode($(this).val(), sessionIndex);
 
 		    	updateHtmlPreviewWindow(sessionIndex);
 
@@ -261,7 +268,7 @@ function initFileTab(newTab) {
 				$("#downloadFileBtn").addClass("disabled");
 			} else {
 				$("#downloadFileBtn").removeClass("disabled");
-			}	
+			}
 		} else {
 			// $(this).val("");
 			// alert("Invalid file Name")
@@ -356,8 +363,8 @@ function updateHtmlPreviewWindow(fileIndex) {
 }
 
 function runProgram() {
-	var fileIndex = $(".nav-link").index($(".nav-link.active"));
-	var fileName = $(".nav-link.active").find(".fileName").val();
+	var fileIndex = $("#code-editor .nav-link").index($("#code-editor .nav-link.active"));
+	var fileName = $("#code-editor .nav-link.active").find(".fileName").val();
 
 	socket.emit("run", fileIndex);
 	$("#loadingWheel").show();

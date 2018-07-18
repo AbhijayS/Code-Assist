@@ -1,72 +1,185 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<title>CodeHat</title>
-	<link rel="stylesheet" type="text/css" href="/codehat/style.css">
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.slim.js"></script>
-	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-	<link rel="stylesheet" href="/codehat/ace-collab-ext/ace-collab-ext.css"/>
+<div id="editorContainer">
+		<div class="ui-layout-center">
+			<div id="code-editor">
+				<div id="topBar">
+					<label class="btn btn-primary mb-0">
+						Upload File<input type="file" accept=".java,.py,.cpp,.dat,.txt,.html,.css,.js" hidden>
+					</label>
+					<button id="newFileBtn" class="btn btn-primary">New File</button>
+					<a id="downloadFileBtn" class="btn btn-primary disabled" href="#">Download File</a>
+					<a id="downloadAllFiles" class="btn btn-primary" href="downloadAll">Download Project as .ZIP</a>
+				</div>
 
-	<script src="/codehat/ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
-	<script src="/codehat/ace-builds/src-noconflict/ext-modelist.js"></script>
-	<script src="/codehat/ace-collab-ext/umd/ace-collab-ext.js" type="text/javascript" charset="utf-8"></script>
+				<ul class="nav nav-tabs" id="fileTabs">
 
-<script src="https://code.jquery.com/jquery-3.3.1.min.js"
-integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-crossorigin="anonymous"></script>
+				</ul>
 
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+				<div class="row">
+					<div class="col-sm" id="editor"></div>
+					<div class="col-sm" id="previewContainer" style="display: none;">
+						<iframe id="htmlPreview"></iframe>
+					</div>
+				</div>
 
-</head>
-<body>
-<div id="topBar">
-	<label class="btn btn-primary mb-0">
-		Upload File<input type="file" accept=".java,.py,.cpp,.dat,.txt,.html,.css,.js" hidden>
-	</label>
-	<button id="newFileBtn" class="btn btn-primary">New File</button>
-	<a id="downloadFileBtn" class="btn btn-primary disabled" href="#">Download File</a>
-	<a id="downloadAllFiles" class="btn btn-primary" href="downloadAll">Download Project as .ZIP</a>
+				<textarea id="output" readonly autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+				<form id="programInputForm">
+					<input disabled id="programInput" type="text" autocomplete="off">
+				</form>
+				<div id="buttons">
+					<button class="btn btn-primary" id="run">Run</button>
+					<img id="loadingWheel" src="/codehat/images/spinner.gif" style="display: none;">
+				</div>
+			</div>
+		</div>
+		<div class="ui-layout-east">
+			<div id="videoChat">
+				<div id="peerButtonContainer">
+					<h5 id="callStatus"></h5>
+					<div id="peerButtons"></div>
+				</div>
+				<video autoplay="autoplay" id="selfVideo" class="easyrtcMirror" muted="muted" style="display: none;"></video>
+				<div id="peerVideos">
+				</div>
+
+				<div id="connectButtons">
+					<button id="joinCallAudio" class="btn btn-success">Join Call With Audio</button>
+					<button id="joinCallVideo" class="btn btn-success">Join Call With Video</button>
+				</div>
+
+				<div id="callButtons" style="display: none;">
+					<button id="muteAudio" class="btn btn-danger"><i class="fas fa-microphone"></i></button>
+					<button id="hangUp" class="btn btn-danger"><i class="fas fa-phone-slash"></i></button>
+					<button id="toggleVideo" class="btn btn-danger"><i class="fas fa-video"></i></button>
+				</div>
+			</div>
+		</div>
 </div>
 
-<ul class="nav nav-tabs" id="fileTabs">
+<!-- <div id="editorContainer" class="container-fluid">
 
-</ul>
+</div> -->
 
-<div id="editorContainer" class="container-fluid">
-	<div class="row">
-		<div class="col-sm" id="editor"></div>
-		<div class="col-sm" id="previewContainer" style="display: none;">
-			<iframe id="htmlPreview"></iframe>
+<!-- Settings Section -->
+<!-- <i id="close-settings" class="far fa-times-circle"></i> -->
+<div id="settings" class="hide">
+	<div id="box" class="mx-auto p-5" style="max-width: 1100px;">
+		<div id="sharing" class="mb-5">
+
+			<h1 class="title mb-4" style="font-weight: 200;">Invite Members to<input id="change-project-name" type="text" class="form-control" value="{{project.name}}" style="
+				    display: inline;
+				    vertical-align: baseline;
+				    font-weight: 400;
+						width: auto;
+						font-size: inherit;
+						border: none;
+						width: 250px;
+			" required>
+			<span class="text-secondary lead" style="
+			font-size: 1rem;
+			">
+			(Click to Change)</span></h1>
+
+			<hr>
+			<div class="container">
+				<form id="share-project" novalidate>
+					<div class="form-group">
+						<div class="row">
+
+							<div class="col-sm-10 offset-sm-1">
+								<label for="exampleInputEmail1" style="font-weight: bold;">Email address</label>
+							</div>
+						</div>
+
+						<div class="row mb-2">
+							<div class="col-sm-10 offset-sm-1">
+								<input id="exampleInputEmail1" type="email" class="form-control" name="emailInput" aria-describedby="emailHelp" placeholder="Enter email" required>
+								<div class="text-danger invalid-feedback">
+				          Member with this email could not be found
+				        </div>
+							</div>
+						</div>
+
+						<div id="send-options" class="row">
+							<div class="col-sm-3 offset-sm-1">
+								<div id="add-more-emails"><i class="fas fa-plus-circle"></i> Add More</div>
+							</div>
+
+							<div class="col-sm-7">
+								<button class="btn btn-success ml-auto" type="submit" name="button" style="display: block !important;">Send Invitations</button>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
 		</div>
+
+		<!-- <div id="members"> -->
+			<h1 style="font-weight: 200;">Members with Access</h1>
+			<hr>
+			<div class="container">
+				<table class="mx-auto table table-hover" style="overflow-y: scroll; width: 82%;">
+					<!-- <thead>
+						<tr>
+							<th scope="col">#</th>
+							<th scope="col">First</th>
+							<th scope="col">Last</th>
+							<th scope="col">Handle</th>
+						</tr>
+					</thead> -->
+					<tbody>
+						{{#if isowner}}
+							<tr class="table-info">
+								<td>{{owner.username}}</td>
+								<td>
+									<p class="text-right">Owner</p>
+								</td>
+								<td class="text-right">
+									<button type="button" class="btn btn-warning">Transfer Ownership</button>
+								</td>
+							</tr>
+						{{else}}
+							<tr class="table-info">
+								<td>{{owner.username}}</td>
+								<td>
+									<p class="text-right">Owner</p>
+								</td>
+								<td>
+								</td>
+							</tr>
+						{{/if}}
+
+						{{#each users}}
+						<tr>
+							<td style="width: 33.33%">{{this.username}}</td>
+							<td style="width: 33.33%">
+								<select class="custom-select" id="inlineFormCustomSelect">
+									<option selected>Choose...</option>
+									<option value="1">One</option>
+									<option value="2">Two</option>
+									<option value="3">Three</option>
+								</select>
+							</td>
+							<td class="text-right" style="width: 33.33%">
+								<button class="btn btn-danger" type="button" name="button">Delete User</button>
+
+							</td>
+						</tr>
+						{{/each}}
+
+						<!-- <tr>
+							<td>Jacob</td>
+							<td>Thornton</td>
+							<td>@fat</td>
+						</tr>
+						<tr>
+							<td colspan="2">Larry the Bird</td>
+							<td>@twitter</td>
+						</tr> -->
+					</tbody>
+				</table>
+			</div>
+
+		<!-- </div> -->
 	</div>
 </div>
-
-<textarea id="output" readonly autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
-<form id="programInputForm">
-	<input disabled id="programInput" type="text" autocomplete="off">
-</form>
-<div id="buttons">
-	<button class="btn btn-primary" id="run">Run</button>
-	<img id="loadingWheel" src="/codehat/images/spinner.gif" style="display: none;">
-</div>
-
-<script>
-	var editor = ace.edit("editor");
-	editor.setTheme("ace/theme/textmate");
-	editor.setShowPrintMargin(false);
-	editor.$blockScrolling = Infinity;
-	editor.focus();
-</script>
-
-<script type="text/javascript">
-
-  console.log('{{user.username}}'+' is your username and you have a clearance of level '+{{clearance}});
-  var socket = io('{{namespace}}');
-</script>
-<script src="/codehat/script.js"></script>
-
-</body>
-</html>

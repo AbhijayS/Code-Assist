@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:300,300i,400,700" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/regular.css" integrity="sha384-avJt9MoJH2rB4PKRsJRHZv7yiFZn8LrnXuzvmZoD3fh1aL6aM6s0BBcnCvBe6XSD" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/solid.css" integrity="sha384-TbilV5Lbhlwdyc4RuIV/JhD8NR+BfMrvz4BL5QFa2we1hQu6wvREr3v6XSRfCTRp" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/fontawesome.css" integrity="sha384-ozJwkrqb90Oa3ZNb+yKFW2lToAWYdTiF1vt8JiH5ptTGHTGcN7qdoR1F95e0kYyG" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="/css/codehat.css">
+    <title>Code HAT</title>
+  </head>
+  <body>
+    <!-- Navbar Template -->
+    <nav class="navbar navbar-light bg-default">
+      <a class="navbar-brand mx-auto" href="#">Code Assist</a>
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a href="#" class="nav-link">
+            <i class="far fa-user"></i>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Side Bar -->
+    <div id="sidebar">
+      <div id="create-project-box" class="sidebar-box">
+        <div class="content container">
+          <form class="createNewProject" novalidate>
+            <div class="container">
+              <h3>Create New Project</h3>
+              <hr>
+              <div class="row">
+                <div class="col-12">
+                  <div class="form-group">
+                    <input type="text" class="form-control" name="project_name" id="project_name" placeholder="Project Name" required>
+                    <div class="text-light invalid-feedback">
+                      Project with this name already exists
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-plus"></i><span> Start New Project</span></button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div id="global-chat-box" class="sidebar-box" style="opacity: 1;">
+        <div class="content container">
+          <ul id="messages"></ul>
+          <form id="submit-messages">
+            <input id="msg" autocomplete="off" /><button>Send</button>
+          </form>
+        </div>
+      </div>
+
+      <ul class="list-group">
+        <li id="create-project" class="list-group-item"><i class="fas fa-plus"></i></li>
+        <li id="global-chat" class="list-group-item"><i class="far fa-comment-alt"></i></li>
+        <li id="global-settings" class="list-group-item"><i class="fas fa-sliders-h"></i></li>
+      </ul>
+    </div>
+
+    {{{body}}}
+
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.min.js"
+      integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+      crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.slim.js"></script>
+    <script src="/js/codehat-dash.js"></script>
+    <script type="text/javascript">
+      var socket = io('{{namespace}}');
+      $(function () {
+        $('#global-chat-box #submit-messages').submit(function(){
+          socket.emit('chat', $(this).find('#msg').val());
+          console.log($(this).find('#msg').val());
+          $(this).find('#msg').val('');
+          return false;
+        });
+        socket.on('broadcastchat', function(msg){
+          console.log(msg);
+          $('#global-chat-box #messages').append($('<li>').text(msg));
+        });
+      });
+    </script>
+  </body>
+</html>
