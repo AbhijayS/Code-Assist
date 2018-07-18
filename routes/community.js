@@ -207,7 +207,7 @@ router.get('/:id', function(req, res) {
     // console.log('');
     // console.log("Type of description: " + typeof description);
     // console.log(description);
-		if(req.user._id==post.authorid){
+		if(req.user && req.user._id==post.authorid){
 			res.render('post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description, isowner: true});
 }else{
     res.render('post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description});
@@ -215,9 +215,15 @@ router.get('/:id', function(req, res) {
 	});
 });
 
+//Serverside Delete post handling
+router.post('/:id/delete', function(req, res){
+	console.log(req.params.id);
+  User.PostSchema.findOneAndRemove({_id: req.params.id}, function(err, user) {
+		console.log("REMOVED THE POST");
+	});
+});
 
-router.post('/:id/answer', function(req, res) {
-
+router.post('/:id/answer', function(req, res){
   var postID = req.params.id;
   // console.log("Id: " + postID);
   var message = req.body.answer;

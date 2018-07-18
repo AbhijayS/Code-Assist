@@ -2,20 +2,22 @@ var express = require('express');
 var router = express.Router();
 var expressValidator = require('express-validator');
 router.use(expressValidator());
+var bcrypt = require('bcryptjs');
 var path = require('path');
 var User = require('../models/user');
 var LocalStrategy = require('passport-local').Strategy;
 var passport = require('passport');
-var nodemailer = require('nodemailer');
-
+//var nodemailer = require('nodemailer');
+const sgMail = require('@sendgrid/mail');
+var saltRounds=10;
 // Get Homepage
 router.get('/', function(req, res){
     // console.log("Homepage: ");
     // console.log(req.isAuthenticated());
-    console.log('============================================');
-    console.log("User is isAuthenticated: " + req.isAuthenticated());
+    // console.log('============================================');
+    // console.log("User is isAuthenticated: " + req.isAuthenticated());
     var deleted = req.flash('account-deleted');
-    console.log("User Account Deleted: " + deleted);
+    // console.log("User Account Deleted: " + deleted);
 
     if(deleted == 'true')
     {
@@ -436,26 +438,96 @@ router.get('/team', function(req, res) {
   res.render('team', {layout: 'dashboard-layout'});
 });
 
-router.get('/admin', function(req, res){
-  var auth = req.flash('admin-page');
-  if(auth[0] == true) {
-    res.render('admin', {isAuthorized: true, layout: 'dashboard-layout'});
-  }else{
-    res.render('admin', {isAuthorized: (req.user) ? ((req.user.title == 'mentor') ? true : false) : false, layout: 'dashboard-layout'});
-  }
+//password forget functions
+router.get('/forgotpass',function(req,res){
+  res.render('forgotpass',{layout:'layout'})
 });
 
-router.post('/admin', function(req, res){
-  var password = req.body.password;
-  if(process.env.ADMIN_PASSWORD == password){
-    req.flash('admin-page');
-    req.flash('admin-page', true);
-    res.send({auth: true});
-  }else{
-    res.send({auth: false});
-  }
+router.post('/resetpass',function(req,res){
+  if(req.body.username){
+//  console.log(req.body.code+"   "+req.body.username);
+  User.UserSchema.findOne({username:req.body.username},function(err,user){
+    if(req.body.code==user.forgotpasscode){
+      console.log("let user reset their password");
+      res.send("activatereset")
+    }
+  });
+}
 });
 
+//where the actual resetting happens
+router.post('/makenewpass',function(req,res){
+  if(req.body.username!="undefined"){
+    console.log(req.body.newpass+" "+req.body.username)
+    res.send("message recieved, making new password");
+      //encryption for the new password
+    User.UserSchema.findOne({username:req.body.username},function(err,user){
+      if(err){
+        console.log(err);
+      }
+      bcrypt.genSalt(saltRounds, function(err, salt) {
+  	     bcrypt.hash(req.body.newpass, salt, function(err, hash) {
+  	        console.log(hash);
+            user.password=hash;
+            user.save(function(err){
+              if(err){
+                console.log(err);
+              }
+            })
+  	     });
+  	   });
+    });
+
+  }
+});
+router.post('/sendpassresetemail',function(req,res){
+//  console.log(req.body.email);
+  //find the user that the person is trying to pass reset
+  User.UserSchema.findOne({email:req.body.email},function(err,user){
+    if(err){
+      console.log(err);
+    }
+    if(user){
+      console.log("this is a valid email");
+
+    //Generate random number to serve as the reset codeform
+      var passresetnumber=Math.floor(Math.random()*9999999)+1000000;
+      user.forgotpasslastattempt=new Date();
+      user.forgotpasscode=passresetnumber;
+      user.save(function(err){
+        if(err){
+          console.log(err);
+        }
+
+      res.send(user.username);
+
+      const output = `
+        <p>Hi ${user.username},</p>
+        <p>Password reset</p>
+        <h2>New Question Details<h2>
+        <hr>
+        <h3>Use This Code To Reset Your Password</h3>
+        <strong><p>${passresetnumber}</p></strong>
+
+        <h3>Contact details</h3>
+        <ul>
+          <li>User's Name: ${user.username}</li>
+          <li>User's Email: ${user.email}</li>
+        </ul>
+      `;
+
+      const forgotpassmsg={
+        to:user.email,
+        from: `Code Assist <${process.env.SENDER_EMAIL}>`,
+        subject: 'Reset Your CodeAssist Password |',
+        html: output
+      }
+      sgMail.send(forgotpassmsg);
+      console.log("email sent to "+user.email);
+    });
+  }
+  });
+});
 /*
 =====================================================
                         BLOG
@@ -476,16 +548,29 @@ router.get('/blog/:name', function(req, res){
   });
 })
 
-
 /*
 =====================================================
                     DEVELOPERS
 =====================================================
-
-
-router.get('/dev', function(req, res) {
-  res.render('guinee', {layout: 'test'});
-});
 */
+router.get('/admin', function(req, res){
+  var auth = req.flash('admin-page');
+  if(auth[0] == true) {
+    res.render('admin', {isAuthorized: true, layout: 'dashboard-layout'});
+  }else{
+    res.render('admin', {isAuthorized: (req.user) ? ((req.user.title == 'mentor') ? true : false) : false, layout: 'dashboard-layout'});
+  }
+});
+
+router.post('/admin', function(req, res){
+  var password = req.body.password;
+  if(process.env.ADMIN_PASSWORD == password){
+    req.flash('admin-page');
+    req.flash('admin-page', true);
+    res.send({auth: true});
+  }else{
+    res.send({auth: false});
+  }
+});
 
 module.exports = router;
