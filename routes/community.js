@@ -122,6 +122,10 @@ router.post('/post', upload.array('file'), function(req, res) {
     return;
   }
 
+//Search function
+function Search(search){
+	var wordarray=search.split(" ");
+}
   User.CommunitySchema.findOne({}, function(err, community) {
     var newPost = new User.PostSchema();
     newPost.question = question;
