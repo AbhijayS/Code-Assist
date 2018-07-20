@@ -35,7 +35,22 @@
       <div  id="all-posts">
         {{#if posts}}
         {{#each posts}}
-        <a class="list-group-item" href="/mentor/history/{{this._id}}">{{this.question}} <span class="badge progress-bar-danger">{{this.answers.length}}</span> <span class="badge">{{this.author}}</span> <span class="badge progress-bar-info">{{this.prog_lang}}</span></a>
+        <a class="list-group-item" href="/mentor/history/{{this._id}}">{{this.question}}
+          <span class="badge progress-bar-danger">{{this.answers.length}}</span> 
+          <span class="badge">{{this.author}}</span>
+          <span class="badge progress-bar-info">{{this.prog_lang}}</span>
+          {{#if ../userIsMentor}}
+          {{#if this.assignedMentor.username}}
+          {{#if this.assignedToSelf}}
+          <span class="badge progress-bar-success">Assigned to you</span>
+          {{else}}
+          <span class="badge progress-bar-warning">Assigned to {{this.assignedMentor.username}}</span>
+          {{/if}}
+          {{else}}
+          <span class="badge progress-bar-danger">Post Unassigned</span>
+          {{/if}}
+          {{/if}}
+        </a>
         {{/each}}
         {{else}}
         <div class="alert alert-info">
