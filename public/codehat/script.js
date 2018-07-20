@@ -15,6 +15,16 @@ var editorSessions = [];
 
 // var htmlPreviewDoc = $("#htmlPreview").get(0).contentWindow.document;
 
+var htmlStarter = `<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+	
+</body>
+</html>`;
+
 function EditorSession(session) {
 	this.session = session;
 	this.curMgr = new AceCollabExt.AceMultiCursorManager(session);
@@ -235,6 +245,12 @@ function initFileTab(newTab) {
 
 		    	updateHtmlPreviewWindow(sessionIndex);
 
+				if ($(".fileName").eq(sessionIndex).val().split('.').pop() == "html") {
+					if (!editorSessions[sessionIndex].session.getValue()) {
+						editorSessions[sessionIndex].session.setValue(htmlStarter);
+					}
+				}
+
 				if(fileNameInput.val().length == 0) {
 					$("#downloadFileBtn").addClass("disabled");
 				} else {
@@ -263,6 +279,12 @@ function initFileTab(newTab) {
 			setSessionMode($(this).val(), sessionIndex);
 
 	        updateHtmlPreviewWindow(sessionIndex);
+
+			if ($(".fileName").eq(sessionIndex).val().split('.').pop() == "html") {
+				if (!editorSessions[sessionIndex].session.getValue()) {
+					editorSessions[sessionIndex].session.setValue(htmlStarter);
+				}
+			}
 
 			if(fileNameInput.val().length == 0) {
 				$("#downloadFileBtn").addClass("disabled");
