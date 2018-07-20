@@ -43,15 +43,15 @@
     <!-- Side Bar -->
     <div id="sidebar">
       <ul class="list-group">
+
         {{#if namespace}}
-        <li class="list-group-item"><i class="far fa-file-code"></i></li>
-        <li id="videochat-btn" class="list-group-item"><i class="fas fa-video"></i></li>
-        {{else}}
-        <li class="list-group-item"><i class="fas fa-plus"></i></li>
+          <li id="directory-btn" class="list-group-item"><i class="far fa-file-code"></i></li>
+          <li id="videochat-btn" class="list-group-item"><i class="fas fa-video"></i></li>
         {{/if}}
-        <li class="list-group-item"><i class="far fa-comment-alt"></i></li>
+
+        <li id="chat-btn" class="list-group-item"><i class="far fa-comment-alt"></i></li>
         <li id="settings-btn" class="list-group-item"><i class="fas fa-sliders-h"></i></li>
-        <li><i id="exit-btn" class="fas fa-sign-out-alt"></i></li>
+        <a href="/codehat"><li id="exit-btn" class="list-group-item"><i class="fas fa-sign-out-alt"></i></li></a>
       </ul>
     </div>
 

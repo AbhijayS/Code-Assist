@@ -1,1 +1,9 @@
+# API Keys, Database, Secret Juice
 .env
+
+# Node Dependencies
+# Dev use node install for setup
+node_modules
+
+# CodeHat Project Files
+codehat_files

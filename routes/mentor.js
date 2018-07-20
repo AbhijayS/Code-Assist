@@ -155,14 +155,21 @@ router.get('/history', function(req, res) {
   if(req.user) {
     if(req.user.title == 'mentor')
     {
-      User.PostSchema.find({}, function(err, posts) {
+      User.PostSchema.find({}).populate('assignedMentor').exec(function(err, posts) {
         var allPosts = posts;
         allPosts.sort(function(date1,date2){
           if (date1 > date2) return -1;
           if (date1 < date2) return 1;
           return 0;
         });
-        res.render('mentor-history', {layout: 'dashboard-layout', posts: allPosts});
+
+        for (var i = 0; i < allPosts.length; i++) {
+          if (allPosts[i].assignedMentor && allPosts[i].assignedMentor._id.equals(req.user._id)) {
+            allPosts[i].assignedToSelf = true;
+          }
+        }
+
+        res.render('mentor-history', {layout: 'dashboard-layout', posts: allPosts, userIsMentor: true});
       })
     }else{
       User.UserSchema.findOne({_id: req.user._id}).populate('private_posts').exec(function(err, user) {
@@ -239,7 +246,12 @@ router.post('/history/:id/answer', function(req, res) {
   {
     if(req.user.title == 'mentor')
     {
-      User.PostSchema.findOne({_id: postID}).populate('answers').exec(function(err, post) {
+      User.PostSchema.findOne({_id: postID}).populate(['answers', 'assignedMentor']).exec(function(err, post) {
+        // set assignedMentor in database
+        if (!post.assignedMentor) {
+          post.assignedMentor = req.user;
+        }
+
         if(err) throw err;
         var newAnswer = new User.AnswerSchema();
         newAnswer.answer = message;
@@ -294,7 +306,7 @@ router.post('/history/:id/answer', function(req, res) {
       User.userHasPrivatePostById(req.user._id, postID, function(found) {
         if(found == true)
         {
-          User.PostSchema.findOne({_id: postID}).populate('answers').exec(function(err, post) {
+          User.PostSchema.findOne({_id: postID}).populate(['answers', 'assignedMentor']).exec(function(err, post) {
             if(err) throw err;
             var newAnswer = new User.AnswerSchema();
             newAnswer.answer = message;
@@ -310,45 +322,79 @@ router.post('/history/:id/answer', function(req, res) {
               if(err) throw err;
               // console.log("Answer saved");
             });
+            if (post.assignedMentor) {
+              const output = `
+                <p>Hi ${post.assignedMentor.username},</p>
+                <p>A User recently replied to a private post</p>
+                <h2>Reply Details<h2>
+                <hr>
 
-            User.UserSchema.find({title: 'mentor'}, function(err, mentors) {
-              if(err) throw err;
-              for(var i = 0; i < mentors.length; i++)
-              {
-                var mentor = mentors[i];
-                const output = `
-                  <p>Hi ${mentor.username},</p>
-                  <p>A User recently replied to a private post</p>
-                  <h2>Reply Details<h2>
-                  <hr>
+                <h3>Answer</h3>
+                <p>${message}</p>
 
-                  <h3>Answer</h3>
-                  <p>${message}</p>
+                <h3>Contact details</h3>
+                <ul>
+                  <li>Date Posted: ${newAnswer.timestamp}</li>
+                  <li>User's Name: ${author}</li>
+                  <li>User's Email: ${req.user.email}</li>
+                  <li>Link: <a href="https://codeassist.club/mentor/history/${postID}">Post</a></li>
+                </ul>
+              `;
 
-                  <h3>Contact details</h3>
-                  <ul>
-                    <li>Date Posted: ${newAnswer.timestamp}</li>
-                    <li>User's Name: ${author}</li>
-                    <li>User's Email: ${req.user.email}</li>
-                    <li>Link: <a href="https://codeassist.club/mentor/history/${postID}">Post</a></li>
-                  </ul>
-                `;
-
-                const msg = {
-                  to: mentor.email,
-                  from: `Code Assist <${process.env.SENDER_EMAIL}>`,
-                  subject: 'New User Reply to Private Post',
-                  html: output
-                };
-                sgMail.send(msg);
-                console.log('============================================');
-                console.log("Sending Email to Mentor ... ");
-                console.log("Mentor's Username: " + mentor.username);
-                console.log("Redirecting to: Specific Private post page from: Specific Private post page");
-                console.log('============================================');
-              }
+              const msg = {
+                to: post.assignedMentor.email,
+                from: `Code Assist <${process.env.SENDER_EMAIL}>`,
+                subject: 'New User Reply to Private Post',
+                html: output
+              };
+              sgMail.send(msg);
+              console.log('============================================');
+              console.log("Sending Email to Assigned Mentor ... ");
+              console.log("Mentor's Username: " + post.assignedMentor.username);
+              console.log("Redirecting to: Specific Private post page from: Specific Private post page");
+              console.log('============================================');
               res.send('/mentor/history/'+postID);
-            });
+            } else {
+              User.UserSchema.find({title: 'mentor'}, function(err, mentors) {
+                if(err) throw err;
+                for(var i = 0; i < mentors.length; i++)
+                {
+                  var mentor = mentors[i];
+                  const output = `
+                    <p>Hi ${mentor.username},</p>
+                    <p>A User recently replied to a private post</p>
+                    <h2>Reply Details<h2>
+                    <hr>
+
+                    <h3>Answer</h3>
+                    <p>${message}</p>
+
+                    <h3>Contact details</h3>
+                    <ul>
+                      <li>Date Posted: ${newAnswer.timestamp}</li>
+                      <li>User's Name: ${author}</li>
+                      <li>User's Email: ${req.user.email}</li>
+                      <li>Link: <a href="https://codeassist.club/mentor/history/${postID}">Post</a></li>
+                    </ul>
+                  `;
+
+                  const msg = {
+                    to: mentor.email,
+                    from: `Code Assist <${process.env.SENDER_EMAIL}>`,
+                    subject: 'New User Reply to Private Post',
+                    html: output
+                  };
+                  sgMail.send(msg);
+                  console.log('============================================');
+                  console.log("Sending Email to Mentor ... ");
+                  console.log("Mentor's Username: " + mentor.username);
+                  console.log("Redirecting to: Specific Private post page from: Specific Private post page");
+                  console.log('============================================');
+                }
+                res.send('/mentor/history/'+postID);
+              });
+            }
+
           });
         }else{
           console.log('============================================');

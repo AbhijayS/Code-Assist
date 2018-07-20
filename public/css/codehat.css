@@ -50,16 +50,6 @@ nav {
   display: none;
 }
 
-#sidebar #exit-btn {
-  position: fixed;
-  bottom: 15px;
-  width: 75px;
-  border-top: 3px solid white;
-  padding-top: 5px;
-}
-
-
-
 #codehat-start {
   position: fixed;
   top: 160px;
@@ -83,7 +73,15 @@ nav {
   margin-top: 56px;
   padding-top: 53px;
   color: white;
+}
 
+#sidebar #exit-btn {
+  border-top: 2px white solid;
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  width: 75px;
+  margin-bottom: 0;
 }
 /*
 ===========================

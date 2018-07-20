@@ -113,7 +113,11 @@ var PostSchema = new Schema ({
 	files: [{
 		type: Schema.Types.ObjectId,
 		ref: 'FileRefSchema'
-	}]
+	}],
+	assignedMentor: {
+		type: Schema.Types.ObjectId,
+		ref: 'UserSchema'
+	}
 });
 
 var AnswerSchema = new Schema ({
