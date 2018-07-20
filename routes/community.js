@@ -292,6 +292,16 @@ router.post('/:id/answer', function(req, res){
   }
 });
 
+//search functions
+function Search(search){
+	var wordarray=search.split(" ");
+		User.PostSchema.find({}).exec(function(err,posts){
+			if(err){
+				console.log(err);
+			}
+		});
+}
+
 router.post('/filter', function(req, res) {
 	var option = req.body.filter_opt;
 	// console.log("Made filter request: " + option);
