@@ -17,7 +17,10 @@
           <small>{{post.author}}</small>
 
           {{#if isowner}}
-            <a href="/community"><button class="btn btn-danger btn-lg" id="delete" type="button" name="button">Delete</button></a>
+            <div class="btn-group" role="group">
+              <button type="button" class="btn btn-default" id="start-codehat">+ Start a CodeHat Project</button>
+              <button class="btn btn-danger" id="delete" type="button" name="button">Delete Post</button>
+            </div>
           {{/if}}
         </div>
       </a>
@@ -165,14 +168,24 @@
       });
 
       $('#delete').on('click', function(event) {
+        event.preventDefault();
         var answer2 = JSON.stringify(answerEditor.getContents().ops);
         var post_url2 = "/community/{{post.id}}/delete";
         var thepost='ah';
-        $.post(post_url2, {deletedpost:"thepost"}, function(url2) {
+        $.post(post_url2, {deletedpost:"thepost"}, function(url) {
+          window.location.replace(window.location.host + url);
         });
       });
 
-    }
+      $('#start-codehat').on('click', function(event) {
+        event.preventDefault();
+        var stringID = window.location.pathname.split('/');
+        stringID = stringID[stringID.length-1];
 
+        $.post('/codehat/' + stringID + '/start-codehat', {postID: stringID}, function(){
+          window.location.replace("http://" + window.location.host + "/codehat");
+        });
+      });
+    }
   </script>
 </body>

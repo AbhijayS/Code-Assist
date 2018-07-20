@@ -217,9 +217,8 @@ router.get('/:id', function(req, res) {
 
 //Serverside Delete post handling
 router.post('/:id/delete', function(req, res){
-	console.log(req.params.id);
   User.PostSchema.findOneAndRemove({_id: req.params.id}, function(err, user) {
-		console.log("REMOVED THE POST");
+		res.send('/community');
 	});
 });
 

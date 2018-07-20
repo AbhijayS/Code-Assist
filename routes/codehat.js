@@ -54,11 +54,7 @@ router.get('/', function(req, res){
 			for(var i = 0; i < user.projectsWithAccess.length; i++) {
 				projects.push(user.projectsWithAccess[i]);
 			}
-			if(user.projectsWithAccess.length > 0){
-				res.render('codehat', {layout: 'codehat-layout', projects: projects});
-			}else{
-				res.render('codehat', {layout: 'codehat-layout'});
-			}
+			res.render('codehat', {layout: 'codehat-layout', expanded: req.flash('start-codehat'), projects: projects});
 		});
 	}else{
 		req.flash('origin');
@@ -322,6 +318,19 @@ router.get('/:id/', function(req, res) {
 		}
 	});
 });
+
+
+router.post('/:id/start-codehat', function(req, res) {
+	User.PostSchema.findOne({_id: req.body.postID}, function(err, post) {
+		if(err) throw err;
+		if(post){
+			req.flash('start-codehat');
+			req.flash('start-codehat', post.question);
+		}
+		res.send("");
+	});
+});
+
 
 // for file downloading
 router.get('/:id/file/:fileIndex', function(req, res) {

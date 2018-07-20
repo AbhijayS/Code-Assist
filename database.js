@@ -13,7 +13,11 @@ require('dotenv').config();
 
 // ***** USE DB_HOST when deploying *****
 var database = process.env.DB_HOST_TEST;
+console.log("Using LOCAL Database");
 // **************************************
+
+// var database = process.env.DB_HOST;
+// console.log("Using REMOTE Database");
 
 mongoose.connect(database);
 var conn = mongoose.connection;
