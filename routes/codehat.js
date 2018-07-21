@@ -134,45 +134,6 @@ router.post('/share', function(req, res){
 	console.log("Share post request ----------------")
 	console.log("projectID: " + projectID);
 
-	// var failedEmails = [];
-	//
-	// async.each(emails, function(email, callback) {
-	// 	User.UserSchema.findOne({email: email}, function(err, user) {
-	// 		if (user) {
-	// 			var e_link = projectID + "/" + uniqid();
-	// 			user.e_link = e_link;
-	// 			user.save(function(err) {
-	// 				if(err) throw err;
-	// 			});
-	//
-	// 			// callback(true);
-	//
-	// 			console.log("sharing with: " + user.email);
-	// 			const output = `
-	// 				<p>Hi ${user.username},</p>
-	// 				<p>You have been invited to a CodeHat project</p>
-	//
-	// 				<h3><a href="http://localhost:8080/codehat/invite/${e_link}">Accept invitation</a></h3>
-	// 				<!-- <h3><a href="https://codeassist.org/codehat/invite/${e_link}">Accept invitation</a></h3> -->
-	// 			`;
-	// 			const msg = {
-	// 				to: user.email,
-	// 				from: `Code Assist <${process.env.SENDER_EMAIL}>`,
-	// 				subject: "You're invited to a new project",
-	// 				html: output
-	// 			};
-	//
-	// 			sgMail.send(msg);
-	// 		} else {
-	// 			failedEmails.push(email);
-	// 		}
-	// 		callback();
-	// 	});
-	// }, function() {
-	// 	console.log("Failed emails: " + failedEmails);
-	// 	res.send(failedEmails);
-	// });
-
 	var failedEmails = [];
 	async.parallel([
 			function(callback) {

@@ -53,6 +53,10 @@
 					<button id="toggleVideo" class="btn btn-danger"><i class="fas fa-video"></i></button>
 				</div>
 			</div>
+
+			<div id="group-chat">
+				
+			</div>
 		</div>
 </div>
 
@@ -118,7 +122,7 @@
 			<h1 style="font-weight: 200;">Members with Access</h1>
 			<hr>
 			<div class="container">
-				<table class="mx-auto table table-hover" style="overflow-y: scroll; width: 82%;">
+				<table class="mx-auto table" style="overflow-y: scroll; width: 82%;">
 					<!-- <thead>
 						<tr>
 							<th scope="col">#</th>
@@ -129,17 +133,26 @@
 					</thead> -->
 					<tbody>
 						{{#if isowner}}
-							<tr class="table-info">
+							<tr class="bg-light">
 								<td>{{owner.username}}</td>
 								<td>
 									<p class="text-right">Owner</p>
 								</td>
 								<td class="text-right">
-									<button type="button" class="btn btn-warning">Transfer Ownership</button>
+									<div class="dropdown">
+										<button type="button" class="btn btn-warning dropdown-toggle" id="transfer-ownership-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Transfer Ownership</button>
+										{{#if project.usersWithAccess}}
+										  <div class="dropdown-menu" aria-labelledby="transfer-ownership-button">
+													{{#each project.usersWithAccess}}
+											    	<a class="dropdown-item" href="#">{{this.username}}</a>
+													{{/each}}
+										  </div>
+										{{/if}}
+									</div>
 								</td>
 							</tr>
 						{{else}}
-							<tr class="table-info">
+							<tr>
 								<td>{{owner.username}}</td>
 								<td>
 									<p class="text-right">Owner</p>
@@ -190,7 +203,7 @@
 				<div class="row">
 					<div class="col-sm-8 offset-sm-1">
 						<h4><b>Delete this Project</b></h4>
-						<p>This action will permanently delete the project</p>
+						<p>This action will permanently delete this project</p>
 					</div>
 
 					<div class="col-sm-2">
@@ -226,7 +239,7 @@
 					<div class="text-danger invalid-feedback">
 						Member with this email could not be found
 					</div>
-					
+
 				</div>
 				<div class="modal-footer">
 					<button type="submit" class="btn btn-danger btn-block">I undestand the consequences, Delete the project</button>
