@@ -276,7 +276,7 @@ router.get('/invite/:projectID/:randomID', function(req, res){
 	}
 });
 
-router.get('/:id/', function(req, res) {
+router.get('/:id', function(req, res) {
 		var projectID = req.params.id;
 		User.ProjectSchema.findOne({_id: projectID}).populate(['usersWithAccess', 'owner', 'chatHistory']).exec(function(err, project) {
 			if(req.user) {
@@ -331,7 +331,32 @@ router.post('/:id/start-codehat', function(req, res) {
 	});
 });
 
+router.post('/:id/delete', function(req, res) {
+	var projectID = req.params.id;
+	var projectName = req.body.projectName;
+	var data = {
+		auth: false,
+		url: ''
+	};
 
+	User.ProjectSchema.findOne({_id: projectID}, function(err, project) {
+		if(req.user && project) {
+			if(project.name == projectName) {
+				data.auth = true;
+				data.url = '/codehat';
+				User.ProjectSchema.deleteOne({_id: projectID}, function (err) {
+				  if (err) throw err;
+					console.log("Project deleted");
+				});
+			}
+		}else{
+			data.url = '/login';
+			req.flash('origin');
+			req.flash('origin', '/codehat/'+projectID);
+		}
+		res.send(data);
+	});
+});
 // for file downloading
 router.get('/:id/file/:fileIndex', function(req, res) {
 	var projectID = req.params.id;
