@@ -9,6 +9,7 @@ require('dotenv').config();
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
+var QuillDeltaToHtmlConverter = require('quill-delta-to-html');
 
 router.get('/', function(req, res) {
   if(req.user)
@@ -89,6 +90,23 @@ router.post('/post', upload.array('file'), function(req, res) {
 
       // console.log("---------------------------");
       // console.log("List of Mentors:");
+
+      var imageCounter = 0;
+      var converter = new QuillDeltaToHtmlConverter(JSON.parse(description), {});
+
+      converter.afterRender(function(groupType, htmlString){
+        // console.log(htmlString);
+        htmlString = htmlString.replace(/<pre>/g, "<pre style='background-color: #23241f;color: #f8f8f2;overflow: visible;white-space: pre-wrap;margin-bottom: 5px;margin-top: 5px;padding: 5px 10px;border-radius: 3px;'>");
+
+        htmlString = htmlString.replace(/<img([\w\W]+?)>/g, function() {
+          return `<img src='http://codeassist.org/mentor/history/${pPost._id}/image/${imageCounter++}'/>`
+        });
+
+        return htmlString;
+      });
+
+      var quillHTML = converter.convert();
+
       for (var i = 0; i < mentors.length; i++)
       {
         var mentor = mentors[i];
@@ -108,14 +126,14 @@ router.post('/post', upload.array('file'), function(req, res) {
           <h3>Question</h3>
           <p>${question}</p>
           <h3>Description</h3>
-          <strong><p>${description}</p></strong>
+          ${quillHTML}
 
           <h3>Contact details</h3>
           <ul>
             <li>Date Posted: ${pPost.timestamp}</li>
             <li>User's Name: ${req.user.username}</li>
             <li>User's Email: ${req.user.email}</li>
-            <li>Link: <a href="https://codeassist.club/mentor/history/${pPost._id}">Post</a></li>
+            <li>Link: <a href="https://codeassist.org/mentor/history/${pPost._id}">Post</a></li>
           </ul>
         `;
 
@@ -187,6 +205,66 @@ router.get('/history', function(req, res) {
     req.flash('origin', '/mentor/history');
     res.redirect('../../login');
   }
+});
+
+// to get images inside a main post
+router.get('/history/:id/image/:imageIndex', function(req, res) {
+  var postID = req.params.id;
+  var imageIndex = req.params.imageIndex;
+
+  User.PostSchema.findOne({_id: postID}, function(err, post) {
+    var descriptionObj = JSON.parse(post.description);
+
+    var imageCount = 0;
+    for (var i = 0; i < descriptionObj.length; i++) {
+      if (typeof descriptionObj[i].insert === 'object') {
+        for (var type in descriptionObj[i].insert) {
+          if (type == "image") {
+            if (imageCount == imageIndex) {
+              var im = descriptionObj[i].insert.image.split(",")[1];
+              var img = new Buffer(im, 'base64');
+              res.writeHead(200, {
+                 'Content-Type': 'image',
+                 'Content-Length': img.length
+              });
+              res.end(img);
+            }
+            imageCount++;
+          }
+        }
+      }
+    }
+  });
+});
+
+// to get images inside answers
+router.get('/history/answer/:id/image/:imageIndex', function(req, res) {
+  var answerID = req.params.id;
+  var imageIndex = req.params.imageIndex;
+
+  User.AnswerSchema.findOne({_id: answerID}, function(err, answer) {
+    var answerObj = JSON.parse(answer.answer);
+
+    var imageCount = 0;
+    for (var i = 0; i < answerObj.length; i++) {
+      if (typeof answerObj[i].insert === 'object') {
+        for (var type in answerObj[i].insert) {
+          if (type == "image") {
+            if (imageCount == imageIndex) {
+              var im = answerObj[i].insert.image.split(",")[1];
+              var img = new Buffer(im, 'base64');
+              res.writeHead(200, {
+                 'Content-Type': 'image',
+                 'Content-Length': img.length
+              });
+              res.end(img);
+            }
+            imageCount++;
+          }
+        }
+      }
+    }
+  });
 });
 
 router.get('/history/:id', function(req, res) {
@@ -274,14 +352,14 @@ router.post('/history/:id/answer', function(req, res) {
           <h2>New Answer Details</h2>
           <hr>
 
-          <h3>Link to the <a href="https://codeassist.club/mentor/history/${postID}">Answer</a></h3>
+          <h3>Link to the <a href="https://codeassist.org/mentor/history/${postID}">Answer</a></h3>
 
           <h3>Contact details</h3>
           <ul>
             <li>Date Replied: ${newAnswer.timestamp}</li>
             <li>Mentor Name: ${author}</li>
             <li>Mentor Email: ${req.user.email}</li>
-            <li><a href="https://codeassist.club/team">About the Mentors</a></li>
+            <li><a href="https://codeassist.org/team">About the Mentors</a></li>
           </ul>
         `;
 
@@ -322,6 +400,23 @@ router.post('/history/:id/answer', function(req, res) {
               if(err) throw err;
               // console.log("Answer saved");
             });
+
+            var imageCounter = 0;
+            var converter = new QuillDeltaToHtmlConverter(JSON.parse(message), {});
+
+            converter.afterRender(function(groupType, htmlString){
+              // console.log(htmlString);
+              htmlString = htmlString.replace(/<pre>/g, "<pre style='background-color: #23241f;color: #f8f8f2;overflow: visible;white-space: pre-wrap;margin-bottom: 5px;margin-top: 5px;padding: 5px 10px;border-radius: 3px;'>");
+
+              htmlString = htmlString.replace(/<img([\w\W]+?)>/g, function() {
+                return `<img src='http://codeassist.org/mentor/history/answer/${newAnswer._id}/image/${imageCounter++}'/>`
+              });
+
+              return htmlString;
+            });
+
+            var quillHTML = converter.convert();
+
             if (post.assignedMentor) {
               const output = `
                 <p>Hi ${post.assignedMentor.username},</p>
@@ -330,14 +425,14 @@ router.post('/history/:id/answer', function(req, res) {
                 <hr>
 
                 <h3>Answer</h3>
-                <p>${message}</p>
+                ${quillHTML}
 
                 <h3>Contact details</h3>
                 <ul>
                   <li>Date Posted: ${newAnswer.timestamp}</li>
                   <li>User's Name: ${author}</li>
                   <li>User's Email: ${req.user.email}</li>
-                  <li>Link: <a href="https://codeassist.club/mentor/history/${postID}">Post</a></li>
+                  <li>Link: <a href="https://codeassist.org/mentor/history/${postID}">Post</a></li>
                 </ul>
               `;
 
@@ -367,14 +462,14 @@ router.post('/history/:id/answer', function(req, res) {
                     <hr>
 
                     <h3>Answer</h3>
-                    <p>${message}</p>
+                    ${quillHTML}
 
                     <h3>Contact details</h3>
                     <ul>
                       <li>Date Posted: ${newAnswer.timestamp}</li>
                       <li>User's Name: ${author}</li>
                       <li>User's Email: ${req.user.email}</li>
-                      <li>Link: <a href="https://codeassist.club/mentor/history/${postID}">Post</a></li>
+                      <li>Link: <a href="https://codeassist.org/mentor/history/${postID}">Post</a></li>
                     </ul>
                   `;
 
