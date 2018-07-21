@@ -134,45 +134,6 @@ router.post('/share', function(req, res){
 	console.log("Share post request ----------------")
 	console.log("projectID: " + projectID);
 
-	// var failedEmails = [];
-	//
-	// async.each(emails, function(email, callback) {
-	// 	User.UserSchema.findOne({email: email}, function(err, user) {
-	// 		if (user) {
-	// 			var e_link = projectID + "/" + uniqid();
-	// 			user.e_link = e_link;
-	// 			user.save(function(err) {
-	// 				if(err) throw err;
-	// 			});
-	//
-	// 			// callback(true);
-	//
-	// 			console.log("sharing with: " + user.email);
-	// 			const output = `
-	// 				<p>Hi ${user.username},</p>
-	// 				<p>You have been invited to a CodeHat project</p>
-	//
-	// 				<h3><a href="http://localhost:8080/codehat/invite/${e_link}">Accept invitation</a></h3>
-	// 				<!-- <h3><a href="https://codeassist.org/codehat/invite/${e_link}">Accept invitation</a></h3> -->
-	// 			`;
-	// 			const msg = {
-	// 				to: user.email,
-	// 				from: `Code Assist <${process.env.SENDER_EMAIL}>`,
-	// 				subject: "You're invited to a new project",
-	// 				html: output
-	// 			};
-	//
-	// 			sgMail.send(msg);
-	// 		} else {
-	// 			failedEmails.push(email);
-	// 		}
-	// 		callback();
-	// 	});
-	// }, function() {
-	// 	console.log("Failed emails: " + failedEmails);
-	// 	res.send(failedEmails);
-	// });
-
 	var failedEmails = [];
 	async.parallel([
 			function(callback) {
@@ -276,7 +237,7 @@ router.get('/invite/:projectID/:randomID', function(req, res){
 	}
 });
 
-router.get('/:id/', function(req, res) {
+router.get('/:id', function(req, res) {
 		var projectID = req.params.id;
 		User.ProjectSchema.findOne({_id: projectID}).populate(['usersWithAccess', 'owner', 'chatHistory']).exec(function(err, project) {
 			if(req.user) {
@@ -331,7 +292,32 @@ router.post('/:id/start-codehat', function(req, res) {
 	});
 });
 
+router.post('/:id/delete', function(req, res) {
+	var projectID = req.params.id;
+	var projectName = req.body.projectName;
+	var data = {
+		auth: false,
+		url: ''
+	};
 
+	User.ProjectSchema.findOne({_id: projectID}, function(err, project) {
+		if(req.user && project) {
+			if(project.name == projectName) {
+				data.auth = true;
+				data.url = '/codehat';
+				User.ProjectSchema.deleteOne({_id: projectID}, function (err) {
+				  if (err) throw err;
+					console.log("Project deleted");
+				});
+			}
+		}else{
+			data.url = '/login';
+			req.flash('origin');
+			req.flash('origin', '/codehat/'+projectID);
+		}
+		res.send(data);
+	});
+});
 // for file downloading
 router.get('/:id/file/:fileIndex', function(req, res) {
 	var projectID = req.params.id;

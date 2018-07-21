@@ -37,9 +37,10 @@ $(document).ready(function() {
   $(document).mouseup(function(e)
   {
       var container = $("#box");
+      var modal = $('#delete-project-modal');
 
       // if the target of the click isn't the container nor a descendant of the container
-      if (!container.is(e.target) && container.has(e.target).length === 0)
+      if (!container.is(e.target) && !modal.is(e.target) && (container.has(e.target).length === 0) && (modal.has(e.target).length === 0))
       {
           $('#settings').hide();
       }
@@ -81,7 +82,7 @@ $(document).ready(function() {
           temp.addClass('form-control');
           temp.addClass("is-valid");
         }
-        
+
       }else{
         for(var i = 0; i < form.find("input[name=emailInput]").length; i++) {
           var temp = form.find("input[name=emailInput]");
@@ -98,6 +99,7 @@ $(document).ready(function() {
     });
 
   });
+
   $("#settings #change-project-name").change(function() {
     var input_field = $(this);
     $.post(window.location.pathname+'/change-project-name', {newName: $(this).val()}, function(data) {
@@ -109,4 +111,22 @@ $(document).ready(function() {
     });
   });
 
+  /* Delete Project Button */
+  $('#delete-project-confirm').submit(function(event) {
+    event.preventDefault();
+    var form = $(this);
+    var name = form.find('input[name=projectName]');
+
+    $.post(window.location.pathname+'delete', {projectName: name.val()}, function(data) {
+      if(data.auth) {
+        console.log("Auth");
+        name.attr('class', 'form-control');
+        window.location.replace("http://" + window.location.host + data.url);
+      }else{
+        name.attr('class', 'form-control is-invalid');
+        if(url)
+          window.location.replace("http://" + window.location.host + data.url);
+      }
+    });
+  });
 });
