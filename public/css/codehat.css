@@ -224,6 +224,23 @@ editorContainer .row {
 	border: 1px solid rgb(210, 208, 208);
 }
 
+/*
+======================
+  Group Chat
+======================
+*/
+
+#group-chat #all-messages {
+  list-style-type: none;
+  max-height: 50vh;
+  overflow-y: scroll;
+}
+
+#group-chat #all-messages::-webkit-scrollbar {
+  width: 0;
+  background-color: transparent;
+}
+
 
 /*
 ======================

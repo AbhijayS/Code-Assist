@@ -33,7 +33,7 @@
 			</div>
 		</div>
 		<div class="ui-layout-east">
-			<div id="videoChat">
+			<div id="videoChat" hidden>
 				<div id="peerButtonContainer">
 					<h5 id="callStatus"></h5>
 					<div id="peerButtons"></div>
@@ -54,9 +54,36 @@
 				</div>
 			</div>
 
-			<div id="group-chat">
-				
+			<div class="container">
+				<div class="card">
+					<div class="card-header">
+						Group Chat
+					</div>
+
+					<div class="card-body">
+						<div id="group-chat">
+							<ul id="all-messages" class="p-0">
+								{{#each project.chatHistory}}
+									<li class="bg-light rounded my-3 py-2 pl-2">
+										<h6 class="text-secondary"><b>{{author}}</b></h6>
+										<p style="margin: 0;">{{message}}</p>
+									</li>
+								{{/each}}
+							</ul>
+
+							<form id="send-message-form">
+								<div class="input-group">
+									<input id="msg" autocomplete="off" type="text" class="form-control" placeholder="Group Message" aria-label="Group Message" aria-describedby="button-addon2">
+									<div class="input-group-append">
+										<button class="btn btn-outline-primary" type="submit">Send</button>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
 			</div>
+
 		</div>
 </div>
 

@@ -73,38 +73,15 @@
     <!-- EasyRTC -->
     <script type="text/javascript" src="/easyrtc/easyrtc.js"></script>
 
-    <script>
-    	var editor = ace.edit("editor");
-    	editor.setTheme("ace/theme/textmate");
-    	editor.getSession().setMode("ace/mode/java");
-    	editor.setShowPrintMargin(false);
-    	editor.$blockScrolling = Infinity;
-    	editor.focus();
-    </script>
-
     <script type="text/javascript">
       console.log('{{user.username}}'+' is your username and you have a clearance of level '+{{clearance}});
-        var namespace = '{{namespace}}';
-    	var socket = io(namespace);
-        var username = '{{user.username}}';
+      var namespace = '{{namespace}}';
+      var socket = io('{{namespace}}');
+      var username = '{{user.username}}';
     </script>
+
     <script src="/codehat/script.js"></script>
-    <script src="/js/codehat-videocall.js"></script>
-    <script>
-    var layout = $('#editorContainer').layout({
-        defaults: {
-            applyDefaultStyles: true,
-            resizeWhileDragging: true,
-            fxName: 0 // prevents close/open animation
-        },
-        east: {
-            initClosed: true,
-            size: "25%",
-            minSize: 200,
-            maxSize: "70%"
-        }
-    });
-    </script>
     <script src="/js/codehat-project.js"></script>
+    <script src="/js/codehat-videocall.js"></script>
   </body>
 </html>

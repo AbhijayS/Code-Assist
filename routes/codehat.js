@@ -536,6 +536,8 @@ function Project(id) {
 
 	// nsp is the socket.io namespace
 	this.nsp = io.of('/'+this.id)
+	var chatdatanamespace=this.nsp;
+
 
 	this.nsp.on('connection', function connection(socket) {
 		console.log("new codehat connection");
@@ -547,6 +549,38 @@ function Project(id) {
 		} else {
 			socket.emit("output", self.output);
 		}
+
+		//chat handler
+		socket.on("chat",function(msg,chatterid,chatter){
+			//console.log(msg+'  ');
+			var NewChatMessage = new User.ChatSchema();
+			NewChatMessage.authorid=chatterid;
+			NewChatMessage.author=chatter;
+			NewChatMessage.message=msg;
+			NewChatMessage.date=new Date();
+
+			//save the new message to the database
+			NewChatMessage.save(function(error){
+				console.log(self.id);
+				User.ProjectSchema.findOne({_id:self.id}).exec(function(error, project){
+					project.chatHistory.push(NewChatMessage._id);
+					console.log(project);
+						project.save(function(error){
+							chatdatanamespace.emit('broadcastchat',NewChatMessage);
+
+							if(error){
+								console.log(error);
+							}
+						});
+					if(error){
+						console.log(error);
+					}
+				});
+				if(error){
+					console.log(error);
+				}
+			});
+		});
 
 		socket.on("updateFile", function(text, fileIndex) {
 			var file = self.files[fileIndex];
