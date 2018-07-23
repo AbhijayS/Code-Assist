@@ -292,9 +292,18 @@ router.post('/:id/answer', function(req, res){
 });
 
 //search functions
+Search("oof");
 function Search(search){
+	var postreturnarray=new Array();
 	var wordarray=search.split(" ");
 		User.PostSchema.find({}).exec(function(err,posts){
+			for(var k=0;k<posts.length;k++){
+				console.log(posts[k]);
+				if(posts[k].question.indexOf(search)!=-1||posts[k].description.indexOf(search)!=-1){
+					postreturnarray.push(posts[k]);
+					console.log("found a post "+posts[k]);
+				}
+			}
 			if(err){
 				console.log(err);
 			}
