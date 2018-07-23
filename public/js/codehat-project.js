@@ -18,7 +18,8 @@ $(document).ready(function() {
       defaults: {
           applyDefaultStyles: true,
           resizeWhileDragging: true,
-          fxName: 0 // prevents close/open animation
+          fxName: 0, // prevents close/open animation
+          enableCursorHotkey: false
       },
       east: {
           initClosed: true,
