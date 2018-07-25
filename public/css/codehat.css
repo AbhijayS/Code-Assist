@@ -5,6 +5,43 @@ body {
   background-color: #eeeeee54;
 }
 
+#feedback-floating-btn {
+  display: flex;
+  width: 75px;
+  height: 75px;
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  border-radius: 50%;
+  border: none;
+  background-color: #fffffff2;
+  font-size: 40px;
+  padding: 15px;
+  box-shadow: 0px 3px 20px 3px #1b1b1b5c;
+  cursor: pointer;
+  vertical-align: baseline;
+  transition: 0.7s;
+  overflow: hidden;
+}
+
+#feedback-floating-btn > span {
+  display: none;
+  font-size: 3rem;
+  padding-left: 10px;
+  margin-top: auto;
+}
+
+#feedback-floating-btn:hover {
+  background-color: white;
+  box-shadow: 0px 7px 13px 2px #1b1b1b5c;
+  border-radius: 15px;
+  padding-right: 200px;
+}
+
+#feedback-floating-btn:hover > span {
+  display: inline;
+}
+
 nav {
   z-index: 6;
   background-color: #eee;
