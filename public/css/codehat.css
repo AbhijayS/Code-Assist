@@ -136,7 +136,7 @@ html, body {
 	font-size: 18px !important;
 }
 
-.close:hover {
+#fileTabs .close:hover {
 	color: red !important;
 }
 
@@ -217,6 +217,14 @@ editorContainer .row {
 	height: 100%;
 	width: 100%;
 	border: none;
+}
+
+#htmlPreviewNewWindow {
+  position: absolute;
+  left: 5px;
+  bottom: 5px;
+  padding: 2px 5px;
+  color: white;
 }
 
 #previewContainer {

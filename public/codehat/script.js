@@ -372,6 +372,7 @@ function updateHtmlPreviewWindow(fileIndex) {
 		if ($("#htmlPreview").attr("src") != "htmlPreview/" + fileIndex + "/") {
 			$("#htmlPreview").hide();
 			$("#htmlPreview").attr("src", "htmlPreview/" + fileIndex + "/");
+			$("#htmlPreviewNewWindow").attr("href", "htmlPreview/" + fileIndex + "/");
 
 			$('#htmlPreview').on('load', function() {
 				$("#htmlPreview").show();
