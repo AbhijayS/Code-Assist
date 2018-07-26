@@ -9,7 +9,12 @@ var LocalStrategy = require('passport-local').Strategy;
 var passport = require('passport');
 //var nodemailer = require('nodemailer');
 const sgMail = require('@sendgrid/mail');
+var QuillDeltaToHtmlConverter = require('quill-delta-to-html');
+var multer = require('multer');
+var upload = multer();
+
 var saltRounds=10;
+
 
 // Get current user
 router.post('/current-user', function(req, res) {
@@ -83,6 +88,88 @@ router.get('/login', function(req, res){
 // Get Contact page
 router.get('/contact', function(req, res){
     res.render('contact', {layout: 'dashboard-layout'});
+});
+
+// Contact feedback form
+router.post('/contact', upload.array('file'), function(req, res) {
+  var name = req.body.name;
+  var email = req.body.email;
+  var subject = req.body.subject;
+  var description = req.body.description;
+  var files = req.files;
+
+  console.log("name: " + name);
+  console.log("email: " + email);
+  console.log("subject: " + subject);
+  console.log("description: " + description);
+
+  if (!name || !email || !subject || JSON.parse(description)[0].insert == "\n") {
+    res.end();
+    return;
+  }
+
+
+  // For generating quill HTML
+  var converter = new QuillDeltaToHtmlConverter(JSON.parse(description), {});
+  // var imageCounter = 0;
+
+  converter.afterRender(function(groupType, htmlString){
+    htmlString = htmlString.replace(/<pre>/g, "<pre style='background-color: #23241f;color: #f8f8f2;overflow: visible;white-space: pre-wrap;margin-bottom: 5px;margin-top: 5px;padding: 5px 10px;border-radius: 3px;'>");
+
+    htmlString = htmlString.replace(/<img([\w\W]+?)>/g, function() {
+      return "<strong>[Imaged inserted]</strong>"
+      // return `<img src='http://codeassist.org/mentor/history/${pPost._id}/image/${imageCounter++}'/>`
+    });
+
+    return htmlString;
+  });
+
+  var quillHTML = converter.convert();
+
+  var attachments = [];
+  for (var i = 0; i < files.length; i++) {
+    var file = files[i];
+    attachments.push({
+      content: Buffer.from(file.buffer).toString('base64'),
+      filename: file.originalname,
+      type: file.mimetype,
+      disposition: 'attachment'
+    });
+  }
+
+  User.UserSchema.find({title: "mentor"}, function(err, mentors) {
+      for (var i = 0; i < mentors.length; i++) {
+        var mentor = mentors[i];
+
+        console.log('============================================');
+        console.log("Sending Email ...");
+        console.log(i+1 + ". Mentor Name: " + mentor.username);
+        console.log(i+1 + ". Mentor Email: " + mentor.email);
+        console.log('============================================');
+
+        const output = `
+          <p>Hi ${mentor.username},</p>
+          <p>A user recently left feedback through the contact page.</p>
+          <h2>Feedback Details</h2>
+          <p><strong>Name:</strong> ${name}</p>
+          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Subject:</strong> ${subject}</p>
+          <hr>
+          ${quillHTML}
+        `;
+
+        const msg = {
+          to: mentor.email,
+          from: `Code Assist <${process.env.SENDER_EMAIL}>`,
+          subject: 'Code Assist Feedback | ' + subject,
+          html: output,
+          attachments: attachments
+        };
+        sgMail.send(msg);
+      }
+  });
+
+  res.send(true);
 });
 
 // Register

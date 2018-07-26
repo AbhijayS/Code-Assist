@@ -80,7 +80,7 @@
         console.log('community-post clicked');
         var description = JSON.stringify(quillEditor.getContents().ops);
 
-        var formData = new FormData($('#upload_form')[0]);
+        var formData = new FormData();
         for (var i = 0; i < $('input[type=file]')[0].files.length; i++) {
           formData.append('file', $('input[type=file]')[0].files[i]);
         }
