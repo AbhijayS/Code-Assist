@@ -33,8 +33,10 @@
 				</div>
 			</div>
 		</div>
+
 		<div class="ui-layout-east">
-			<div id="videoChat" hidden>
+			<div id="videoChat" class="video-chat-view hide mt-5">
+				<button type="button" name="switch-views" id="toggle-chat" class="btn btn-primary" data-toggle="tooltip" data-placement="bottom" title="Toggle Group Chat" style="position: absolute; top: 5px; right: 5px;"><i class="fas fa-comments"></i></button>
 				<div id="peerButtonContainer">
 					<h5 id="callStatus"></h5>
 					<div id="peerButtons"></div>
@@ -44,8 +46,17 @@
 				</div>
 
 				<div id="connectButtons">
-					<button id="joinCallAudio" class="btn btn-success">Join Call With Audio</button>
-					<button id="joinCallVideo" class="btn btn-success">Join Call With Video</button>
+					<div class="btn-group btn-group-toggle w-100 px-2" data-toggle="buttons">
+					  <label class="btn btn-outline-info w-50" id="joinCallAudio" style="overflow: hidden;">
+					    <input type="radio" name="options" id="option1" autocomplete="off" checked>Join Call With Audio
+					  </label>
+					  <label class="btn btn-outline-info btn-block w-50" id="joinCallVideo" style="overflow: hidden;">
+					    <input type="radio" name="options" id="option2" autocomplete="off">Join Call With Video
+					  </label>
+					</div>
+
+					<!-- <button id="joinCallAudio" class="btn btn-success">Join Call With Audio</button>
+					<button id="joinCallVideo" class="btn btn-success">Join Call With Video</button> -->
 				</div>
 
 				<div id="callButtons" style="display: none;">
@@ -55,7 +66,9 @@
 				</div>
 			</div>
 
-			<div class="container">
+			<div id="chat" class="container video-chat-view mt-5">
+				<button type="button" name="switch-views" id="toggle-video" class="btn btn-primary" data-toggle="tooltip" data-placement="bottom" title="Toggle Video" style="position: absolute; top: 5px; right: 5px;"><i class="fas fa-headset"></i></button>
+
 				<div class="card">
 					<div class="card-header">
 						Group Chat
@@ -65,12 +78,16 @@
 						<div id="group-chat">
 							<ul id="all-messages" class="p-0">
 								{{#each project.chatHistory}}
-									<li class="bg-light rounded my-3 py-2 pl-2">
+									<li class="bg-light rounded my-3 py-2 mx-2 pl-2">
 										<h6 class="text-secondary"><b>{{author}}</b></h6>
 										<p style="margin: 0;">{{message}}</p>
 									</li>
 								{{/each}}
 							</ul>
+							<script type="text/javascript">
+								var objDiv = document.getElementById("all-messages");
+								objDiv.scrollTop = objDiv.scrollHeight;
+							</script>
 
 							<form id="send-message-form">
 								<div class="input-group">

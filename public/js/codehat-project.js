@@ -1,36 +1,5 @@
 $(document).ready(function() {
 
-  /* Defaults on page load */
-  $('#editorContainer').css({
-    'padding-left' : $('#sidebar').width()
-  });
-
-  // editor
-  var editor = ace.edit("editor");
-  editor.setTheme("ace/theme/textmate");
-  editor.getSession().setMode("ace/mode/java");
-  editor.setShowPrintMargin(false);
-  editor.$blockScrolling = Infinity;
-  editor.focus();
-
-  // Layout
-  var layout = $('#editorContainer').layout({
-      defaults: {
-          applyDefaultStyles: true,
-          resizeWhileDragging: true,
-          fxName: 0, // prevents close/open animation
-          enableCursorHotkey: false
-      },
-      east: {
-          initClosed: true,
-          size: "25%",
-          minSize: 200,
-          maxSize: "70%"
-      }
-  });
-  layout.resizeAll();
-
-
   /* socket io */
   $('#group-chat #send-message-form').submit(function(event){
     event.preventDefault();
@@ -109,7 +78,27 @@ $(document).ready(function() {
   });
 
   $('#videochat-btn').click(function() {
-    layout.toggle("east");
+    $('.ui-layout-east .video-chat-view').hide();
+    $('.ui-layout-east #videoChat').show();
+    if(layout.state.east.isClosed)
+      layout.toggle("east");
+  });
+
+  $('#toggle-video').click(function() {
+    $('.ui-layout-east .video-chat-view').hide();
+    $('.ui-layout-east #videoChat').show();
+  });
+
+  $('#chat-btn').click(function() {
+    $('.ui-layout-east .video-chat-view').hide();
+    $('.ui-layout-east #chat').show();
+    if(layout.state.east.isClosed)
+      layout.toggle("east");
+  });
+
+  $('#toggle-chat').click(function() {
+    $('.ui-layout-east .video-chat-view').hide();
+    $('.ui-layout-east #chat').show();
   });
 
   $('#share-project').submit(function(event) {

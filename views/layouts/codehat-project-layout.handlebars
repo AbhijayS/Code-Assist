@@ -46,10 +46,10 @@
 
         {{#if namespace}}
           <li id="directory-btn" class="list-group-item"><i class="far fa-file-code"></i></li>
-          <li id="videochat-btn" class="list-group-item"><i class="fas fa-video"></i></li>
+          <li id="videochat-btn" class="list-group-item"><i class="fas fa-headset"></i></li>
         {{/if}}
 
-        <li id="chat-btn" class="list-group-item"><i class="far fa-comment-alt"></i></li>
+        <li id="chat-btn" class="list-group-item"><i class="fas fa-comments"></i></li>
         <li id="settings-btn" class="list-group-item"><i class="fas fa-sliders-h"></i></li>
         <a href="/codehat"><li id="exit-btn" class="list-group-item"><i class="fas fa-sign-out-alt"></i></li></a>
       </ul>
@@ -85,6 +85,36 @@
       var namespace = '{{namespace}}';
       var socket = io('{{namespace}}');
       var username = '{{user.username}}';
+
+      /* Defaults on page load */
+      $('#editorContainer').css({
+        'padding-left' : $('#sidebar').width()
+      });
+
+      // editor
+      var editor = ace.edit("editor");
+      editor.setTheme("ace/theme/textmate");
+      editor.getSession().setMode("ace/mode/java");
+      editor.setShowPrintMargin(false);
+      editor.$blockScrolling = Infinity;
+      editor.focus();
+
+      // Layout
+      var layout = $('#editorContainer').layout({
+          defaults: {
+              applyDefaultStyles: true,
+              resizeWhileDragging: true,
+              fxName: 0, // prevents close/open animation
+              enableCursorHotkey: false
+          },
+          east: {
+              initClosed: true,
+              size: "25%",
+              minSize: 200,
+              maxSize: "70%"
+          }
+      });
+      layout.resizeAll();
     </script>
 
     <script src="/codehat/script.js"></script>
