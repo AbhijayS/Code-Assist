@@ -57,10 +57,15 @@
 
     {{{body}}}
 
-    <div id="feedback-floating-btn">
+    <div id="feedback-floating-btn" onclick="relocateFeedback()">
       <i class="fas fa-bullhorn"></i>
       <span><strong> Feedback</strong></span>
     </div>
+    <script type="text/javascript">
+      function relocateFeedback() {
+        window.location.replace('http://' + window.location.host + '/contact');
+      }
+    </script>
 
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script
