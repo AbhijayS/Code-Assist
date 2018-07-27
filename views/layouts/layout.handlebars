@@ -26,19 +26,41 @@
   <body>
     <div id="page-overlay-main" class="page-overlay d-none d-lg-block"></div>
 
+    <div class="page-overlay-secondary d-none d-lg-block" style="clip-path: circle(69.4% at 0 -63%)"></div>
+
+
     <!-- Page larger than Bootstrap lg-->
     <div id="page-overlay-collapsed" class="page-overlay d-none d-lg-block" style="-webkit-clip-path: circle(32.1% at 95% 94%); clip-path: circle(32.1% at 95% 94%);"></div>
 
-    <!-- Page smaller  than Bootstrap lg-->
+    <div id="page-overlay-collapsed" class="page-overlay-secondary d-none d-lg-block" style="-webkit-clip-path: circle(32.1% at 95% -6%); clip-path: circle(32.1% at 95% -6%);"></div>
+
+    <!-- Page smaller than Bootstrap lg-->
     <div id="page-overlay-collapsed" class="page-overlay d-lg-none" style="-webkit-clip-path: circle(41.4% at 91% 84%); clip-path: circle(41.4% at 91% 84%);"></div>
+
+    <div id="page-overlay-collapsed" class="page-overlay-secondary d-lg-none" style="-webkit-clip-path: circle(41.4% at 91% -16%); clip-path: circle(41.4% at 91% -16%);"></div>
+
+    <!-- Page larger than Bootstrap lg-->
+    <div class="d-none d-lg-block">
+      <div id="online-learning" class="landing-pg-illustration"></div>
+      <div id="collaboration" class="landing-pg-illustration"></div>
+      <div id="education" class="landing-pg-illustration"></div>
+    </div>
+
+    <!-- Page smaller than Bootstrap lg-->
+    <!-- <div class="d-none d-sm-block d-lg-none">
+      <div id="online-learning-collapsed" class="landing-pg-illustration"></div>
+      <div id="collaboration-collapsed" class="landing-pg-illustration"></div>
+      <div id="education-collapsed" class="landing-pg-illustration"></div>
+    </div> -->
+
 
     <div class="container">
       <nav class="navbar navbar-expand-lg navbar-dark pt-3">
-        <a class="navbar-brand d-none d-lg-block" href="#">
+        <a class="navbar-brand d-none d-lg-block" href="/">
           Code Assist
         </a>
 
-        <a class="navbar-brand d-lg-none text-dark" href="#">
+        <a class="navbar-brand d-lg-none text-dark" href="/">
           Code Assist
         </a>
 
@@ -116,6 +138,14 @@
     <hr style="margin: 0; background-color: rgba(255, 255, 255, 0.5);">
 
     {{{body}}}
+
+    <div class="site-footer jumbotron rounded-0 text-center">
+      <h3 class="text-dark">Code Assist</h3>
+      <hr>
+
+      <div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+
+    </div>
 
     <div id="feedback-floating-btn" onclick="relocateFeedback()">
       <i class="fas fa-bullhorn"></i>

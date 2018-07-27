@@ -1,11 +1,7 @@
 body{
   font-family: 'Nunito', sans-serif !important;
-  /* background: linear-gradient(-135deg, #83b6ef, #0d75e8); */
   background-color: rgb(255, 255, 255, 0.7);
   background-attachment:fixed;
-  overflow-y: hidden;
-  -webkit-clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
-  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
 }
 
 .navbar .nav-item .nav-link {
@@ -13,29 +9,75 @@ body{
 }
 
 .navbar .nav-item .nav-link:hover {
-  color: black !important;
+  color: #343a40 !important;
 }
 
 .page-overlay {
   position: absolute;
   background-color: #007bff;
   width: 100%;
+  height: 100vh;
+  z-index: -1;
+  overflow: visible;
+}
+
+.page-overlay-secondary {
+  position: absolute;
+  background-color: #007bff;
+  top: 100%;
+  width: 100%;
   height: 100%;
   z-index: -1;
+  overflow: visible;
 }
+
 #page-overlay-main {
-  /* -webkit-clip-path: circle(56.6% at 12% 33%);
-  clip-path: circle(56.6% at 12% 33%); */
-
-  /* -webkit-clip-path: circle(67.7% at 0 35%);
-  clip-path: circle(67.7% at 0 35%); */
-
   -webkit-clip-path: circle(69.4% at 0 37%);
   clip-path: circle(69.4% at 0 37%);
 }
-#page-overlay-collapsed {
-  -webkit-clip-path: circle(32.1% at 95% 94%);
-  clip-path: circle(32.1% at 95% 94%);
+
+.landing-pg-illustration {
+  position: absolute;
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 150px;
+  height: 150px;
+}
+
+#online-learning {
+  background-image: url('/images/online-learning.svg');
+  top: 100px;
+  left: 54%;
+}
+
+#collaboration {
+  background-image: url('/images/conversation.svg');
+  top: 50%;
+  left: 70%;
+}
+
+#education {
+  background-image: url('/images/learning.svg');
+  bottom: 11%;
+  left: 48%;
+}
+
+#online-learning-collapsed {
+  background-image: url('/images/online-learning.svg');
+  bottom: 45%;
+  left: 73%;
+}
+
+#collaboration-collapsed {
+  background-image: url('/images/conversation.svg');
+  bottom: 30%;
+  left: 44%;
+}
+
+#education-collapsed {
+  background-image: url('/images/learning.svg');
+  bottom: 6%;
+  left: 40%;
 }
 
 #feedback-floating-btn {
@@ -75,15 +117,27 @@ body{
   display: inline;
 }
 
+#jumbotron-container{
+  background-color: transparent;
+  margin-top: 100px;
+  height: 100vh;
+}
+
 #jumbotron-container input[type=text] {
   background-color: transparent;
   border: none;
-
   padding: 8px;
 }
 
 #jumbotron-container input[type=text]:focus {
   outline: none;
+}
+
+.site-footer {
+  background-color: #f8f9fac2;
+  height: 100vh;
+  padding-top: 10%;
+  box-shadow: -1px -2px 12px 1px #9e9e9e57;
 }
 
 ::placeholder {
@@ -102,11 +156,6 @@ body{
    text-align: center;
 }
 
-#jumbotron-container{
-  background-color: transparent;
-  height: 100vh;
-  margin-top: 100px;
-}
 
 .overview .call-to-action {
 	text-align: center;
