@@ -8,7 +8,12 @@
         <a class="card-link" href="/codehat/{{this._id}}/" style="text-decoration: none;">
           <div class="card">
             <div class="card-body text-center">
-              {{this.thumbnail}}
+              <div class="thumbnailLetter">{{this.thumbnail}}</div>
+              <div class="thumbnail-container">
+                <div class="thumbnail">
+                 <iframe src="/codehat/{{this._id}}/?thumbnail=true" frameborder="0" onload="this.style.opacity = 1"></iframe>
+                </div>
+              </div>
             </div>
             <div class="card-footer">
               <div class="project-name">

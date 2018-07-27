@@ -2,6 +2,7 @@
 <div id="editorContainer">
 		<div class="ui-layout-center">
 			<div id="code-editor">
+				{{#unless isThumbnail}}
 				<div id="topBar">
 					<label class="btn btn-primary mb-0">
 						Upload File<input type="file" accept=".java,.py,.cpp,.dat,.txt,.html,.css,.js" hidden>
@@ -10,6 +11,7 @@
 					<a id="downloadFileBtn" class="btn btn-primary disabled" href="#">Download File</a>
 					<a id="downloadAllFiles" class="btn btn-primary" href="downloadAll">Download Project as .ZIP</a>
 				</div>
+				{{/unless}}
 
 				<ul class="nav nav-tabs" id="fileTabs">
 
@@ -18,7 +20,7 @@
 				<div class="row">
 					<div class="col-sm" id="editor"></div>
 					<div class="col-sm" id="previewContainer" style="display: none;">
-						<iframe id="htmlPreview"></iframe>
+						<iframe id="htmlPreview" {{#if isThumbnail}}sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts"{{/if}}></iframe>
 						<a id="htmlPreviewNewWindow" target="_blank" class="btn btn-primary"><i class="fas fa-external-link-alt"></i></a>
 					</div>
 				</div>
@@ -34,6 +36,7 @@
 			</div>
 		</div>
 
+		{{#unless isThumbnail}}
 		<div class="ui-layout-east">
 			<div id="videoChat" class="video-chat-view hide mt-5">
 				<button type="button" name="switch-views" id="toggle-chat" class="btn btn-primary" data-toggle="tooltip" data-placement="bottom" title="Toggle Group Chat" style="position: absolute; top: 5px; right: 5px;"><i class="fas fa-comments"></i></button>
@@ -103,6 +106,7 @@
 			</div>
 
 		</div>
+		{{/unless}}
 </div>
 
 <!-- <div id="editorContainer" class="container-fluid">
@@ -111,6 +115,7 @@
 
 <!-- Settings Section -->
 <!-- <i id="close-settings" class="far fa-times-circle"></i> -->
+{{#unless isThumbnail}}
 <div id="settings" class="hide">
 	<div id="box" class="mx-auto p-5" style="max-width: 1100px;">
 		<div id="sharing" class="mb-5">
@@ -293,3 +298,4 @@
 		</form>
 	</div>
 </div>
+{{/unless}}

@@ -238,25 +238,25 @@ router.get('/invite/:projectID/:randomID', function(req, res){
 });
 
 router.get('/:id', function(req, res) {
-		var projectID = req.params.id;
-		User.ProjectSchema.findOne({_id: projectID}).populate(['usersWithAccess', 'owner', 'chatHistory']).exec(function(err, project) {
-			if(req.user) {
-				if (project) {
-					var userAccessLevel = 0;
-					for (var i = 0; i < project.usersWithAccess.length; i++) {
-						// console.log(typeof req.user._id);
-						// console.log(typeof project.usersWithAccess[i].id);
-						if (project.usersWithAccess[i].id === req.user.id)
-							userAccessLevel = 1;
-					}
+	var isThumbnail = req.query.thumbnail;
+	console.log("isThumbnail:", isThumbnail);
+	var projectID = req.params.id;
+	User.ProjectSchema.findOne({_id: projectID}).populate(['usersWithAccess', 'owner', 'chatHistory']).exec(function(err, project) {
+		if(req.user) {
+			if (project) {
+				var userAccessLevel = 0;
+				for (var i = 0; i < project.usersWithAccess.length; i++) {
+					// console.log(typeof req.user._id);
+					// console.log(typeof project.usersWithAccess[i].id);
+					if (project.usersWithAccess[i].id === req.user.id)
+						userAccessLevel = 1;
+				}
 
-					if (req.user._id.equals(project.owner.id)) {
-						userAccessLevel = 2;
-					}
-					// console.log(userAccessLevel);
-					if (userAccessLevel != 0) {
-
-
+				if (req.user._id.equals(project.owner.id)) {
+					userAccessLevel = 2;
+				}
+				// console.log(userAccessLevel);
+				if (userAccessLevel != 0) {
 					console.log("user connecting to codehat project with access level "+userAccessLevel);
 
 					if (!projectActive(projectID)){
@@ -264,22 +264,20 @@ router.get('/:id', function(req, res) {
 						currentProjects.push(new Project(project._id, project.files));
 					}
 					console.log(project.owner.id == req.user.id ? true : false);
-					res.render('codehat-project', {layout: 'codehat-project-layout', namespace: '/' + projectID, clearance:userAccessLevel, project: project, users: project.usersWithAccess, owner: project.owner, isowner: project.owner.id == req.user.id ? true : false});
-
-				} else{
+					res.render('codehat-project', {layout: 'codehat-project-layout', isThumbnail: isThumbnail, namespace: '/' + projectID, clearance:userAccessLevel, project: project, users: project.usersWithAccess, owner: project.owner, isowner: project.owner.id == req.user.id ? true : false});
+				} else {
 					res.send("You don't have access to this project");
 				}
-			}else {
+			} else {
 				res.send("Project Not Found");
 			}
-		}else{
+		} else {
 			req.flash('origin');
 			req.flash('origin', '/codehat/'+req.params.id);
 			res.redirect("/login");
 		}
 	});
 });
-
 
 router.post('/:id/start-codehat', function(req, res) {
 	User.PostSchema.findOne({_id: req.body.postID}, function(err, post) {

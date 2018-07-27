@@ -1,6 +1,6 @@
 // redirect to slash url if needed
 var lastChar = window.location.href.substr(-1);
-if (lastChar != '/') {
+if (lastChar != '/' && window.location.search != "?thumbnail=true") {
    var url = window.location.href + '/';
 	 window.location.replace(url);
 }
@@ -122,14 +122,17 @@ function addFile(fileName, text) {
 		socket.emit("updateFile", editor.getValue(), fileIndex);
 		socket.emit("fileChange", event, fileIndex);
 	});
-	editorSessions[sessionIndex].session.selection.on('changeCursor', function(e) {
-		var fileIndex = getSessionIndex(editor.session);
-		socket.emit("cursorChange", editor.getCursorPosition(), fileIndex);
-	});
-	editorSessions[sessionIndex].session.selection.on('changeSelection', function(e) {
-		var fileIndex = getSessionIndex(editor.session);
-		socket.emit("selectionChange", editor.selection.getRange(), fileIndex);
-	});
+
+	if (!isThumbnail) {
+		editorSessions[sessionIndex].session.selection.on('changeCursor', function(e) {
+			var fileIndex = getSessionIndex(editor.session);
+			socket.emit("cursorChange", editor.getCursorPosition(), fileIndex);
+		});
+		editorSessions[sessionIndex].session.selection.on('changeSelection', function(e) {
+			var fileIndex = getSessionIndex(editor.session);
+			socket.emit("selectionChange", editor.selection.getRange(), fileIndex);
+		});	
+	}
 
 	if (editorSessions.length == 1) {
 		editor.setSession(editorSessions[0].session);

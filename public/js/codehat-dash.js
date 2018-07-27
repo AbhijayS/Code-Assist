@@ -56,12 +56,12 @@ function() {
   $('#projects .card').mouseover(function() {
     // $(this).find('.card-footer .project-info').removeClass('hide');
     $(this).find('.card-footer .project-info').show();
-    $(this).find('.card-body').toggleClass('py-0');
+    $(this).find('.card-body').addClass('py-0');
   });
 
   $('#projects .card').mouseout(function() {
     $(this).find('.card-footer .project-info').hide();
-    $(this).find('.card-body').toggleClass('py-0');
+    $(this).find('.card-body').removeClass('py-0');
   });
 
 
