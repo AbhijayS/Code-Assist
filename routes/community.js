@@ -298,8 +298,8 @@ router.post('/Search',function(req,res){
 	var postreturnarray=new Array();
 	var wordarray= req.body.search.split(" ");
 		User.PostSchema.find({}).exec(function(err,posts){
-			for(var o=0;o<wordarray.length;o++){
 				for(var k=0;k<posts.length;k++){
+					for(var o=0;o<wordarray.length;o++){
 						if(posts[k].question.indexOf(wordarray[o])!=-1||posts[k].description.indexOf(wordarray[o])!=-1){
 							console.log("found one "+posts[k]);
 							postreturnarray.push(posts[k]);
