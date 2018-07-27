@@ -20,14 +20,16 @@
     <script>
     $(function(){
       $('form').submit(function(){
-          $.post("/community/Search",{search:$('#m').val()},function(url){
-            
+          $.post("/community/Search",{search:$('#m').val()},function(posts){
+            loadposts(posts);
+
           });
         $('#m').val('');
         return false;
       });
     });
     </script>
+
     <hr class="style1">
 
     <div class="container btn-group" id="filter-button-body">
@@ -57,14 +59,21 @@
     <!-- Single button -->
     <div id="all-post-container" class="container list-group">
       <div id="all-posts">
+        <script>
+        function loadposts(posts){
+          $('#all-posts').empty();
+        for (i=0;i<posts.length;i++){
+          var curpost=posts[i];
+          $('#all-posts').append(" <a id="+"postlink"+" class='list-group-item' href="+"/community/"+curpost._id+">"+curpost.question+"<span class='badge progress-bar-danger'>"+curpost.answers.length+"</span> <span class='badge'>"+curpost.author+"</span> <span class='badge progress-bar-info'>"+curpost.prog_lang+"</span> </a>");
+
+        }
+      }
+        </script>
         {{#each posts}}
-        <a class="list-group-item" href="/community/{{this._id}}">{{this.question}} <span class="badge progress-bar-danger">{{this.answers.length}}</span> <span class="badge">{{this.author}}</span> <span class="badge progress-bar-info">{{this.prog_lang}}</span> </a>
+          <a id="postlink" class="list-group-item" href="/community/{{this._id}}">{{this.question}} <span class="badge progress-bar-danger">{{this.answers.length}}</span> <span class="badge">{{this.author}}</span> <span class="badge progress-bar-info">{{this.prog_lang}}</span> </a>
         {{/each}}
       </div>
     </div>
-
   </div>
-
   <script type="text/javascript" src="/js/community-filter.js"></script>
-
 </body>
