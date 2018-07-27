@@ -1,107 +1,115 @@
-<body>
-  <div class="jumbotron text-center" id="dashboard-title">
-    <h1 class="display-2">Dashboard</h1>
-  </div>
+<div id="dashboard-sidepanel" class="clippy d-none d-md-block" style="-webkit-clip-path: polygon(0 0, 64% 0, 38% 100%, 0% 100%); clip-path: polygon(0 0, 64% 0, 38% 100%, 0% 100%);"></div>
 
-  <div class="container text-center" id="dashboard-body">
-    <div class="row">
-      <div class="col-lg-4 col-md-4 float-left">
-        <div class="list-group">
-          <a href="/community" class="list-group-item list-group-item-action flex-column align-items-start active">
-            <div class="d-flex w-100 justify-content-between">
-              <h1 class="mb-1">Community</h1>
-            </div>
-          </a>
-          <a href="/community/post" class="list-group-item list-group-item-action flex-column align-items-start">
-            <div class="d-flex w-100 justify-content-between">
-              <h2 class="mb-1"><span class="glyphicon glyphicon-th-list"></span></h2>
-            </div>
-            <p class="mb-1">Easily view and answer Community Posts</p>
-          </a>
-          <a href="/community" class="list-group-item list-group-item-action flex-column align-items-start">
-            <div class="d-flex w-100 justify-content-between">
-              <h2 class="mb-1"><span class="glyphicon glyphicon-search"></span></h2>
-            </div>
-            <p class="mb-1">Filter Community Posts by Language:</p>
-            <small class="text-muted">Python |</small>
-            <small class="text-muted">Java |</small>
-            <small class="text-muted">C/C++ |</small>
-            <small class="text-muted">HTML |</small>
-            <small class="text-muted">CSS |</small>
-            <small class="text-muted">Javascript</small>
-            <!-- <a href="/community"><button class="btn btn-success btn-bg" type="button" name="button" style="width: 100%;"><h3>Visit Community</h3></button></a> -->
-          </a>
+<div class="clippy d-none d-md-block" style="-webkit-clip-path: polygon(100% 0, 69% 100%, 100% 100%);
+clip-path: polygon(100% 0, 69% 100%, 100% 100%);"></div>
 
+<div class="container-fluid pt-5" style="opacity: 0.96;">
+  <div class="row">
+    <div class="col-lg-4 text-left text-light pt-5 d-none d-lg-block">
+      <div class="content">
+        <h1 class="display-3">Dashboard</h1>
+        <hr style="border-top: 1px solid rgba(255, 255, 255, 0.25);">
+        <p class="lead">Everything you need, in one Place</p>
+      </div>
+    </div>
+
+    <div class="col-lg-8">
+      <div class="card-group" style="max-width: 1100px;">
+
+        <!-- Community -->
+        <div class="card pt-4">
+          <div class="card-img-top text-center" style="font-size: 72px;">
+            <i class="fas fa-people-carry"></i>
+          </div>
+          <div class="card-body">
+            <h1>Community</h1>
+            <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+
+            <ul class="list-group list-group-flush">
+              <a href="/community">
+                <li class="list-group-item list-group-item-action">
+                  <h2><i class="fas fa-clipboard-list"></i></h2>
+                  <p>Easily view and answer Community Posts</p>
+                </li>
+              </a>
+
+              <a href="/community">
+                <li class="list-group-item list-group-item-action">
+                  <h2><i class="fas fa-search"></i></h2>
+                  <p class="mb-1">Filter Community Posts by Language:</p>
+                  <small class="text-muted">Python | </small>
+                  <small class="text-muted"> Java | </small>
+                  <small class="text-muted"> C/C++ | </small>
+                  <small class="text-muted"> HTML | </small>
+                  <small class="text-muted"> CSS | </small>
+                  <small class="text-muted"> Javascript</small>
+                </li>
+              </a>
+            </ul>
+
+            <a href="/community"> <button type="button" name="button" class="btn btn-primary mt-3">Ask the Community</button> </a>
+          </div>
+        </div>
+
+        <!-- Mentor -->
+        <div class="card pt-4">
+          <div class="card-img-top text-center" style="font-size: 72px;">
+            <i class="fas fa-users"></i>
+          </div>
+          <div class="card-body">
+            <h1>Mentors</h1>
+            <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+
+            <ul class="list-group list-group-flush">
+              <a href="/mentor">
+                <li class="list-group-item list-group-item-action">
+                  <h2><i class="far fa-bell"></i></h2>
+                  <p>Expect Quick Notifications from a team of Mentors</p>
+                </li>
+              </a>
+
+              <a href="/mentor">
+                <li class="list-group-item list-group-item-action">
+                  <h2><i class="fas fa-cloud"></i></h2>
+                  <p class="mb-1">All Communications stored in 1 place</p>
+                </li>
+              </a>
+            </ul>
+
+            <a href="/community"> <button type="button" name="button" class="btn btn-primary mt-3">Get Personalized Help</button> </a>
+          </div>
+        </div>
+
+        <!-- CodeHat -->
+        <div class="card pt-4">
+          <div class="card-img-top text-center" style="font-size: 72px;">
+            <i class="fas fa-project-diagram"></i>
+          </div>
+          <div class="card-body">
+            <h1>Projects</h1>
+            <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+
+            <ul class="list-group list-group-flush">
+              <a href="/codehat">
+                <li class="list-group-item list-group-item-action">
+                  <h2><i class="far fa-share-square"></i></h2>
+                  <p>Share and Collaborate with Friends and Mentors</p>
+                </li>
+              </a>
+
+              <a href="/codehat">
+                <li class="list-group-item list-group-item-action">
+                  <h2><i class="fas fa-laptop-code"></i></h2>
+                  <p class="mb-1">Built-in Code Editor for the language of your choosing</p>
+                </li>
+              </a>
+            </ul>
+
+            <a href="/community"> <button type="button" name="button" class="btn btn-primary mt-3">Get Personalized Help</button> </a>
+          </div>
         </div>
       </div>
 
-      <div class="col-lg-4 col-md-4 float-left">
-        <a href="/mentor" class="list-group-item list-group-item-action flex-column align-items-start active">
-          <div class="d-flex w-100 justify-content-between">
-            <h1 class="mb-1">Ask a Mentor</h1>
-          </div>
-        </a>
-        <a href="/mentor/history" class="list-group-item list-group-item-action flex-column align-items-start">
-          <div class="d-flex w-100 justify-content-between">
-            <h2 class="mb-1"><span class="glyphicon glyphicon-envelope"></span></h2>
-          </div>
-          <p class="mb-1">Expect Quick Notifications</p>
-        </a>
-        <a href="/mentor/history" class="list-group-item list-group-item-action flex-column align-items-start">
-          <div class="d-flex w-100 justify-content-between">
-            <h2 class="mb-1"><span class="glyphicon glyphicon-cloud"></span></h2>
-          </div>
-          <p class="mb-1">All Communications stored in 1 place </p>
-          <small class="text-muted">  </small>
-          <small class="text-muted">  </small>
-          <!-- <small class="text-muted">Python |</small>
-          <small class="text-muted">Java |</small>
-          <small class="text-muted">C/C++ |</small>
-          <small class="text-muted">HTML |</small>
-          <small class="text-muted">CSS |</small>
-          <small class="text-muted">Javascript</small> -->
-          <!-- <a href="/community"><button class="btn btn-success btn-bg" type="button" name="button" style="width: 100%;"><h3>Visit Community</h3></button></a> -->
-        </a>
-      </div>
-
-      <div class="col-lg-4 col-md-4 float-left">
-        <a href="/account" class="list-group-item list-group-item-action flex-column align-items-start active">
-          <div class="d-flex w-100 justify-content-between">
-            <h1 class="mb-1">Your Profile</h1>
-          </div>
-        </a>
-        <a href="/account" class="list-group-item list-group-item-action flex-column align-items-start">
-          <div class="d-flex w-100 justify-content-between">
-            <h2 class="mb-1"><span class="glyphicon glyphicon-user"></span></h2>
-          </div>
-          <p class="mb-1">Customize your Public Profile</p>
-        </a>
-        <a href="/account" class="list-group-item list-group-item-action flex-column align-items-start">
-          <div class="d-flex w-100 justify-content-between">
-            <h2 class="mb-1"><span class="glyphicon glyphicon-search"></span></h2>
-          </div>
-          <p class="mb-1">More Customizations Coming Soon ...</p>
-          <small class="text-muted">Friends |</small>
-          <small class="text-muted">Profile Picture</small>
-
-          <!-- <a href="/community"><button class="btn btn-success btn-bg" type="button" name="button" style="width: 100%;"><h3>Visit Community</h3></button></a> -->
-        </a>
-
-      </div>
     </div>
   </div>
-  <!--
-  <div class="container" id="dashboard-overview">
-    <div class="row">
-      <div class="col-sm-4" style="background-color: #FFEB59;">
-        <p class="h3"><a href="/faq">FAQ</a></p>
-      </div>
-      <div class="col-sm-4" style="background-color: #EF8FA4;">
-        <p class="h3"><a href="/mentor">Mentor</a></p>
-      </div>
-      <div class="col-sm-4" style="background-color: #446070">
-        <p class="h3"><a href="/community">Community</a></p>
-      </div>
-    </div>
-  </div> -->
-</body>
+</div>
