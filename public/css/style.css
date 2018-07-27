@@ -1,8 +1,41 @@
 body{
   font-family: 'Nunito', sans-serif !important;
-  background: linear-gradient(-135deg, #83b6ef, #0d75e8);
+  /* background: linear-gradient(-135deg, #83b6ef, #0d75e8); */
+  background-color: rgb(255, 255, 255, 0.7);
   background-attachment:fixed;
   overflow-y: hidden;
+  -webkit-clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+}
+
+.navbar .nav-item .nav-link {
+  color: rgba(64, 62, 62, 0.9);
+}
+
+.navbar .nav-item .nav-link:hover {
+  color: black !important;
+}
+
+.page-overlay {
+  position: absolute;
+  background-color: #007bff;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+#page-overlay-main {
+  /* -webkit-clip-path: circle(56.6% at 12% 33%);
+  clip-path: circle(56.6% at 12% 33%); */
+
+  /* -webkit-clip-path: circle(67.7% at 0 35%);
+  clip-path: circle(67.7% at 0 35%); */
+
+  -webkit-clip-path: circle(69.4% at 0 37%);
+  clip-path: circle(69.4% at 0 37%);
+}
+#page-overlay-collapsed {
+  -webkit-clip-path: circle(32.1% at 95% 94%);
+  clip-path: circle(32.1% at 95% 94%);
 }
 
 #feedback-floating-btn {
@@ -42,102 +75,11 @@ body{
   display: inline;
 }
 
-/*
-.signIn-form{
-  display: none;
-  position: absolute;
-  border: none;
-  top: 10%;
-  left: 10%;
-  right: 10%;
-  bottom: 10%;
-  z-index: 999;
-}
-
-.signIn-form iframe{
-  border: none;
-  height: 100% !important;
-  width: 100%;
-  padding: 0;
-} */
-
-.navbar {
-  margin: 0;
-  padding: 0;
-  background: transparent !important;
-  border: 0;
-  border-color: transparent;
-}
-
-.navbar li a{
-  color: white;
-}
-
-.navbar li a:hover {
-  background-color: transparent !important;
-}
-
-.navbar-brand {
-  color: white;
-  transition: ease 0.1s;
-}
-
-.navbar-collapse {
-  background:none !important;
-  border: none !important;
-  box-shadow: none !important;
-}
-.navbar-brand:hover {
-  border-bottom-width: 5px;
-  border-bottom-color: white;
-  border-bottom-style: solid;
-  color: white;
-}
-/* .navbar li{
-  margin: 0;
-  padding: 0;
-}
-
-.navbar-nav li a:hover {
-	background: #eee;
-}
-*/
-#jumbotron-container .btn-primary {
-  margin-left: 2%;
-  background-color: transparent !important;
-  color: white !important;
-	border-color: white !important;
-	margin-bottom: 5px !important;
-}
-
-#jumbotron-container .btn-primary:hover {
-	color: skyblue !important;
-	background-color: white !important;
-	border-color: #eee;
-}
-
-
-#jumbotron-container .btn-primary span{
-  margin: 0;
-  margin-top: 3%;
-  margin-left: 1%;
-  padding: 0;
-  -webkit-transition: 0.4s ease-in-out;
-  transition: 0.4s ease-in-out;
-}
-
-#jumbotron-container .btn-primary:hover span{
-  padding-left: 5px;
-}
-
 #jumbotron-container input[type=text] {
   background-color: transparent;
   border: none;
-  border-bottom: 2px solid white;
-  color: white;
+
   padding: 8px;
-  letter-spacing: 1px;
-  font-size: 1.5em;
 }
 
 #jumbotron-container input[type=text]:focus {
@@ -162,30 +104,10 @@ body{
 
 #jumbotron-container{
   background-color: transparent;
-}
-
-#jumbotron-container {
-  margin: 8% 0;
-  padding: 5% 0 0 0;
   height: 100vh;
+  margin-top: 100px;
 }
 
-#jumbotron-container h1{
-  font-size: 100px !important;
-  font-weight: bold;
-  margin-bottom: 50px;
-}
-
-#jumbotron-container p{
-  font-size: 35px !important;
-  font-weight: 400;
-  margin: 5% 0 5% 0;
-
-}
-
-/* .form-control {
-  width: 100%;
-} */
 .overview .call-to-action {
 	text-align: center;
 }
@@ -200,21 +122,6 @@ body{
 
 .overview .title{
   margin-bottom: 2%;
-}
-/*
-.divider {
-  height: 1px;
-  margin-left: 10%;
-  margin-bottom: 2%;
-  width:80%;
-  display:block;
-  overflow: hidden;
-  background-color: #dddddd87;
-} */
-
-#jumbotron-container .form-inline {
-  margin-top: 10%;
-
 }
 
 .overview {
