@@ -65,6 +65,7 @@ router.get('/', function(req, res) {
 		});
 	});*/
 
+
 router.get('/post', function(req, res) {
   if(req.user)
   {
@@ -310,6 +311,10 @@ function Search(search){
 		});
 		return postreturnarray;
 }
+
+router.post('/Search',function(req,res){
+	console.log("Someone Is Searching")
+});
 
 router.post('/filter', function(req, res) {
 	var option = req.body.filter_opt;
