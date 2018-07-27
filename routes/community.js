@@ -294,22 +294,24 @@ router.post('/:id/answer', function(req, res){
 
 //search functions
 router.post('/Search',function(req,res){
-	console.log("Someone Is Searching for "+req.body.search);
+	//console.log("Someone Is Searching for "+req.body.search);
 	var postreturnarray=new Array();
 	var wordarray= req.body.search.split(" ");
 		User.PostSchema.find({}).exec(function(err,posts){
-			for(var o=0;o<wordarray.length;o++){
 				for(var k=0;k<posts.length;k++){
+					for(var o=0;o<wordarray.length;o++){
 						if(posts[k].question.indexOf(wordarray[o])!=-1||posts[k].description.indexOf(wordarray[o])!=-1){
-							console.log("found one "+posts[k]);
+						//	console.log("found one "+posts[k]);
 							postreturnarray.push(posts[k]);
+							k++;
+							o=wordarray.length;
 							}
 					}
 			}
 			if(err){
 				console.log(err);
 			}
-			console.log("return="+postreturnarray);
+		//	console.log("return="+postreturnarray);
 			res.send(postreturnarray);
 			return postreturnarray;
 		});
