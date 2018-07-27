@@ -74,7 +74,8 @@ Dashboard
 }
 
 #dashboard-sidepanel {
-
+  -webkit-clip-path: polygon(0 0, 64% 0, 38% 100%, 0% 100%);
+  clip-path: polygon(0 0, 64% 0, 38% 100%, 0% 100%);
 }
 
 
