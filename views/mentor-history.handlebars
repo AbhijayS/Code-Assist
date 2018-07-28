@@ -35,7 +35,7 @@
       <div  id="all-posts">
         {{#if posts}}
         {{#each posts}}
-        <a class="list-group-item" href="/mentor/history/{{this._id}}">{{this.question}}
+        <a id="{{this._id}}" class="list-group-item" href="/mentor/history/{{this._id}}">{{this.question}}
           <span class="badge progress-bar-danger">{{this.answers.length}}</span> 
           <span class="badge">{{this.author}}</span>
           <span class="badge progress-bar-info">{{this.prog_lang}}</span>
@@ -59,7 +59,8 @@
         {{/if}}
       </div>
     </div>
+    {{#if posts}}<button id="getMorePosts" class="btn btn-primary">Show More</button>{{/if}}
   </div>
   <script type="text/javascript" src="/js/mentor-filter.js"></script>
-
+  <script type="text/javascript" src="/js/mentor-more-posts.js"></script>
 </body>

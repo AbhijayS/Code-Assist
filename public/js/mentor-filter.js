@@ -1,4 +1,4 @@
-window.onload = function(){
+window.addEventListener('load', function() {
   $('.filter').on('click', function(event) {
     event.preventDefault();
     var value = $(this).text();
@@ -44,4 +44,4 @@ window.onload = function(){
       $("#filterLoading").hide();
     });
   });
-};
+});

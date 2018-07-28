@@ -173,31 +173,29 @@ router.get('/history', function(req, res) {
   if(req.user) {
     if(req.user.title == 'mentor')
     {
-      User.PostSchema.find({}).populate('assignedMentor').exec(function(err, posts) {
-        var allPosts = posts;
-        allPosts.sort(function(date1,date2){
+      User.PostSchema.find({}).sort({'timestamp': -1}).limit(5).populate('assignedMentor').exec(function(err, posts) {
+/*        posts.sort(function(date1,date2){
           if (date1 > date2) return -1;
           if (date1 < date2) return 1;
           return 0;
-        });
+        });*/
 
-        for (var i = 0; i < allPosts.length; i++) {
-          if (allPosts[i].assignedMentor && allPosts[i].assignedMentor._id.equals(req.user._id)) {
-            allPosts[i].assignedToSelf = true;
+        for (var i = 0; i < posts.length; i++) {
+          if (posts[i].assignedMentor && posts[i].assignedMentor._id.equals(req.user._id)) {
+            posts[i].assignedToSelf = true;
           }
         }
 
-        res.render('mentor-history', {layout: 'dashboard-layout', posts: allPosts, userIsMentor: true});
+        res.render('mentor-history', {layout: 'dashboard-layout', posts: posts, userIsMentor: true});
       })
     }else{
-      User.UserSchema.findOne({_id: req.user._id}).populate('private_posts').exec(function(err, user) {
-        var allPosts = user.private_posts;
-        allPosts.sort(function(date1,date2){
-          if (date1 > date2) return -1;
-          if (date1 < date2) return 1;
-          return 0;
-        });
-        res.render('mentor-history', {layout: 'dashboard-layout', posts: allPosts});
+      User.UserSchema.findOne({_id: req.user._id}).populate({
+        path: 'private_posts', 
+        options: {sort: {'timestamp': -1}, limit: 5}
+      }).exec(function(err, user) {
+        var posts = user.private_posts;
+
+        res.render('mentor-history', {layout: 'dashboard-layout', posts: posts});
       });
     }
   }else{
@@ -205,6 +203,90 @@ router.get('/history', function(req, res) {
     req.flash('origin', '/mentor/history');
     res.redirect('../../login');
   }
+});
+
+router.post('/history/morePosts', function(req, res) {
+  var lastPostID = req.body.lastPostID;
+
+  if(req.user) {
+    // get last post from database
+    User.PostSchema.findOne({_id: lastPostID}, function(err, lastPost) {
+      if(req.user.title == 'mentor')
+      {
+        User.PostSchema.find({timestamp: {$lt: lastPost.timestamp}}).sort({'timestamp': -1}).limit(5).select('_id timestamp author question prog_lang answers').populate({path: 'assignedMentor', select: '_id username'}).lean().exec(function(err, postsToAdd) {
+          // .lean() converts mongoose objects to normal js objects
+          // assignedToSelf is needed in postschema model if .lean() is not used
+
+          for (var i = 0; i < postsToAdd.length; i++) {
+            if (postsToAdd[i].assignedMentor && postsToAdd[i].assignedMentor._id.equals(req.user._id)) {
+              postsToAdd[i].assignedToSelf = true;
+            }
+
+            if (postsToAdd[i].assignedMentor) {
+              delete postsToAdd[i].assignedMentor._id;
+            }
+          }
+
+          if (postsToAdd.length > 0) {
+            User.PostSchema.count({timestamp: {$lt: postsToAdd[postsToAdd.length-1].timestamp}}, function(err, count) {
+              var morePostsAvailable = true;
+
+              if (count == 0)
+                morePostsAvailable = false;
+
+              res.send({
+                postsToAdd: postsToAdd,
+                userIsMentor: true,
+                morePostsAvailable: morePostsAvailable
+              });
+            });     
+          } else {
+            res.send({
+              postsToAdd: [],
+              userIsMentor: true,
+              morePostsAvailable: false
+            });
+          }
+
+        });
+      } else {
+        User.UserSchema.findOne({_id: req.user._id}).populate({
+          path: 'private_posts',
+          match: {timestamp: {$lt: lastPost.timestamp}},
+          options: {sort: {'timestamp': -1}, limit: 5},
+          select: '_id timestamp author question prog_lang answers'
+        }).exec(function(err, user) {
+          var postsToAdd = user.private_posts;
+
+          if (postsToAdd.length > 0) {
+            User.PostSchema.count({timestamp: {$lt: postsToAdd[postsToAdd.length-1].timestamp}}, function(err, count) {
+              var morePostsAvailable = true;
+
+              if (count == 0)
+                morePostsAvailable = false;
+
+              res.send({
+                postsToAdd: postsToAdd,
+                userIsMentor: false,
+                morePostsAvailable: morePostsAvailable
+              });
+            });     
+          } else {
+            res.send({
+              postsToAdd: [],
+              userIsMentor: false,
+              morePostsAvailable: false
+            });
+          }
+        });
+      }
+    });
+  } else {
+    req.flash('origin');
+    req.flash('origin', '/mentor/history');
+    res.redirect('../../login');
+  }
+
 });
 
 // to get images inside a main post
