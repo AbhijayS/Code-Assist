@@ -78,7 +78,9 @@ Dashboard
   clip-path: polygon(0 0, 64% 0, 38% 100%, 0% 100%);
 }
 
-
+.card-group .card {
+  box-shadow: 9px 12px 0px 1px #eee;
+}
 
 /*
 ========================================
@@ -114,7 +116,7 @@ Community Page
 ========================================
 */
 
-#community-body #filter-button-body {
+/* #community-body #filter-button-body {
   padding: 0 !important;
   margin-bottom: 20px;
 }
@@ -126,7 +128,7 @@ Community Page
 #community-title {
   background-color: #0d75e8;
 
-}
+} */
 
 /*
 ========================================
