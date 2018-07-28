@@ -34,20 +34,23 @@ window.onload = function(){
           // <a class="list-group-item" href="/community/${id}">${question} <span class="badge progress-bar-danger">${answers}</span> <span class="badge">${author}</span> <span class="badge progress-bar-info">${lang}</span> </a>
           // `;
           var newPost = `
-            <a href="/community/${id}">
             <li class="list-group-item list-group-item-action lead" style="font-weight: 400;">
-            ${question}
+            <p class="m-0" style="max-width: 50%; overflow: hidden;">
+            <a href="/community/{{this._id}}">${question}</a>
+            </p>
+
+
             <span style="position: absolute; right: 0;">
             <span class="badge badge-warning badge-pill mr-3">${answers} Answers</span>
             <span class="badge badge-primary badge-pill mr-3">${lang}</span>
             </span>
 
-            <div class="">
-            <p class="text-gray pt-4 my-0">${author}</p>
+            <div style="font-size: 16px;">
+            <p class="text-gray pt-2 my-0">${author}</p>
             </div>
             </li>
-            </a>
-          `
+          `;
+
 
           postsContainer.append(newPost);
         }
