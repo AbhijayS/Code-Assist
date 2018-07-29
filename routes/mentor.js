@@ -3,13 +3,13 @@ var router = express.Router();
 var User = require('../models/user');
 var upload = require('../database').upload;
 var mongoose = require('mongoose');
-// var nodemailer = require('nodemailer');
-require('dotenv').config();
-
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-
+// var nodemailer = require('nodemailer');
+require('dotenv').config();
 var QuillDeltaToHtmlConverter = require('quill-delta-to-html');
+
+var postLimit = 15; // how many posts to show user at a time
 
 router.get('/', function(req, res) {
   if(req.user)
@@ -173,30 +173,46 @@ router.get('/history', function(req, res) {
   if(req.user) {
     if(req.user.title == 'mentor')
     {
-      User.PostSchema.find({}).sort({'timestamp': -1}).limit(5).populate('assignedMentor').exec(function(err, posts) {
-/*        posts.sort(function(date1,date2){
-          if (date1 > date2) return -1;
-          if (date1 < date2) return 1;
-          return 0;
-        });*/
-
+      User.PostSchema.find({}).sort({'timestamp': -1}).limit(postLimit).populate('assignedMentor').exec(function(err, posts) {
         for (var i = 0; i < posts.length; i++) {
           if (posts[i].assignedMentor && posts[i].assignedMentor._id.equals(req.user._id)) {
             posts[i].assignedToSelf = true;
           }
         }
 
-        res.render('mentor-history', {layout: 'dashboard-layout', posts: posts, userIsMentor: true});
-      })
+        // see if show more posts button should be greyed out
+        var morePosts = false;
+        if (posts.length > 0) {
+          User.PostSchema.count({timestamp: {$lt: posts[posts.length-1].timestamp}}, function(err, count) {
+            if (count > 0)
+              morePosts = true;
+
+            res.render('mentor-history', {layout: 'dashboard-layout', posts: posts, userIsMentor: true, morePosts: morePosts});
+          });     
+        }
+      });
     }else{
       User.UserSchema.findOne({_id: req.user._id}).populate({
         path: 'private_posts', 
-        options: {sort: {'timestamp': -1}, limit: 5}
+        options: {sort: {'timestamp': -1}, limit: postLimit}
       }).exec(function(err, user) {
         var posts = user.private_posts;
 
-        res.render('mentor-history', {layout: 'dashboard-layout', posts: posts});
+        var morePosts = false;
+        if (posts.length > 0) {
+          User.UserSchema.findOne({_id: req.user._id}).populate({
+            path: 'private_posts',
+            match: {timestamp: {$lt: posts[posts.length-1].timestamp}},
+          }).exec(function(err, userWithRemainingPosts) {
+            var count = userWithRemainingPosts.private_posts.length;
+            if (count > 0)
+              morePosts = true;
+
+            res.render('mentor-history', {layout: 'dashboard-layout', posts: posts, morePosts: morePosts});
+          });
+        }
       });
+
     }
   }else{
     req.flash('origin');
@@ -207,13 +223,22 @@ router.get('/history', function(req, res) {
 
 router.post('/history/morePosts', function(req, res) {
   var lastPostID = req.body.lastPostID;
+  var prog_lang = req.body.filter_opt;
+  console.log("Getting more posts");
+  console.log("filter_opt: " + prog_lang);
+
+  if (!lastPostID)
+    return false;
+
+  if (!prog_lang || prog_lang == "Remove Filter")
+    prog_lang = {$exists: true}; // will match any language
 
   if(req.user) {
     // get last post from database
     User.PostSchema.findOne({_id: lastPostID}, function(err, lastPost) {
       if(req.user.title == 'mentor')
       {
-        User.PostSchema.find({timestamp: {$lt: lastPost.timestamp}}).sort({'timestamp': -1}).limit(5).select('_id timestamp author question prog_lang answers').populate({path: 'assignedMentor', select: '_id username'}).lean().exec(function(err, postsToAdd) {
+        User.PostSchema.find({prog_lang: prog_lang, timestamp: {$lt: lastPost.timestamp}}).sort({'timestamp': -1}).limit(postLimit).select('_id timestamp author question prog_lang answers').populate({path: 'assignedMentor', select: '_id username'}).lean().exec(function(err, postsToAdd) {
           // .lean() converts mongoose objects to normal js objects
           // assignedToSelf is needed in postschema model if .lean() is not used
 
@@ -221,23 +246,14 @@ router.post('/history/morePosts', function(req, res) {
             if (postsToAdd[i].assignedMentor && postsToAdd[i].assignedMentor._id.equals(req.user._id)) {
               postsToAdd[i].assignedToSelf = true;
             }
-
-            if (postsToAdd[i].assignedMentor) {
-              delete postsToAdd[i].assignedMentor._id;
-            }
           }
 
           if (postsToAdd.length > 0) {
-            User.PostSchema.count({timestamp: {$lt: postsToAdd[postsToAdd.length-1].timestamp}}, function(err, count) {
-              var morePostsAvailable = true;
-
-              if (count == 0)
-                morePostsAvailable = false;
-
+            User.PostSchema.count({prog_lang: prog_lang, timestamp: {$lt: postsToAdd[postsToAdd.length-1].timestamp}}, function(err, count) {
               res.send({
                 postsToAdd: postsToAdd,
                 userIsMentor: true,
-                morePostsAvailable: morePostsAvailable
+                morePostsAvailable: count > 0
               });
             });     
           } else {
@@ -252,25 +268,26 @@ router.post('/history/morePosts', function(req, res) {
       } else {
         User.UserSchema.findOne({_id: req.user._id}).populate({
           path: 'private_posts',
-          match: {timestamp: {$lt: lastPost.timestamp}},
-          options: {sort: {'timestamp': -1}, limit: 5},
+          match: {prog_lang: prog_lang, timestamp: {$lt: lastPost.timestamp}},
+          options: {sort: {'timestamp': -1}, limit: postLimit},
           select: '_id timestamp author question prog_lang answers'
         }).exec(function(err, user) {
           var postsToAdd = user.private_posts;
 
           if (postsToAdd.length > 0) {
-            User.PostSchema.count({timestamp: {$lt: postsToAdd[postsToAdd.length-1].timestamp}}, function(err, count) {
-              var morePostsAvailable = true;
-
-              if (count == 0)
-                morePostsAvailable = false;
+            User.UserSchema.findOne({_id: req.user._id}).populate({
+              path: 'private_posts',
+              match: {prog_lang: prog_lang, timestamp: {$lt: postsToAdd[postsToAdd.length-1].timestamp}},
+            }).exec(function(err, userWithRemainingPosts) {
+              var count =  userWithRemainingPosts.private_posts.length;
 
               res.send({
                 postsToAdd: postsToAdd,
                 userIsMentor: false,
-                morePostsAvailable: morePostsAvailable
+                morePostsAvailable: count > 0
               });
             });     
+
           } else {
             res.send({
               postsToAdd: [],
@@ -596,6 +613,76 @@ router.post('/history/filter', function(req, res) {
   if(req.user) {
     var option = req.body.filter_opt;
     console.log("Made filter request: " + option);
+
+    if (!option || option == "Remove Filter")
+      option = {$exists: true}; // will match any language
+
+    if(req.user.title == 'mentor')
+    {
+      User.PostSchema.find({prog_lang: option}).sort({'timestamp': -1}).limit(postLimit).select('_id timestamp author question prog_lang answers').populate({path: 'assignedMentor', select: '_id username'}).lean().exec(function(err, postsToAdd) {
+
+        for (var i = 0; i < postsToAdd.length; i++) {
+          if (postsToAdd[i].assignedMentor && postsToAdd[i].assignedMentor._id.equals(req.user._id)) {
+            postsToAdd[i].assignedToSelf = true;
+          }
+        }
+
+        if (postsToAdd.length > 0) {
+          User.PostSchema.count({prog_lang: option, timestamp: {$lt: postsToAdd[postsToAdd.length-1].timestamp}}, function(err, count) {
+            res.send({
+              postsToAdd: postsToAdd,
+              userIsMentor: true,
+              morePostsAvailable: count > 0
+            });
+          });     
+        } else {
+          res.send({
+            postsToAdd: [],
+            userIsMentor: true,
+            morePostsAvailable: false
+          });
+        }
+
+      });
+    } else {
+      User.UserSchema.findOne({_id: req.user._id}).populate({
+        path: 'private_posts',
+        match: {prog_lang: option},
+        options: {sort: {'timestamp': -1}, limit: postLimit},
+        select: '_id timestamp author question prog_lang answers'
+      }).exec(function(err, user) {
+        var postsToAdd = user.private_posts;
+
+        if (postsToAdd.length > 0) {
+          User.UserSchema.findOne({_id: req.user._id}).populate({
+            path: 'private_posts',
+            match: {prog_lang: option, timestamp: {$lt: postsToAdd[postsToAdd.length-1].timestamp}},
+          }).exec(function(err, userWithRemainingPosts) {
+            var count = userWithRemainingPosts.private_posts.length;
+            res.send({
+              postsToAdd: postsToAdd,
+              userIsMentor: false,
+              morePostsAvailable: count > 0
+            });
+          });   
+        } else {
+          res.send({
+            postsToAdd: [],
+            userIsMentor: false,
+            morePostsAvailable: false
+          });
+        }
+      });
+    }
+  } else {
+    req.flash('origin');
+    req.flash('origin', '/mentor/history/');
+    res.send({url: '/login'});
+  }
+
+/*  if(req.user) {
+    var option = req.body.filter_opt;
+    console.log("Made filter request: " + option);
     if(option == "Remove Filter")
     {
       console.log("Filter Removed");
@@ -645,6 +732,6 @@ router.post('/history/filter', function(req, res) {
     req.flash('origin', '/mentor/history/');
     res.send({url: '/login'});
   }
-
+*/
 });
 module.exports = router;

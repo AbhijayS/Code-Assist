@@ -1,12 +1,15 @@
 window.addEventListener('load', function() {
 	$("#getMorePosts").click(function() {
 	    var data = {
-	    	lastPostID: $("#all-post-container .list-group-item").last().attr('id')
+	    	lastPostID: $("#all-post-container .list-group-item").last().attr('id'),
+	    	filter_opt: currentFilter
 	    };
 		$.post('/mentor/history/morePosts', data, function(data) {
 			// console.log(data);
 			if (!data.morePostsAvailable) {
 				$("#getMorePosts").attr("disabled", true);
+			} else {
+				$("#getMorePosts").attr("disabled", false);
 			}
 			for (var i = 0; i < data.postsToAdd.length; i++) {
 				var post = data.postsToAdd[i];

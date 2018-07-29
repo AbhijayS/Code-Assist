@@ -59,7 +59,7 @@
         {{/if}}
       </div>
     </div>
-    {{#if posts}}<button id="getMorePosts" class="btn btn-primary">Show More</button>{{/if}}
+    <button id="getMorePosts" class="btn btn-primary" {{#unless morePosts}}disabled="disabled"{{/unless}}>Show More</button>
   </div>
   <script type="text/javascript" src="/js/mentor-filter.js"></script>
   <script type="text/javascript" src="/js/mentor-more-posts.js"></script>
