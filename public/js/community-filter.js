@@ -1,4 +1,13 @@
 window.onload = function(){
+  // Date Modifications
+  $('.moment-timestamp').each(function() {
+
+    var timestamp = new Date($(this).text());
+    timestamp = moment(timestamp, "MM-DD");
+    $(this).text(timestamp.format("MMM D"));
+    $(this).show();
+  });
+
   $('.filter').on('click', function(event) {
     event.preventDefault();
     var value = $(this).text();
@@ -30,27 +39,25 @@ window.onload = function(){
           var answers = data[i].answers.length;
           var author = data[i].author;
           var lang = data[i].prog_lang;
-          // var newPost = `
-          // <a class="list-group-item" href="/community/${id}">${question} <span class="badge progress-bar-danger">${answers}</span> <span class="badge">${author}</span> <span class="badge progress-bar-info">${lang}</span> </a>
-          // `;
+          var description = data[i].description;
+          var timestamp = new Date(data[i].timestamp);
+          timestamp = moment(timestamp, "MM-DD");
+          timestamp = timestamp.format("MMM D");
+
           var newPost = `
-            <li class="list-group-item list-group-item-action lead" style="font-weight: 400;">
-            <p class="m-0" style="max-width: 50%; overflow: hidden;">
-            <a href="/community/{{this._id}}">${question}</a>
-            </p>
+          <li class="list-group-item list-group-item-action lead" style="font-weight: 400;">
+          <div style="font-size: 16px;" class="d-none d-sm-block">
+          <p class="text-gray pt-2 my-0">asked <span class="moment-timestamp" style="display: none;">${timestamp}</span> ${author}</p>
+          </div>
 
-
-            <span style="position: absolute; right: 0;">
-            <span class="badge badge-warning badge-pill mr-3">${answers} Answers</span>
-            <span class="badge badge-primary badge-pill mr-3">${lang}</span>
-            </span>
-
-            <div style="font-size: 16px;">
-            <p class="text-gray pt-2 my-0">${author}</p>
-            </div>
-            </li>
+          <a href="/community/${id}">${question}</a>
+          <p>${description}</p>
+          <div class="ml-auto text-right">
+          <span class="badge badge-warning badge-pill mr-3">${answers} Answers</span>
+          <span class="badge badge-primary badge-pill mr-3">${lang}</span>
+          </div>
+          </li>
           `;
-
 
           postsContainer.append(newPost);
         }

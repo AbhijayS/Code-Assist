@@ -88,28 +88,6 @@ Mentor Page
 ========================================
 */
 
-#mentor-container {
-  background-color: #0d75e8;
-
-}
-
-#mentor-container h1{
-  text-align: center;
-}
-
-#mentor-container .container{
-  padding-top: 2%;
-}
-
-#history-body #filter-button-body {
-  padding: 0 !important;
-  margin-bottom: 20px;
-}
-
-#history-body #filter-button {
-  border: none;
-}
-
 /*
 ========================================
 Community Page

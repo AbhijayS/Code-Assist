@@ -1,156 +1,174 @@
-<body>
-  <div class="jumbotron jumbotron-title text-center" id="mentor-post-title">
-    <h2>{{post.question}}</h2>
-    <div class="title-buttons">
-      <a href="/mentor/history"><button type="button" class="btn btn-warning btn-lg">View All</button></a>
-      <a href="/community"><button type="button" class="btn btn-primary btn-lg">Ask community</button></a>
-    </div>
+<div class="clippy d-none d-xl-block" style="-webkit-clip-path: polygon(0 85%, 0% 100%, 72% 100%);
+clip-path: polygon(0 85%, 0% 100%, 72% 100%); height: 405px; z-index: 1;"></div>
+
+<div class="clippy d-none d-xl-block" style="-webkit-clip-path: polygon(50% 85%, 100% 85%, 100% 100%, 91% 100%);
+clip-path: polygon(50% 85%, 100% 85%, 100% 100%, 91% 100%); height: 405px; z-index: 1;     background-color: #0d75e8bd;"></div>
+
+<div class="clippy d-none d-xl-block" style="-webkit-clip-path: polygon(93% 77%, 100% 26%, 100% 100%, 59% 85%);
+clip-path: polygon(93% 77%, 100% 26%, 100% 100%, 59% 85%); height: 405px; z-index: 1;"></div>
+
+<div class="jumbotron jumbotron-title text-left" style="background-color: #e9ecef4f; box-shadow: 0px 3px 6px 0px #4441412b;">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="/mentor">Ask a Mentor</a></li>
+        <li class="breadcrumb-item active" aria-current="page">View</li>
+      </ol>
+    </nav>
+
+    <h1 class="display-3 d-none d-sm-block">{{post.question}}</h1>
+    <h1 class="display-4 d-sm-none">{{post.question}}</h1>
+    <hr>
+
+    <a href="/mentor/post"><p class="lead"><i class="fas fa-user-graduate"></i>  Personalized help from experienced Code Assist Mentors</p></a>
+    <a href="/community"><button class="btn btn-outline-primary btn-lg" type="button">Ask the Community Instead</button></a>
   </div>
+</div>
 
-  <div class="container" id="mentor-post-body">
-    <div class="list-group">
+<div class="container" id="mentor-post-body">
+  <div class="list-group">
 
-      <a class="list-group-item list-group-item-action flex-column align-items-start active">
-        <div class="d-flex w-100 justify-content-between">
-          <h3>{{post.question}}</h3>
-          <small>{{post.author}}</small>
-        </div>
-      </a>
-
-      <a class="list-group-item list-group-item-action flex-column align-items-start">
-        <div class="d-flex w-100 justify-content-between">
-          <p class="mb-1"><div id="post-view-editor" class="noborder"></div></p>
-        </div>
-      </a>
-
-      {{#if post.files}}
-      <div class="list-group-item list-group-item-action flex-column align-items-start">
-        <div class="d-flex w-100 justify-content-between">
-          {{#each post.files}}
-          <a class="btn btn-primary" href="/mentor/file/{{this.fileID}}" role="button">{{this.name}}</a>
-          {{/each}}
-        </div>
+    <a class="list-group-item list-group-item-action flex-column align-items-start active">
+      <div class="d-flex w-100 justify-content-between">
+        <h3>{{post.question}}</h3>
+        <small>{{post.author}}</small>
       </div>
-      {{/if}}
+    </a>
 
-      <a class="list-group-item list-group-item-action flex-column align-items-start">
-        <div class="d-flex w-100 justify-content-between">
-          <small class="moment-timestamp">{{post.timestamp}}</small>
-        </div>
-      </a>
+    <a class="list-group-item list-group-item-action flex-column align-items-start">
+      <div class="d-flex w-100 justify-content-between">
+        <p class="mb-1"><div id="post-view-editor" class="noborder"></div></p>
+      </div>
+    </a>
 
-      {{#each post.answers}}
-      <a class="list-group-item list-group-item-action flex-column align-items-start">
-        <div class="d-flex w-100 justify-content-between">
-          <h5> </h5>
-          <small>{{this.author}}</small>
-        </div>
-        <p class="mb-1"><div class="quill-editor-view answer-view noborder"></div></p>
-        <small class="moment-timestamp">{{this.timestamp}}</small>
-      </a>
-      {{/each}}
+    {{#if post.files}}
+    <div class="list-group-item list-group-item-action flex-column align-items-start">
+      <div class="d-flex w-100 justify-content-between">
+        {{#each post.files}}
+        <a class="btn btn-primary" href="/mentor/file/{{this.fileID}}" role="button">{{this.name}}</a>
+        {{/each}}
+      </div>
     </div>
-    <!-- <form class="container" action="{{post._id}}/answer" method="post">
-      <textarea name="answer" rows="8" cols="80">{{saved}}</textarea>
-      <button type="submit" name="button">Post your answer</button>
-    </form>
- -->
-    <form action="/" method="post">
-      <div class="form-group">
-        <label for="answer-editor">Description</label>
-        <div id="answer-editor">
+    {{/if}}
 
-        </div>
+    <a class="list-group-item list-group-item-action flex-column align-items-start">
+      <div class="d-flex w-100 justify-content-between">
+        <small class="moment-timestamp">{{post.timestamp}}</small>
       </div>
+    </a>
 
-      <button class="btn btn-primary" id="submit">Post your answer</button>
-    </form>
-
+    {{#each post.answers}}
+    <a class="list-group-item list-group-item-action flex-column align-items-start">
+      <div class="d-flex w-100 justify-content-between">
+        <h5> </h5>
+        <small>{{this.author}}</small>
+      </div>
+      <p class="mb-1"><div class="quill-editor-view answer-view noborder"></div></p>
+      <small class="moment-timestamp">{{this.timestamp}}</small>
+    </a>
+    {{/each}}
   </div>
-  <script type="text/javascript">
-    window.onload = function(){
-      /* Post Description Viewer (Quill) */
-      var postViewEditor = new Quill('#post-view-editor', {
+  <!-- <form class="container" action="{{post._id}}/answer" method="post">
+    <textarea name="answer" rows="8" cols="80">{{saved}}</textarea>
+    <button type="submit" name="button">Post your answer</button>
+  </form>
+-->
+  <form action="/" method="post">
+    <div class="form-group">
+      <label for="answer-editor">Description</label>
+      <div id="answer-editor">
+
+      </div>
+    </div>
+
+    <button class="btn btn-primary" id="submit">Post your answer</button>
+  </form>
+
+</div>
+<script type="text/javascript">
+  window.onload = function(){
+    /* Post Description Viewer (Quill) */
+    var postViewEditor = new Quill('#post-view-editor', {
+      modules: {
+        toolbar: false
+      },
+      theme: 'snow'
+    });
+    postViewEditor.setContents({{{post.description}}});
+    postViewEditor.disable();
+
+    /* All of the Answers Viewer (Quill) */
+    var answerViews = $('.answer-view');
+    // console.log("#Answers: " + answerViews.length);
+    var postAnswers = [];
+    {{#each post.answers}}
+    postAnswers.push({{{this.answer}}});
+    {{/each}}
+    for (var i = 0; i < answerViews.length; i++)
+    {
+      var answer = answerViews.get(i);
+      var quill = new Quill(answer, {
         modules: {
           toolbar: false
         },
         theme: 'snow'
       });
-      postViewEditor.setContents({{{post.description}}});
-      postViewEditor.disable();
-
-      /* All of the Answers Viewer (Quill) */
-      var answerViews = $('.answer-view');
-      // console.log("#Answers: " + answerViews.length);
-      var postAnswers = [];
-      {{#each post.answers}}
-      postAnswers.push({{{this.answer}}});
-      {{/each}}
-      for (var i = 0; i < answerViews.length; i++)
-      {
-        var answer = answerViews.get(i);
-        var quill = new Quill(answer, {
-          modules: {
-            toolbar: false
-          },
-          theme: 'snow'
-        });
-        quill.setContents(postAnswers[i]);
-        quill.disable();
-      }
+      quill.setContents(postAnswers[i]);
+      quill.disable();
+    }
 
 
-      /*New answer posting editor (Quill)
-        Render saved data as well
-      */
+    /*New answer posting editor (Quill)
+      Render saved data as well
+    */
 
-      var answerEditor = new Quill('#answer-editor', {
-        modules: {
-          toolbar: [
-            [{ header: [1, 2, false] }],
-            ['bold', 'italic', 'underline'],
-            ['image', 'code-block']
-          ]
-        },
-        theme: 'snow'
+    var answerEditor = new Quill('#answer-editor', {
+      modules: {
+        toolbar: [
+          [{ header: [1, 2, false] }],
+          ['bold', 'italic', 'underline'],
+          ['image', 'code-block']
+        ]
+      },
+      theme: 'snow'
+    });
+    answerEditor.setContents({{{saved}}});
+
+    $('#submit').on('click', function(event) {
+      event.preventDefault();
+      var answer = JSON.stringify(answerEditor.getContents().ops);
+      console.log($(location).attr('pathname'));
+      var post_url = "/mentor/history/{{post.id}}/answer";
+
+      $.post(post_url, {answer: answer}, function(url) {
+        /* Would be nice to have the page not reload after answer submission
+           but due to code minimization and time constraints,
+           we deem it necessary to reload the page*/
+
+        // var newAnswer = `
+        // <a class="list-group-item list-group-item-action flex-column align-items-start">
+        // <div class="d-flex w-100 justify-content-between">
+        // <small></small>
+        // </div>
+        // <p class="mb-1"></p>
+        // <small></small>
+        // </a>
+        // `;
+        //
+        // $("#descriptions_answers").append(newAnswer);
+        // console.log("Answer Saved");
+        window.location.replace(url);
       });
-      answerEditor.setContents({{{saved}}});
+    });
 
-      $('#submit').on('click', function(event) {
-        event.preventDefault();
-        var answer = JSON.stringify(answerEditor.getContents().ops);
-        console.log($(location).attr('pathname'));
-        var post_url = "/mentor/history/{{post.id}}/answer";
-
-        $.post(post_url, {answer: answer}, function(url) {
-          /* Would be nice to have the page not reload after answer submission
-             but due to code minimization and time constraints,
-             we deem it necessary to reload the page*/
-
-          // var newAnswer = `
-          // <a class="list-group-item list-group-item-action flex-column align-items-start">
-          // <div class="d-flex w-100 justify-content-between">
-          // <small></small>
-          // </div>
-          // <p class="mb-1"></p>
-          // <small></small>
-          // </a>
-          // `;
-          //
-          // $("#descriptions_answers").append(newAnswer);
-          // console.log("Answer Saved");
-          window.location.replace(url);
-        });
-      });
-
-      /*
-      Moment Date format
-      */
-      $('.moment-timestamp').each(function() {
-        var timestamp = new Date($(this).text());
-        timestamp = moment(timestamp, "MM-DD");
-        $(this).text("Posted " + timestamp.format("MMM D"));
-      });
-    };
-  </script>
-</body>
+    /*
+    Moment Date format
+    */
+    $('.moment-timestamp').each(function() {
+      var timestamp = new Date($(this).text());
+      timestamp = moment(timestamp, "MM-DD");
+      $(this).text("Posted " + timestamp.format("MMM D"));
+    });
+  };
+</script>

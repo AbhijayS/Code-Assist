@@ -1,138 +1,114 @@
-<body>
-  <div class="jumbotron jumbotron-title text-center" id="mentor-container">
-    <h1>Ask a Mentor</h1>
-    <div class="title-buttons">
-      <a href="/mentor/history"><button type="button" class="btn btn-warning btn-lg">View All</button></a>
-      <a href="/community"><button type="button" class="btn btn-primary btn-lg">Ask community</button></a>
-    </div>
+<div class="clippy d-none d-xl-block" style="-webkit-clip-path: polygon(0 85%, 0% 100%, 72% 100%);
+clip-path: polygon(0 85%, 0% 100%, 72% 100%); height: 405px; z-index: 1;"></div>
+
+<div class="clippy d-none d-xl-block" style="-webkit-clip-path: polygon(50% 85%, 100% 85%, 100% 100%, 91% 100%);
+clip-path: polygon(50% 85%, 100% 85%, 100% 100%, 91% 100%); height: 405px; z-index: 1;     background-color: #0d75e8bd;"></div>
+
+<div class="clippy d-none d-xl-block" style="-webkit-clip-path: polygon(93% 77%, 100% 26%, 100% 100%, 59% 85%);
+clip-path: polygon(93% 77%, 100% 26%, 100% 100%, 59% 85%); height: 405px; z-index: 1;"></div>
+
+
+<div class="jumbotron jumbotron-title text-left" style="background-color: #e9ecef4f; box-shadow: 0px 3px 6px 0px #4441412b;">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Ask a Mentor</li>
+      </ol>
+    </nav>
+
+    <h1 class="display-3 d-none d-sm-block">Ask a Mentor</h1>
+    <h1 class="display-4 d-sm-none">Mentors</h1>
+    <hr>
+
+    <a href="/mentor/post"><p class="lead"><i class="fas fa-user-graduate"></i>  Personalized help from experienced Code Assist Mentors</p></a>
+    <a href="/community"><button class="btn btn-outline-primary btn-lg" type="button">Ask the Community Instead</button></a>
+  </div>
+</div>
+
+<div class="container" id="history-body">
+  <h1 style="font-weight: 200;">History <img id="filterLoading" src="/images/loadingwheel.gif" style="width: 50px; display: none;"></h1>
+  <hr>
+
+  <div class="d-flex justify-content-between">
+    <span class="dropdown">
+      <a class="btn btn-primary dropdown-toggle btn-lg" style="border: none;" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Filter By
+      </a>
+
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+        <a class="filter dropdown-item" role="menuitem" href="#">Remove Filter</a>
+        <a class="filter dropdown-item" role="menuitem" tabindex="-1" href="#">Python</a>
+        <a class="filter dropdown-item" role="menuitem" tabindex="-1" href="#">Java</a>
+        <a class="filter dropdown-item" role="menuitem" tabindex="-1" href="#">C/C++</a>
+        <a class="filter dropdown-item" role="menuitem" tabindex="-1" href="#">HTML</a>
+        <a class="filter dropdown-item" role="menuitem" tabindex="-1" href="#">CSS</a>
+        <a class="filter dropdown-item" role="menuitem" tabindex="-1" href="#">Javascript</a>
+      </div>
+    </span>
+
+    <a href="/mentor/post" class="btn btn-outline-primary btn-lg d-none d-sm-block">Ask your Question</a>
+    <a href="/mentor/post" class="btn btn-outline-primary btn-lg d-sm-none pl-3 pr-4"><i class="fas fa-plus-circle"></i> Post</a>
   </div>
 
-  {{msg}}
-  <div class="container mentor-overview">
-    <div id="questionInvalid" style="margin-bottom: 2rem; display: none;" class="alert alert-danger">
-      Please enter a <strong>question</strong>
+  <ul id="all-post-container" class="list-group list-group-flush my-5">
+    <div id="all-posts">
+      {{#each posts}}
+        <li class="list-group-item list-group-item-action lead" style="font-weight: 400;">
+          <div style="font-size: 16px;" class="d-none d-sm-block">
+            <p class="text-gray pt-2 my-0">asked <span class="moment-timestamp" style="display: none;">{{this.timestamp}}</span> {{this.author}}</p>
+          </div>
+
+          <a href="/mentor/history/{{this._id}}">{{this.question}}</a>
+          <p class="w-100">{{this.description}}</p>
+          <div class="ml-auto text-right">
+            <span class="badge badge-warning badge-pill">{{this.answers.length}} Answers</span>
+            <span class="badge badge-primary badge-pill">{{this.prog_lang}}</span>
+            {{#if userIsMentor}}
+              {{#if this.assignedMentor.username}}
+                {{#if this.assignedToSelf}}
+                  <span class="badge badge-info badge-pill">Assigned to you</span>
+                {{else}}
+                  <span class="badge badge-info badge-pill">Assigned to {{this.assignedMentor.username}}</span>
+                {{/if}}
+              {{else}}
+                <span class="badge badge-info badge-pill">Post Unassigned</span>
+              {{/if}}
+            {{/if}}
+          </div>
+        </li>
+      {{/each}}
     </div>
-
-    <div id="descriptionInvalid" style="margin-bottom: 2rem; display: none;" class="alert alert-danger">
-      Please enter a <strong>description</strong>
+  </ul>
+<!--
+  <div id="all-post-container" class="container list-group">
+    <div  id="all-posts">
+      {{#if posts}}
+      {{#each posts}}
+      <a class="list-group-item" href="/mentor/history/{{this._id}}">{{this.question}}
+        <span class="badge progress-bar-danger">{{this.answers.length}}</span>
+        <span class="badge">{{this.author}}</span>
+        <span class="badge progress-bar-info">{{this.prog_lang}}</span>
+        {{#if ../userIsMentor}}
+        {{#if this.assignedMentor.username}}
+        {{#if this.assignedToSelf}}
+        <span class="badge progress-bar-success">Assigned to you</span>
+        {{else}}
+        <span class="badge progress-bar-warning">Assigned to {{this.assignedMentor.username}}</span>
+        {{/if}}
+        {{else}}
+        <span class="badge progress-bar-danger">Post Unassigned</span>
+        {{/if}}
+        {{/if}}
+      </a>
+      {{/each}}
+      {{else}}
+      <div class="alert alert-info">
+        <h2>No posts here! Make a new Post now <a href="/mentor"><button class="btn btn-lg btn-primary">Ask a mentor</button></a></h2>
+      </div>
+      {{/if}}
     </div>
+  </div> -->
+</div>
 
-    <form action="/mentor/send" method="post">
-      <div class="form-group">
-        <label for="email-choose">Choose your email</label>
-        <select class="form-control" id="email-choose">
-          <option type="email">{{email}}</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="language-choose">Programming Language</label>
-        <select class="form-control" id="language-choose" name="programming">
-          <option>Python</option>
-          <option>Java</option>
-          <option>C/C++</option>
-          <option>HTML</option>
-          <option>CSS</option>
-          <option>Javascript</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="exampleFormControlInput1">Question Title</label>
-        <input type="text" class="form-control" id="question" placeholder="" value="{{question}}">
-      </div>
-
-      <div class="form-group">
-        <label for="editor">Description</label>
-        <!-- <textarea class="form-control" id="exampleFormControlTextarea1" name="description" rows="3">{{saved}}</textarea> -->
-        <div id="editor">
-
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label for="fileUpload">File Upload (optional)</label>
-        <input name="file" type="file" class="form-control-file" id="fileUpload" multiple="">
-      </div>
-
-      <button id="submit" class="btn btn-primary">Submit</button>
-
-    </form>
-  </div>
-
-  <script type="text/javascript">
-    window.onload = function(){
-      var quillEditor = new Quill('#editor', {
-        modules: {
-          toolbar: [
-            [{ header: [1, 2, false] }],
-            ['bold', 'italic', 'underline'],
-            ['image', 'code-block']
-          ]
-        },
-        theme: 'snow'
-      });
-
-      $('#submit').on('click', function(event) {
-        event.preventDefault();
-        console.log('');
-        console.log('-------------------------------------');
-        console.log('community-post clicked');
-        var description = JSON.stringify(quillEditor.getContents().ops);
-
-        var formData = new FormData();
-        for (var i = 0; i < $('input[type=file]')[0].files.length; i++) {
-          formData.append('file', $('input[type=file]')[0].files[i]);
-        }
-        formData.append('programming', $('#language-choose').val());
-        formData.append('question', $("#question").val());
-        formData.append('description', description);
-
-/*        var data = {
-          programming: $('#language-choose').val(),
-          question: $("input[name=question]").val(),
-          description: description,
-        };*/
-
-
-
-        // console.log(data.description);
-        // console.log("Object Created");
-        // console.log("Object Type: " + typeof data.description);
-
-        $.ajax({
-            url: "/mentor/post",
-            data: formData,
-            type: 'POST',
-            contentType: false,
-            processData: false,
-            success: function(resData) {
-              $(".alert-danger").hide();
-              // console.log(resData);
-              if (!resData.questionInvalid && !resData.descriptionInvalid) {
-                window.location.replace(resData.url);
-              } else {
-                if (resData.questionInvalid)
-                  $("#questionInvalid").show();
-                if (resData.descriptionInvalid)
-                  $("#descriptionInvalid").show();
-              }
-            }
-        });
-
-/*        $.post("/mentor/post", data).done(function(resData) {
-          $(".alert-danger").hide();
-          // console.log(resData);
-          if (!resData.questionInvalid && !resData.descriptionInvalid) {
-            window.location.replace(resData.url);
-          } else {
-            if (resData.questionInvalid)
-              $("#questionInvalid").show();
-            if (resData.descriptionInvalid)
-              $("#descriptionInvalid").show();
-          }
-        });*/
-      });
-    };
-  </script>
-</body>
+<script type="text/javascript" src="/js/mentor-filter.js"></script>

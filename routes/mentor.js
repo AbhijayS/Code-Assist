@@ -12,13 +12,40 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 var QuillDeltaToHtmlConverter = require('quill-delta-to-html');
 
 router.get('/', function(req, res) {
-  if(req.user)
-  {
-    res.render('mentor', {layout: 'dashboard-layout', email: req.user.email});;
+  if(req.user) {
+    if(req.user.title == 'mentor')
+    {
+      User.PostSchema.find({}).populate('assignedMentor').exec(function(err, posts) {
+        var allPosts = posts;
+        allPosts.sort(function(date1,date2){
+          if (date1 > date2) return -1;
+          if (date1 < date2) return 1;
+          return 0;
+        });
+
+        for (var i = 0; i < allPosts.length; i++) {
+          if (allPosts[i].assignedMentor && allPosts[i].assignedMentor._id.equals(req.user._id)) {
+            allPosts[i].assignedToSelf = true;
+          }
+        }
+
+        res.render('mentor', {layout: 'dashboard-layout', posts: allPosts, userIsMentor: true});
+      })
+    }else{
+      User.UserSchema.findOne({_id: req.user._id}).populate('private_posts').exec(function(err, user) {
+        var allPosts = user.private_posts;
+        allPosts.sort(function(date1,date2){
+          if (date1 > date2) return -1;
+          if (date1 < date2) return 1;
+          return 0;
+        });
+        res.render('mentor', {layout: 'dashboard-layout', posts: allPosts});
+      });
+    }
   }else{
     req.flash('origin');
     req.flash('origin', '/mentor');
-    res.redirect('../login');
+    res.redirect('../../login');
   }
 });
 
@@ -169,41 +196,14 @@ router.get('/file/:fileID', (req, res) => {
   });
 });
 
-router.get('/history', function(req, res) {
-  if(req.user) {
-    if(req.user.title == 'mentor')
-    {
-      User.PostSchema.find({}).populate('assignedMentor').exec(function(err, posts) {
-        var allPosts = posts;
-        allPosts.sort(function(date1,date2){
-          if (date1 > date2) return -1;
-          if (date1 < date2) return 1;
-          return 0;
-        });
-
-        for (var i = 0; i < allPosts.length; i++) {
-          if (allPosts[i].assignedMentor && allPosts[i].assignedMentor._id.equals(req.user._id)) {
-            allPosts[i].assignedToSelf = true;
-          }
-        }
-
-        res.render('mentor-history', {layout: 'dashboard-layout', posts: allPosts, userIsMentor: true});
-      })
-    }else{
-      User.UserSchema.findOne({_id: req.user._id}).populate('private_posts').exec(function(err, user) {
-        var allPosts = user.private_posts;
-        allPosts.sort(function(date1,date2){
-          if (date1 > date2) return -1;
-          if (date1 < date2) return 1;
-          return 0;
-        });
-        res.render('mentor-history', {layout: 'dashboard-layout', posts: allPosts});
-      });
-    }
+router.get('/post', function(req, res) {
+  if(req.user)
+  {
+    res.render('mentor-post', {layout: 'dashboard-layout', email: req.user.email});;
   }else{
     req.flash('origin');
-    req.flash('origin', '/mentor/history');
-    res.redirect('../../login');
+    req.flash('origin', '/mentor');
+    res.redirect('../login');
   }
 });
 
@@ -512,6 +512,9 @@ router.post('/history/:id/answer', function(req, res) {
 
 router.post('/history/filter', function(req, res) {
   if(req.user) {
+    if(req.user.title == 'mentor')
+      var isMentor = true;
+
     var option = req.body.filter_opt;
     console.log("Made filter request: " + option);
     if(option == "Remove Filter")
@@ -526,10 +529,14 @@ router.post('/history/filter', function(req, res) {
           return 0;
         });
 
+        for (var i = 0; i < allPosts.length; i++) {
+          if (allPosts[i].assignedMentor && allPosts[i].assignedMentor._id.equals(req.user._id)) {
+            allPosts[i].assignedToSelf = true;
+          }
+        }
+
         if(err) throw err;
-        // console.log(community);
-        // console.log(community.posts);
-        res.send(allPosts);
+        res.send({posts: allPosts, userIsMentor: isMentor});
       });
 
     }else{
@@ -548,13 +555,13 @@ router.post('/history/filter', function(req, res) {
         {
           if(allPosts[i].prog_lang == option)
           {
-            console.log("Found same");
+            if (allPosts[i].assignedMentor && allPosts[i].assignedMentor._id.equals(req.user._id)) {
+              allPosts[i].assignedToSelf = true;
+            }
             sendPosts.push(allPosts[i]);
           }
         }
-        // console.log(community);
-        // console.log(community.posts);
-        res.send(sendPosts);
+        res.send({posts: allPosts, userIsMentor: isMentor});
       });
     }
 

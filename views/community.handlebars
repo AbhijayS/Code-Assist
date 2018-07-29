@@ -1,8 +1,12 @@
-<div class="clippy d-none d-xl-block" style="-webkit-clip-path: polygon(91% 0, 100% 0, 100% 100%, 77% 100%);
-clip-path: polygon(91% 0, 100% 0, 100% 100%, 77% 100%); height: 405px; z-index: 1;"></div>
+<div class="clippy d-none d-xl-block" style="-webkit-clip-path: polygon(93% 0, 100% 0, 100% 100%, 83% 100%); clip-path: polygon(93% 0, 100% 0, 100% 100%, 83% 100%); height: 405px; z-index: 1;"></div>
 
-<div class="clippy d-none d-xl-block" style="-webkit-clip-path: polygon(0 91%, 0% 100%, 80% 100%);
-clip-path: polygon(0 91%, 0% 100%, 80% 100%); height: 405px; z-index: 1;"></div>
+<div class="clippy d-none d-xl-block" style="-webkit-clip-path: polygon(92% 0, 100% 0, 100% 100%, 82.5% 100%); clip-path: polygon(92% 0, 100% 0, 100% 100%, 82.5% 100%); height: 405px; z-index: 1; background-color: #0d75e894;"></div>
+
+<div class="clippy d-none d-xl-block" style="-webkit-clip-path: polygon(7% 87%, 18% 91%, 33% 100%, 0 100%, 0 59%);
+clip-path: polygon(7% 87%, 18% 91%, 33% 100%, 0 100%, 0 59%); height: 405px; z-index: 1;"></div>
+
+<div class="clippy d-none d-xl-block" style="-webkit-clip-path: polygon(7% 85%, 18% 89%, 32% 100%, 0 100%, 0 57%);
+clip-path: polygon(7% 85%, 18% 89%, 32% 100%, 0 100%, 0 57%); height: 405px; z-index: 1; background-color: #0d75e894;"></div>
 
 <div class="jumbotron jumbotron-title text-left" style="background-color: #e9ecef4f; box-shadow: 0px 3px 6px 0px #4441412b;">
   <div class="container">
@@ -12,6 +16,7 @@ clip-path: polygon(0 91%, 0% 100%, 80% 100%); height: 405px; z-index: 1;"></div>
         <li class="breadcrumb-item active" aria-current="page">Community</li>
       </ol>
     </nav>
+
     <h1 class="display-3 d-none d-sm-block">Community</h1>
     <h1 class="display-4 d-sm-none">Community</h1>
     <hr>
@@ -20,11 +25,6 @@ clip-path: polygon(0 91%, 0% 100%, 80% 100%); height: 405px; z-index: 1;"></div>
     <a href="/mentor"><button class="btn btn-outline-primary btn-lg" type="button">Ask a Mentor Instead</button></a>
 
   </div>
-  <!-- <div class="title-buttons">
-    <a href="/community/post"><button class="btn btn-primary btn-lg" type="button" name="button">Post a Question</button></a>
-    <a href="/mentor"><button class="btn btn-warning btn-lg" type="button" name="button">Ask a Mentor</button></a>
-  </div> -->
-
 </div>
 
 
@@ -34,77 +34,47 @@ clip-path: polygon(0 91%, 0% 100%, 80% 100%); height: 405px; z-index: 1;"></div>
   <h1 style="font-weight: 200;">Top Searches <img id="filterLoading" src="/images/loadingwheel.gif" style="width: 50px; display: none;"></h1>
   <hr>
 
-  <div class="dropdown">
-    <a class="btn btn-primary dropdown-toggle btn-lg" style="border: none;" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-      Filter By
-    </a>
+  <div class="d-flex justify-content-between">
+    <span class="dropdown">
+      <a class="btn btn-primary dropdown-toggle btn-lg" style="border: none;" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Filter By
+      </a>
 
-    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-      <a class="filter dropdown-item" role="menuitem" href="#">Remove Filter</a>
-      <a class="filter dropdown-item" role="menuitem" tabindex="-1" href="#">Python</a>
-      <a class="filter dropdown-item" role="menuitem" tabindex="-1" href="#">Java</a>
-      <a class="filter dropdown-item" role="menuitem" tabindex="-1" href="#">C/C++</a>
-      <a class="filter dropdown-item" role="menuitem" tabindex="-1" href="#">HTML</a>
-      <a class="filter dropdown-item" role="menuitem" tabindex="-1" href="#">CSS</a>
-      <a class="filter dropdown-item" role="menuitem" tabindex="-1" href="#">Javascript</a>
-    </div>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+        <a class="filter dropdown-item" role="menuitem" href="#">Remove Filter</a>
+        <a class="filter dropdown-item" role="menuitem" tabindex="-1" href="#">Python</a>
+        <a class="filter dropdown-item" role="menuitem" tabindex="-1" href="#">Java</a>
+        <a class="filter dropdown-item" role="menuitem" tabindex="-1" href="#">C/C++</a>
+        <a class="filter dropdown-item" role="menuitem" tabindex="-1" href="#">HTML</a>
+        <a class="filter dropdown-item" role="menuitem" tabindex="-1" href="#">CSS</a>
+        <a class="filter dropdown-item" role="menuitem" tabindex="-1" href="#">Javascript</a>
+      </div>
+    </span>
+
+    <a href="/community/post" class="btn btn-outline-primary btn-lg d-none d-sm-block">Ask your Question</a>
+    <a href="/community/post" class="btn btn-outline-primary btn-lg d-sm-none pl-3 pr-4"><i class="fas fa-plus-circle"></i> Post</a>
   </div>
 
 
-  <!-- <div class="container btn-group" id="filter-button-body">
-    <div class="row">
-      <div class="col-sm-2">
-        <button id="filter-button" type="button" class="btn btn-default btn-lg dropdown-toggle" data-toggle="dropdown">
-          Filter By <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
-        </button>
-        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu3">
-          <li role="presentation"><a class="filter" role="menuitem" tabindex="-1" href="#">Remove Filter</a></li>
-          <li role="presentation"><a class="filter" role="menuitem" tabindex="-1" href="#">Python</a></li>
-          <li role="presentation"><a class="filter" role="menuitem" tabindex="-1" href="#">Java</a></li>
-          <li role="presentation"><a class="filter" role="menuitem" tabindex="-1" href="#">C/C++</a></li>
-          <li role="presentation"><a class="filter" role="menuitem" tabindex="-1" href="#">HTML</a></li>
-          <li role="presentation"><a class="filter" role="menuitem" tabindex="-1" href="#">CSS</a></li>
-          <li role="presentation"><a class="filter" role="menuitem" tabindex="-1" href="#">Javascript</a></li>
-        </ul>
-      </div>
-
-      <div class="col-sm-10">
-          <img id="filterLoading" src="/images/loadingwheel.gif" style="width: 30px; display: none;">
-      </div>
-    </div>
-
-  </div> -->
   <ul id="all-post-container" class="list-group list-group-flush my-5">
     <div id="all-posts">
       {{#each posts}}
 
         <li class="list-group-item list-group-item-action lead" style="font-weight: 400;">
-          <p class="m-0" style="max-width: 50%; overflow: hidden;">
-            <a href="/community/{{this._id}}">{{this.question}}</a>
-          </p>
+          <div style="font-size: 16px;" class="d-none d-sm-block">
+            <p class="text-gray pt-2 my-0">asked <span class="moment-timestamp" style="display: none;">{{this.timestamp}}</span> {{this.author}}</p>
+          </div>
 
-
-          <span style="position: absolute; right: 0;">
+          <a href="/community/{{this._id}}">{{this.question}}</a>
+          <p>{{this.description}}</p>
+          <div class="ml-auto text-right">
             <span class="badge badge-warning badge-pill mr-3">{{this.answers.length}} Answers</span>
             <span class="badge badge-primary badge-pill mr-3">{{this.prog_lang}}</span>
-          </span>
-
-          <div style="font-size: 16px;">
-            <p class="text-gray pt-2 my-0">{{this.author}}</p>
           </div>
         </li>
       {{/each}}
     </div>
   </ul>
-
-  <!-- Single button -->
-  <!-- <div id="all-post-container" class="container list-group">
-    <div id="all-posts">
-      {{#each posts}}
-      <a class="list-group-item" href="/community/{{this._id}}">{{this.question}} <span class="badge progress-bar-danger">{{this.answers.length}}</span> <span class="badge">{{this.author}}</span> <span class="badge progress-bar-info">{{this.prog_lang}}</span> </a>
-      {{/each}}
-    </div>
-  </div> -->
 
 </div>
 
