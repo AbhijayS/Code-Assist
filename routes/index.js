@@ -510,6 +510,10 @@ router.post('/password-change', function(req, res) {
 router.post('/delete-account', function(req, res) {
     if(req.user) {
       User.UserSchema.findOne({_id: req.user._id}).remove(function(err) {
+        User.PostSchema.find({authorid:req.user._id}).remove(function(err){
+          if(err) throw err;
+          //console.log("removing users posts");
+      });
         if(err) throw err;
         console.log('============================================');
         console.log('User Account Deleted');
