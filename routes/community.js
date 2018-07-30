@@ -242,9 +242,9 @@ router.get('/:id', function(req, res) {
     var today = moment(Date.now());
     var description = post.description;
 		if(req.user && req.user._id==post.authorid){
-			res.render('post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description, isowner: true});
+			res.render('community-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description, isowner: true});
 		}else{
-		    res.render('post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description});
+		    res.render('community-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description});
 		}
 	});
 });
