@@ -7,11 +7,10 @@ window.onload = function(){
   });
 
   $("#getMorePosts").click(function() {
-    console.log("CLCIS");
-      var data = {
-        lastPostID: $("#all-post-container .list-group-item").last().attr('id'),
-        filter_opt: currentFilter
-      };
+    var data = {
+      lastPostID: $("#all-post-container .list-group-item").last().attr('id'),
+      filter_opt: currentFilter
+    };
     $.post('/mentor/history/morePosts', data, function(data) {
       console.log(data);
       if (!data.morePostsAvailable) {
@@ -124,7 +123,7 @@ window.onload = function(){
             var timestamp = new Date(postsToAdd[i].timestamp);
             timestamp = moment(timestamp, "MM-DD");
             timestamp = timestamp.format("MMM D");
-            console.log(timestamp);
+            // console.log(timestamp);
             var userIsMentor = data.userIsMentor;
 
             var newPost = `

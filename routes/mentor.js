@@ -9,7 +9,7 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 require('dotenv').config();
 var QuillDeltaToHtmlConverter = require('quill-delta-to-html');
 
-var postLimit = 2; // how many posts to show user at a time
+var postLimit = 10; // how many posts to show user at a time
 
 router.get('/', function(req, res) {
   if(req.user) {
@@ -670,63 +670,5 @@ router.post('/history/filter', function(req, res) {
     req.flash('origin', '/mentor/history/');
     res.send({url: '/login'});
   }
-
-/*  if(req.user) {
-    var option = req.body.filter_opt;
-    console.log("Made filter request: " + option);
-    if(option == "Remove Filter")
-    {
-      console.log("Filter Removed");
-      User.UserSchema.findOne({}).populate('private_posts').exec(function(err, user) {
-        var allPosts = user.private_posts;
-
-        allPosts.sort(function(date1,date2){
-          if (date1 > date2) return -1;
-          if (date1 < date2) return 1;
-          return 0;
-        });
-
-        for (var i = 0; i < allPosts.length; i++) {
-          if (allPosts[i].assignedMentor && allPosts[i].assignedMentor._id.equals(req.user._id)) {
-            allPosts[i].assignedToSelf = true;
-          }
-        }
-
-        if(err) throw err;
-        res.send({posts: allPosts, userIsMentor: isMentor});
-      });
-
-    }else{
-      User.UserSchema.findOne({}).populate('private_posts').exec(function(err, user) {
-        if(err) throw err;
-        var allPosts = user.private_posts;
-
-        allPosts.sort(function(date1,date2){
-          if (date1 > date2) return -1;
-          if (date1 < date2) return 1;
-          return 0;
-        });
-
-        var sendPosts = [];
-        for (var i = 0; i < allPosts.length; i++)
-        {
-          if(allPosts[i].prog_lang == option)
-          {
-            if (allPosts[i].assignedMentor && allPosts[i].assignedMentor._id.equals(req.user._id)) {
-              allPosts[i].assignedToSelf = true;
-            }
-            sendPosts.push(allPosts[i]);
-          }
-        }
-        res.send({posts: allPosts, userIsMentor: isMentor});
-      });
-    }
-
-  }else{
-    req.flash('origin');
-    req.flash('origin', '/mentor/history/');
-    res.send({url: '/login'});
-  }
-*/
 });
 module.exports = router;
