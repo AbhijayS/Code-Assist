@@ -1,3 +1,12 @@
+<style>
+  #answer-editor .ql-editor{
+    min-height: 150px;
+  }
+</style>
+
+<div class="clippy d-none d-xl-block" style="-webkit-clip-path: polygon(0 87%, 100% 81%, 100% 100%, 0% 100%);
+clip-path: polygon(0 87%, 100% 81%, 100% 100%, 0% 100%); height: 351px; z-index: 1;"></div>
+
 <div class="jumbotron jumbotron-title text-left" style="background-color: #e9ecef4f; box-shadow: 0px 3px 6px 0px #4441412b;">
   <div class="container">
     <nav aria-label="breadcrumb">
@@ -11,78 +20,53 @@
     <h1 class="display-3 d-none d-sm-block">{{post.question}}</h1>
     <h1 class="display-4 d-sm-none">{{post.question}}</h1>
     <hr>
-
-    <a href="/mentor/post"><p class="lead"><i class="fas fa-user-graduate"></i>  Personalized help from experienced Code Assist Mentors</p></a>
+    <p style="font-weight: 400; width: 100px;"><a href="/mentor" class="text-secondary">Go Back</a></p>
   </div>
 </div>
 
-<div class="container" id="mentor-post-body">
-  <div class="list-group">
-
-    <a class="list-group-item list-group-item-action flex-column align-items-start active">
-      <div class="d-flex w-100 justify-content-between">
-        <h3>{{post.question}}</h3>
-        <small>{{post.author}}</small>
-      </div>
-    </a>
-
-    <a class="list-group-item list-group-item-action flex-column align-items-start">
-      <div class="d-flex w-100 justify-content-between">
-        <p class="mb-1"><div id="post-view-editor" class="noborder"></div></p>
-      </div>
-    </a>
-
-    {{#if post.files}}
-    <div class="list-group-item list-group-item-action flex-column align-items-start">
-      <div class="d-flex w-100 justify-content-between">
-        {{#each post.files}}
-        <a class="btn btn-primary" href="/mentor/file/{{this.fileID}}" role="button">{{this.name}}</a>
-        {{/each}}
-      </div>
+<div class="container" id="mentor-post-body" class="mb-5">
+  <p class="text-right"><a href="#answer-editor"><button type="button" name="button" class="btn btn-primary btn-lg">Post an Answer</button></a></p>
+  <div class="card border-light bg-light mb-3">
+    <div class="card-header">
+      <p>{{post.author}}</p>
+      <p class="moment-timestamp" style="display: none;">{{post.timestamp}}</p>
     </div>
-    {{/if}}
-
-    <a class="list-group-item list-group-item-action flex-column align-items-start">
-      <div class="d-flex w-100 justify-content-between">
-        <small class="moment-timestamp">{{post.timestamp}}</small>
-      </div>
-    </a>
-
-    {{#each post.answers}}
-    <a class="list-group-item list-group-item-action flex-column align-items-start">
-      <div class="d-flex w-100 justify-content-between">
-        <h5> </h5>
-        <small>{{this.author}}</small>
-      </div>
-      <p class="mb-1"><div class="quill-editor-view answer-view noborder"></div></p>
-      <small class="moment-timestamp">{{this.timestamp}}</small>
-    </a>
-    {{/each}}
+    <div class="card-body">
+      <h5 class="card-title">{{post.question}}</h5>
+      <p><div id="post-view-editor" class="noborder p-0"></div></p>
+    </div>
   </div>
 
-  <form action="/" method="post">
-    <div class="form-group">
-      <label for="answer-editor">Description</label>
-      <div id="answer-editor">
-
-      </div>
+  {{#each post.answers}}
+  <div class="card mb-3">
+    <div class="card-body">
+      <p class="card-text answer-view noborder d-none">{{this.answer}}</p>
     </div>
 
-    <button class="btn btn-primary" id="submit">Post your answer</button>
-  </form>
+    <div class="card-footer text-muted">
+      Answered <p class="moment-timestamp d-none">{{this.timestamp}}</p>
+      {{this.author}}
+
+    </div>
+  </div>
+  {{/each}}
+
+  <div class="jumbotron bg-white">
+    <form action="/" method="post">
+      <div class="form-group">
+        <h1 style="font-weight: 200;">Your Answer</h1>
+        <hr>
+        <div id="answer-editor">
+
+        </div>
+      </div>
+
+      <button class="btn btn-outline-primary btn-lg btn-block py-3" id="submit">Post your answer</button>
+    </form>
+  </div>
 
 </div>
 
-<div class="card">
-  <div class="card-header">
-    Featured
-  </div>
-  <div class="card-body">
-    <h5 class="card-title">Special title treatment</h5>
-    <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-    <a href="#" class="btn btn-primary">Go somewhere</a>
-  </div>
-</div>
 
 <script type="text/javascript">
   window.onload = function(){
@@ -105,7 +89,7 @@
     {{/each}}
     for (var i = 0; i < answerViews.length; i++)
     {
-      var answer = answerViews.get(i);
+      var answer = answerViews[i];
       var quill = new Quill(answer, {
         modules: {
           toolbar: false
@@ -115,7 +99,7 @@
       quill.setContents(postAnswers[i]);
       quill.disable();
     }
-
+    answerViews.removeClass('d-none');
 
     /*New answer posting editor (Quill)
       Render saved data as well
@@ -150,7 +134,9 @@
     $('.moment-timestamp').each(function() {
       var timestamp = new Date($(this).text());
       timestamp = moment(timestamp, "MM-DD");
-      $(this).text("Posted " + timestamp.format("MMM D"));
+      $(this).text(timestamp.format("MMM D"));
+      $(this).removeClass('d-none');
+      $(this).show();
     });
   };
 </script>
