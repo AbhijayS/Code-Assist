@@ -1,58 +1,27 @@
-<body>
-  <div class="jumbotron" id="jumbotron-container">
-    <div class="container text-center">
-      <!--<h1>Code Assist</h1>-->
-      <h1>Code Assist</h1>
-      <!-- <p>Live Coding Help</p> -->
-      <p>Code Mentoring Platform</p>
-        {{#if user}}
-        <a href="/dashboard"><button class="btn btn-primary btn-lg" type="submit">Go to Dashboard<span class="glyphicon glyphicon-menu-right"></span></button></a>
-        {{else}}
-        <form class="form-inline" action="/dashboard" method="post">
-          <input type="text" placeholder="USERNAME" name="username" autofocus>
-          <button class="btn btn-primary btn-lg" type="submit">Go to Dashboard<span class="glyphicon glyphicon-menu-right"></span></button>
-        </form>
-        {{/if}}
+<div class="jumbotron text-light d-none d-lg-block" id="jumbotron-container">
+  <div class="container text-left">
+    <h1 class="display-1 mb-3">Code Assist</h1>
+    <h1 class="lead pl-1" style="max-width: 50%; color: #f8f9fac9; font-size: 24px; line-height: 32px;">Real-time programming assistance from Mentors, Teachers and the Code Assist Community</h1>
 
-      <!-- {{#if user}}
-      <form class="form-inline" action="/dashboard" method="get">
-        <button class="btn btn-primary" type="submit">Go to Dashboard<span class="glyphicon glyphicon-menu-right"></span></button>
-      </form>
-      {{else}}
-      <form class="form-inline" action="/dashboard" method="post">
-        <input type="text" placeholder="USERNAME" name="username" autofocus>
-        <button class="btn btn-primary" type="submit">Go to Dashboard<span class="glyphicon glyphicon-menu-right"></span></button>
-      </form>
-      {{/if}} -->
-    </div>
+    {{#if user}}
+    <a href="/dashboard"><button class="btn btn-light btn-lg py-3 w-25 mt-5 ml-1" type="submit">Go to Dashboard<span class="glyphicon glyphicon-menu-right"></span></button></a>
+    {{else}}
+    <form class="form-inline" action="/dashboard" method="post" style="margin-top: 10%;">
+      <input type="text" placeholder="username" name="username" class="text-light" style="font-size: 1.2rem; border-bottom: 2px solid #f8f9fa;" autofocus>
+      <button class="btn btn-lg btn-light ml-4" type="submit" style="box-shadow: 1px 3px 7px 1px #00000036;">Collaborate Today<span class="glyphicon glyphicon-menu-right"></span></button>
+    </form>
+    {{/if}}
   </div>
+</div>
 
-    <!-- <div class="container overview">
-      <div class="container text-center title">
-        <h1>Code</h1>
-      </div>
-      <section class="call-to-action">
-        <div class="container">
-          <div class="row">
-            <div class="col-md-4">
-              <span class="glyphicon glyphicon-cloud glyphicon-large" aria-hidden="true"></span>
-              <h3>Realtime Code</h3>
-            </div>
-            <div class="col-md-4">
-              <span class="glyphicon glyphicon-tasks glyphicon-large" aria-hidden="true"></span>
-              <h3>Task Scheduling</h3>
-            </div>
-            <div class="col-md-4">
-              <span class="glyphicon glyphicon-send glyphicon-large" aria-hidden="true"></span>
-              <h3>Communication</h3>
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
-  </div> -->
+<div class="jumbotron text-dark d-lg-none mt-auto" id="jumbotron-container">
+  <div class="container text-left">
+    <h1 class="display-1">Code Assist</h1>
+    <h1 class="lead pl-1" style="max-width: 400px; font-size: 24px; line-height: 32px;">Real-time programming assistance from Mentors, Teachers and the Code Assist Community</h1>
+    <a href="/dashboard"><button class="btn btn-dark btn-lg mt-5 py-3" style="box-shadow: 1px 3px 7px 1px #00000036;">Go to Dashboard<span class="glyphicon glyphicon-menu-right"></span></button></a>
+  </div>
+</div>
 
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-  <!--<script type="text/javascript" src="js/blur.js"></script>-->
-</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<!--<script type="text/javascript" src="js/blur.js"></script>-->

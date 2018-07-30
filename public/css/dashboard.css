@@ -1,6 +1,6 @@
 body{
   font-family: 'Nunito', sans-serif !important;
-  background-color: none;
+  background-color: rgb(255, 255, 255, 0.7);
   background-attachment:fixed;
 }
 
@@ -41,50 +41,10 @@ body{
   display: inline;
 }
 
-
-.navbar {
-  margin: 0;
-  padding: 0;
-  background-color: #0d75e8 !important;
-  border: 0;
-  border-color: transparent;
-  border-bottom: 0;
-}
-
-.navbar-collapse {
-  background:none !important;
-  border: none !important;
-  box-shadow: none !important;
-}
-
-.navbar li a{
-  color: white;
-}
-
-.navbar li a:hover {
-  background-color: transparent;
-}
-
-.navbar li a:focus {
-  background-color: transparent;
-}
-
-.navbar-brand {
-  color: white;
-  transition: ease 0.1s;
-}
-
-.navbar-brand:hover {
-  border-bottom-width: 5px;
-  border-bottom-color: white;
-  border-bottom-style: solid;
-  color: white;
-}
-
-.jumbotron-title {
+/* .jumbotron-title {
   background-color: #0d75e8;
   color: white;
-}
+} */
 
 .ql-container.noborder  {
   border: 0px !important;
@@ -104,8 +64,22 @@ body{
 Dashboard
 ========================================
 */
-#dashboard-title {
+
+.clippy {
+  position: absolute;
+  z-index: -1;
   background-color: #0d75e8;
+  width: 100%;
+  height: 100vh;
+}
+
+#dashboard-sidepanel {
+  -webkit-clip-path: polygon(0 0, 64% 0, 38% 100%, 0% 100%);
+  clip-path: polygon(0 0, 64% 0, 38% 100%, 0% 100%);
+}
+
+.card-group .card {
+  box-shadow: 9px 12px 0px 1px #eee;
 }
 
 /*
@@ -114,47 +88,13 @@ Mentor Page
 ========================================
 */
 
-#mentor-container {
-  background-color: #0d75e8;
-
-}
-
-#mentor-container h1{
-  text-align: center;
-}
-
-#mentor-container .container{
-  padding-top: 2%;
-}
-
-#history-body #filter-button-body {
-  padding: 0 !important;
-  margin-bottom: 20px;
-}
-
-#history-body #filter-button {
-  border: none;
-}
-
 /*
 ========================================
 Community Page
 ========================================
 */
 
-#community-body #filter-button-body {
-  padding: 0 !important;
-  margin-bottom: 20px;
-}
 
-#community-body #filter-button {
-  border: none;
-}
-
-#community-title {
-  background-color: #0d75e8;
-
-}
 
 /*
 ========================================

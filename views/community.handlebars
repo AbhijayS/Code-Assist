@@ -1,79 +1,89 @@
-<body>
-  <div class="jumbotron jumbotron-title text-center" id="community-title">
-    <h1>Community</h1>
-    <div class="title-buttons">
-      <a href="/community/post"><button class="btn btn-primary btn-lg" type="button" name="button">Post a Question</button></a>
-      <a href="/mentor"><button class="btn btn-warning btn-lg" type="button" name="button">Ask a Mentor</button></a>
-    </div>
+<div class="clippy d-none d-xl-block" style="-webkit-clip-path: polygon(93% 0, 100% 0, 100% 100%, 83% 100%); clip-path: polygon(93% 0, 100% 0, 100% 100%, 83% 100%); height: 405px; z-index: 1;"></div>
+
+<div class="clippy d-none d-xl-block" style="-webkit-clip-path: polygon(92% 0, 100% 0, 100% 100%, 82.5% 100%); clip-path: polygon(92% 0, 100% 0, 100% 100%, 82.5% 100%); height: 405px; z-index: 1; background-color: #0d75e894;"></div>
+
+<div class="clippy d-none d-xl-block" style="-webkit-clip-path: polygon(7% 87%, 18% 91%, 33% 100%, 0 100%, 0 59%);
+clip-path: polygon(7% 87%, 18% 91%, 33% 100%, 0 100%, 0 59%); height: 405px; z-index: 1;"></div>
+
+<div class="clippy d-none d-xl-block" style="-webkit-clip-path: polygon(7% 85%, 18% 89%, 32% 100%, 0 100%, 0 57%);
+clip-path: polygon(7% 85%, 18% 89%, 32% 100%, 0 100%, 0 57%); height: 405px; z-index: 1; background-color: #0d75e894;"></div>
+
+<div class="jumbotron jumbotron-title text-left" style="background-color: #e9ecef4f; box-shadow: 0px 3px 6px 0px #4441412b;">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Community</li>
+      </ol>
+    </nav>
+
+    <h1 class="display-3 d-none d-sm-block">Community</h1>
+    <h1 class="display-4 d-sm-none">Community</h1>
+    <hr>
+
+    <a href="/community/post"><p class="lead"><i class="far fa-handshake"></i> Get help from the Code Assist Community today.</p></a>
+    <a href="/mentor"><button class="btn btn-outline-primary btn-lg" type="button">Ask a Mentor Instead</button></a>
+
   </div>
+</div>
 
 
 
-  <div class="container" id="community-body">
+<div class="container" id="community-body">
 
-    <h3>Top Searches</h3>
-    <form>
-      <input id="m" autocomplete="off" /><button>Send</button>
-    </form>
-    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+  <h1 style="font-weight: 200;">Top Searches <img id="filterLoading" src="/images/loadingwheel.gif" style="width: 50px; display: none;"></h1>
+  <hr>
 
-    <script>
-    $(function(){
-      $('form').submit(function(){
-          $.post("/community/Search",{search:$('#m').val()},function(posts){
-            loadposts(posts);
-
-          });
-        $('#m').val('');
-        return false;
-      });
-    });
-    </script>
-
-    <hr class="style1">
-
-    <div class="container btn-group" id="filter-button-body">
-      <div class="row">
-        <div class="col-sm-2">
-          <button id="filter-button" type="button" class="btn btn-default btn-lg dropdown-toggle" data-toggle="dropdown">
-            Filter By <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
-          </button>
-          <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu3">
-            <li role="presentation"><a class="filter" role="menuitem" tabindex="-1" href="#">Remove Filter</a></li>
-            <li role="presentation"><a class="filter" role="menuitem" tabindex="-1" href="#">Python</a></li>
-            <li role="presentation"><a class="filter" role="menuitem" tabindex="-1" href="#">Java</a></li>
-            <li role="presentation"><a class="filter" role="menuitem" tabindex="-1" href="#">C/C++</a></li>
-            <li role="presentation"><a class="filter" role="menuitem" tabindex="-1" href="#">HTML</a></li>
-            <li role="presentation"><a class="filter" role="menuitem" tabindex="-1" href="#">CSS</a></li>
-            <li role="presentation"><a class="filter" role="menuitem" tabindex="-1" href="#">Javascript</a></li>
-          </ul>
-        </div>
-
-        <div class="col-sm-10">
-            <img id="filterLoading" src="/images/loadingwheel.gif" style="width: 30px; display: none;">
-        </div>
-      </div>
-
-    </div>
-
-    <!-- Single button -->
-    <div id="all-post-container" class="container list-group">
-      <div id="all-posts">
-        <script>
-        function loadposts(posts){
-          $('#all-posts').empty();
-        for (i=0;i<posts.length;i++){
-          var curpost=posts[i];
-          $('#all-posts').append(" <a id="+"postlink"+" class='list-group-item' href="+"/community/"+curpost._id+">"+curpost.question+"<span class='badge progress-bar-danger'>"+curpost.answers.length+"</span> <span class='badge'>"+curpost.author+"</span> <span class='badge progress-bar-info'>"+curpost.prog_lang+"</span> </a>");
-
-        }
-      }
-        </script>
-        {{#each posts}}
-          <a id="postlink" class="list-group-item" href="/community/{{this._id}}">{{this.question}} <span class="badge progress-bar-danger">{{this.answers.length}}</span> <span class="badge">{{this.author}}</span> <span class="badge progress-bar-info">{{this.prog_lang}}</span> </a>
-        {{/each}}
+  <form id="search-bar">
+    <div class="input-group mb-3">
+      <input type="text" class="form-control" placeholder="Search" aria-label="Search Bar" autocomplete="off" id="m">
+      <div class="input-group-append">
+        <button class="btn btn-outline-primary" type="submit">Search</button>
       </div>
     </div>
+  </form>
+
+  <div class="d-flex justify-content-between">
+    <span class="dropdown">
+      <a class="btn btn-primary dropdown-toggle btn-lg" style="border: none;" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Filter By
+      </a>
+
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+        <a class="filter dropdown-item" role="menuitem" href="#">Remove Filter</a>
+        <a class="filter dropdown-item" role="menuitem" tabindex="-1" href="#">Python</a>
+        <a class="filter dropdown-item" role="menuitem" tabindex="-1" href="#">Java</a>
+        <a class="filter dropdown-item" role="menuitem" tabindex="-1" href="#">C/C++</a>
+        <a class="filter dropdown-item" role="menuitem" tabindex="-1" href="#">HTML</a>
+        <a class="filter dropdown-item" role="menuitem" tabindex="-1" href="#">CSS</a>
+        <a class="filter dropdown-item" role="menuitem" tabindex="-1" href="#">Javascript</a>
+      </div>
+    </span>
+
+    <a href="/community/post" class="btn btn-outline-primary btn-lg d-none d-sm-block">Ask your Question</a>
+    <a href="/community/post" class="btn btn-outline-primary btn-lg d-sm-none pl-3 pr-4"><i class="fas fa-plus-circle"></i> Post</a>
   </div>
-  <script type="text/javascript" src="/js/community-filter.js"></script>
-</body>
+
+  <ul id="all-post-container" class="list-group list-group-flush my-5">
+    <div id="all-posts">
+      {{#each posts}}
+
+        <li class="list-group-item list-group-item-action lead" style="font-weight: 400;">
+          <div style="font-size: 16px;" class="d-none d-sm-block">
+            <p class="text-gray pt-2 my-0">asked <span class="moment-timestamp" style="display: none;">{{this.timestamp}}</span> {{this.author}}</p>
+          </div>
+
+          <a href="/community/{{this._id}}">{{this.question}}</a>
+          <p>{{this.description}}</p>
+          <div class="ml-auto text-right">
+            <span class="badge badge-warning badge-pill mr-3">{{this.answers.length}} Answers</span>
+            <span class="badge badge-primary badge-pill mr-3">{{this.prog_lang}}</span>
+          </div>
+        </li>
+      {{/each}}
+    </div>
+  </ul>
+
+</div>
+
+<script type="text/javascript" src="/js/community-filter.js"></script>

@@ -9,16 +9,60 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 require('dotenv').config();
 var QuillDeltaToHtmlConverter = require('quill-delta-to-html');
 
-var postLimit = 15; // how many posts to show user at a time
+var postLimit = 2; // how many posts to show user at a time
 
 router.get('/', function(req, res) {
-  if(req.user)
-  {
-    res.render('mentor', {layout: 'dashboard-layout', email: req.user.email});;
+  if(req.user) {
+    if(req.user.title == 'mentor')
+    {
+      User.PostSchema.find({}).sort({'timestamp': -1}).limit(postLimit).populate('assignedMentor').exec(function(err, posts) {
+        for (var i = 0; i < posts.length; i++) {
+          if (posts[i].assignedMentor && posts[i].assignedMentor._id.equals(req.user._id)) {
+            posts[i].assignedToSelf = true;
+          }
+        }
+
+        // see if show more posts button should be greyed out
+        var morePosts = false;
+        if (posts.length > 0) {
+          User.PostSchema.count({timestamp: {$lt: posts[posts.length-1].timestamp}}, function(err, count) {
+            if (count > 0)
+              morePosts = true;
+
+            res.render('mentor', {layout: 'dashboard-layout', posts: posts, userIsMentor: true, morePosts: morePosts});
+          });
+        }
+      });
+    }else{
+      User.UserSchema.findOne({_id: req.user._id}).populate({
+        path: 'private_posts',
+        options: {sort: {'timestamp': -1}, limit: postLimit}
+      }).exec(function(err, user) {
+        console.log("YEAH");
+        var posts = user.private_posts;
+
+        var morePosts = false;
+        if (posts.length > 0) {
+          User.UserSchema.findOne({_id: req.user._id}).populate({
+            path: 'private_posts',
+            match: {timestamp: {$lt: posts[posts.length-1].timestamp}},
+          }).exec(function(err, userWithRemainingPosts) {
+            var count = userWithRemainingPosts.private_posts.length;
+            if (count > 0)
+              morePosts = true;
+
+            res.render('mentor', {layout: 'dashboard-layout', posts: posts, morePosts: morePosts});
+          });
+        }else{
+          res.render('mentor', {layout: 'dashboard-layout', morePosts: false});
+        }
+      });
+
+    }
   }else{
     req.flash('origin');
     req.flash('origin', '/mentor');
-    res.redirect('../login');
+    res.redirect('../../login');
   }
 });
 
@@ -169,59 +213,19 @@ router.get('/file/:fileID', (req, res) => {
   });
 });
 
-router.get('/history', function(req, res) {
-  if(req.user) {
-    if(req.user.title == 'mentor')
-    {
-      User.PostSchema.find({}).sort({'timestamp': -1}).limit(postLimit).populate('assignedMentor').exec(function(err, posts) {
-        for (var i = 0; i < posts.length; i++) {
-          if (posts[i].assignedMentor && posts[i].assignedMentor._id.equals(req.user._id)) {
-            posts[i].assignedToSelf = true;
-          }
-        }
-
-        // see if show more posts button should be greyed out
-        var morePosts = false;
-        if (posts.length > 0) {
-          User.PostSchema.count({timestamp: {$lt: posts[posts.length-1].timestamp}}, function(err, count) {
-            if (count > 0)
-              morePosts = true;
-
-            res.render('mentor-history', {layout: 'dashboard-layout', posts: posts, userIsMentor: true, morePosts: morePosts});
-          });     
-        }
-      });
-    }else{
-      User.UserSchema.findOne({_id: req.user._id}).populate({
-        path: 'private_posts', 
-        options: {sort: {'timestamp': -1}, limit: postLimit}
-      }).exec(function(err, user) {
-        var posts = user.private_posts;
-
-        var morePosts = false;
-        if (posts.length > 0) {
-          User.UserSchema.findOne({_id: req.user._id}).populate({
-            path: 'private_posts',
-            match: {timestamp: {$lt: posts[posts.length-1].timestamp}},
-          }).exec(function(err, userWithRemainingPosts) {
-            var count = userWithRemainingPosts.private_posts.length;
-            if (count > 0)
-              morePosts = true;
-
-            res.render('mentor-history', {layout: 'dashboard-layout', posts: posts, morePosts: morePosts});
-          });
-        }
-      });
-
-    }
+router.get('/post', function(req, res) {
+  if(req.user)
+  {
+    res.render('mentor-post', {layout: 'dashboard-layout', email: req.user.email});;
   }else{
     req.flash('origin');
-    req.flash('origin', '/mentor/history');
-    res.redirect('../../login');
+    req.flash('origin', '/mentor/post');
+    res.redirect('../login');
   }
 });
 
 router.post('/history/morePosts', function(req, res) {
+  console.log("MORE");
   var lastPostID = req.body.lastPostID;
   var prog_lang = req.body.filter_opt;
   console.log("Getting more posts");
@@ -255,7 +259,7 @@ router.post('/history/morePosts', function(req, res) {
                 userIsMentor: true,
                 morePostsAvailable: count > 0
               });
-            });     
+            });
           } else {
             res.send({
               postsToAdd: [],
@@ -286,7 +290,7 @@ router.post('/history/morePosts', function(req, res) {
                 userIsMentor: false,
                 morePostsAvailable: count > 0
               });
-            });     
+            });
 
           } else {
             res.send({
@@ -611,6 +615,9 @@ router.post('/history/:id/answer', function(req, res) {
 
 router.post('/history/filter', function(req, res) {
   if(req.user) {
+    if(req.user.title == 'mentor')
+      var isMentor = true;
+
     var option = req.body.filter_opt;
     console.log("Made filter request: " + option);
 
@@ -634,7 +641,7 @@ router.post('/history/filter', function(req, res) {
               userIsMentor: true,
               morePostsAvailable: count > 0
             });
-          });     
+          });
         } else {
           res.send({
             postsToAdd: [],
@@ -664,7 +671,7 @@ router.post('/history/filter', function(req, res) {
               userIsMentor: false,
               morePostsAvailable: count > 0
             });
-          });   
+          });
         } else {
           res.send({
             postsToAdd: [],
@@ -695,10 +702,14 @@ router.post('/history/filter', function(req, res) {
           return 0;
         });
 
+        for (var i = 0; i < allPosts.length; i++) {
+          if (allPosts[i].assignedMentor && allPosts[i].assignedMentor._id.equals(req.user._id)) {
+            allPosts[i].assignedToSelf = true;
+          }
+        }
+
         if(err) throw err;
-        // console.log(community);
-        // console.log(community.posts);
-        res.send(allPosts);
+        res.send({posts: allPosts, userIsMentor: isMentor});
       });
 
     }else{
@@ -717,13 +728,13 @@ router.post('/history/filter', function(req, res) {
         {
           if(allPosts[i].prog_lang == option)
           {
-            console.log("Found same");
+            if (allPosts[i].assignedMentor && allPosts[i].assignedMentor._id.equals(req.user._id)) {
+              allPosts[i].assignedToSelf = true;
+            }
             sendPosts.push(allPosts[i]);
           }
         }
-        // console.log(community);
-        // console.log(community.posts);
-        res.send(sendPosts);
+        res.send({posts: allPosts, userIsMentor: isMentor});
       });
     }
 

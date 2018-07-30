@@ -1,0 +1,91 @@
+<div class="jumbotron text-center bg-light" id="dashboard-title">
+  <h1 class="display-2">Dashboard</h1>
+</div>
+
+<div class="container text-center" id="dashboard-body">
+  <div class="row">
+    <div class="col-lg-4 col-md-4 float-left">
+      <div class="list-group">
+        <a href="/community" class="list-group-item list-group-item-action flex-column align-items-start active">
+          <div class="d-flex w-100 justify-content-between">
+            <h1 class="mb-1">Community</h1>
+          </div>
+        </a>
+        <a href="/community/post" class="list-group-item list-group-item-action flex-column align-items-start">
+          <div class="d-flex w-100 justify-content-between">
+            <h2 class="mb-1"><span class="glyphicon glyphicon-th-list"></span></h2>
+          </div>
+          <p class="mb-1">Easily view and answer Community Posts</p>
+        </a>
+        <a href="/community" class="list-group-item list-group-item-action flex-column align-items-start">
+          <div class="d-flex w-100 justify-content-between">
+            <h2 class="mb-1"><span class="glyphicon glyphicon-search"></span></h2>
+          </div>
+          <p class="mb-1">Filter Community Posts by Language:</p>
+          <small class="text-muted">Python |</small>
+          <small class="text-muted">Java |</small>
+          <small class="text-muted">C/C++ |</small>
+          <small class="text-muted">HTML |</small>
+          <small class="text-muted">CSS |</small>
+          <small class="text-muted">Javascript</small>
+          <!-- <a href="/community"><button class="btn btn-success btn-bg" type="button" name="button" style="width: 100%;"><h3>Visit Community</h3></button></a> -->
+        </a>
+
+      </div>
+    </div>
+
+    <div class="col-lg-4 col-md-4 float-left">
+      <a href="/mentor" class="list-group-item list-group-item-action flex-column align-items-start active">
+        <div class="d-flex w-100 justify-content-between">
+          <h1 class="mb-1">Ask a Mentor</h1>
+        </div>
+      </a>
+      <a href="/mentor/history" class="list-group-item list-group-item-action flex-column align-items-start">
+        <div class="d-flex w-100 justify-content-between">
+          <h2 class="mb-1"><span class="glyphicon glyphicon-envelope"></span></h2>
+        </div>
+        <p class="mb-1">Expect Quick Notifications</p>
+      </a>
+      <a href="/mentor/history" class="list-group-item list-group-item-action flex-column align-items-start">
+        <div class="d-flex w-100 justify-content-between">
+          <h2 class="mb-1"><span class="glyphicon glyphicon-cloud"></span></h2>
+        </div>
+        <p class="mb-1">All Communications stored in 1 place </p>
+        <small class="text-muted">  </small>
+        <small class="text-muted">  </small>
+        <!-- <small class="text-muted">Python |</small>
+        <small class="text-muted">Java |</small>
+        <small class="text-muted">C/C++ |</small>
+        <small class="text-muted">HTML |</small>
+        <small class="text-muted">CSS |</small>
+        <small class="text-muted">Javascript</small> -->
+        <!-- <a href="/community"><button class="btn btn-success btn-bg" type="button" name="button" style="width: 100%;"><h3>Visit Community</h3></button></a> -->
+      </a>
+    </div>
+
+    <div class="col-lg-4 col-md-4 float-left">
+      <a href="/account" class="list-group-item list-group-item-action flex-column align-items-start active">
+        <div class="d-flex w-100 justify-content-between">
+          <h1 class="mb-1">Your Profile</h1>
+        </div>
+      </a>
+      <a href="/account" class="list-group-item list-group-item-action flex-column align-items-start">
+        <div class="d-flex w-100 justify-content-between">
+          <h2 class="mb-1"><span class="glyphicon glyphicon-user"></span></h2>
+        </div>
+        <p class="mb-1">Customize your Public Profile</p>
+      </a>
+      <a href="/account" class="list-group-item list-group-item-action flex-column align-items-start">
+        <div class="d-flex w-100 justify-content-between">
+          <h2 class="mb-1"><span class="glyphicon glyphicon-search"></span></h2>
+        </div>
+        <p class="mb-1">More Customizations Coming Soon ...</p>
+        <small class="text-muted">Friends |</small>
+        <small class="text-muted">Profile Picture</small>
+
+        <!-- <a href="/community"><button class="btn btn-success btn-bg" type="button" name="button" style="width: 100%;"><h3>Visit Community</h3></button></a> -->
+      </a>
+
+    </div>
+  </div>
+</div>

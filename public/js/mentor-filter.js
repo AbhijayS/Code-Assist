@@ -1,10 +1,84 @@
-var currentFilter = null;
-window.addEventListener('load', function() {
+window.onload = function(){
+  $('.moment-timestamp').each(function() {
+    var timestamp = new Date($(this).text());
+    timestamp = moment(timestamp, "MM-DD");
+    $(this).text(timestamp.format("MMM D"));
+    $(this).show();
+  });
+
+  $("#getMorePosts").click(function() {
+    console.log("CLCIS");
+      var data = {
+        lastPostID: $("#all-post-container .list-group-item").last().attr('id'),
+        filter_opt: currentFilter
+      };
+    $.post('/mentor/history/morePosts', data, function(data) {
+      console.log(data);
+      if (!data.morePostsAvailable) {
+        $("#getMorePosts").attr("disabled", true);
+      } else {
+        $("#getMorePosts").attr("disabled", false);
+      }
+      var postsContainer = $('#all-posts');
+      var postsToAdd = data.postsToAdd;
+      for(var i = 0; i < postsToAdd.length; i++)
+      {
+        var id = postsToAdd[i]._id;
+        var question = postsToAdd[i].question;
+        var answers = postsToAdd[i].answers.length;
+        var author = postsToAdd[i].author;
+        var lang = postsToAdd[i].prog_lang;
+        // console.log(lang);
+        var description = postsToAdd[i].description;
+        var assignedMentor = postsToAdd[i].assignedMentor;
+        if(assignedMentor)
+          assignedMentor = assignedMentor.username;
+        var assignedToSelf = postsToAdd[i].assignedToSelf;
+
+        var timestamp = new Date(postsToAdd[i].timestamp);
+        timestamp = moment(timestamp, "MM-DD");
+        timestamp = timestamp.format("MMM D");
+        console.log(timestamp);
+        var userIsMentor = data.userIsMentor;
+
+        var newPost = `
+        <li id="${id}" class="list-group-item list-group-item-action lead" style="font-weight: 400;">
+          <div style="font-size: 16px;" class="d-none d-sm-block">
+            <p class="text-gray pt-2 my-0">asked <span class="moment-timestamp">${timestamp}</span> ${author}</p>
+          </div>
+
+          <a href="/mentor/history/${id}">${question}</a>
+          <p class="w-100">${description}</p>
+          <div class="ml-auto text-right">
+            <span class="badge badge-warning badge-pill">${answers} Answers</span>
+            <span class="badge badge-primary badge-pill">${lang}</span>
+            `;
+
+        if(userIsMentor) {
+          if(assignedMentor) {
+            if(assignedToSelf) {
+              newPost += `<span class="badge badge-info badge-pill">Assigned to you</span>`;
+            }else{
+              newPost += `<span class="badge badge-info badge-pill">Assigned to {{this.assignedMentor.username}}</span>`;
+            }
+          }else{
+            newPost += `<span class="badge badge-info badge-pill">Post Unassigned</span>`;
+          }
+        }
+        newPost += `
+          </div>
+        </li>`;
+
+        postsContainer.append(newPost);
+      }
+    });
+  });
+
+  var currentFilter = null;
   $('.filter').on('click', function(event) {
     event.preventDefault();
     var value = $(this).text();
     currentFilter = value;
-    // console.log('filter button clicked: '+ value);
     var data = {
       filter_opt: value
     };
@@ -14,15 +88,15 @@ window.addEventListener('load', function() {
       if(data.url)
       {
         window.location.replace(url);
-      } else {
+      }else{
         if (!data.morePostsAvailable) {
           $("#getMorePosts").attr("disabled", true);
         } else {
           $("#getMorePosts").attr("disabled", false);
         }
 
-        // console.log("Filter request returned:", data);
         $('#all-posts').empty()
+        var postsContainer = $('#all-posts');
         if(data.postsToAdd.length == 0)
         {
           var alert = `
@@ -30,27 +104,58 @@ window.addEventListener('load', function() {
             <h2>No posts found matching <span style="text-decoration: underline;">${value}</span>!</h2>
           </div>
           `;
-          $('#all-posts').append(alert);
-        } else {
-          for (var i = 0; i < data.postsToAdd.length; i++) {
-            var post = data.postsToAdd[i];
-            var postHTML = `<a id="${post._id}" class="list-group-item" href="/mentor/history/${post._id}">${post.question}
-                      <span class="badge progress-bar-danger">${post.answers.length}</span> 
-                      <span class="badge">${post.author}</span>
-                      <span class="badge progress-bar-info">${post.prog_lang}</span>`;
-            if (data.userIsMentor) {
-              if (post.assignedMentor) {
-                if (post.assignedToSelf) {
-                  postHTML += '<span class="badge progress-bar-success">Assigned to you</span>';
-                } else {
-                  postHTML += '<span class="badge progress-bar-warning">Assigned to ' + post.assignedMentor.username + '</span>';
+          postsContainer.append(alert);
+        }else{
+          var postsToAdd = data.postsToAdd;
+          for(var i = 0; i < postsToAdd.length; i++)
+          {
+            var id = postsToAdd[i]._id;
+            var question = postsToAdd[i].question;
+            var answers = postsToAdd[i].answers.length;
+            var author = postsToAdd[i].author;
+            var lang = postsToAdd[i].prog_lang;
+            // console.log(lang);
+            var description = postsToAdd[i].description;
+            var assignedMentor = postsToAdd[i].assignedMentor;
+            if(assignedMentor)
+              assignedMentor = assignedMentor.username;
+            var assignedToSelf = postsToAdd[i].assignedToSelf;
+
+            var timestamp = new Date(postsToAdd[i].timestamp);
+            timestamp = moment(timestamp, "MM-DD");
+            timestamp = timestamp.format("MMM D");
+            console.log(timestamp);
+            var userIsMentor = data.userIsMentor;
+
+            var newPost = `
+            <li id="${id}" class="list-group-item list-group-item-action lead" style="font-weight: 400;">
+              <div style="font-size: 16px;" class="d-none d-sm-block">
+                <p class="text-gray pt-2 my-0">asked <span class="moment-timestamp">${timestamp}</span> ${author}</p>
+              </div>
+
+              <a href="/mentor/history/${id}">${question}</a>
+              <p class="w-100">${description}</p>
+              <div class="ml-auto text-right">
+                <span class="badge badge-warning badge-pill">${answers} Answers</span>
+                <span class="badge badge-primary badge-pill">${lang}</span>
+                `;
+
+            if(userIsMentor) {
+              if(assignedMentor) {
+                if(assignedToSelf) {
+                  newPost += `<span class="badge badge-info badge-pill">Assigned to you</span>`;
+                }else{
+                  newPost += `<span class="badge badge-info badge-pill">Assigned to {{this.assignedMentor.username}}</span>`;
                 }
-              } else {
-                postHTML += '<span class="badge progress-bar-danger">Post Unassigned</span>';
+              }else{
+                newPost += `<span class="badge badge-info badge-pill">Post Unassigned</span>`;
               }
             }
-            postHTML += '</a>';
-            $("#all-posts").append(postHTML);
+            newPost += `
+              </div>
+            </li>`;
+
+            postsContainer.append(newPost);
           }
 
         }
@@ -58,4 +163,4 @@ window.addEventListener('load', function() {
       $("#filterLoading").hide();
     });
   });
-});
+};
