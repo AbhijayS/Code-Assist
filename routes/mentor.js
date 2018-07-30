@@ -38,7 +38,6 @@ router.get('/', function(req, res) {
         path: 'private_posts',
         options: {sort: {'timestamp': -1}, limit: postLimit}
       }).exec(function(err, user) {
-        console.log("YEAH");
         var posts = user.private_posts;
 
         var morePosts = false;
@@ -374,21 +373,6 @@ router.get('/history/:id', function(req, res) {
   var postID = req.params.id;
   if(req.user)
   {
-    // var found = false;
-    // // console.log('-------------------------');
-    // // console.log(req.user.private_posts.length);
-    // // console.log(req.user.private_posts);
-    // // console.log('');
-    // // console.log('');
-    // for (var i = 0; (i < req.user.private_posts.length); i++)
-    // {
-    //   // console.log("Iterating: " + req.user.private_posts[i]);
-    //   if(req.user.private_posts[i] == postID)
-    //   {
-    //     found = true;
-    //     break;
-    //   }
-    // }
     if(req.user.title == 'mentor')
     {
       User.PostSchema.findOne({_id: postID}).populate(['answers', 'files']).exec(function(err, post) {
