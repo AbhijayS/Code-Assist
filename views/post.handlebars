@@ -1,37 +1,51 @@
-<body>
-  <div class="jumbotron jumbotron-title text-center" id="post-title">
-    <h2>{{post.question}}</h2>
-    <div class="title-buttons">
-      <a href="/community/post"><button class="btn btn-primary btn-lg" type="button" name="button">Post a Question</button></a>
-      <a href="/community"><button class="btn btn-info btn-lg" type="button" name="button">View All</button></a>
-      <a href="/mentor"><button class="btn btn-warning btn-lg" type="button" name="button">Ask a Mentor</button></a>
-    </div>
+<style>
+  #answer-editor .ql-editor{
+    min-height: 150px;
+  }
+</style>
+
+<div class="clippy d-none d-xl-block" style="-webkit-clip-path: polygon(0 87%, 100% 81%, 100% 100%, 0% 100%);
+clip-path: polygon(0 87%, 100% 81%, 100% 100%, 0% 100%); height: 351px; z-index: 1;"></div>
+
+<div class="jumbotron jumbotron-title text-left" style="background-color: #e9ecef4f; box-shadow: 0px 3px 6px 0px #4441412b;">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="/community">Community</a></li>
+        <li class="breadcrumb-item active" aria-current="page">View</li>
+      </ol>
+    </nav>
+
+    <h1 class="display-3 d-none d-sm-block">{{post.question}}</h1>
+    <h1 class="display-4 d-sm-none">{{post.question}}</h1>
+    <hr>
+    <p style="font-weight: 400; width: 100px;"><a href="/community" class="text-secondary">Go Back</a></p>
   </div>
+</div>
 
-  <div class="container" id="post-body">
-    <div id="descriptions_answers" class="list-group">
-      <a class="list-group-item list-group-item-action flex-column align-items-start active">
-        <div class="d-flex w-100 justify-content-between">
-          <h3>{{post.question}}</h3>
 
-          <small>{{post.author}}</small>
+<div class="container" id="post-body">
+  <p class="text-right"><a href="#answer-editor"><button type="button" name="button" class="btn btn-primary btn-lg">Post an Answer</button></a></p>
 
-          {{#if isowner}}
-            <div class="btn-group" role="group">
-              <button type="button" class="btn btn-default" id="start-codehat">+ Start a CodeHat Project</button>
-              <button class="btn btn-danger" id="delete" type="button" name="button">Delete Post</button>
-            </div>
-          {{/if}}
+  <div class="card border-light bg-light mb-3">
+    <div class="card-header">
+      <p>{{post.author}}</p>
+      <p class="moment-timestamp" style="display: none;">{{post.timestamp}}</p>
+      {{#if isowner}}
+        <div class="btn-group" role="group">
+          <button type="button" class="btn btn-default" id="start-codehat">+ Start a CodeHat Project</button>
+          <button class="btn btn-danger" id="delete" type="button" name="button">Delete Post</button>
         </div>
-      </a>
+      {{/if}}
+    </div>
+    <div class="card-body">
+      <h5 class="card-title">{{post.question}}</h5>
+      <p id="description"><div id="post-view-editor" class="noborder p-0"></div></p>
+    </div>
 
-      <a class="list-group-item list-group-item-action flex-column align-items-start">
-        <div class="d-flex w-100 justify-content-between">
-          <p class="mb-1" id="description"><div id="post-view-editor" class="noborder"></div></p>
-        </div>
-      </a>
-
-      {{#if post.files}}
+    {{#if post.files}}
+    <div class="card-footer">
       <div class="list-group-item list-group-item-action flex-column align-items-start">
         <div class="d-flex w-100 justify-content-between">
           {{#each post.files}}
@@ -39,153 +53,150 @@
           {{/each}}
         </div>
       </div>
-      {{/if}}
-
-      <a class="list-group-item list-group-item-action flex-column align-items-start">
-        <div class="d-flex w-100 justify-content-between">
-          <small class="moment-timestamp">{{post.timestamp}}</small>
-          <!-- {{post.timestamp}} -->
-        </div>
-      </a>
-
-<!-- {{post.description}} -->
-
     </div>
-    <div class="list-group">
-      {{#each post.answers}}
-      <a class="list-group-item list-group-item-action flex-column align-items-start">
-        <div class="d-flex w-100 justify-content-between">
-          <small>{{this.author}}</small>
-        </div>
-        <p class="mb-1"><div class="answer-view noborder"></div></p>
-        <small class="moment-timestamp">{{this.timestamp}}</small>
-        <!-- {{this.timestamp}} -->
-      </a>
-      {{/each}}
+    {{/if}}
+  </div>
 
+  {{#each post.answers}}
+  <div class="card mb-3">
+    <div class="card-body">
+      <p class="card-text answer-view noborder d-none">{{this.answer}}</p>
     </div>
 
+    <div class="card-footer text-muted">
+      Answered <p class="moment-timestamp d-none">{{this.timestamp}}</p>
+      {{this.author}}
+
+    </div>
+  </div>
+  {{/each}}
+
+  <div class="jumbotron bg-white">
     <form action="/" method="post">
       <div class="form-group">
-        <label for="answer-editor">Description</label>
+        <h1 style="font-weight: 200;">Your Answer</h1>
+        <hr>
         <div id="answer-editor">
 
         </div>
       </div>
 
-      <button id="submit" class="btn btn-primary">Post your answer</button>
+      <button class="btn btn-outline-primary btn-lg btn-block py-3" id="submit">Post your answer</button>
     </form>
-
   </div>
+</div>
 
-  <script type="text/javascript">
-    window.onload = function(){
-      /* Post Description Viewer (Quill) */
-      var postViewEditor = new Quill('#post-view-editor', {
+<script type="text/javascript">
+  window.onload = function(){
+    /* Post Description Viewer (Quill) */
+    var postViewEditor = new Quill('#post-view-editor', {
+      modules: {
+        toolbar: false
+      },
+      theme: 'snow'
+    });
+
+    // console.log("Community description: " + typeof {{{description}}});
+    postViewEditor.setContents({{{description}}});
+    postViewEditor.disable();
+
+    /* All of the Answers Viewer (Quill) */
+
+    var answerViews = $('.answer-view');
+    // console.log("#Answers: " + answerViews.length);
+    var postAnswers = [];
+    {{#each post.answers}}
+    postAnswers.push({{{this.answer}}});
+    {{/each}}
+    for (var i = 0; i < answerViews.length; i++)
+    {
+      var answer = answerViews.get(i);
+      var quill = new Quill(answer, {
         modules: {
           toolbar: false
         },
         theme: 'snow'
       });
-
-      // console.log("Community description: " + typeof {{{description}}});
-      postViewEditor.setContents({{{description}}});
-      postViewEditor.disable();
-
-      /* All of the Answers Viewer (Quill) */
-
-      var answerViews = $('.answer-view');
-      // console.log("#Answers: " + answerViews.length);
-      var postAnswers = [];
-      {{#each post.answers}}
-      postAnswers.push({{{this.answer}}});
-      {{/each}}
-      for (var i = 0; i < answerViews.length; i++)
-      {
-        var answer = answerViews.get(i);
-        var quill = new Quill(answer, {
-          modules: {
-            toolbar: false
-          },
-          theme: 'snow'
-        });
-        quill.setContents(postAnswers[i]);
-        quill.disable();
-      }
-
-
-      /*New answer posting editor (Quill)
-        Render saved data as well
-      */
-
-      var answerEditor = new Quill('#answer-editor', {
-        modules: {
-          toolbar: [
-            [{ header: [1, 2, false] }],
-            ['bold', 'italic', 'underline'],
-            ['image', 'code-block']
-          ]
-        },
-        theme: 'snow'
-      });
-      answerEditor.setContents({{{saved}}});
-
-      $('#submit').on('click', function(event) {
-        event.preventDefault();
-        var answer = JSON.stringify(answerEditor.getContents().ops);
-        console.log($(location).attr('pathname'));
-        var post_url = "/community/{{post.id}}/answer";
-
-        $.post(post_url, {answer: answer}, function(url) {
-          /* Would be nice to have the page not reload after answer submission
-             but due to code minimization and time constraints,
-             we deem it necessary to reload the page*/
-
-          // var newAnswer = `
-          // <a class="list-group-item list-group-item-action flex-column align-items-start">
-          // <div class="d-flex w-100 justify-content-between">
-          // <small></small>
-          // </div>
-          // <p class="mb-1"></p>
-          // <small></small>
-          // </a>
-          // `;
-          //
-          // $("#descriptions_answers").append(newAnswer);
-          // console.log("Answer Saved");
-          window.location.replace(url);
-        });
-      });
-
-
-      /*
-      Moment Date format
-      */
-      $('.moment-timestamp').each(function() {
-        var timestamp = new Date($(this).text());
-        timestamp = moment(timestamp, "MM-DD");
-        $(this).text("Posted " + timestamp.format("MMM D"));
-      });
-
-      $('#delete').on('click', function(event) {
-        event.preventDefault();
-        var answer2 = JSON.stringify(answerEditor.getContents().ops);
-        var post_url2 = "/community/{{post.id}}/delete";
-        var thepost='ah';
-        $.post(post_url2, {deletedpost:"thepost"}, function(url) {
-          window.location.replace(window.location.host + url);
-        });
-      });
-
-      $('#start-codehat').on('click', function(event) {
-        event.preventDefault();
-        var stringID = window.location.pathname.split('/');
-        stringID = stringID[stringID.length-1];
-
-        $.post('/codehat/' + stringID + '/start-codehat', {postID: stringID}, function(){
-          window.location.replace("http://" + window.location.host + "/codehat");
-        });
-      });
+      quill.setContents(postAnswers[i]);
+      quill.disable();
     }
-  </script>
-</body>
+    answerViews.show();
+    answerViews.removeClass('d-none');
+
+
+    /*New answer posting editor (Quill)
+      Render saved data as well
+    */
+
+    var answerEditor = new Quill('#answer-editor', {
+      modules: {
+        toolbar: [
+          [{ header: [1, 2, false] }],
+          ['bold', 'italic', 'underline'],
+          ['image', 'code-block']
+        ]
+      },
+      theme: 'snow'
+    });
+    answerEditor.setContents({{{saved}}});
+
+    $('#submit').on('click', function(event) {
+      event.preventDefault();
+      var answer = JSON.stringify(answerEditor.getContents().ops);
+      console.log($(location).attr('pathname'));
+      var post_url = "/community/{{post.id}}/answer";
+
+      $.post(post_url, {answer: answer}, function(url) {
+        /* Would be nice to have the page not reload after answer submission
+           but due to code minimization and time constraints,
+           we deem it necessary to reload the page*/
+
+        // var newAnswer = `
+        // <a class="list-group-item list-group-item-action flex-column align-items-start">
+        // <div class="d-flex w-100 justify-content-between">
+        // <small></small>
+        // </div>
+        // <p class="mb-1"></p>
+        // <small></small>
+        // </a>
+        // `;
+        //
+        // $("#descriptions_answers").append(newAnswer);
+        // console.log("Answer Saved");
+        window.location.replace(url);
+      });
+    });
+
+
+    /*
+    Moment Date format
+    */
+    $('.moment-timestamp').each(function() {
+      var timestamp = new Date($(this).text());
+      timestamp = moment(timestamp, "MM-DD");
+      $(this).text(timestamp.format("MMM D"));
+      $(this).show();
+      $(this).removeClass('d-none');
+    });
+
+    $('#delete').on('click', function(event) {
+      event.preventDefault();
+      var answer2 = JSON.stringify(answerEditor.getContents().ops);
+      var post_url2 = "/community/{{post.id}}/delete";
+      var thepost='ah';
+      $.post(post_url2, {deletedpost:"thepost"}, function(url) {
+        window.location.replace(window.location.host + url);
+      });
+    });
+
+    $('#start-codehat').on('click', function(event) {
+      event.preventDefault();
+      var stringID = window.location.pathname.split('/');
+      stringID = stringID[stringID.length-1];
+
+      $.post('/codehat/' + stringID + '/start-codehat', {postID: stringID}, function(){
+        window.location.replace("http://" + window.location.host + "/codehat");
+      });
+    });
+  }
+</script>

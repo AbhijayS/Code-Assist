@@ -7,6 +7,30 @@ window.onload = function(){
     $(this).text(timestamp.format("MMM D"));
     $(this).show();
   });
+  // 
+  // function updateQuillContent() {
+  //   /* All of the Answers Viewer (Quill) */
+  //   var posts = $('.quill-content');
+  //   for (var i = 0; i < posts.length; i++)
+  //   {
+  //     var post = $(posts[i]);
+  //     var contents = JSON.parse(post.text());
+  //     console.log(contents);
+  //
+  //     var quill = new Quill(posts[i], {
+  //       modules: {
+  //         toolbar: false
+  //       },
+  //       theme: 'snow'
+  //     });
+  //     quill.setContents();
+  //     quill.disable();
+  //     console.log(quill.getText());
+  //     post.removeClass('d-none');
+  //   }
+  // }
+  // updateQuillContent();
+
 
   $('.filter').on('click', function(event) {
     event.preventDefault();
