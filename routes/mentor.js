@@ -241,7 +241,7 @@ router.post('/history/morePosts', function(req, res) {
     User.PostSchema.findOne({_id: lastPostID}, function(err, lastPost) {
       if(req.user.title == 'mentor')
       {
-        User.PostSchema.find({prog_lang: prog_lang, timestamp: {$lt: lastPost.timestamp}}).sort({'timestamp': -1}).limit(postLimit).select('_id timestamp author question prog_lang answers').populate({path: 'assignedMentor', select: '_id username'}).lean().exec(function(err, postsToAdd) {
+        User.PostSchema.find({prog_lang: prog_lang, timestamp: {$lt: lastPost.timestamp}}).sort({'timestamp': -1}).limit(postLimit).select('_id timestamp author question description prog_lang answers').populate({path: 'assignedMentor', select: '_id username'}).lean().exec(function(err, postsToAdd) {
           // .lean() converts mongoose objects to normal js objects
           // assignedToSelf is needed in postschema model if .lean() is not used
 
@@ -273,7 +273,7 @@ router.post('/history/morePosts', function(req, res) {
           path: 'private_posts',
           match: {prog_lang: prog_lang, timestamp: {$lt: lastPost.timestamp}},
           options: {sort: {'timestamp': -1}, limit: postLimit},
-          select: '_id timestamp author question prog_lang answers'
+          select: '_id timestamp author question description prog_lang answers'
         }).exec(function(err, user) {
           var postsToAdd = user.private_posts;
 
@@ -610,7 +610,7 @@ router.post('/history/filter', function(req, res) {
 
     if(req.user.title == 'mentor')
     {
-      User.PostSchema.find({prog_lang: option}).sort({'timestamp': -1}).limit(postLimit).select('_id timestamp author question prog_lang answers').populate({path: 'assignedMentor', select: '_id username'}).lean().exec(function(err, postsToAdd) {
+      User.PostSchema.find({prog_lang: option}).sort({'timestamp': -1}).limit(postLimit).select('_id timestamp author question description prog_lang answers').populate({path: 'assignedMentor', select: '_id username'}).lean().exec(function(err, postsToAdd) {
 
         for (var i = 0; i < postsToAdd.length; i++) {
           if (postsToAdd[i].assignedMentor && postsToAdd[i].assignedMentor._id.equals(req.user._id)) {
@@ -640,7 +640,7 @@ router.post('/history/filter', function(req, res) {
         path: 'private_posts',
         match: {prog_lang: option},
         options: {sort: {'timestamp': -1}, limit: postLimit},
-        select: '_id timestamp author question prog_lang answers'
+        select: '_id timestamp author question description prog_lang answers'
       }).exec(function(err, user) {
         var postsToAdd = user.private_posts;
 
