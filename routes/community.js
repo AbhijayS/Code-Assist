@@ -37,34 +37,6 @@ router.get('/', function(req, res) {
 
 });
 
-/*	var answer1 = new User.AnswerSchema({
-	answer: "MongoDB"
-	});
-
-	answer1.save(function(err) {
-	if(err) throw err;
-	});
-
-	User.PostSchema.find({question: "What?"}).populate('answers').exec(function(err, newPost) {
-		for (var i = 0; i < newPost.length; i++)
-		{
-			newPost[i].answers.push(answer1);
-
-			newPost[i].save(function(err) {
-			if(err) throw err;
-			console.log("New Post Saved:")
-			console.log(newPost);
-			console.log('-------------------------');
-			console.log('');
-			});
-		}
-		User.PostSchema.find({}).populate('answers').exec(function(err, posts) {
-			if(err) throw err;
-			console.log(posts);
-			res.render('community', {layout: false, posts: posts});
-		});
-	});*/
-
 
 router.get('/post', function(req, res) {
   if(req.user)
@@ -197,6 +169,56 @@ router.get('/:id', function(req, res) {
 	});
 });
 
+router.post('/flag-post', function(req, res) {
+	var postID = req.body.postID;
+	var data = {
+		auth: false
+	};
+
+	User.PostSchema.findOne({_id: postID}, function(err, post) {
+		if(err) throw err;
+		var today = moment(Date.now());
+		if(post) {
+			var timestamp = moment(post.timestamp);
+			const output = `
+				<p>Hi Code Assist,</p>
+				<p>Someone in the community recently <strong>Flagged</strong> a post with the following details on ${today.format("dddd, MMM D YYYY, h:mm A")}</p>
+				<h1>Post Details</h1>
+				<hr>
+
+				<ul>
+					<li>Author: ${post.author}</li>
+					<li>Question: ${post.question}</li>
+					<li>Description: ${post.description}</li>
+					<li>Date Posted: ${timestamp.format('MMM D')}</li>
+				</ul>
+
+				<h1>Flag Details</h1>
+				<hr>
+
+				<ul>
+					<li>Flag Description: ${req.body.postDescription}</li>
+					<li>Link to the <a href="https://codeassist.org/community/${postID}">Flagged Post</a></li>
+				</ul>
+			`;
+			const msg = {
+				to: process.env.SENDER_EMAIL,
+				from: `Code Assist <${process.env.SENDER_EMAIL}>`,
+				subject: 'Flagged Post',
+				html: output
+			};
+
+			sgMail.send(msg);
+			console.log('============================================');
+			console.log("Flagged Post");
+			console.log("Sending Email to Code Assist ... ");
+			console.log('============================================');
+			data.auth = true;
+			res.send(data)
+		}
+	});
+});
+
 //Serverside Delete post handling
 router.post('/:id/delete', function(req, res){
   User.PostSchema.findOneAndRemove({_id: req.params.id}, function(err, user) {
@@ -238,7 +260,7 @@ router.post('/:id/answer', function(req, res){
 					<h2>New Answer Details</h2>
 					<hr>
 
-					<h3>Link to the <a href="https://codeassist.club/community/${postID}">Answer</a></h3>
+					<h3>Link to the <a href="https://codeassist.org/community/${postID}">Answer</a></h3>
 
 					<h3>Contact details</h3>
 					<ul>

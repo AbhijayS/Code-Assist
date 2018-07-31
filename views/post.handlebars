@@ -20,12 +20,21 @@ clip-path: polygon(0 87%, 100% 81%, 100% 100%, 0% 100%); height: 351px; z-index:
     <h1 class="display-3 d-none d-sm-block">{{post.question}}</h1>
     <h1 class="display-4 d-sm-none">{{post.question}}</h1>
     <hr>
-    <p style="font-weight: 400; width: 100px;"><a href="/community" class="text-secondary">Go Back</a></p>
+    <p style="font-weight: 400;">
+      <a href="#flagPost" data-toggle="modal" data-target="#flagPost" class="text-secondary ml-auto"><i class="far fa-flag"></i> Flag Post</a>
+    </p>
   </div>
 </div>
 
 
 <div class="container" id="post-body">
+  <div class="alert alert-info alert-dismissible fade show" role="alert" id="flag-alert">
+    This post has been flagged. The author will be notified.
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
   <p class="text-right"><a href="#answer-editor"><button type="button" name="button" class="btn btn-primary btn-lg">Post an Answer</button></a></p>
 
   <div class="card border-light bg-light mb-3">
@@ -82,6 +91,32 @@ clip-path: polygon(0 87%, 100% 81%, 100% 100%, 0% 100%); height: 351px; z-index:
       </div>
 
       <button class="btn btn-outline-primary btn-lg btn-block py-3" id="submit">Post your answer</button>
+    </form>
+  </div>
+</div>
+
+<!-- Flag/reporting post Modal -->
+<div class="modal fade" id="flagPost" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <form id="flag-post">
+      <p hidden id="post-id">{{post._id}}</p>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel"><strong>Flag / Report</strong> Post</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <textarea placeholder="Please describe the issue ..." class="form-control" id="post-issue" rows="3"></textarea>
+          </div>
+        </div>
+        <div class="container">
+          <button type="submit" class="btn btn-block btn-lg btn-outline-danger mb-2">Submit Report</button>
+          <p class="text-secondary">User will be notified</p>
+        </div>
+      </div>
     </form>
   </div>
 </div>
@@ -147,22 +182,6 @@ clip-path: polygon(0 87%, 100% 81%, 100% 100%, 0% 100%); height: 351px; z-index:
       var post_url = "/community/{{post.id}}/answer";
 
       $.post(post_url, {answer: answer}, function(url) {
-        /* Would be nice to have the page not reload after answer submission
-           but due to code minimization and time constraints,
-           we deem it necessary to reload the page*/
-
-        // var newAnswer = `
-        // <a class="list-group-item list-group-item-action flex-column align-items-start">
-        // <div class="d-flex w-100 justify-content-between">
-        // <small></small>
-        // </div>
-        // <p class="mb-1"></p>
-        // <small></small>
-        // </a>
-        // `;
-        //
-        // $("#descriptions_answers").append(newAnswer);
-        // console.log("Answer Saved");
         window.location.replace(url);
       });
     });
@@ -196,6 +215,16 @@ clip-path: polygon(0 87%, 100% 81%, 100% 100%, 0% 100%); height: 351px; z-index:
 
       $.post('/codehat/' + stringID + '/start-codehat', {postID: stringID}, function(){
         window.location.replace("http://" + window.location.host + "/codehat");
+      });
+    });
+
+    $('#flag-post').submit(function(event) {
+      event.preventDefault();
+      $.post('/community/flag-post', {postID: $('#post-id').text(), postDescription: $('#post-issue').text()}, function(data) {
+        if(data.auth) {
+          $('.modal').modal('hide')
+          $('#flag-alert').removeClass('d-none');
+        }
       });
     });
   }
