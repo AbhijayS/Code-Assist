@@ -31,6 +31,8 @@ router.get('/', function(req, res) {
 
             res.render('mentor', {layout: 'dashboard-layout', posts: posts, userIsMentor: true, morePosts: morePosts});
           });
+        } else {
+          res.render('mentor', {layout: 'dashboard-layout', userIsMentor: true, morePosts: false});
         }
       });
     }else{
