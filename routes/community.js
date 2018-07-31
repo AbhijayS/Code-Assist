@@ -10,32 +10,112 @@ require('dotenv').config();
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
+var postLimit = 10; // how many posts to show user at a time
+
 // var User = require('../models/test-user');
 
 router.get('/', function(req, res) {
-	  //	User.UserSchema.findOne({username: "otherusername"}, function(err, user) {
-			//	console.log(user);
-		//	});
-	User.CommunitySchema.findOne({}).populate('posts').exec(function(err, community) {
-    var allPosts = community.posts;
+	 User.CommunitySchema.findOne({}).populate({path: 'posts', options: {sort: {'timestamp': -1}, limit: postLimit}}).exec(function(err, community) {
+    var posts = community.posts;
 
-    allPosts.sort(function(date1,date2){
-      if (date1 > date2) return -1;
-      if (date1 < date2) return 1;
-      return 0;
-    });
+    var morePosts = false;
+    if (posts.length > 0) {
+      User.CommunitySchema.findOne({}).populate({
+        path: 'posts',
+        match: {timestamp: {$lt: posts[posts.length-1].timestamp}},
+      }).exec(function(err, communityRemainingPosts) {
+        var count =  communityRemainingPosts.posts.length;
+        if (count > 0)
+          morePosts = true;
 
-    // console.log('---------------------------');
-    // console.log('Sorted posts:');
-    // console.log(allPosts);
-    // console.log('---------------------------');
+        res.render('community', {layout: 'dashboard-layout', posts: posts, morePosts: morePosts});
+      });
 
-		res.render('community', {layout: 'dashboard-layout', posts: community.posts});
-
-
+    } else {
+      res.render('community', {layout: 'dashboard-layout', posts: posts, morePosts: false});
+    }
 	});
 
 });
+
+router.post('/morePosts', function(req, res) {
+  var lastPostID = req.body.lastPostID;
+  var prog_lang = req.body.filter_opt;
+  console.log("Getting more posts");
+  console.log("filter_opt: " + prog_lang);
+
+  if (!lastPostID)
+    return false;
+
+  if (!prog_lang || prog_lang == "Remove Filter")
+    prog_lang = {$exists: true}; // will match any language
+
+  if(req.user) {
+    // get last post from database
+    User.PostSchema.findOne({_id: lastPostID}, function(err, lastPost) {
+      User.CommunitySchema.findOne({}).populate({
+        path: 'posts',
+        match: {prog_lang: prog_lang, timestamp: {$lt: lastPost.timestamp}},
+        options: {sort: {'timestamp': -1}, limit: postLimit},
+        select: '_id timestamp author question description prog_lang answers'
+      }).exec(function(err, community) {
+        var postsToAdd = community.posts;
+
+        if (postsToAdd.length > 0) {
+          User.CommunitySchema.findOne({}).populate({
+            path: 'posts',
+            match: {prog_lang: prog_lang, timestamp: {$lt: postsToAdd[postsToAdd.length-1].timestamp}},
+          }).exec(function(err, communityRemainingPosts) {
+            var count = communityRemainingPosts.posts.length;
+
+            res.send({
+              postsToAdd: postsToAdd,
+              morePostsAvailable: count > 0
+            });
+          });
+
+        } else {
+          res.send({
+            postsToAdd: [],
+            morePostsAvailable: false
+          });
+        }
+      });
+    });
+  } else {
+    req.flash('origin');
+    req.flash('origin', '/community');
+    res.redirect('/login');
+  }
+});
+
+/*	var answer1 = new User.AnswerSchema({
+	answer: "MongoDB"
+	});
+
+	answer1.save(function(err) {
+	if(err) throw err;
+	});
+
+	User.PostSchema.find({question: "What?"}).populate('answers').exec(function(err, newPost) {
+		for (var i = 0; i < newPost.length; i++)
+		{
+			newPost[i].answers.push(answer1);
+
+			newPost[i].save(function(err) {
+			if(err) throw err;
+			console.log("New Post Saved:")
+			console.log(newPost);
+			console.log('-------------------------');
+			console.log('');
+			});
+		}
+		User.PostSchema.find({}).populate('answers').exec(function(err, posts) {
+			if(err) throw err;
+			console.log(posts);
+			res.render('community', {layout: false, posts: posts});
+		});
+	});*/
 
 
 router.get('/post', function(req, res) {
@@ -162,9 +242,9 @@ router.get('/:id', function(req, res) {
     var today = moment(Date.now());
     var description = post.description;
 		if(req.user && req.user._id==post.authorid){
-			res.render('post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description, isowner: true});
+			res.render('community-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description, isowner: true});
 		}else{
-		    res.render('post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description});
+		    res.render('community-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description});
 		}
 	});
 });
@@ -323,50 +403,40 @@ router.post('/Search',function(req,res){
 });
 
 router.post('/filter', function(req, res) {
-	var option = req.body.filter_opt;
-	// console.log("Made filter request: " + option);
-	if(option == "Remove Filter")
-	{
-		// console.log("Filter Removed");
-		User.CommunitySchema.findOne({}).populate('posts').exec(function(err, community) {
-			var allPosts = community.posts;
+  var option = req.body.filter_opt;
+  // console.log("Made filter request: " + option);
 
-			allPosts.sort(function(date1,date2){
-				if (date1 > date2) return -1;
-				if (date1 < date2) return 1;
-				return 0;
-			});
+  if (!option || option == "Remove Filter")
+    option = {$exists: true}; // will match any language
 
-			if(err) throw err;
-			// console.log(community);
-			// console.log(community.posts);
-			res.send(allPosts);
-		});
+  User.CommunitySchema.findOne({}).populate({
+    path: 'posts',
+    match: {prog_lang: option},
+    options: {sort: {'timestamp': -1}, limit: postLimit},
+    select: '_id timestamp author question description prog_lang answers'
+  }).exec(function(err, community) {
+    var postsToAdd = community.posts;
 
-	}else{
-		User.CommunitySchema.findOne({}).populate('posts').exec(function(err, community) {
-			if(err) throw err;
-			var allPosts = community.posts;
+    if (postsToAdd.length > 0) {
+      User.CommunitySchema.findOne({}).populate({
+        path: 'posts',
+        match: {prog_lang: option, timestamp: {$lt: postsToAdd[postsToAdd.length-1].timestamp}},
+      }).exec(function(err, communityRemainingPosts) {
+        var count = communityRemainingPosts.posts.length;
 
-			allPosts.sort(function(date1,date2){
-				if (date1 > date2) return -1;
-				if (date1 < date2) return 1;
-				return 0;
-			});
+        res.send({
+          postsToAdd: postsToAdd,
+          morePostsAvailable: count > 0
+        });
+      });
 
-			var sendPosts = [];
-			for (var i = 0; i < allPosts.length; i++)
-			{
-				if(allPosts[i].prog_lang == option)
-				{
-					// console.log("Found same");
-					sendPosts.push(allPosts[i]);
-				}
-			}
-			// console.log(community);
-			// console.log(community.posts);
-			res.send(sendPosts);
-		});
-	}
+    } else {
+      res.send({
+        postsToAdd: [],
+        morePostsAvailable: false
+      });
+    }
+  });
+
 });
 module.exports = router;

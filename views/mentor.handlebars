@@ -59,7 +59,7 @@ clip-path: polygon(93% 77%, 100% 26%, 100% 100%, 59% 85%); height: 405px; z-inde
             <p class="text-gray pt-2 my-0">asked <span class="moment-timestamp" style="display: none;">{{this.timestamp}}</span> {{this.author}}</p>
           </div>
 
-          <a href="/mentor/history/{{this._id}}">{{this.question}}</a>
+          <a href="/mentor/{{this._id}}">{{this.question}}</a>
           <p class="w-100">{{this.description}}</p>
           <div class="ml-auto text-right">
             <span class="badge badge-warning badge-pill">{{this.answers.length}} Answers</span>
@@ -79,9 +79,9 @@ clip-path: polygon(93% 77%, 100% 26%, 100% 100%, 59% 85%); height: 405px; z-inde
         </li>
       {{/each}}
     </div>
+    <button id="getMorePosts" class="mt-1 btn btn-outline-primary" {{#unless morePosts}}disabled="disabled"{{/unless}}>Show More</button>
   </ul>
 
-  <button id="getMorePosts" class="btn btn-primary" {{#unless morePosts}}disabled="disabled"{{/unless}}>Show More</button>
 
 </div>
 

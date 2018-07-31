@@ -9,7 +9,7 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 require('dotenv').config();
 var QuillDeltaToHtmlConverter = require('quill-delta-to-html');
 
-var postLimit = 2; // how many posts to show user at a time
+var postLimit = 10; // how many posts to show user at a time
 
 router.get('/', function(req, res) {
   if(req.user) {
@@ -126,7 +126,7 @@ router.post('/post', upload.array('file'), function(req, res) {
         var data = {
           questionInvalid: questionInvalid,
           descriptionInvalid: descriptionInvalid,
-          url: "/mentor/history/" + pPost._id
+          url: "/mentor/" + pPost._id
         }
         res.send(data);
       });
@@ -142,7 +142,7 @@ router.post('/post', upload.array('file'), function(req, res) {
         htmlString = htmlString.replace(/<pre>/g, "<pre style='background-color: #23241f;color: #f8f8f2;overflow: visible;white-space: pre-wrap;margin-bottom: 5px;margin-top: 5px;padding: 5px 10px;border-radius: 3px;'>");
 
         htmlString = htmlString.replace(/<img([\w\W]+?)>/g, function() {
-          return `<img src='http://codeassist.org/mentor/history/${pPost._id}/image/${imageCounter++}'/>`
+          return `<img src='http://codeassist.org/mentor/${pPost._id}/image/${imageCounter++}'/>`
         });
 
         return htmlString;
@@ -176,7 +176,7 @@ router.post('/post', upload.array('file'), function(req, res) {
             <li>Date Posted: ${pPost.timestamp}</li>
             <li>User's Name: ${req.user.username}</li>
             <li>User's Email: ${req.user.email}</li>
-            <li>Link: <a href="https://codeassist.org/mentor/history/${pPost._id}">Post</a></li>
+            <li>Link: <a href="https://codeassist.org/mentor/${pPost._id}">Post</a></li>
           </ul>
         `;
 
@@ -223,7 +223,7 @@ router.get('/post', function(req, res) {
   }
 });
 
-router.post('/history/morePosts', function(req, res) {
+router.post('/morePosts', function(req, res) {
   console.log("MORE");
   var lastPostID = req.body.lastPostID;
   var prog_lang = req.body.filter_opt;
@@ -241,7 +241,7 @@ router.post('/history/morePosts', function(req, res) {
     User.PostSchema.findOne({_id: lastPostID}, function(err, lastPost) {
       if(req.user.title == 'mentor')
       {
-        User.PostSchema.find({prog_lang: prog_lang, timestamp: {$lt: lastPost.timestamp}}).sort({'timestamp': -1}).limit(postLimit).select('_id timestamp author question prog_lang answers').populate({path: 'assignedMentor', select: '_id username'}).lean().exec(function(err, postsToAdd) {
+        User.PostSchema.find({prog_lang: prog_lang, timestamp: {$lt: lastPost.timestamp}}).sort({'timestamp': -1}).limit(postLimit).select('_id timestamp author question description prog_lang answers').populate({path: 'assignedMentor', select: '_id username'}).lean().exec(function(err, postsToAdd) {
           // .lean() converts mongoose objects to normal js objects
           // assignedToSelf is needed in postschema model if .lean() is not used
 
@@ -273,7 +273,7 @@ router.post('/history/morePosts', function(req, res) {
           path: 'private_posts',
           match: {prog_lang: prog_lang, timestamp: {$lt: lastPost.timestamp}},
           options: {sort: {'timestamp': -1}, limit: postLimit},
-          select: '_id timestamp author question prog_lang answers'
+          select: '_id timestamp author question description prog_lang answers'
         }).exec(function(err, user) {
           var postsToAdd = user.private_posts;
 
@@ -303,14 +303,14 @@ router.post('/history/morePosts', function(req, res) {
     });
   } else {
     req.flash('origin');
-    req.flash('origin', '/mentor/history');
+    req.flash('origin', '/mentor');
     res.redirect('../../login');
   }
 
 });
 
 // to get images inside a main post
-router.get('/history/:id/image/:imageIndex', function(req, res) {
+router.get('/:id/image/:imageIndex', function(req, res) {
   var postID = req.params.id;
   var imageIndex = req.params.imageIndex;
 
@@ -340,7 +340,7 @@ router.get('/history/:id/image/:imageIndex', function(req, res) {
 });
 
 // to get images inside answers
-router.get('/history/answer/:id/image/:imageIndex', function(req, res) {
+router.get('/answer/:id/image/:imageIndex', function(req, res) {
   var answerID = req.params.id;
   var imageIndex = req.params.imageIndex;
 
@@ -369,14 +369,14 @@ router.get('/history/answer/:id/image/:imageIndex', function(req, res) {
   });
 });
 
-router.get('/history/:id', function(req, res) {
+router.get('/:id', function(req, res) {
   var postID = req.params.id;
   if(req.user)
   {
     if(req.user.title == 'mentor')
     {
       User.PostSchema.findOne({_id: postID}).populate(['answers', 'files']).exec(function(err, post) {
-        res.render('mentor-history-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer')});
+        res.render('mentor-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer')});
       });
     }else{
       User.userHasPrivatePostById(req.user._id, postID, function(found) {
@@ -384,7 +384,7 @@ router.get('/history/:id', function(req, res) {
         {
           // console.log("Found: " + found);
           User.PostSchema.findOne({_id: postID}).populate(['answers', 'files']).exec(function(err, post) {
-            res.render('mentor-history-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer')});
+            res.render('mentor-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer')});
           });
         }else{
           // console.log("Found: " + found);
@@ -394,13 +394,13 @@ router.get('/history/:id', function(req, res) {
     }
   }else{
     req.flash('origin');
-    req.flash('origin', '/mentor/history/'+postID);
+    req.flash('origin', '/mentor/'+postID);
     res.redirect('../../login');
   }
 
 });
 
-router.post('/history/:id/answer', function(req, res) {
+router.post('/:id/answer', function(req, res) {
 
   var postID = req.params.id;
   // console.log("Id: " + postID);
@@ -439,7 +439,7 @@ router.post('/history/:id/answer', function(req, res) {
           <h2>New Answer Details</h2>
           <hr>
 
-          <h3>Link to the <a href="https://codeassist.org/mentor/history/${postID}">Answer</a></h3>
+          <h3>Link to the <a href="https://codeassist.org/mentor/${postID}">Answer</a></h3>
 
           <h3>Contact details</h3>
           <ul>
@@ -464,7 +464,7 @@ router.post('/history/:id/answer', function(req, res) {
           console.log("User's Username: " + author);
           console.log("Redirecting to: Specific Private post page from: Specific Private post page");
           console.log('============================================');
-          res.send('/mentor/history/'+postID);
+          res.send('/mentor/'+postID);
         });
       });
     }else{
@@ -496,7 +496,7 @@ router.post('/history/:id/answer', function(req, res) {
               htmlString = htmlString.replace(/<pre>/g, "<pre style='background-color: #23241f;color: #f8f8f2;overflow: visible;white-space: pre-wrap;margin-bottom: 5px;margin-top: 5px;padding: 5px 10px;border-radius: 3px;'>");
 
               htmlString = htmlString.replace(/<img([\w\W]+?)>/g, function() {
-                return `<img src='http://codeassist.org/mentor/history/answer/${newAnswer._id}/image/${imageCounter++}'/>`
+                return `<img src='http://codeassist.org/mentor/answer/${newAnswer._id}/image/${imageCounter++}'/>`
               });
 
               return htmlString;
@@ -519,7 +519,7 @@ router.post('/history/:id/answer', function(req, res) {
                   <li>Date Posted: ${newAnswer.timestamp}</li>
                   <li>User's Name: ${author}</li>
                   <li>User's Email: ${req.user.email}</li>
-                  <li>Link: <a href="https://codeassist.org/mentor/history/${postID}">Post</a></li>
+                  <li>Link: <a href="https://codeassist.org/mentor/${postID}">Post</a></li>
                 </ul>
               `;
 
@@ -535,7 +535,7 @@ router.post('/history/:id/answer', function(req, res) {
               console.log("Mentor's Username: " + post.assignedMentor.username);
               console.log("Redirecting to: Specific Private post page from: Specific Private post page");
               console.log('============================================');
-              res.send('/mentor/history/'+postID);
+              res.send('/mentor/'+postID);
             } else {
               User.UserSchema.find({title: 'mentor'}, function(err, mentors) {
                 if(err) throw err;
@@ -556,7 +556,7 @@ router.post('/history/:id/answer', function(req, res) {
                       <li>Date Posted: ${newAnswer.timestamp}</li>
                       <li>User's Name: ${author}</li>
                       <li>User's Email: ${req.user.email}</li>
-                      <li>Link: <a href="https://codeassist.org/mentor/history/${postID}">Post</a></li>
+                      <li>Link: <a href="https://codeassist.org/mentor/${postID}">Post</a></li>
                     </ul>
                   `;
 
@@ -573,7 +573,7 @@ router.post('/history/:id/answer', function(req, res) {
                   console.log("Redirecting to: Specific Private post page from: Specific Private post page");
                   console.log('============================================');
                 }
-                res.send('/mentor/history/'+postID);
+                res.send('/mentor/'+postID);
               });
             }
 
@@ -591,13 +591,13 @@ router.post('/history/:id/answer', function(req, res) {
     req.flash('origin');
     req.flash('saved_answer');
 
-    req.flash('origin', '/mentor/history/'+postID);
+    req.flash('origin', '/mentor/'+postID);
     req.flash('saved_answer', message);
     res.send('/login');
   }
 });
 
-router.post('/history/filter', function(req, res) {
+router.post('/filter', function(req, res) {
   if(req.user) {
     if(req.user.title == 'mentor')
       var isMentor = true;
@@ -610,7 +610,7 @@ router.post('/history/filter', function(req, res) {
 
     if(req.user.title == 'mentor')
     {
-      User.PostSchema.find({prog_lang: option}).sort({'timestamp': -1}).limit(postLimit).select('_id timestamp author question prog_lang answers').populate({path: 'assignedMentor', select: '_id username'}).lean().exec(function(err, postsToAdd) {
+      User.PostSchema.find({prog_lang: option}).sort({'timestamp': -1}).limit(postLimit).select('_id timestamp author question description prog_lang answers').populate({path: 'assignedMentor', select: '_id username'}).lean().exec(function(err, postsToAdd) {
 
         for (var i = 0; i < postsToAdd.length; i++) {
           if (postsToAdd[i].assignedMentor && postsToAdd[i].assignedMentor._id.equals(req.user._id)) {
@@ -640,7 +640,7 @@ router.post('/history/filter', function(req, res) {
         path: 'private_posts',
         match: {prog_lang: option},
         options: {sort: {'timestamp': -1}, limit: postLimit},
-        select: '_id timestamp author question prog_lang answers'
+        select: '_id timestamp author question description prog_lang answers'
       }).exec(function(err, user) {
         var postsToAdd = user.private_posts;
 
@@ -667,66 +667,8 @@ router.post('/history/filter', function(req, res) {
     }
   } else {
     req.flash('origin');
-    req.flash('origin', '/mentor/history/');
+    req.flash('origin', '/mentor/');
     res.send({url: '/login'});
   }
-
-/*  if(req.user) {
-    var option = req.body.filter_opt;
-    console.log("Made filter request: " + option);
-    if(option == "Remove Filter")
-    {
-      console.log("Filter Removed");
-      User.UserSchema.findOne({}).populate('private_posts').exec(function(err, user) {
-        var allPosts = user.private_posts;
-
-        allPosts.sort(function(date1,date2){
-          if (date1 > date2) return -1;
-          if (date1 < date2) return 1;
-          return 0;
-        });
-
-        for (var i = 0; i < allPosts.length; i++) {
-          if (allPosts[i].assignedMentor && allPosts[i].assignedMentor._id.equals(req.user._id)) {
-            allPosts[i].assignedToSelf = true;
-          }
-        }
-
-        if(err) throw err;
-        res.send({posts: allPosts, userIsMentor: isMentor});
-      });
-
-    }else{
-      User.UserSchema.findOne({}).populate('private_posts').exec(function(err, user) {
-        if(err) throw err;
-        var allPosts = user.private_posts;
-
-        allPosts.sort(function(date1,date2){
-          if (date1 > date2) return -1;
-          if (date1 < date2) return 1;
-          return 0;
-        });
-
-        var sendPosts = [];
-        for (var i = 0; i < allPosts.length; i++)
-        {
-          if(allPosts[i].prog_lang == option)
-          {
-            if (allPosts[i].assignedMentor && allPosts[i].assignedMentor._id.equals(req.user._id)) {
-              allPosts[i].assignedToSelf = true;
-            }
-            sendPosts.push(allPosts[i]);
-          }
-        }
-        res.send({posts: allPosts, userIsMentor: isMentor});
-      });
-    }
-
-  }else{
-    req.flash('origin');
-    req.flash('origin', '/mentor/history/');
-    res.send({url: '/login'});
-  }
-*/
 });
 module.exports = router;

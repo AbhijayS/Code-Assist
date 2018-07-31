@@ -7,12 +7,11 @@ window.onload = function(){
   });
 
   $("#getMorePosts").click(function() {
-    console.log("CLCIS");
-      var data = {
-        lastPostID: $("#all-post-container .list-group-item").last().attr('id'),
-        filter_opt: currentFilter
-      };
-    $.post('/mentor/history/morePosts', data, function(data) {
+    var data = {
+      lastPostID: $("#all-post-container .list-group-item").last().attr('id'),
+      filter_opt: currentFilter
+    };
+    $.post('/mentor/morePosts', data, function(data) {
       console.log(data);
       if (!data.morePostsAvailable) {
         $("#getMorePosts").attr("disabled", true);
@@ -47,7 +46,7 @@ window.onload = function(){
             <p class="text-gray pt-2 my-0">asked <span class="moment-timestamp">${timestamp}</span> ${author}</p>
           </div>
 
-          <a href="/mentor/history/${id}">${question}</a>
+          <a href="/mentor/${id}">${question}</a>
           <p class="w-100">${description}</p>
           <div class="ml-auto text-right">
             <span class="badge badge-warning badge-pill">${answers} Answers</span>
@@ -84,7 +83,7 @@ window.onload = function(){
     };
 
     $("#filterLoading").show();
-    $.post('/mentor/history/filter', data, function(data) {
+    $.post('/mentor/filter', data, function(data) {
       if(data.url)
       {
         window.location.replace(url);
@@ -124,7 +123,7 @@ window.onload = function(){
             var timestamp = new Date(postsToAdd[i].timestamp);
             timestamp = moment(timestamp, "MM-DD");
             timestamp = timestamp.format("MMM D");
-            console.log(timestamp);
+            // console.log(timestamp);
             var userIsMentor = data.userIsMentor;
 
             var newPost = `
@@ -133,7 +132,7 @@ window.onload = function(){
                 <p class="text-gray pt-2 my-0">asked <span class="moment-timestamp">${timestamp}</span> ${author}</p>
               </div>
 
-              <a href="/mentor/history/${id}">${question}</a>
+              <a href="/mentor/${id}">${question}</a>
               <p class="w-100">${description}</p>
               <div class="ml-auto text-right">
                 <span class="badge badge-warning badge-pill">${answers} Answers</span>

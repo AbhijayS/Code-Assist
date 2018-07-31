@@ -1,0 +1,141 @@
+<style>
+  #answer-editor .ql-editor{
+    min-height: 150px;
+  }
+</style>
+
+<div class="clippy d-none d-xl-block" style="-webkit-clip-path: polygon(0 87%, 100% 81%, 100% 100%, 0% 100%);
+clip-path: polygon(0 87%, 100% 81%, 100% 100%, 0% 100%); height: 351px; z-index: 1;"></div>
+
+<div class="jumbotron jumbotron-title text-left" style="background-color: #e9ecef4f; box-shadow: 0px 3px 6px 0px #4441412b;">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="/mentor">Ask a Mentor</a></li>
+        <li class="breadcrumb-item active" aria-current="page">View</li>
+      </ol>
+    </nav>
+
+    <h1 class="display-3 d-none d-sm-block">{{post.question}}</h1>
+    <h1 class="display-4 d-sm-none">{{post.question}}</h1>
+    <hr>
+
+  </div>
+</div>
+
+<div class="container" id="mentor-post-body" class="mb-5">
+  <p class="text-right"><a href="#answer-editor"><button type="button" name="button" class="btn btn-primary btn-lg">Post an Answer</button></a></p>
+  <div class="card border-light bg-light mb-3">
+    <div class="card-header">
+      <p>{{post.author}}</p>
+      <p class="moment-timestamp" style="display: none;">{{post.timestamp}}</p>
+    </div>
+    <div class="card-body">
+      <h5 class="card-title">{{post.question}}</h5>
+      <p><div id="post-view-editor" class="noborder p-0"></div></p>
+    </div>
+  </div>
+
+  {{#each post.answers}}
+  <div class="card mb-3">
+    <div class="card-body">
+      <p class="card-text answer-view noborder d-none">{{this.answer}}</p>
+    </div>
+
+    <div class="card-footer text-muted">
+      Answered <p class="moment-timestamp d-none">{{this.timestamp}}</p>
+      {{this.author}}
+
+    </div>
+  </div>
+  {{/each}}
+
+  <div class="jumbotron bg-white">
+    <form action="/" method="post">
+      <div class="form-group">
+        <h1 style="font-weight: 200;">Your Answer</h1>
+        <hr>
+        <div id="answer-editor">
+
+        </div>
+      </div>
+
+      <button class="btn btn-outline-primary btn-lg btn-block py-3" id="submit">Post your answer</button>
+    </form>
+  </div>
+</div>
+
+<script type="text/javascript">
+  window.onload = function(){
+    /* Post Description Viewer (Quill) */
+    var postViewEditor = new Quill('#post-view-editor', {
+      modules: {
+        toolbar: false
+      },
+      theme: 'snow'
+    });
+    postViewEditor.setContents({{{post.description}}});
+    postViewEditor.disable();
+
+    /* All of the Answers Viewer (Quill) */
+    var answerViews = $('.answer-view');
+    // console.log("#Answers: " + answerViews.length);
+    var postAnswers = [];
+    {{#each post.answers}}
+    postAnswers.push({{{this.answer}}});
+    {{/each}}
+    for (var i = 0; i < answerViews.length; i++)
+    {
+      var answer = answerViews[i];
+      var quill = new Quill(answer, {
+        modules: {
+          toolbar: false
+        },
+        theme: 'snow'
+      });
+      console.log(postAnswers[i]);
+      quill.setContents(postAnswers[i]);
+      quill.disable();
+    }
+    answerViews.removeClass('d-none');
+
+    /*New answer posting editor (Quill)
+      Render saved data as well
+    */
+
+    var answerEditor = new Quill('#answer-editor', {
+      modules: {
+        toolbar: [
+          [{ header: [1, 2, false] }],
+          ['bold', 'italic', 'underline'],
+          ['image', 'code-block']
+        ]
+      },
+      theme: 'snow'
+    });
+    answerEditor.setContents({{{saved}}});
+
+    $('#submit').on('click', function(event) {
+      event.preventDefault();
+      var answer = JSON.stringify(answerEditor.getContents().ops);
+      console.log($(location).attr('pathname'));
+      var post_url = "/mentor/history/{{post.id}}/answer";
+
+      $.post(post_url, {answer: answer}, function(url) {
+        window.location.replace(url);
+      });
+    });
+
+    /*
+    Moment Date format
+    */
+    $('.moment-timestamp').each(function() {
+      var timestamp = new Date($(this).text());
+      timestamp = moment(timestamp, "MM-DD");
+      $(this).text(timestamp.format("MMM D"));
+      $(this).removeClass('d-none');
+      $(this).show();
+    });
+  };
+</script>
