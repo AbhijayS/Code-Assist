@@ -15,10 +15,11 @@ router.get('/', function(req, res) {
   if(req.user) {
     if(req.user.title == 'mentor')
     {
-      User.UserSchema.findOne({_id: req.user._id}).populate(['assignedMentor', {
+      User.UserSchema.findOne({_id: req.user._id}).populate({
         path: 'private_posts',
-        options: {sort: {'timestamp': -1}, limit: postLimit}
-      }]).exec(function(err, user) {
+        options: {sort: {'timestamp': -1}, limit: postLimit},
+        populate: {path: 'assignedMentor'}
+      }).exec(function(err, user) {
         var posts = user.private_posts;
         for (var i = 0; i < posts.length; i++) {
           if (posts[i].assignedMentor && posts[i].assignedMentor._id.equals(req.user._id)) {
