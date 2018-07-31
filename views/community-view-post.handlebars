@@ -37,7 +37,7 @@ clip-path: polygon(0 87%, 100% 81%, 100% 100%, 0% 100%); height: 351px; z-index:
 
   <p class="text-right"><a href="#answer-editor"><button type="button" name="button" class="btn btn-primary btn-lg">Post an Answer</button></a></p>
 
-  <div class="card border-light bg-light mb-3">
+  <div id="post-{{post._id}}" class="card border-light bg-light mb-3">
     <div class="card-header">
       <p>{{post.author}}</p>
       <p class="moment-timestamp" style="display: none;">{{post.timestamp}}</p>
@@ -47,6 +47,10 @@ clip-path: polygon(0 87%, 100% 81%, 100% 100%, 0% 100%); height: 351px; z-index:
           <button class="btn btn-danger" id="delete" type="button" name="button">Delete Post</button>
         </div>
       {{/if}}
+      <div class="float-right d-inline-flex">
+        <p class="likeCounter m-0 mr-2">{{post.likeCount}}</p>
+        <button class="likeBtn btn {{#if post.liked}}btn-success{{else}}btn-secondary{{/if}}"><i class="fas fa-thumbs-up"></i></button>
+      </div>
     </div>
     <div class="card-body">
       <h5 class="card-title">{{post.question}}</h5>
@@ -67,7 +71,7 @@ clip-path: polygon(0 87%, 100% 81%, 100% 100%, 0% 100%); height: 351px; z-index:
   </div>
 
   {{#each post.answers}}
-  <div class="card mb-3">
+  <div id="answer-{{this._id}}" class="card mb-3">
     <div class="card-body">
       <p class="card-text answer-view noborder d-none">{{this.answer}}</p>
     </div>
@@ -76,6 +80,10 @@ clip-path: polygon(0 87%, 100% 81%, 100% 100%, 0% 100%); height: 351px; z-index:
       Answered <p class="moment-timestamp d-none">{{this.timestamp}}</p>
       {{this.author}}
 
+      <div class="float-right d-inline-flex">
+        <p class="likeCounter m-0 mr-2">{{this.likeCount}}</p>
+        <button class="likeBtn btn {{#if this.liked}}btn-success{{else}}btn-secondary{{/if}}"><i class="fas fa-thumbs-up"></i></button>
+      </div>
     </div>
   </div>
   {{/each}}
@@ -223,6 +231,30 @@ clip-path: polygon(0 87%, 100% 81%, 100% 100%, 0% 100%); height: 351px; z-index:
         if(data.auth) {
           $('.modal').modal('hide')
           $('#flag-alert').removeClass('d-none');
+        }
+      });
+    });
+
+    $(".likeBtn").click(function() {
+      if ($(this).hasClass("btn-secondary")) {
+        $(this).addClass("btn-success");
+        $(this).removeClass("btn-secondary");
+
+        var likeCount = Number($(this).siblings(".likeCounter").text());
+        $(this).siblings(".likeCounter").text(likeCount + 1);
+      } else {
+        $(this).addClass("btn-secondary");
+        $(this).removeClass("btn-success");
+
+        var likeCount = Number($(this).siblings(".likeCounter").text());
+        $(this).siblings(".likeCounter").text(likeCount - 1);
+      }
+
+      var id = $(this).parents(".card").attr('id').split('-')[1];
+      var type = $(this).parents(".card").attr('id').split('-')[0];
+      $.post('/community/like', {type: type, id: id, postID: $('#post-id').text()}, function(data) {
+        if (data.url) {
+          window.location.replace(data.url);
         }
       });
     });

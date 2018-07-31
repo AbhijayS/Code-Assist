@@ -118,13 +118,23 @@ var PostSchema = new Schema ({
 	assignedMentor: {
 		type: Schema.Types.ObjectId,
 		ref: 'UserSchema'
-	}
+	},
+	userLikes: [{
+		type: Schema.Types.ObjectId,
+		ref: 'UserSchema'
+	}],
+	likeCount: {type: Number, default: 0}
 });
 
 var AnswerSchema = new Schema ({
 	author: String,
 	answer: String,
-	timestamp: {type: Date, default: Date.now}
+	timestamp: {type: Date, default: Date.now},
+	userLikes: [{
+		type: Schema.Types.ObjectId,
+		ref: 'UserSchema'
+	}],
+	likeCount: {type: Number, default: 0}
   // ...
 });
 

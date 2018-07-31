@@ -230,14 +230,26 @@ router.post('/post', upload.array('file'), function(req, res) {
 
 router.get('/:id', function(req, res) {
   var postID = req.params.id;
-  User.PostSchema.findOne({_id: postID}).populate(['answers', 'files']).exec(function(err, post) {
+  User.PostSchema.findOne({_id: postID}).populate([{path: 'answers', options: {sort: {'timestamp': 1}}}, 'files']).exec(function(err, post) {
+    // post = post.toObject();
 
-    var allAnswers = post.answers;
-    allAnswers.sort(function(date1,date2){
-      if (date1 > date2) return -1;
-      if (date1 < date2) return 1;
-      return 0;
-    });
+    if (req.user) {
+      for (var i = 0; i < post.answers.length; i++) {
+        var userLikedAnswer = post.answers[i].userLikes.some(function(userID) {
+          return userID.equals(req.user._id);
+        });
+
+        if (userLikedAnswer)
+          post.answers[i].liked = true;  
+      }
+
+      var userLikedPost = post.userLikes.some(function(userID) {
+        return userID.equals(req.user._id);
+      });
+      if (userLikedPost)
+        post.liked = true;
+    }
+
 
     var today = moment(Date.now());
     var description = post.description;
@@ -247,6 +259,52 @@ router.get('/:id', function(req, res) {
 		    res.render('community-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description});
 		}
 	});
+});
+
+router.post('/like', function(req, res) {
+  var id = req.body.id;
+  var type = req.body.type;
+  var postID = req.body.postID;
+
+  if(req.user) {
+    if (type == "post") {
+      User.PostSchema.findOne({_id: id}, function(err, post) {
+        var index = post.userLikes.indexOf(req.user._id);
+        if (index == -1) {
+          post.userLikes.push(req.user);
+          post.likeCount++;
+        } else {
+          post.userLikes.splice(index, 1);
+          post.likeCount--;
+        }
+        post.save(function(err) {
+          if(err) throw err;
+        });
+
+        res.end();
+      });
+    } else if (type == "answer") {
+      User.AnswerSchema.findOne({_id: id}, function(err, answer) {
+        var index = answer.userLikes.indexOf(req.user._id);
+        if (index == -1) {
+          answer.userLikes.push(req.user);
+          answer.likeCount++;
+        } else {
+          answer.userLikes.splice(index, 1);
+          answer.likeCount--;
+        }
+        answer.save(function(err) {
+          if(err) throw err;
+        });
+
+        res.end();
+      });
+    }
+  } else {
+    req.flash('origin');
+    req.flash('origin', '/community/' + postID);
+    res.send({url: '/login'})
+  }
 });
 
 router.post('/flag-post', function(req, res) {
