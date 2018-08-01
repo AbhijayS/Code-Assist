@@ -256,7 +256,7 @@ router.get('/:id', function(req, res) {
 		if(req.user && req.user._id==post.authorid){
 			res.render('community-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description, isowner: true});
 		}else{
-			res.redirect('/community');
+			res.render('community-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description});
 		}
 	});
 });
