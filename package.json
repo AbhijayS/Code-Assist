@@ -25,6 +25,7 @@
     "cookie-parser": "^1.4.1",
     "cookie-session": "^2.0.0-beta.3",
     "dotenv": "^5.0.1",
+    "escape-string-regexp": "^1.0.5",
     "express": "*",
     "express-handlebars": "*",
     "express-session": "^1.15.6",

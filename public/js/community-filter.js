@@ -34,7 +34,8 @@ window.onload = function(){
   $("#getMorePosts").click(function() {
     var data = {
       lastPostID: $("#all-post-container .list-group-item").last().attr('id'),
-      filter_opt: currentFilter
+      filter_opt: currentFilter,
+      search: lastSearch
     };
     $.post('/community/morePosts', data, function(data) {
       // console.log(data);
@@ -85,7 +86,8 @@ window.onload = function(){
     var value = $(this).text();
     currentFilter = value;
     var data = {
-      filter_opt: value
+      filter_opt: value,
+      search: lastSearch
     };
 
     $("#filterLoading").show();
@@ -150,14 +152,23 @@ window.onload = function(){
     });
   });
 
+  var lastSearch = null;
   $('#search-bar').submit(function(event){
     event.preventDefault();
     var key = $("#m").val();
-    $.post("/community/Search",{search:key},function(data){
+    lastSearch = key;
+    $.post("/community/Search",{search:key, filter_opt: currentFilter},function(data){
       var postsContainer = $('#all-posts');
       postsContainer.empty();
+      var postsToAdd = data.postsToAdd;
 
-      if(data.length == 0)
+      if (!data.morePostsAvailable) {
+        $("#getMorePosts").attr("disabled", true);
+      } else {
+        $("#getMorePosts").attr("disabled", false);
+      }
+
+      if(postsToAdd.length == 0)
       {
         var alert = `
         <div class="alert alert-info">
@@ -166,37 +177,36 @@ window.onload = function(){
         `;
         postsContainer.append(alert);
       }else{
-        for(var i = 0; i < data.length; i++)
+        for(var i = 0; i < postsToAdd.length; i++)
         {
-          var id = data[i]._id;
-          var question = data[i].question;
-          var answers = data[i].answers.length;
-          var author = data[i].author;
-          var lang = data[i].prog_lang;
-          var description = data[i].description;
-          var timestamp = new Date(data[i].timestamp);
+          var id = postsToAdd[i]._id;
+          var question = postsToAdd[i].question;
+          var answers = postsToAdd[i].answers.length;
+          var author = postsToAdd[i].author;
+          var lang = postsToAdd[i].prog_lang;
+          var description = postsToAdd[i].description;
+          var timestamp = new Date(postsToAdd[i].timestamp);
           timestamp = moment(timestamp, "MM-DD");
           timestamp = timestamp.format("MMM D");
 
           var newPost = `
-          <li class="list-group-item list-group-item-action lead" style="font-weight: 400;">
-          <div style="font-size: 16px;" class="d-none d-sm-block">
-          <p class="text-gray pt-2 my-0">asked <span class="moment-timestamp" style="display: none;">${timestamp}</span> ${author}</p>
-          </div>
+          <li id="${id}" class="list-group-item list-group-item-action lead" style="font-weight: 400;">
+            <div style="font-size: 16px;" class="d-none d-sm-block">
+              <p class="text-gray pt-2 my-0">asked <span class="moment-timestamp">${timestamp}</span> ${author}</p>
+            </div>
 
-          <a href="/community/${id}">${question}</a>
-          <p>${description}</p>
-          <div class="ml-auto text-right">
-          <span class="badge badge-warning badge-pill mr-3">${answers} Answers</span>
-          <span class="badge badge-primary badge-pill mr-3">${lang}</span>
-          </div>
-          </li>
-          `;
+            <a href="/community/${id}">${question}</a>
+            <p class="w-100">${description}</p>
+            <div class="ml-auto text-right">
+              <span class="badge badge-warning badge-pill">${answers} Answers</span>
+              <span class="badge badge-primary badge-pill">${lang}</span>
+            </div>
+          </li>`;
 
           postsContainer.append(newPost);
         }
       }
-      $('#m').val('');
+      // $('#m').val('');
     });
   });
 };
