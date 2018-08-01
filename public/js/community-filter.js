@@ -55,6 +55,9 @@ window.onload = function(){
         var lang = postsToAdd[i].prog_lang;
         // console.log(lang);
         var description = postsToAdd[i].description;
+        var likeCount = postsToAdd[i].likeCount;
+        if (!likeCount)
+          likeCount = "";
 
         var timestamp = new Date(postsToAdd[i].timestamp);
         timestamp = moment(timestamp, "MM-DD");
@@ -70,6 +73,7 @@ window.onload = function(){
           <a href="/community/${id}">${question}</a>
           <p class="w-100">${description}</p>
           <div class="ml-auto text-right">
+            <button class="btn btn-outline-secondary badge-pill p-0 px-2"><span class="badge badge-pill">${likeCount}<i class="far fa-thumbs-up"></i></span></button>
             <span class="badge badge-warning badge-pill">${answers} Answers</span>
             <span class="badge badge-primary badge-pill">${lang}</span>
           </div>
@@ -123,6 +127,9 @@ window.onload = function(){
             var lang = postsToAdd[i].prog_lang;
             // console.log(lang);
             var description = postsToAdd[i].description;
+            var likeCount = postsToAdd[i].likeCount;
+            if (!likeCount)
+              likeCount = "";
 
             var timestamp = new Date(postsToAdd[i].timestamp);
             timestamp = moment(timestamp, "MM-DD");
@@ -138,6 +145,7 @@ window.onload = function(){
               <a href="/community/${id}">${question}</a>
               <p class="w-100">${description}</p>
               <div class="ml-auto text-right">
+                <button class="btn btn-outline-secondary badge-pill p-0 px-2"><span class="badge badge-pill">${likeCount}<i class="far fa-thumbs-up"></i></span></button>
                 <span class="badge badge-warning badge-pill">${answers} Answers</span>
                 <span class="badge badge-primary badge-pill">${lang}</span>
               </div>
@@ -185,6 +193,9 @@ window.onload = function(){
           var author = postsToAdd[i].author;
           var lang = postsToAdd[i].prog_lang;
           var description = postsToAdd[i].description;
+          var likeCount = postsToAdd[i].likeCount;
+          if (!likeCount)
+            likeCount = "";
           var timestamp = new Date(postsToAdd[i].timestamp);
           timestamp = moment(timestamp, "MM-DD");
           timestamp = timestamp.format("MMM D");
@@ -198,6 +209,7 @@ window.onload = function(){
             <a href="/community/${id}">${question}</a>
             <p class="w-100">${description}</p>
             <div class="ml-auto text-right">
+              <button class="btn btn-outline-secondary badge-pill p-0 px-2"><span class="badge badge-pill">${likeCount}<i class="far fa-thumbs-up"></i></span></button>
               <span class="badge badge-warning badge-pill">${answers} Answers</span>
               <span class="badge badge-primary badge-pill">${lang}</span>
             </div>

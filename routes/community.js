@@ -12,7 +12,7 @@ const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 
-var postLimit = 10; // how many posts to show user at a time
+var postLimit = 3; // how many posts to show user at a time
 
 // var User = require('../models/test-user');
 
@@ -74,7 +74,7 @@ router.post('/morePosts', function(req, res) {
           searchMatch
         ]},
         options: {sort: {'timestamp': -1}, limit: postLimit},
-        select: '_id timestamp author question description prog_lang answers'
+        select: '_id timestamp author question description prog_lang answers likeCount'
       }).exec(function(err, community) {
         var postsToAdd = community.posts;
 
@@ -477,7 +477,7 @@ router.post('/Search',function(req,res){
       }
     ]},
     options: {sort: {'timestamp': -1}, limit: postLimit},
-    select: '_id timestamp author question description prog_lang answers'
+    select: '_id timestamp author question description prog_lang answers likeCount'
   }).exec(function(err, community) {
 		if (err) console.log(err);
 
@@ -552,7 +552,7 @@ router.post('/filter', function(req, res) {
       searchMatch
     ]},
     options: {sort: {'timestamp': -1}, limit: postLimit},
-    select: '_id timestamp author question description prog_lang answers'
+    select: '_id timestamp author question description prog_lang answers likeCount'
   }).exec(function(err, community) {
     var postsToAdd = community.posts;
 
