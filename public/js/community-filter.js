@@ -94,6 +94,11 @@ window.onload = function(){
       search: lastSearch
     };
 
+    if (value != "Remove Filter")
+      $("#dropdownMenuLink").text(value);
+    else
+      $("#dropdownMenuLink").text("Filter By");
+
     $("#filterLoading").show();
     $.post('/community/filter', data, function(data) {
       if(data.url)
