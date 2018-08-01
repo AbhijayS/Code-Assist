@@ -131,6 +131,11 @@ Community Post Page (community-post.handlebars)
   background-color: #0d75e8;
 }
 
+.likeCounter {
+  font-size: 20px;
+  line-height: 2;
+}
+
 /*
 ========================================
 Community Post Page (community-post.handlebars)

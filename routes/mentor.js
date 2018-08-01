@@ -15,7 +15,12 @@ router.get('/', function(req, res) {
   if(req.user) {
     if(req.user.title == 'mentor')
     {
-      User.PostSchema.find({}).sort({'timestamp': -1}).limit(postLimit).populate('assignedMentor').exec(function(err, posts) {
+      User.UserSchema.findOne({_id: req.user._id}).populate({
+        path: 'private_posts',
+        options: {sort: {'timestamp': -1}, limit: postLimit},
+        populate: {path: 'assignedMentor'}
+      }).exec(function(err, user) {
+        var posts = user.private_posts;
         for (var i = 0; i < posts.length; i++) {
           if (posts[i].assignedMentor && posts[i].assignedMentor._id.equals(req.user._id)) {
             posts[i].assignedToSelf = true;
@@ -25,12 +30,18 @@ router.get('/', function(req, res) {
         // see if show more posts button should be greyed out
         var morePosts = false;
         if (posts.length > 0) {
-          User.PostSchema.count({timestamp: {$lt: posts[posts.length-1].timestamp}}, function(err, count) {
+          User.UserSchema.findOne({_id: req.user._id}).populate({
+            path: 'private_posts',
+            match: {timestamp: {$lt: posts[posts.length-1].timestamp}},
+          }).exec(function(err, userWithRemainingPosts) {
+            var count = userWithRemainingPosts.private_posts.length;
             if (count > 0)
               morePosts = true;
 
             res.render('mentor', {layout: 'dashboard-layout', posts: posts, userIsMentor: true, morePosts: morePosts});
           });
+        } else {
+          res.render('mentor', {layout: 'dashboard-layout', userIsMentor: true, morePosts: false});
         }
       });
     }else{
@@ -153,6 +164,16 @@ router.post('/post', upload.array('file'), function(req, res) {
       for (var i = 0; i < mentors.length; i++)
       {
         var mentor = mentors[i];
+
+        // add post to all mentor's private_posts
+        // unless mentor made the post (in which case it's already added)
+        if (!req.user._id.equals(mentor._id)) {
+          mentor.private_posts.push(pPost);
+          mentor.save(function(err) {
+            if(err) throw err;
+          });       
+        }
+
         console.log('============================================');
         console.log("Sending Email ...");
         console.log("User: " + req.user.username);
@@ -241,9 +262,18 @@ router.post('/morePosts', function(req, res) {
     User.PostSchema.findOne({_id: lastPostID}, function(err, lastPost) {
       if(req.user.title == 'mentor')
       {
-        User.PostSchema.find({prog_lang: prog_lang, timestamp: {$lt: lastPost.timestamp}}).sort({'timestamp': -1}).limit(postLimit).select('_id timestamp author question description prog_lang answers').populate({path: 'assignedMentor', select: '_id username'}).lean().exec(function(err, postsToAdd) {
+        // User.PostSchema.find({prog_lang: prog_lang, timestamp: {$lt: lastPost.timestamp}}).sort({'timestamp': -1}).limit(postLimit).select('_id timestamp author question description prog_lang answers').populate({path: 'assignedMentor', select: '_id username'}).lean().exec(function(err, postsToAdd) {
+        User.UserSchema.findOne({_id: req.user._id}).populate({
+          path: 'private_posts',
+          match: {prog_lang: prog_lang, timestamp: {$lt: lastPost.timestamp}},
+          options: {sort: {'timestamp': -1}, limit: postLimit},
+          select: '_id timestamp author question description prog_lang answers',
+          populate: {path: 'assignedMentor', select: '_id username'}
+        }).lean().exec(function(err, user) {
           // .lean() converts mongoose objects to normal js objects
           // assignedToSelf is needed in postschema model if .lean() is not used
+
+          var postsToAdd = user.private_posts;
 
           for (var i = 0; i < postsToAdd.length; i++) {
             if (postsToAdd[i].assignedMentor && postsToAdd[i].assignedMentor._id.equals(req.user._id)) {
@@ -252,7 +282,11 @@ router.post('/morePosts', function(req, res) {
           }
 
           if (postsToAdd.length > 0) {
-            User.PostSchema.count({prog_lang: prog_lang, timestamp: {$lt: postsToAdd[postsToAdd.length-1].timestamp}}, function(err, count) {
+            User.UserSchema.findOne({_id: req.user._id}).populate({
+              path: 'private_posts',
+              match: {prog_lang: prog_lang, timestamp: {$lt: postsToAdd[postsToAdd.length-1].timestamp}},
+            }).exec(function(err, userWithRemainingPosts) {
+              var count =  userWithRemainingPosts.private_posts.length;
               res.send({
                 postsToAdd: postsToAdd,
                 userIsMentor: true,
@@ -610,7 +644,14 @@ router.post('/filter', function(req, res) {
 
     if(req.user.title == 'mentor')
     {
-      User.PostSchema.find({prog_lang: option}).sort({'timestamp': -1}).limit(postLimit).select('_id timestamp author question description prog_lang answers').populate({path: 'assignedMentor', select: '_id username'}).lean().exec(function(err, postsToAdd) {
+      User.UserSchema.findOne({_id: req.user._id}).populate({
+        path: 'private_posts',
+        match: {prog_lang: option},
+        options: {sort: {'timestamp': -1}, limit: postLimit},
+        select: '_id timestamp author question description prog_lang answers',
+        populate: {path: 'assignedMentor', select: '_id username'}
+      }).lean().exec(function(err, user) {
+        var postsToAdd = user.private_posts;
 
         for (var i = 0; i < postsToAdd.length; i++) {
           if (postsToAdd[i].assignedMentor && postsToAdd[i].assignedMentor._id.equals(req.user._id)) {
@@ -619,7 +660,11 @@ router.post('/filter', function(req, res) {
         }
 
         if (postsToAdd.length > 0) {
-          User.PostSchema.count({prog_lang: option, timestamp: {$lt: postsToAdd[postsToAdd.length-1].timestamp}}, function(err, count) {
+          User.UserSchema.findOne({_id: req.user._id}).populate({
+            path: 'private_posts',
+            match: {prog_lang: option, timestamp: {$lt: postsToAdd[postsToAdd.length-1].timestamp}},
+          }).exec(function(err, userWithRemainingPosts) {
+            var count = userWithRemainingPosts.private_posts.length;
             res.send({
               postsToAdd: postsToAdd,
               userIsMentor: true,
