@@ -231,20 +231,23 @@ router.post('/post', upload.array('file'), function(req, res) {
 router.get('/:id', function(req, res) {
   var postID = req.params.id;
   User.PostSchema.findOne({_id: postID}).populate(['answers', 'files']).exec(function(err, post) {
+		if(post) {
+			var allAnswers = post.answers;
+			allAnswers.sort(function(date1,date2){
+				if (date1 > date2) return -1;
+				if (date1 < date2) return 1;
+				return 0;
+			});
 
-    var allAnswers = post.answers;
-    allAnswers.sort(function(date1,date2){
-      if (date1 > date2) return -1;
-      if (date1 < date2) return 1;
-      return 0;
-    });
-
-    var today = moment(Date.now());
-    var description = post.description;
-		if(req.user && req.user._id==post.authorid){
-			res.render('community-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description, isowner: true});
+			var today = moment(Date.now());
+			var description = post.description;
+			if(req.user && req.user._id==post.authorid){
+				res.render('community-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description, isowner: true});
+			}else{
+				res.render('community-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description});
+			}
 		}else{
-		    res.render('community-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description});
+			res.redirect('/community');
 		}
 	});
 });

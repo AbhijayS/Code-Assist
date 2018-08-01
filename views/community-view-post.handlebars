@@ -2,6 +2,10 @@
   #answer-editor .ql-editor{
     min-height: 150px;
   }
+
+  .card .ql-editor {
+    padding-left: 0;
+  }
 </style>
 
 <div class="clippy d-none d-xl-block" style="-webkit-clip-path: polygon(0 87%, 100% 81%, 100% 100%, 0% 100%);
@@ -18,11 +22,19 @@ clip-path: polygon(0 87%, 100% 81%, 100% 100%, 0% 100%); height: 351px; z-index:
     </nav>
 
     <h1 class="display-3 d-none d-sm-block">{{post.question}}</h1>
-    <h1 class="display-4 d-sm-none">{{post.question}}</h1>
+    <h3 class="display-4 d-sm-none">{{post.question}}</h3>
     <hr>
-    <p style="font-weight: 400;">
-      <a href="#flagPost" data-toggle="modal" data-target="#flagPost" class="text-secondary ml-auto"><i class="far fa-flag"></i> Flag Post</a>
-    </p>
+    <a href="#flagPost" data-toggle="modal" data-target="#flagPost" class="text-secondary"><i class="far fa-flag"></i> Flag Post</a>
+    {{#if isowner}}
+    <div class="dropdown float-right">
+      <button class="btn btn-outline dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="fas fa-cog"></i>
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <a class="dropdown-item text-danger" href="#" id="delete">Delete Post</a>
+      </div>
+    </div>
+    {{/if}}
   </div>
 </div>
 
@@ -35,26 +47,20 @@ clip-path: polygon(0 87%, 100% 81%, 100% 100%, 0% 100%); height: 351px; z-index:
     </button>
   </div>
 
-  <p class="text-right"><a href="#answer-editor"><button type="button" name="button" class="btn btn-primary btn-lg">Post an Answer</button></a></p>
+  <!-- <p class="text-right"><a href="#answer-editor"><button type="button" name="button" class="btn btn-primary btn-lg">Post an Answer</button></a></p> -->
 
-  <div class="card border-light bg-light mb-3">
-    <div class="card-header">
-      <p>{{post.author}}</p>
-      <p class="moment-timestamp" style="display: none;">{{post.timestamp}}</p>
-      {{#if isowner}}
-        <div class="btn-group" role="group">
-          <button type="button" class="btn btn-default" id="start-codehat">+ Start a CodeHat Project</button>
-          <button class="btn btn-danger" id="delete" type="button" name="button">Delete Post</button>
-        </div>
-      {{/if}}
+  <div class="card mb-3">
+    <div class="card-header bg-white">
+      <span class="text-muted mt-2 float-bottom">Asked <span class="moment-timestamp" style="display: none;">{{post.timestamp}}</span> by {{post.author}}</span>
     </div>
     <div class="card-body">
-      <h5 class="card-title">{{post.question}}</h5>
+      <h3h3hkkggooggpghh. class="card-title">{{post.question}}</h3>
       <p id="description"><div id="post-view-editor" class="noborder p-0"></div></p>
     </div>
 
-    {{#if post.files}}
     <div class="card-footer">
+      <button type="button" class="btn btn-outline-primary float-right" id="start-codehat"><i class="fas fa-code-branch"></i> Create Project</button>
+      {{#if post.files}}
       <div class="list-group-item list-group-item-action flex-column align-items-start">
         <div class="d-flex w-100 justify-content-between">
           {{#each post.files}}
@@ -62,8 +68,8 @@ clip-path: polygon(0 87%, 100% 81%, 100% 100%, 0% 100%); height: 351px; z-index:
           {{/each}}
         </div>
       </div>
+      {{/if}}
     </div>
-    {{/if}}
   </div>
 
   {{#each post.answers}}
