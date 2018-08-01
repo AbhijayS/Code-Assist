@@ -231,32 +231,34 @@ router.post('/post', upload.array('file'), function(req, res) {
 router.get('/:id', function(req, res) {
   var postID = req.params.id;
   User.PostSchema.findOne({_id: postID}).populate([{path: 'answers', options: {sort: {'timestamp': 1}}}, 'files']).exec(function(err, post) {
-    // post = post.toObject();
+		if(post) {
+			if (req.user) {
+				for (var i = 0; i < post.answers.length; i++) {
+					var userLikedAnswer = post.answers[i].userLikes.some(function(userID) {
+						return userID.equals(req.user._id);
+					});
 
-    if (req.user) {
-      for (var i = 0; i < post.answers.length; i++) {
-        var userLikedAnswer = post.answers[i].userLikes.some(function(userID) {
-          return userID.equals(req.user._id);
-        });
+					if (userLikedAnswer)
+					post.answers[i].liked = true;
+				}
 
-        if (userLikedAnswer)
-          post.answers[i].liked = true;
-      }
-
-      var userLikedPost = post.userLikes.some(function(userID) {
-        return userID.equals(req.user._id);
-      });
-      if (userLikedPost)
-        post.liked = true;
-    }
+				var userLikedPost = post.userLikes.some(function(userID) {
+					return userID.equals(req.user._id);
+				});
+				if (userLikedPost)
+				post.liked = true;
+			}
 
 
-    var today = moment(Date.now());
-    var description = post.description;
-		if(req.user && req.user._id==post.authorid){
-			res.render('community-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description, isowner: true});
+			var today = moment(Date.now());
+			var description = post.description;
+			if(req.user && req.user._id==post.authorid){
+				res.render('community-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description, isowner: true});
+			}else{
+				res.render('community-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description});
+			}
 		}else{
-			res.render('community-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description});
+			res.redirect('/community');
 		}
 	});
 });
