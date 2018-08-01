@@ -82,6 +82,11 @@ window.onload = function(){
       filter_opt: value
     };
 
+    if (value != "Remove Filter")
+      $("#dropdownMenuLink").text(value);
+    else
+      $("#dropdownMenuLink").text("Filter By");
+
     $("#filterLoading").show();
     $.post('/mentor/filter', data, function(data) {
       if(data.url)
