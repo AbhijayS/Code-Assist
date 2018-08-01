@@ -49,10 +49,12 @@
 
       <span class="text-muted">Asked <span class="moment-timestamp" style="display: none;">{{post.timestamp}}</span></span>
       <span class="float-right d-inline-flex">
-        {{#if post.userLikes}}
+        {{#if post.likeCount}}
         <span class="likeCounter m-0 mr-2">{{post.likeCount}}</span>
+        {{else}}
+        <span class="likeCounter m-0 mr-2"></span>
         {{/if}}
-        <button class="likeBtn btn {{#if post.liked}}btn-success{{else}}btn-secondary{{/if}}"><i class="far fa-thumbs-up"></i></button>
+        <button class="likeBtn btn {{#if post.liked}}btn-success{{else}}btn-secondary{{/if}}"><i class="fas fa-thumbs-up"></i></button>
       </span>
     </div>
     <div class="card-body">
@@ -85,7 +87,11 @@
         {{this.author}}
 
         <div class="float-right d-inline-flex">
+          {{#if this.likeCount}}
           <p class="likeCounter m-0 mr-2">{{this.likeCount}}</p>
+          {{else}}
+          <p class="likeCounter m-0 mr-2"></p>
+          {{/if}}
           <button class="likeBtn btn {{#if this.liked}}btn-success{{else}}btn-secondary{{/if}}"><i class="fas fa-thumbs-up"></i></button>
         </div>
       </div>
@@ -254,7 +260,10 @@
         $(this).removeClass("btn-success");
 
         var likeCount = Number($(this).siblings(".likeCounter").text());
-        $(this).siblings(".likeCounter").text(likeCount - 1);
+        if (likeCount - 1 > 0)
+          $(this).siblings(".likeCounter").text(likeCount - 1);
+        else
+          $(this).siblings(".likeCounter").text("");
       }
 
       var id = $(this).parents(".card").attr('id').split('-')[1];

@@ -6,11 +6,13 @@ var moment = require('moment');
 var upload = require('../database').upload;
 var mongoose = require('mongoose');
 require('dotenv').config();
+const escapeRegex = require('escape-string-regexp');
 
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-var postLimit = 10; // how many posts to show user at a time
+
+var postLimit = 3; // how many posts to show user at a time
 
 // var User = require('../models/test-user');
 
@@ -41,11 +43,23 @@ router.get('/', function(req, res) {
 router.post('/morePosts', function(req, res) {
   var lastPostID = req.body.lastPostID;
   var prog_lang = req.body.filter_opt;
+  var search = req.body.search;
+  var searchMatch = {};
   console.log("Getting more posts");
   console.log("filter_opt: " + prog_lang);
 
   if (!lastPostID)
     return false;
+
+  if (search) {
+    searchMatch = {
+      $or: [
+        {question: new RegExp(escapeRegex(search), 'i')},
+        {description: new RegExp(escapeRegex(search), 'i')}
+      ]
+    }
+  }
+
 
   if (!prog_lang || prog_lang == "Remove Filter")
     prog_lang = {$exists: true}; // will match any language
@@ -55,16 +69,22 @@ router.post('/morePosts', function(req, res) {
     User.PostSchema.findOne({_id: lastPostID}, function(err, lastPost) {
       User.CommunitySchema.findOne({}).populate({
         path: 'posts',
-        match: {prog_lang: prog_lang, timestamp: {$lt: lastPost.timestamp}},
+        match: {$and: [
+          {prog_lang: prog_lang, timestamp: {$lt: lastPost.timestamp}},  
+          searchMatch
+        ]},
         options: {sort: {'timestamp': -1}, limit: postLimit},
-        select: '_id timestamp author question description prog_lang answers'
+        select: '_id timestamp author question description prog_lang answers likeCount'
       }).exec(function(err, community) {
         var postsToAdd = community.posts;
 
         if (postsToAdd.length > 0) {
           User.CommunitySchema.findOne({}).populate({
             path: 'posts',
-            match: {prog_lang: prog_lang, timestamp: {$lt: postsToAdd[postsToAdd.length-1].timestamp}},
+            match: {$and: [
+              {prog_lang: prog_lang, timestamp: {$lt: postsToAdd[postsToAdd.length-1].timestamp}},  
+              searchMatch
+            ]},
           }).exec(function(err, communityRemainingPosts) {
             var count = communityRemainingPosts.posts.length;
 
@@ -437,50 +457,112 @@ router.post('/:id/answer', function(req, res){
 
 //search functions
 router.post('/Search',function(req,res){
+  var search = req.body.search;
+  var prog_lang = req.body.filter_opt;
+  if (!prog_lang || prog_lang == "Remove Filter")
+    prog_lang = {$exists: true}; // will match any language
+
 	//console.log("Someone Is Searching for "+req.body.search);
-	var postreturnarray=new Array();
-	var wordarray= req.body.search.split(" ");
-		User.CommunitySchema.findOne({}).populate("posts").exec(function(err,thecommunity){
-			var posts=thecommunity.posts;
-				for(var k=0;k<posts.length;k++){
-					for(var o=0;o<wordarray.length;o++){
-						if(posts[k].question.indexOf(wordarray[o])!=-1||posts[k].description.indexOf(wordarray[o])!=-1){
-						//	console.log("found one "+posts[k]);
-							postreturnarray.push(posts[k]);
-							k++;
-							o=wordarray.length;
-							}
-					}
-			}
-			if(err){
-				console.log(err);
-			}
-		//	console.log("return="+postreturnarray);
-			res.send(postreturnarray);
-			return postreturnarray;
-		});
+	// var postreturnarray=new Array();
+	// var wordarray= req.body.search.split(" ");
+  User.CommunitySchema.findOne({}).populate({
+    path: 'posts',
+    match: {$and: [
+      {prog_lang: prog_lang},  
+      {
+        $or: [
+          {question: new RegExp(escapeRegex(search), 'i')},
+          {description: new RegExp(escapeRegex(search), 'i')}
+        ] 
+      }
+    ]},
+    options: {sort: {'timestamp': -1}, limit: postLimit},
+    select: '_id timestamp author question description prog_lang answers likeCount'
+  }).exec(function(err, community) {
+		if (err) console.log(err);
+
+    var postsToAdd = community.posts;
+    
+    if (postsToAdd.length > 0) {
+      User.CommunitySchema.findOne({}).populate({
+        path: 'posts',
+        match: {$and: [
+          {prog_lang: prog_lang, timestamp: {$lt: postsToAdd[postsToAdd.length-1].timestamp}},  
+          {
+            $or: [
+              {question: new RegExp(escapeRegex(search), 'i')},
+              {description: new RegExp(escapeRegex(search), 'i')}
+            ] 
+          }
+        ]},
+      }).exec(function(err, communityRemainingPosts) {
+        var count = communityRemainingPosts.posts.length;
+
+        res.send({
+          postsToAdd: postsToAdd,
+          morePostsAvailable: count > 0
+        });
+      });
+
+    } else {
+      res.send({
+        postsToAdd: [],
+        morePostsAvailable: false
+      });
+    }
+
+/*    for(var k=0;k<posts.length;k++){
+      for(var o=0;o<wordarray.length;o++){
+        if(posts[k].question.indexOf(wordarray[o])!=-1||posts[k].description.indexOf(wordarray[o])!=-1){
+        //  console.log("found one "+posts[k]);
+          postreturnarray.push(posts[k]);
+          break;
+        }
+      }
+    }*/
+    // res.send(community.posts);
+	  // console.log("return="+postreturnarray);
+		// res.send(postreturnarray);
+	});
 
 });
 
 router.post('/filter', function(req, res) {
   var option = req.body.filter_opt;
+  var search = req.body.search;
+  var searchMatch = {};
   // console.log("Made filter request: " + option);
 
   if (!option || option == "Remove Filter")
     option = {$exists: true}; // will match any language
 
+  if (search) {
+    searchMatch = {
+      $or: [
+        {question: new RegExp(escapeRegex(search), 'i')},
+        {description: new RegExp(escapeRegex(search), 'i')}
+      ]
+    }
+  }
+
   User.CommunitySchema.findOne({}).populate({
     path: 'posts',
-    match: {prog_lang: option},
+    match: {$and: [
+      {prog_lang: option},
+      searchMatch
+    ]},
     options: {sort: {'timestamp': -1}, limit: postLimit},
-    select: '_id timestamp author question description prog_lang answers'
+    select: '_id timestamp author question description prog_lang answers likeCount'
   }).exec(function(err, community) {
     var postsToAdd = community.posts;
 
     if (postsToAdd.length > 0) {
       User.CommunitySchema.findOne({}).populate({
         path: 'posts',
-        match: {prog_lang: option, timestamp: {$lt: postsToAdd[postsToAdd.length-1].timestamp}},
+        match: {$and: [
+          {prog_lang: option, timestamp: {$lt: postsToAdd[postsToAdd.length-1].timestamp}},
+          searchMatch
+        ]}
       }).exec(function(err, communityRemainingPosts) {
         var count = communityRemainingPosts.posts.length;
 
