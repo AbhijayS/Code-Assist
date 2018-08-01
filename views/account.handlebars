@@ -1,112 +1,83 @@
-<body>
-  <div class="jumbotron jumbotron-title text-center">
-    <h1>Profile</h1>
-    <div class="title-buttons">
-
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-sm-5 text-center">
+      <div class="">
+        <img src="https://github.com/identicons/1000.png" alt="" width="50%;" class="text-center" style="border-radius: 10px;">
+        <p class="lead my-3">Welcome <strong>{{user.username}}</strong></p>
+      </div>
     </div>
-  </div>
 
-  <div class="container" id="account-body">
-    <div class="row">
-      <div class="col-xs-3 float-left">
-        <span class="glyphicon glyphicon-user"></span>
-        <div id="profile-description">
-          <div id="username">
-            <strong>Username</strong>: {{user.username}}
-          </div>
+    <div class="col-sm-7 float-left">
+      {{#each error.msg}}
+        <div style="margin-bottom: 2rem;" class="alert alert-danger">
+          {{this}}
+        </div>
+      {{/each}}
 
+      {{#each success.msg}}
+        <div class="alert alert-success" role="alert">
+          {{this}}
+        </div>
+      {{/each}}
+
+      <div class="container mb-5">
+        <h1>Profile</h1>
+        <hr>
+
+        <div class="form-group">
+          <label for="#usernameInput"><strong>Username</strong></label>
+          <input id="usernameInput" type="text" class="form-control" value="{{user.username}}" aria-label="Username" aria-describedby="basic-addon1">
+        </div>
+
+        <div class="form-group">
+          <label for="#email-choose"><strong>Email</strong></label>
+          <input type="text" class="form-control mb-2" id="emailInput" value="{{user.email}}">
+          <input id="email-checkbox" type="checkbox" aria-label="Checkbox for following text input" checked>
+          <label for="#email-checkbox" class="text-muted" style="font-size: 14px;">Stay on top of Code Assist email Updates and Notifications!</label>
         </div>
       </div>
 
-      <div class="col-xs-9 float-left">
-        <div class="jumbotron">
-          {{#each error.msg}}
-            <div style="margin-bottom: 2rem;" class="alert alert-danger">
-              {{this}}
-            </div>
-          {{/each}}
+      <div class="container mb-5">
+        <h1>Change Password</h1>
+        <hr>
 
-          {{#each success.msg}}
-            <div class="alert alert-success" role="alert">
-              {{this}}
-            </div>
-          {{/each}}
+        <div class="form-group">
+          <label for="#oldPass"><strong>Old Password</strong></label>
+          <input class="form-control" type="password" name="oldPass" value="">
+        </div>
 
-          <div class="container-fluid">
-            <div class="row">
-              <div class="col-md-3 float-left" id="labels">
-                <label for="#usernameInput">Username</label>
-                <span id="user-status"></span>
-              </div>
+        <div class="form-group">
+          <label for="#newPass"><strong>New Password</strong></label>
+          <input class="form-control" type="password" name="newPass" value="">
+        </div>
 
-              <div class="col-md-6 float-left" id="inputs">
-                <input type="text" class="form-control" id="usernameInput" value="{{user.username}}">
-              </div>
-
-            </div>
-
-            <div class="row">
-              <div class="col-md-3 float-left" id="labels">
-                <label for="#email-choose">Email</label>
-                <span id="email-status"></span>
-              </div>
-
-              <div class="col-md-6 float-left" id="inputs">
-                <input type="text" class="form-control" id="emailInput" value="{{user.email}}">
-              </div>
-            </div>
-
-            <!-- <div class="row">
-              <div class="col-md-2 float-left" id="labels">
-                <label for="#courses">CS Courses:</label>
-              </div>
-
-              <div class="col-md-6 float-left" id="inputs">
-                <div class="form-inline">
-                  <input class="form-control" type="text" id="courses">
-                  <button class="btn btn-primary" type="button" name="button">Add CS Courses</button>
-                </div>
-              </div>
-            </div> -->
-            <form action="/password-change" method="post">
-
-              <div class="row">
-                <div class="col-md-3 float-left" id="labels">
-                  <label for=".changePassword">Change Password</label>
-                </div>
-
-                <div class="col-md-6 float-left" id="inputs" class="changePassword">
-                  <label for="#oldPass">Old Password</label>
-                  <input class="form-control" type="password" name="oldPass" value="">
-
-                  <label for="#newPass">New Password</label>
-                  <input class="form-control" type="password" name="newPass" value="">
-
-                  <label for="#confPass">Confirm Password</label>
-                  <input class="form-control" type="password" name="confPass" value="">
-
-                  <button id="changePassword" class="btn btn-danger" type="submit" name="changePassword">Change Password</button>
-                </div>
-              </div>
-
-            </form>
-            <div class="row" style="margin-top: 100px;">
-              <div class="col-md-3 float-left" id="labels">
-                <label for="deleteAccount">Account Removal</label>
-              </div>
-
-              <div class="col-md-6 float-left" id="inputs">
-                <button id="deleteAccount" class="btn btn-danger btn-lg">Delete Account</button>
-              </div>
-            </div>
-
-
-          </div>
+        <div class="form-group">
+          <label for="#confPass"><strong>Confirm Password</strong></label>
+          <input class="form-control" type="password" name="confPass" value="">
         </div>
       </div>
 
-    </div>
+      <div class="container mb-5">
+        <h1 class="text-danger">Danger Zone</h1>
+        <hr>
 
+        <div class="form-group">
+          <div class="row">
+            <div class="col-md-6">
+              <label for="#deleteAccount"><p><strong>Remove Account</strong></p></label>
+              <p>This action will remove all account data including all Community Posts, Mentor Posts and Shared Projects.</p>
+            </div>
+
+            <div class="col-md-6 text-right">
+              <button id="deleteAccount" class="btn btn-outline-danger btn-lg d-none d-lg-block">Delete Account</button>
+
+              <button id="deleteAccount" class="btn btn-outline-danger btn-block btn-lg d-lg-none">Delete Account</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-  <script type="text/javascript" src="/js/account.js"></script>
-</body>
+
+</div>
+<script type="text/javascript" src="/js/account.js"></script>
