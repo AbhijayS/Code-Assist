@@ -18,7 +18,7 @@
       </ol>
     </nav>
 
-    <h1 class="">{{post.question}}</h1>
+    <h1 class="">{{post.question}} {{#if post.status.edited}}<span style="font-size: 14px;" class="text-muted">(edited)</span>{{/if}}</h1>
     <hr>
     {{#if isowner}}
     <a href="/community/post/edit/{{post._id}}"><i class="fas fa-pencil-alt"></i> Edit</a>

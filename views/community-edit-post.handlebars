@@ -34,7 +34,7 @@
     </button>
   </div>
 
-  <form novalidate>
+  <form>
 
     <div class="form-group mb-4">
       <label for="language-choose"><strong>Programming Language</strong></label>
@@ -50,7 +50,7 @@
 
     <div class="form-group mb-4">
       <label for="exampleFormControlInput1"><strong>Question Title</strong></label>
-      <input type="text" class="form-control" id="question" placeholder="" value="{{post.question}}">
+      <input type="text" class="form-control" id="question" placeholder="" value="{{post.question}}" required>
     </div>
 
     <div class="form-group mb-4">
@@ -121,29 +121,29 @@
     quillEditor.setContents({{{post.description}}});
 
     function editPost() {
+      console.log("POSTING");
       var description = JSON.stringify(quillEditor.getContents().ops);
-      var formData = new FormData($('#upload_form')[0]);
-      for (var i = 0; i < $('input[type=file]')[0].files.length; i++) {
-        formData.append('file', $('input[type=file]')[0].files[i]);
-      }
-      formData.append('programming', $('#language-choose').val());
-      formData.append('question', $("#question").val());
-      formData.append('description', description);
+      var formData = {};
 
-      // $.post('/community/post/edit/{{post._id}}', formData, function(data) {
-      //   if(data.auth) {
-      //
-      //   }else{
-      //     if(data.url) {
-      //       window.location.replace('https://' + window.location.host + data.url);
-      //     }
-      //
-      //     if(data.questionInvalid) {
-      //       $('#invalid-question').attr('hidden', false);
-      //     }
-      //   }
-      // });
+      /* Chris please take care of sending files to the backend here */
 
+      formData.programming = $('#language-choose').val();
+      formData.question = $("#question").val();
+      formData.description = description;
+
+      $.post('/community/post/edit/{{post._id}}', formData, function(data) {
+        if(data.auth) {
+          window.location.replace('http://' + window.location.host + data.url);
+        }else{
+          if(data.url) {
+            window.location.replace('http://' + window.location.host + data.url);
+          }
+
+          if(data.questionInvalid) {
+            $('#invalid-question').attr('hidden', false);
+          }
+        }
+      });
     };
 
     $('#save-changes').click(function(event) {

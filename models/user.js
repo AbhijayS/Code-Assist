@@ -107,6 +107,10 @@ var PostSchema = new Schema ({
 	question: String,
 	description: String,
 	prog_lang: String,
+	status: {
+		edited: false
+		// add others in the future
+	},
 	answers: [{
 		type: Schema.Types.ObjectId,
 		ref: 'AnswerSchema'

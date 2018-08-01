@@ -70,7 +70,7 @@ router.post('/morePosts', function(req, res) {
       User.CommunitySchema.findOne({}).populate({
         path: 'posts',
         match: {$and: [
-          {prog_lang: prog_lang, timestamp: {$lt: lastPost.timestamp}},  
+          {prog_lang: prog_lang, timestamp: {$lt: lastPost.timestamp}},
           searchMatch
         ]},
         options: {sort: {'timestamp': -1}, limit: postLimit},
@@ -82,7 +82,7 @@ router.post('/morePosts', function(req, res) {
           User.CommunitySchema.findOne({}).populate({
             path: 'posts',
             match: {$and: [
-              {prog_lang: prog_lang, timestamp: {$lt: postsToAdd[postsToAdd.length-1].timestamp}},  
+              {prog_lang: prog_lang, timestamp: {$lt: postsToAdd[postsToAdd.length-1].timestamp}},
               searchMatch
             ]},
           }).exec(function(err, communityRemainingPosts) {
@@ -468,12 +468,12 @@ router.post('/Search',function(req,res){
   User.CommunitySchema.findOne({}).populate({
     path: 'posts',
     match: {$and: [
-      {prog_lang: prog_lang},  
+      {prog_lang: prog_lang},
       {
         $or: [
           {question: new RegExp(escapeRegex(search), 'i')},
           {description: new RegExp(escapeRegex(search), 'i')}
-        ] 
+        ]
       }
     ]},
     options: {sort: {'timestamp': -1}, limit: postLimit},
@@ -482,17 +482,17 @@ router.post('/Search',function(req,res){
 		if (err) console.log(err);
 
     var postsToAdd = community.posts;
-    
+
     if (postsToAdd.length > 0) {
       User.CommunitySchema.findOne({}).populate({
         path: 'posts',
         match: {$and: [
-          {prog_lang: prog_lang, timestamp: {$lt: postsToAdd[postsToAdd.length-1].timestamp}},  
+          {prog_lang: prog_lang, timestamp: {$lt: postsToAdd[postsToAdd.length-1].timestamp}},
           {
             $or: [
               {question: new RegExp(escapeRegex(search), 'i')},
               {description: new RegExp(escapeRegex(search), 'i')}
-            ] 
+            ]
           }
         ]},
       }).exec(function(err, communityRemainingPosts) {
@@ -584,7 +584,6 @@ router.post('/filter', function(req, res) {
 
 router.get('/post/edit/:id', function(req, res) {
 	var postID = req.params.id;
-	console.log("postID: " + postID);
 	if(req.user) {
 		User.UserSchema.findOne({_id: req.user._id}).populate("posts").exec(function(err, user) {
 			if(err) throw err;
@@ -599,7 +598,6 @@ router.get('/post/edit/:id', function(req, res) {
 			}
 
 			if(found) {
-				console.log("user editing found");
 				User.PostSchema.findOne({_id: postID}).populate("files").exec(function(err, post) {
 					if(post) {
 						res.render('community-edit-post', {layout: 'dashboard-layout', post: post});
@@ -619,7 +617,7 @@ router.get('/post/edit/:id', function(req, res) {
 });
 
 router.post('/post/edit/:id', upload.array('file'), function(req, res) {
-	var postID = req.params._id;
+	var postID = req.params.id;
 	var data = {
 		auth: false
 		// url
@@ -638,58 +636,39 @@ router.post('/post/edit/:id', upload.array('file'), function(req, res) {
 			res.send(data);
 
 		}else{
-			User.CommunitySchema.findOne({}, function(err, community) {
-				var newPost = new User.PostSchema();
-				newPost.question = question;
-				newPost.description = description;
-				newPost.author = author;
-				newPost.authorid=authorid;
-				newPost.prog_lang = prog_lang;
-
-				for (var i = 0; i < req.files.length; i++) {
-					// console.log(req.files[i]);
-
-					// new file reference
-					var newFileRef = new User.FileRefSchema();
-					newFileRef.name = req.files[i].filename;
-					newFileRef.fileID = req.files[i].id;
-					newFileRef.save(function(err) {
-						if(err) throw err;
-						// saved
-					});
-					newPost.files.push(newFileRef);
+			User.UserSchema.findOne({_id: req.user._id}).populate('posts').exec(function(err, user) {
+				if(err) throw err;
+				var found = false;
+				var allPosts = user.posts;
+				for(var i = 0; i < allPosts.length; i++) {
+					console.log(allPosts[i]._id);
+					if(allPosts[i]._id == postID)
+						found = true;
 				}
 
-				console.log("Programming Language: " + newPost.prog_lang);
+				if(found) {
+					User.PostSchema.findOne({_id: postID}).populate('files').exec(function(err, post) {
+						if(err) throw err;
+						post.question = question;
+						post.description = description;
+						post.prog_lang = prog_lang;
 
-				newPost.save(function(err) {
-					if(err) throw err;
-					console.log('new post saved');
-				});
+						/* Chris please take of the new Files coming in here */
 
-				community.posts.push(newPost);
-				req.user.posts.push(newPost);
-
-				community.save(function(err) {
-					if(err) throw err;
-					console.log("Post Saved");
-					// console.log(community);
-					// console.log('-----------------------------');
-					// console.log('');
-					var data = {
-						questionInvalid: questionInvalid,
-						descriptionInvalid: descriptionInvalid,
-						url: "/community/" + newPost._id
-					}
+						post.status.edited = true;
+						post.save(function(err) {
+							if(err) throw err;
+							data.auth = true;
+							data.url = '/community/' + postID;
+							console.log(data);
+							res.send(data);
+						});
+					});
+				}else{
+					data.auth = false;
 					res.send(data);
-
-				});
-
-				req.user.save(function(err) {
-					if(err) throw err;
-				});
+				}
 			});
-
 		}
 	}else{
 		req.flash('origin');
