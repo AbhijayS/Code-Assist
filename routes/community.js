@@ -12,7 +12,7 @@ const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 
-var postLimit = 3; // how many posts to show user at a time
+var postLimit = 10; // how many posts to show user at a time
 
 // var User = require('../models/test-user');
 
