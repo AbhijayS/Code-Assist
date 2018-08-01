@@ -76,6 +76,12 @@ clip-path: polygon(7% 85%, 18% 89%, 32% 100%, 0 100%, 0 57%); height: 405px; z-i
           <a href="/community/{{this._id}}">{{this.question}}</a>
           <p class="quill-content">{{this.description}}</p>
           <div class="ml-auto text-right">
+            {{#if this.userLikes}}
+            <button class="btn btn-outline-secondary badge-pill p-0 px-2"><span class="badge badge-pill">{{this.likeCount}} <i class="far fa-thumbs-up"></i></span></button>
+            {{else}}
+            <button class="btn btn-outline-secondary badge-pill p-0 px-2"><span class="badge badge-pill"><i class="far fa-thumbs-up"></i></span></button>
+            {{/if}}
+
             <span class="badge badge-warning badge-pill">{{this.answers.length}} Answers</span>
             <span class="badge badge-primary badge-pill">{{this.prog_lang}}</span>
           </div>
