@@ -1,65 +1,85 @@
-<body>
-  <div class="jumbotron jumbotron-title text-center" id="community-post-title">
-    <h1>Ask the Code Assist Community </h1>
-    <div class="title-buttons">
-      <a href="/community"><button class="btn btn-primary btn-lg" type="button" name="button">View All</button></a>
-      <a href="/mentor"><button class="btn btn-warning btn-lg" type="button" name="button">Ask a Mentor Instead</button></a>
-    </div>
+<div class="clippy d-none d-xl-block" style="-webkit-clip-path: polygon(93% 0, 100% 0, 100% 100%, 83% 100%); clip-path: polygon(93% 0, 100% 0, 100% 100%, 83% 100%); height: 405px; z-index: 1;"></div>
+
+<div class="clippy d-none d-xl-block" style="-webkit-clip-path: polygon(92% 0, 100% 0, 100% 100%, 82.5% 100%); clip-path: polygon(92% 0, 100% 0, 100% 100%, 82.5% 100%); height: 405px; z-index: 1; background-color: #0d75e894;"></div>
+
+<div class="clippy d-none d-xl-block" style="-webkit-clip-path: polygon(7% 87%, 18% 91%, 33% 100%, 0 100%, 0 59%);
+clip-path: polygon(7% 87%, 18% 91%, 33% 100%, 0 100%, 0 59%); height: 405px; z-index: 1;"></div>
+
+<div class="clippy d-none d-xl-block" style="-webkit-clip-path: polygon(7% 85%, 18% 89%, 32% 100%, 0 100%, 0 57%);
+clip-path: polygon(7% 85%, 18% 89%, 32% 100%, 0 100%, 0 57%); height: 405px; z-index: 1; background-color: #0d75e894;"></div>
+
+<div class="jumbotron jumbotron-title text-left" style="background-color: #e9ecef4f; box-shadow: 0px 3px 6px 0px #4441412b;">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Community</li>
+      </ol>
+    </nav>
+
+    <h1 class="display-3 d-none d-sm-block">Community</h1>
+    <h1 class="display-4 d-sm-none">Community</h1>
+    <hr>
+
+    <a href="/community/post"><p class="lead"><i class="far fa-handshake"></i> Get help from the Code Assist Community today.</p></a>
+    <a href="/mentor"><button class="btn btn-outline-primary btn-lg" type="button">Ask a Mentor Instead</button></a>
   </div>
-  <!-- <form class="" action="post" method="post">
-    <input type="text" name="title" value="" placeholder="Ask your question" autofocus>
-    <textarea name="description" rows="8" cols="80"></textarea>
-    <button type="submit" name="button">Post Question</button>
-  </form> -->
+</div>
 
-  {{msg}}
-  <div class="container mentor-overview">
+<div class="jumbotron bg-light container mentor-overview" style="box-shadow: 0px 4px 4px 2px #eee;">
+  <p style="font-weight: 400; width: 100px;"><a href="/mentor" class="text-secondary">Go Back</a></p>
+  <h1 style="font-weight: 200;">Post your Question <img id="filterLoading" src="/images/loadingwheel.gif" style="width: 50px; display: none;"></h1>
+  <hr>
+  <br>
 
-    <div id="questionInvalid" style="margin-bottom: 2rem; display: none;" class="alert alert-danger">
-      Please enter a <strong>question</strong>
-    </div>
-
-    <div id="descriptionInvalid" style="margin-bottom: 2rem; display: none;" class="alert alert-danger">
-      Please enter a <strong>description</strong>
-    </div>
-
-    <form id="postform" action="/" method="post" enctype="multipart/form-data">
-
-      <div class="form-group">
-        <label for="language-choose">Programming Language</label>
-        <select class="form-control" id="language-choose">
-          <option>Python</option>
-          <option>Java</option>
-          <option>C/C++</option>
-          <option>HTML</option>
-          <option>CSS</option>
-          <option>Javascript</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label for="exampleFormControlInput1">Question Title</label>
-        <input type="text" class="form-control" id="question" placeholder="" value="{{question}}">
-      </div>
-
-      <div class="form-group">
-        <label for="exampleFormControlTextarea1">Description</label>
-        <!-- <textarea class="form-control" id="exampleFormControlTextarea1" name="description" rows="3"></textarea> -->
-
-        <div id="editor">
-
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label for="fileUpload">File Upload (optional)</label>
-        <input name="file" type="file" class="form-control-file" id="fileUpload" multiple="">
-      </div>
-
-      <button class="btn btn-primary" id="submit">Submit</button>
-
-    </form>
+  <div id="questionInvalid" style="margin-bottom: 2rem; display: none;" class="alert alert-danger">
+    Please enter a <strong>question</strong>
   </div>
-  <script type="text/javascript" src="/js/quill-post.js"></script>
 
-</body>
+  <div id="descriptionInvalid" style="margin-bottom: 2rem; display: none;" class="alert alert-danger">
+    Please enter a <strong>description</strong>
+  </div>
+
+  <form action="/mentor/send" method="post">
+    <div class="form-group mb-4">
+      <label for="email-choose"><strong>Choose your email</strong></label>
+      <select class="form-control" id="email-choose">
+        <option type="email">{{email}}</option>
+      </select>
+    </div>
+
+    <div class="form-group mb-4">
+      <label for="language-choose"><strong>Programming Language</strong></label>
+      <select class="form-control" id="language-choose" name="programming">
+        <option>Python</option>
+        <option>Java</option>
+        <option>C/C++</option>
+        <option>HTML</option>
+        <option>CSS</option>
+        <option>Javascript</option>
+      </select>
+    </div>
+
+    <div class="form-group mb-4">
+      <label for="exampleFormControlInput1"><strong>Question Title</strong></label>
+      <input type="text" class="form-control" id="question" placeholder="" value="{{question}}">
+    </div>
+
+    <div class="form-group mb-4">
+      <label for="editor"><strong>Description</strong></label>
+      <div id="editor">
+
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="fileUpload">File Upload (optional)</label>
+      <input name="file" type="file" class="form-control-file" id="fileUpload" multiple="">
+    </div>
+
+    <button id="submit" class="btn btn-outline-primary btn-lg mt-3 btn-block py-3">Submit Request</button>
+
+  </form>
+</div>
+
+<script type="text/javascript" src="/js/quill-post.js"></script>

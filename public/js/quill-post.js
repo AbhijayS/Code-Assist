@@ -27,16 +27,6 @@ window.onload = function(){
     formData.append('question', $("#question").val());
     formData.append('description', description);
 
-/*    var data = {
-      programming: $('#language-choose').val(),
-      question: $("#question").val(),
-      description: description
-    };*/
-
-    // console.log(data.description);
-    // console.log("Object Created");
-    // console.log("Object Type: " + typeof data.description);
-
     $.ajax({
         url: "/community/post",
         data: formData,
@@ -45,7 +35,6 @@ window.onload = function(){
         processData: false,
         success: function(resData) {
           $(".alert-danger").hide();
-          // console.log(resData);
           if (!resData.questionInvalid && !resData.descriptionInvalid) {
             window.location.replace(resData.url);
           } else {
@@ -56,18 +45,5 @@ window.onload = function(){
           }
         }
     });
-
-/*    $.post("/community/post", data).done(function(resData) {
-      $(".alert-danger").hide();
-      // console.log(resData);
-      if (!resData.questionInvalid && !resData.descriptionInvalid) {
-        window.location.replace(resData.url);
-      } else {
-        if (resData.questionInvalid)
-          $("#questionInvalid").show();
-        if (resData.descriptionInvalid)
-          $("#descriptionInvalid").show();
-      }
-    });*/
   });
 };

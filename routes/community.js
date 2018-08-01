@@ -121,7 +121,7 @@ router.post('/morePosts', function(req, res) {
 router.get('/post', function(req, res) {
   if(req.user)
   {
-    res.render('community-post', {layout: 'dashboard-layout'});
+    res.render('community-post', {layout: 'dashboard-layout', email: req.user.email});
   }else{
     req.flash('origin');
     req.flash('origin', '/community/post');
