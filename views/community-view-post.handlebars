@@ -21,7 +21,7 @@
     <h1 class="">{{post.question}}</h1>
     <hr>
     {{#if isowner}}
-    <a href="#"><i class="fas fa-pencil-alt"></i> Edit</a>
+    <a href="/community/post/edit/{{post._id}}"><i class="fas fa-pencil-alt"></i> Edit</a>
     {{else}}
     <a href="#flagPost" data-toggle="modal" data-target="#flagPost" class="text-secondary"><i class="far fa-flag"></i> Flag Post</a>
     {{/if}}
@@ -147,7 +147,6 @@
       theme: 'snow'
     });
 
-    // console.log("Community description: " + typeof {{{description}}});
     postViewEditor.setContents({{{description}}});
     postViewEditor.disable();
 

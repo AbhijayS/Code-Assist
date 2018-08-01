@@ -499,4 +499,122 @@ router.post('/filter', function(req, res) {
   });
 
 });
+
+router.get('/post/edit/:id', function(req, res) {
+	var postID = req.params.id;
+	console.log("postID: " + postID);
+	if(req.user) {
+		User.UserSchema.findOne({_id: req.user._id}).populate("posts").exec(function(err, user) {
+			if(err) throw err;
+			var allPosts = user.posts;
+			var found = false;
+			for(var i = 0; i < allPosts.length; i++) {
+				if(allPosts[i]._id == postID) {
+					// found - do stuff
+					found = true;
+					break;
+				}
+			}
+
+			if(found) {
+				console.log("user editing found");
+				User.PostSchema.findOne({_id: postID}).populate("files").exec(function(err, post) {
+					if(post) {
+						res.render('community-edit-post', {layout: 'dashboard-layout', post: post});
+					}else{
+						res.redirect('/community/' + postID);
+					}
+				});
+			}else{
+				res.redirect('/community/' + postID);
+			}
+		});
+	}else{
+		req.flash('origin');
+		req.flash('origin', '/community/'+postID);
+		res.send('/login');
+	}
+});
+
+router.post('/post/edit/:id', upload.array('file'), function(req, res) {
+	var postID = req.params._id;
+	var data = {
+		auth: false
+		// url
+		// questionInvalid
+	};
+
+	if(req.user) {
+		var question = req.body.question;
+		var description = req.body.description;
+		var author = req.user.username;
+		var prog_lang = req.body.programming;
+		var authorid = req.user._id;
+
+		if (question.trim().split(' ').length < 3) {
+			data.questionInvalid = true;
+			res.send(data);
+
+		}else{
+			User.CommunitySchema.findOne({}, function(err, community) {
+				var newPost = new User.PostSchema();
+				newPost.question = question;
+				newPost.description = description;
+				newPost.author = author;
+				newPost.authorid=authorid;
+				newPost.prog_lang = prog_lang;
+
+				for (var i = 0; i < req.files.length; i++) {
+					// console.log(req.files[i]);
+
+					// new file reference
+					var newFileRef = new User.FileRefSchema();
+					newFileRef.name = req.files[i].filename;
+					newFileRef.fileID = req.files[i].id;
+					newFileRef.save(function(err) {
+						if(err) throw err;
+						// saved
+					});
+					newPost.files.push(newFileRef);
+				}
+
+				console.log("Programming Language: " + newPost.prog_lang);
+
+				newPost.save(function(err) {
+					if(err) throw err;
+					console.log('new post saved');
+				});
+
+				community.posts.push(newPost);
+				req.user.posts.push(newPost);
+
+				community.save(function(err) {
+					if(err) throw err;
+					console.log("Post Saved");
+					// console.log(community);
+					// console.log('-----------------------------');
+					// console.log('');
+					var data = {
+						questionInvalid: questionInvalid,
+						descriptionInvalid: descriptionInvalid,
+						url: "/community/" + newPost._id
+					}
+					res.send(data);
+
+				});
+
+				req.user.save(function(err) {
+					if(err) throw err;
+				});
+			});
+
+		}
+	}else{
+		req.flash('origin');
+		req.flash('origin', '/community/'+postID);
+		data.url = '/login';
+		res.send(data);
+	}
+});
+
 module.exports = router;

@@ -14,9 +14,6 @@ window.onload = function(){
 
   $('#submit').on('click', function(event) {
     event.preventDefault();
-    console.log('');
-    console.log('-------------------------------------');
-    console.log('community-post clicked');
     var description = JSON.stringify(quillEditor.getContents().ops);
 
     var formData = new FormData($('#upload_form')[0]);
