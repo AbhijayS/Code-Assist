@@ -34,7 +34,7 @@
     </button>
   </div>
 
-  <form>
+  <form id="save-changes">
 
     <div class="form-group mb-4">
       <label for="language-choose"><strong>Programming Language</strong></label>
@@ -75,7 +75,7 @@
 
     </div>
 
-    <button id="save-changes" class="btn btn-outline-primary btn-lg mt-3 btn-block py-3">Save Changes</button>
+    <button type="submit" class="btn btn-outline-primary btn-lg mt-3 btn-block py-3">Save Changes</button>
 
   </form>
 </div>
@@ -146,7 +146,7 @@
       });
     };
 
-    $('#save-changes').click(function(event) {
+    $('#save-changes').submit(function(event) {
       event.preventDefault();
       if((quillEditor.getContents().ops).length == 0 || (quillEditor.getContents().ops)[0].insert.trim() == "") {
         $('#description-warning').modal('show');
