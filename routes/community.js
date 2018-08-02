@@ -12,7 +12,7 @@ const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 
-var postLimit = 10; // how many posts to show user at a time
+var postLimit = 3; // how many posts to show user at a time
 
 // var User = require('../models/test-user');
 
@@ -48,6 +48,8 @@ router.post('/morePosts', function(req, res) {
   console.log("Getting more posts");
   console.log("filter_opt: " + prog_lang);
 
+  var skipNum = req.body.skipNum;
+
   if (!lastPostID)
     return false;
 
@@ -60,6 +62,14 @@ router.post('/morePosts', function(req, res) {
     }
   }
 
+  var sortMatch;
+  var countOptions = {};
+  if (sortMethod == "Popularity") {
+    sortMatch = {'views': -1};
+  } else {
+    sortMatch = {'timestamp': -1};
+    countOptions = {skip: postLimit};
+  }
 
   if (!prog_lang || prog_lang == "Remove Filter")
     prog_lang = {$exists: true}; // will match any language
@@ -73,7 +83,7 @@ router.post('/morePosts', function(req, res) {
           {prog_lang: prog_lang, timestamp: {$lt: lastPost.timestamp}},  
           searchMatch
         ]},
-        options: {sort: {'timestamp': -1}, limit: postLimit},
+        options: {sort: sortMatch, limit: postLimit},
         select: '_id timestamp author question description prog_lang answers likeCount'
       }).exec(function(err, community) {
         var postsToAdd = community.posts;
@@ -269,6 +279,10 @@ router.get('/:id', function(req, res) {
 				post.liked = true;
 			}
 
+      post.views++;
+      post.save(function(err) {
+        if(err) throw err;
+      });
 
 			var today = moment(Date.now());
 			var description = post.description;
@@ -531,6 +545,8 @@ router.post('/filter', function(req, res) {
   var option = req.body.filter_opt;
   var search = req.body.search;
   var searchMatch = {};
+  var sortMethod = req.body.sortMethod;
+
   // console.log("Made filter request: " + option);
 
   if (!option || option == "Remove Filter")
@@ -545,24 +561,40 @@ router.post('/filter', function(req, res) {
     }
   }
 
+  var sortMatch;
+  var countOptions = {};
+  if (sortMethod == "Popularity") {
+    sortMatch = {'views': -1};
+  } else {
+    sortMatch = {'timestamp': -1};
+    countOptions = {skip: postLimit};
+  }
+
   User.CommunitySchema.findOne({}).populate({
     path: 'posts',
     match: {$and: [
       {prog_lang: option},
       searchMatch
     ]},
-    options: {sort: {'timestamp': -1}, limit: postLimit},
-    select: '_id timestamp author question description prog_lang answers likeCount'
+    options: {sort: sortMatch, limit: postLimit},
+    select: '_id timestamp author question description prog_lang answers likeCount views'
   }).exec(function(err, community) {
     var postsToAdd = community.posts;
 
     if (postsToAdd.length > 0) {
+      var morePostsMatch = {timestamp: {$lt: postsToAdd[postsToAdd.length-1].timestamp}};
+
+      // if (sortMethod == "Popularity")
+      //   morePostsMatch = {views: {$lte: postsToAdd[postsToAdd.length-1].views}};
+
       User.CommunitySchema.findOne({}).populate({
         path: 'posts',
         match: {$and: [
-          {prog_lang: option, timestamp: {$lt: postsToAdd[postsToAdd.length-1].timestamp}},
+          {prog_lang: option},
+          morePostsMatch,
           searchMatch
-        ]}
+        ]},
+        options: countOptions
       }).exec(function(err, communityRemainingPosts) {
         var count = communityRemainingPosts.posts.length;
 

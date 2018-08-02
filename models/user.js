@@ -123,7 +123,8 @@ var PostSchema = new Schema ({
 		type: Schema.Types.ObjectId,
 		ref: 'UserSchema'
 	}],
-	likeCount: {type: Number, default: 0}
+	likeCount: {type: Number, default: 0},
+	views: {type: Number, default: 0}
 });
 
 var AnswerSchema = new Schema ({
