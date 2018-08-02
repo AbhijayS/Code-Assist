@@ -57,9 +57,12 @@
         <button class="likeBtn btn {{#if post.liked}}btn-success{{else}}btn-secondary{{/if}}"><i class="fas fa-thumbs-up"></i></button>
       </span>
     </div>
+
     <div class="card-body">
       <h3 class="card-title">{{post.question}}</h3>
+      {{#if description}}
       <p id="description"><div id="post-view-editor" class="noborder p-0"></div></p>
+      {{/if}}
 
       {{#if post.files}}
       <div class="flex-column align-items-start">

@@ -169,6 +169,7 @@ router.get('/file/:fileID', (req, res) => {
   });
 });
 
+/* Chris this needs to get updated */
 router.post('/post', upload.array('file'), function(req, res) {
   var question = req.body.question;
   var description = req.body.description;
@@ -271,7 +272,13 @@ router.get('/:id', function(req, res) {
 
 
 			var today = moment(Date.now());
-			var description = post.description;
+			var description = JSON.parse(post.description);
+			if(description.length == 0 || description[0].insert.trim() == "") {
+				description = null;
+			}else{
+				description = post.description;
+			}
+			
 			if(req.user && req.user._id==post.authorid){
 				res.render('community-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description, isowner: true});
 			}else{
@@ -634,7 +641,6 @@ router.post('/post/edit/:id', upload.array('file'), function(req, res) {
 		if (question.trim().split(' ').length < 3) {
 			data.questionInvalid = true;
 			res.send(data);
-
 		}else{
 			User.UserSchema.findOne({_id: req.user._id}).populate('posts').exec(function(err, user) {
 				if(err) throw err;
