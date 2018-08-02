@@ -138,7 +138,13 @@ var AnswerSchema = new Schema ({
 		type: Schema.Types.ObjectId,
 		ref: 'UserSchema'
 	}],
-	likeCount: {type: Number, default: 0}
+	likeCount: {type: Number, default: 0},
+
+	status: {
+		edited: false
+		// add others in the future
+	}
+
   // ...
 });
 

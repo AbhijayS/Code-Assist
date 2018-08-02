@@ -278,11 +278,11 @@ router.get('/:id', function(req, res) {
 			}else{
 				description = post.description;
 			}
-			
+
 			if(req.user && req.user._id==post.authorid){
-				res.render('community-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description, isowner: true});
+				res.render('community-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description, isowner: true, username: req.user.username});
 			}else{
-				res.render('community-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description});
+				res.render('community-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description, username: req.user.username});
 			}
 		}else{
 			res.redirect('/community');
@@ -618,13 +618,14 @@ router.get('/post/edit/:id', function(req, res) {
 		});
 	}else{
 		req.flash('origin');
-		req.flash('origin', '/community/'+postID);
+		req.flash('origin', '/community/post/edit/'+postID);
 		res.send('/login');
 	}
 });
 
 router.post('/post/edit/:id', upload.array('file'), function(req, res) {
 	var postID = req.params.id;
+	console.log("Editing: " + postID);
 	var data = {
 		auth: false
 		// url
@@ -678,10 +679,60 @@ router.post('/post/edit/:id', upload.array('file'), function(req, res) {
 		}
 	}else{
 		req.flash('origin');
-		req.flash('origin', '/community/'+postID);
+		req.flash('origin', '/community/post/edit/'+postID);
 		data.url = '/login';
 		res.send(data);
 	}
 });
+
+router.post('/:id/answers/edit/:answerid', function(req, res) {
+	console.log("GOT IT");
+  var postID = req.params.id;
+	var answerID = req.params.answerid;
+	var answer = req.body.answer;
+
+	if(req.user) {
+		User.UserSchema.findOne({_id: req.user._id}).populate('posts').exec(function(err, user) {
+			if(err) throw err;
+			if(user) {
+				var foundPost = false;
+				var allPosts = user.posts;
+				for(var i = 0; i < allPosts.length; i++) {
+					if(allPosts[i]._id == postID) {
+						foundPost = true;
+						break;
+					}
+				}
+
+				if(foundPost) {
+					User.PostSchema.findOne({_id: postID}).populate('answers').exec(function(err, post) {
+						if(err) throw err;
+						var foundAnswer = false;
+						var allAnswers = post.answers;
+						for (var j = 0; j < allAnswers.length; j++) {
+							if(allAnswers[j]._id == answerID) {
+								var answerToChange = allAnswers[i];
+								if(answerToChange.author == req.user.username) {
+									answerToChange.answer = answer;
+									answerToChange.status.edited = true;
+									answerToChange.save(function(err) {
+										if(err) throw err;
+										console.log("Answer Updated");
+										res.send({auth: true});
+									});
+								}
+							}
+						}
+					});
+				}
+			}
+		});
+	}else{
+		req.flash('origin');
+    req.flash('origin', '/community/'+postID);
+    res.send({url: '/login'});
+	}
+});
+
 
 module.exports = router;

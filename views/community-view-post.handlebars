@@ -3,9 +3,9 @@
     min-height: 150px;
   }
 
-  .card .ql-editor {
+  /* .card .ql-editor {
     padding-left: 0;
-  }
+  } */
 </style>
 
 <div class="jumbotron bg-white jumbotron-title text-left" style="background-color: #e9ecef4f; box-shadow: 0px 3px 6px 0px #4441412b;">
@@ -82,12 +82,20 @@
     {{#each post.answers}}
     <div id="answer-{{this._id}}" class="card mb-3">
       <div class="card-body">
-        <p class="card-text answer-view noborder d-none">{{this.answer}}</p>
+        <p class="card-text answer-view noborder d-none mb-3">{{this.answer}}</p>
+
+        <div style="position: absolute; top: 5px; right: 5px;">
+          <button type="button" name="button" class="utils answer-edit-btn btn btn-outline-primary py-0" style="position: absolute; top: 5px; right: 5px;" hidden><i class="fas fa-pencil-alt"></i></button>
+        </div>
+
+        <button type="button" name="button" class="utils answer-edit-save btn btn-primary" hidden>Save Changes</button>
+
+        <button type="button" name="button" class="utils answer-edit-cancel btn btn-secondary" hidden>Cancel</button>
+
       </div>
 
       <div class="card-footer text-muted">
-        Answered <p class="moment-timestamp d-none">{{this.timestamp}}</p>
-        {{this.author}}
+        <p><span class="answer-author">{{this.author}}</span> <span>answered <span class="moment-timestamp d-none">{{this.timestamp}}</span></span></p>
 
         <div class="float-right d-inline-flex">
           {{#if this.likeCount}}
@@ -146,18 +154,41 @@
   </div>
 </div>
 
+<!-- Answer Editing Modal -->
+<div class="modal fade" id="answer-editing-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script type="text/javascript">
   window.onload = function(){
     /* Post Description Viewer (Quill) */
-    var postViewEditor = new Quill('#post-view-editor', {
-      modules: {
-        toolbar: false
-      },
-      theme: 'snow'
-    });
+    if($('#post-view-editor').length != 0) {
+      var postViewEditor = new Quill('#post-view-editor', {
+        modules: {
+          toolbar: false
+        },
+        theme: 'snow'
+      });
 
-    postViewEditor.setContents({{{description}}});
-    postViewEditor.disable();
+      postViewEditor.setContents({{{description}}});
+      postViewEditor.disable();
+    }
 
     /* All of the Answers Viewer (Quill) */
 
@@ -277,5 +308,62 @@
         }
       });
     });
+
+
+    // Editing answers
+    // function cancelEdit(item, quill) {
+    //   var answerBox = item.closest('.card');
+    //   var answerEditor = answerBox.find('.answer-view');
+    //
+    //   answerBox.find('.utils').attr('hidden', true);
+    //   answerBox.find('.answer-edit-btn').attr('hidden', false);
+    // };
+    //
+    $('.answer-author').each(function() {
+      var username = '{{username}}';
+      if($(this).text() == username) {
+        $('.answer-edit-btn').attr('hidden', false);
+      }
+    });
+
+    $('.answer-edit-btn').click(function() {
+      var answerBox = $(this).closest('.card');
+      var answerEditor = answerBox.find('.answer-view');
+      answerEditor.removeClass('noborder');
+      var editQuill = new Quill(answerEditor[0], {
+        modules: {
+          toolbar: [
+            [{ header: [1, 2, false] }],
+            ['bold', 'italic', 'underline'],
+            ['image', 'code-block']
+          ]
+        },
+        theme: 'snow'
+      });
+      editQuill.enable();
+      editQuill.focus();
+      answerBox.find('.utils').attr('hidden', false);
+      $(this).attr('hidden', true);
+
+      $('.answer-edit-cancel').click(function() {
+        console.log("Clicked");
+        answerBox.find('.ql-toolbar').hide();
+        answerEditor.addClass('noborder');
+        editQuill.disable();
+        answerBox.find('.utils').attr('hidden', true);
+        answerBox.find('.answer-edit-btn').attr('hidden', false);
+      });
+
+      $('.answer-edit-save').click(function() {
+        console.log("Saving " + JSON.stringify(editQuill.getContents().ops));
+        var url = '/community/' + '{{post._id}}' + '/answers/edit/' + ((answerBox.attr('id').split('-'))[1]);
+        console.log(url);
+        $.post(url, {answer: JSON.stringify(editQuill.getContents().ops)}, function(data) {
+          console.log(data);
+        });
+      });
+    });
+
+
   }
 </script>
