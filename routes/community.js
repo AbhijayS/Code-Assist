@@ -618,13 +618,14 @@ router.get('/post/edit/:id', function(req, res) {
 		});
 	}else{
 		req.flash('origin');
-		req.flash('origin', '/community/'+postID);
+		req.flash('origin', '/community/post/edit/'+postID);
 		res.send('/login');
 	}
 });
 
 router.post('/post/edit/:id', upload.array('file'), function(req, res) {
 	var postID = req.params.id;
+	console.log("Editing: " + postID);
 	var data = {
 		auth: false
 		// url
@@ -678,7 +679,7 @@ router.post('/post/edit/:id', upload.array('file'), function(req, res) {
 		}
 	}else{
 		req.flash('origin');
-		req.flash('origin', '/community/'+postID);
+		req.flash('origin', '/community/post/edit/'+postID);
 		data.url = '/login';
 		res.send(data);
 	}

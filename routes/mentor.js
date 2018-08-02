@@ -171,7 +171,7 @@ router.post('/post', upload.array('file'), function(req, res) {
           mentor.private_posts.push(pPost);
           mentor.save(function(err) {
             if(err) throw err;
-          });       
+          });
         }
 
         console.log('============================================');
@@ -629,6 +629,99 @@ router.post('/:id/answer', function(req, res) {
     req.flash('saved_answer', message);
     res.send('/login');
   }
+});
+
+router.get('/post/edit/:id', function(req, res) {
+  var postID = req.params.id;
+  if(req.user) {
+    User.UserSchema.findOne({_id: req.user._id}).populate("private_posts").exec(function(err, user) {
+      if(err) throw err;
+      var allPosts = user.private_posts;
+      var found = false;
+      for(var i = 0; i < allPosts.length; i++) {
+        if(allPosts[i]._id == postID) {
+          // found - do stuff
+          found = true;
+          break;
+        }
+      }
+
+      if(found) {
+        User.PostSchema.findOne({_id: postID}).populate("files").exec(function(err, post) {
+          if(post) {
+            res.render('mentor-edit-post', {layout: 'dashboard-layout', post: post});
+          }else{
+            res.redirect('/mentor/' + postID);
+          }
+        });
+      }else{
+        res.redirect('/mentor/' + postID);
+      }
+    });
+  }else{
+    req.flash('origin');
+    req.flash('origin', '/mentor/post/edit/'+postID);
+    res.send('/login');
+  }
+});
+
+router.post('/post/edit/:id', upload.array('file'), function(req, res) {
+	var postID = req.params.id;
+	var data = {
+		auth: false
+		// url
+		// questionInvalid
+	};
+
+	if(req.user) {
+		var question = req.body.question;
+		var description = req.body.description;
+		var author = req.user.username;
+		var prog_lang = req.body.programming;
+		var authorid = req.user._id;
+
+		if (question.trim().split(' ').length < 3) {
+			data.questionInvalid = true;
+			res.send(data);
+		}else{
+			User.UserSchema.findOne({_id: req.user._id}).populate('private_posts').exec(function(err, user) {
+				if(err) throw err;
+				var found = false;
+				var allPosts = user.private_posts;
+				for(var i = 0; i < allPosts.length; i++) {
+					if(allPosts[i]._id == postID)
+						found = true;
+				}
+
+				if(found) {
+					User.PostSchema.findOne({_id: postID}).populate('files').exec(function(err, post) {
+						if(err) throw err;
+						post.question = question;
+						post.description = description;
+						post.prog_lang = prog_lang;
+
+						/* Chris please take of the new Files coming in here */
+
+						post.status.edited = true;
+						post.save(function(err) {
+							if(err) throw err;
+							data.auth = true;
+							data.url = '/mentor/' + postID;
+							res.send(data);
+						});
+					});
+				}else{
+					data.auth = false;
+					res.send(data);
+				}
+			});
+		}
+	}else{
+		req.flash('origin');
+		req.flash('origin', '/mentor/post/edit/'+postID);
+		data.url = '/login';
+		res.send(data);
+	}
 });
 
 router.post('/filter', function(req, res) {

@@ -1,0 +1,163 @@
+<style>
+  #editor .ql-editor{
+    min-height: 150px;
+  }
+</style>
+
+<div class="jumbotron jumbotron-title text-left" style="background-color: #e9ecef4f; box-shadow: 0px 3px 6px 0px #4441412b;">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+        <li class="breadcrumb-item" aria-current="page"><a href="/mentor/{{post._id}}">Ask a Mentor</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Edit</li>
+      </ol>
+    </nav>
+
+    <h1>{{post.question}}</h1>
+    <hr>
+
+    <a href="/mentor/post"><p class="lead"><i class="fas fa-user-graduate"></i>  Personalized help from experienced Code Assist Mentors</p></a>
+
+  </div>
+</div>
+
+<div class="jumbotron bg-light container mentor-overview" style="box-shadow: 0px 4px 4px 2px #eee;">
+  <p style="font-weight: 400; width: 100px;"><a href="/mentor/{{post._id}}" class="text-secondary">Go Back</a></p>
+  <h1 style="font-weight: 200;">Edit your post <img id="filterLoading" src="/images/loadingwheel.gif" style="width: 50px; display: none;"></h1>
+  <hr>
+  <br>
+
+  <div id="invalid-question" class="alert alert-danger alert-dismissible fade show" role="alert" hidden>
+    <a href="#question"><strong>Invalid Question!</strong></a> The question must be at least 3 words in length.
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <form id="save-changes">
+
+    <div class="form-group mb-4">
+      <label for="language-choose"><strong>Programming Language</strong></label>
+      <select class="form-control" id="language-choose" name="programming">
+        <option>Python</option>
+        <option>Java</option>
+        <option>C/C++</option>
+        <option>HTML</option>
+        <option>CSS</option>
+        <option>Javascript</option>
+      </select>
+    </div>
+
+    <div class="form-group mb-4">
+      <label for="exampleFormControlInput1"><strong>Question Title</strong></label>
+      <input type="text" class="form-control" id="question" placeholder="" value="{{post.question}}" required>
+    </div>
+
+    <div class="form-group mb-4">
+      <label for="editor"><strong>Description</strong></label>
+      <div id="editor" class="bg-white">
+
+      </div>
+    </div>
+
+    {{#if post.files}}
+      <label><strong>Files</strong></label>
+      <div class="d-flex w-100 justify-content-between mb-3">
+        {{#each post.files}}
+        <a class="btn btn-primary" href="/community/file/{{this.fileID}}" role="button">{{this.name}}</a>
+        {{/each}}
+      </div>
+    {{/if}}
+
+    <div class="form-group">
+      <label for="fileUpload"><strong>File Upload (optional)</strong></label>
+      <input name="file" type="file" class="form-control-file" id="fileUpload" multiple="">
+
+    </div>
+
+    <button type="submit" class="btn btn-outline-primary btn-lg mt-3 btn-block py-3">Save Changes</button>
+
+  </form>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="description-warning" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h3 class="modal-title" id="exampleModalLabel"><strong class="text-warning">Warning!</strong></h3>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-info" role="alert">
+          <a href="#"><strong>Pro tip!</strong></a> Having a description increases the chances of your question being answered by a Code Assist Mentor!
+        </div>
+        <strong>Do you really want to continue without a description?</strong>
+      </div>
+      <div class="modal-footer text-right">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Add a description</button>
+
+        <button id="no-description-submit" type="button" class="btn btn-secondary" data-dismiss="modal">Not necessary</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+  window.onload = function() {
+    var quillEditor = new Quill('#editor', {
+      modules: {
+        toolbar: [
+          [{ header: [1, 2, false] }],
+          ['bold', 'italic', 'underline'],
+          ['image', 'code-block']
+        ]
+      },
+      theme: 'snow'
+    });
+    quillEditor.setContents({{{post.description}}});
+
+    function editPost() {
+      console.log("POSTING");
+      var description = JSON.stringify(quillEditor.getContents().ops);
+      var formData = {};
+
+      /* Chris please take care of sending files to the backend here */
+
+      formData.programming = $('#language-choose').val();
+      formData.question = $("#question").val();
+      formData.description = description;
+
+      $.post('/mentor/post/edit/{{post._id}}', formData, function(data) {
+        if(data.auth) {
+          window.location.replace('http://' + window.location.host + data.url);
+        }else{
+          if(data.url) {
+            window.location.replace('http://' + window.location.host + data.url);
+          }
+
+          if(data.questionInvalid) {
+            $('#invalid-question').attr('hidden', false);
+          }
+        }
+      });
+    };
+
+    $('#save-changes').submit(function(event) {
+      event.preventDefault();
+      if((quillEditor.getContents().ops).length == 0 || (quillEditor.getContents().ops)[0].insert.trim() == "") {
+        $('#description-warning').modal('show');
+      }else{
+        editPost();
+      }
+    });
+
+    $('#no-description-submit').click(function(event) {
+      editPost();
+    });
+  };
+</script>
