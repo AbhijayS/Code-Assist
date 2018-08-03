@@ -28,7 +28,7 @@ window.onload = function(){
         var author = postsToAdd[i].author;
         var lang = postsToAdd[i].prog_lang;
         // console.log(lang);
-        var description = postsToAdd[i].description;
+        var description = postsToAdd[i].descriptionPreview;
         var assignedMentor = postsToAdd[i].assignedMentor;
         if(assignedMentor)
           assignedMentor = assignedMentor.username;
@@ -119,7 +119,7 @@ window.onload = function(){
             var author = postsToAdd[i].author;
             var lang = postsToAdd[i].prog_lang;
             // console.log(lang);
-            var description = postsToAdd[i].description;
+            var description = postsToAdd[i].descriptionPreview;
             var assignedMentor = postsToAdd[i].assignedMentor;
             if(assignedMentor)
               assignedMentor = assignedMentor.username;

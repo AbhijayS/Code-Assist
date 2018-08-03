@@ -29,6 +29,8 @@ router.get('/', function(req, res) {
           }
         }
 
+        addDescriptionPreviews(posts);
+
         // see if show more posts button should be greyed out
         var morePosts = false;
         if (posts.length > 0) {
@@ -52,6 +54,16 @@ router.get('/', function(req, res) {
         options: {sort: {'timestamp': -1}, limit: postLimit}
       }).exec(function(err, user) {
         var posts = user.private_posts;
+
+        for (var i = 0; i < posts.length; i++) {
+          var descriptionObj = JSON.parse(posts[i].description);
+          var descriptionPreview = descriptionObj.filter(op => typeof op.insert === 'string').map(op => op.insert).join('').trim();
+          if (descriptionPreview.length < 200)
+            descriptionPreview = descriptionPreview.substring(0, 200)
+          else
+            descriptionPreview = descriptionPreview.substring(0, 200) + "...";
+          posts[i].descriptionPreview = descriptionPreview;
+        }
 
         var morePosts = false;
         if (posts.length > 0) {
@@ -77,6 +89,18 @@ router.get('/', function(req, res) {
     res.redirect('../../login');
   }
 });
+
+function addDescriptionPreviews(posts) {
+  for (var i = 0; i < posts.length; i++) {
+    var descriptionObj = JSON.parse(posts[i].description);
+    var descriptionPreview = descriptionObj.filter(op => typeof op.insert === 'string').map(op => op.insert).join('').trim();
+    if (descriptionPreview.length < 200)
+      descriptionPreview = descriptionPreview.substring(0, 200)
+    else
+      descriptionPreview = descriptionPreview.substring(0, 200) + "...";
+    posts[i].descriptionPreview = descriptionPreview;
+  }
+}
 
 router.post('/post', upload.array('file'), function(req, res) {
   if(req.user)
@@ -276,6 +300,8 @@ router.post('/morePosts', function(req, res) {
           // assignedToSelf is needed in postschema model if .lean() is not used
 
           var postsToAdd = user.private_posts;
+
+          addDescriptionPreviews(postsToAdd);
 
           for (var i = 0; i < postsToAdd.length; i++) {
             if (postsToAdd[i].assignedMentor && postsToAdd[i].assignedMentor._id.equals(req.user._id)) {
@@ -788,6 +814,8 @@ router.post('/filter', function(req, res) {
         populate: {path: 'assignedMentor', select: '_id username'}
       }).lean().exec(function(err, user) {
         var postsToAdd = user.private_posts;
+
+        addDescriptionPreviews(postsToAdd);
 
         for (var i = 0; i < postsToAdd.length; i++) {
           if (postsToAdd[i].assignedMentor && postsToAdd[i].assignedMentor._id.equals(req.user._id)) {

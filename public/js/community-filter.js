@@ -54,7 +54,7 @@ window.onload = function(){
         var author = postsToAdd[i].author;
         var lang = postsToAdd[i].prog_lang;
         // console.log(lang);
-        var description = postsToAdd[i].description;
+        var description = postsToAdd[i].descriptionPreview;
         var likeCount = postsToAdd[i].likeCount;
         if (!likeCount)
           likeCount = "";
@@ -131,7 +131,7 @@ window.onload = function(){
             var author = postsToAdd[i].author;
             var lang = postsToAdd[i].prog_lang;
             // console.log(lang);
-            var description = postsToAdd[i].description;
+            var description = postsToAdd[i].descriptionPreview;
             var likeCount = postsToAdd[i].likeCount;
             if (!likeCount)
               likeCount = "";
@@ -197,7 +197,7 @@ window.onload = function(){
           var answers = postsToAdd[i].answers.length;
           var author = postsToAdd[i].author;
           var lang = postsToAdd[i].prog_lang;
-          var description = postsToAdd[i].description;
+          var description = postsToAdd[i].descriptionPreview;
           var likeCount = postsToAdd[i].likeCount;
           if (!likeCount)
             likeCount = "";
