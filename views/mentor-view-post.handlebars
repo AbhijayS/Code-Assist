@@ -4,9 +4,6 @@
   }
 </style>
 
-<div class="clippy d-none d-xl-block" style="-webkit-clip-path: polygon(0 87%, 100% 81%, 100% 100%, 0% 100%);
-clip-path: polygon(0 87%, 100% 81%, 100% 100%, 0% 100%); height: 351px; z-index: 1;"></div>
-
 <div class="jumbotron jumbotron-title text-left" style="background-color: #e9ecef4f; box-shadow: 0px 3px 6px 0px #4441412b;">
   <div class="container">
     <nav aria-label="breadcrumb">
@@ -17,8 +14,7 @@ clip-path: polygon(0 87%, 100% 81%, 100% 100%, 0% 100%); height: 351px; z-index:
       </ol>
     </nav>
 
-    <h1 class="display-3 d-none d-sm-block">{{post.question}}</h1>
-    <h1 class="display-4 d-sm-none">{{post.question}}</h1>
+    <h1>{{post.question}}</h1>
     <hr>
 
   </div>
@@ -26,30 +22,54 @@ clip-path: polygon(0 87%, 100% 81%, 100% 100%, 0% 100%); height: 351px; z-index:
 
 <div class="container" id="mentor-post-body" class="mb-5">
   <p class="text-right"><a href="#answer-editor"><button type="button" name="button" class="btn btn-primary btn-lg">Post an Answer</button></a></p>
-  <div class="card border-light bg-light mb-3">
-    <div class="card-header">
-      <p>{{post.author}}</p>
-      <p class="moment-timestamp" style="display: none;">{{post.timestamp}}</p>
+
+  <div class="card mb-5">
+    <div class="card-header bg-white">
+      <span>{{post.author}}</span>
+      <span class="text-muted">Asked <span class="moment-timestamp" style="display: none;">{{post.timestamp}}</span></span>
     </div>
     <div class="card-body">
-      <h5 class="card-title">{{post.question}}</h5>
-      <p><div id="post-view-editor" class="noborder p-0"></div></p>
+      <h3 class="card-title">{{post.question}}</h3>
+      {{#if description}}
+      <p id="description"><div id="post-view-editor" class="noborder p-0"></div></p>
+      {{/if}}
+
+      {{#if post.files}}
+      <div class="flex-column align-items-start">
+        <div class="d-flex w-100 justify-content-between">
+          {{#each post.files}}
+          <a class="btn btn-secondary" href="/community/file/{{this.fileID}}" role="button">{{this.name}}</a>
+          {{/each}}
+        </div>
+      </div>
+      {{/if}}
     </div>
   </div>
 
-  {{#each post.answers}}
-  <div class="card mb-3">
-    <div class="card-body">
-      <p class="card-text answer-view noborder d-none">{{this.answer}}</p>
-    </div>
+  {{#if post.answers}}
+    <h1>{{post.answers.length}} Answers</h1>
+    <hr>
+    {{#each post.answers}}
+    <div id="answer-{{this._id}}" class="card mb-3">
+      <div class="card-body">
+        <p class="card-text answer-view noborder d-none mb-3">{{this.answer}}</p>
 
-    <div class="card-footer text-muted">
-      Answered <p class="moment-timestamp d-none">{{this.timestamp}}</p>
-      {{this.author}}
+        <div style="position: absolute; top: 5px; right: 5px;">
+          <button type="button" name="button" class="utils answer-edit-btn btn btn-outline-primary py-0" hidden><i class="fas fa-pencil-alt"></i></button>
+        </div>
 
+        <button type="button" name="button" class="utils answer-edit-save btn btn-primary" hidden>Save Changes</button>
+
+        <button type="button" name="button" class="utils answer-edit-cancel btn btn-secondary" hidden>Cancel</button>
+
+      </div>
+
+      <div class="card-footer text-muted">
+        <p><span class="answer-author">{{this.author.username}}</span> <span>answered <span class="moment-timestamp d-none">{{this.timestamp}}</span></span></p>
+      </div>
     </div>
-  </div>
-  {{/each}}
+    {{/each}}
+  {{/if}}
 
   <div class="jumbotron bg-white">
     <form action="/" method="post">
@@ -69,14 +89,16 @@ clip-path: polygon(0 87%, 100% 81%, 100% 100%, 0% 100%); height: 351px; z-index:
 <script type="text/javascript">
   window.onload = function(){
     /* Post Description Viewer (Quill) */
-    var postViewEditor = new Quill('#post-view-editor', {
-      modules: {
-        toolbar: false
-      },
-      theme: 'snow'
-    });
-    postViewEditor.setContents({{{post.description}}});
-    postViewEditor.disable();
+    if($('#post-view-editor').length != 0) {
+      var postViewEditor = new Quill('#post-view-editor', {
+        modules: {
+          toolbar: false
+        },
+        theme: 'snow'
+      });
+      postViewEditor.setContents({{{post.description}}});
+      postViewEditor.disable();
+    }
 
     /* All of the Answers Viewer (Quill) */
     var answerViews = $('.answer-view');
@@ -94,7 +116,6 @@ clip-path: polygon(0 87%, 100% 81%, 100% 100%, 0% 100%); height: 351px; z-index:
         },
         theme: 'snow'
       });
-      console.log(postAnswers[i]);
       quill.setContents(postAnswers[i]);
       quill.disable();
     }
@@ -135,6 +156,56 @@ clip-path: polygon(0 87%, 100% 81%, 100% 100%, 0% 100%); height: 351px; z-index:
       $(this).text(timestamp.format("MMM D"));
       $(this).removeClass('d-none');
       $(this).show();
+    });
+
+    $('.answer-author').each(function() {
+      var username = '{{username}}';
+      if($(this).text() == username) {
+        $(this).closest('.card').find($('.answer-edit-btn')).attr('hidden', false);
+      }
+    });
+
+    $('.answer-edit-btn').click(function() {
+      var answerBox = $(this).closest('.card');
+      var answerEditor = answerBox.find('.answer-view');
+      answerEditor.removeClass('noborder');
+      var editQuill = new Quill(answerEditor[0], {
+        modules: {
+          toolbar: [
+            [{ header: [1, 2, false] }],
+            ['bold', 'italic', 'underline'],
+            ['image', 'code-block']
+          ]
+        },
+        theme: 'snow'
+      });
+      editQuill.enable();
+      editQuill.focus();
+      answerBox.find('.utils').attr('hidden', false);
+      $(this).attr('hidden', true);
+
+      $('.answer-edit-cancel').click(function() {
+        answerBox.find('.ql-toolbar').hide();
+        answerEditor.addClass('noborder');
+        editQuill.disable();
+        answerBox.find('.utils').attr('hidden', true);
+        answerBox.find('.answer-edit-btn').attr('hidden', false);
+      });
+
+      $('.answer-edit-save').click(function() {
+        var url = '/mentor/' + '{{post._id}}' + '/answers/edit/' + ((answerBox.attr('id').split('-'))[1]);
+        $.post(url, {answer: JSON.stringify(editQuill.getContents().ops)}, function(data) {
+          if(data.auth) {
+            answerBox.find('.ql-toolbar').hide();
+            answerEditor.addClass('noborder');
+            editQuill.disable();
+            answerBox.find('.utils').attr('hidden', true);
+            answerBox.find('.answer-edit-btn').attr('hidden', false);
+          }else{
+            window.location.replace("http://" + window.location.host + data.url);
+          }
+        });
+      });
     });
   };
 </script>

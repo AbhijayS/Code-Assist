@@ -85,7 +85,7 @@
         <p class="card-text answer-view noborder d-none mb-3">{{this.answer}}</p>
 
         <div style="position: absolute; top: 5px; right: 5px;">
-          <button type="button" name="button" class="utils answer-edit-btn btn btn-outline-primary py-0" style="position: absolute; top: 5px; right: 5px;" hidden><i class="fas fa-pencil-alt"></i></button>
+          <button type="button" name="button" class="utils answer-edit-btn btn btn-outline-primary py-0" hidden><i class="fas fa-pencil-alt"></i></button>
         </div>
 
         <button type="button" name="button" class="utils answer-edit-save btn btn-primary" hidden>Save Changes</button>
@@ -95,7 +95,7 @@
       </div>
 
       <div class="card-footer text-muted">
-        <p><span class="answer-author">{{this.author}}</span> <span>answered <span class="moment-timestamp d-none">{{this.timestamp}}</span></span></p>
+        <p><span class="answer-author">{{this.author.username}}</span> <span>answered <span class="moment-timestamp d-none">{{this.timestamp}}</span></span></p>
 
         <div class="float-right d-inline-flex">
           {{#if this.likeCount}}
@@ -322,7 +322,7 @@
     $('.answer-author').each(function() {
       var username = '{{username}}';
       if($(this).text() == username) {
-        $('.answer-edit-btn').attr('hidden', false);
+        $(this).closest('.card').find($('.answer-edit-btn')).attr('hidden', false);
       }
     });
 
@@ -346,7 +346,6 @@
       $(this).attr('hidden', true);
 
       $('.answer-edit-cancel').click(function() {
-        console.log("Clicked");
         answerBox.find('.ql-toolbar').hide();
         answerEditor.addClass('noborder');
         editQuill.disable();
@@ -355,15 +354,19 @@
       });
 
       $('.answer-edit-save').click(function() {
-        console.log("Saving " + JSON.stringify(editQuill.getContents().ops));
         var url = '/community/' + '{{post._id}}' + '/answers/edit/' + ((answerBox.attr('id').split('-'))[1]);
-        console.log(url);
         $.post(url, {answer: JSON.stringify(editQuill.getContents().ops)}, function(data) {
-          console.log(data);
+          if(data.auth) {
+            answerBox.find('.ql-toolbar').hide();
+            answerEditor.addClass('noborder');
+            editQuill.disable();
+            answerBox.find('.utils').attr('hidden', true);
+            answerBox.find('.answer-edit-btn').attr('hidden', false);
+          }else{
+            window.location.replace("http://" + window.location.host + data.url);
+          }
         });
       });
     });
-
-
   }
 </script>

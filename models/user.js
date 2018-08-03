@@ -131,7 +131,10 @@ var PostSchema = new Schema ({
 });
 
 var AnswerSchema = new Schema ({
-	author: String,
+	author: {
+		type: Schema.Types.ObjectId,
+		ref: 'UserSchema'
+	},
 	answer: String,
 	timestamp: {type: Date, default: Date.now},
 	userLikes: [{

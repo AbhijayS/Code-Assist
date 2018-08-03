@@ -3,6 +3,8 @@ var router = express.Router();
 var User = require('../models/user');
 var upload = require('../database').upload;
 var mongoose = require('mongoose');
+var moment = require('moment');
+
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 // var nodemailer = require('nodemailer');
@@ -409,20 +411,32 @@ router.get('/:id', function(req, res) {
   {
     if(req.user.title == 'mentor')
     {
-      User.PostSchema.findOne({_id: postID}).populate(['answers', 'files']).exec(function(err, post) {
+      User.PostSchema.findOne({_id: postID}).populate([{
+    		path: 'answers',
+    		options: {sort: {'timestamp': 1}},
+    		populate: {path: 'author'}}, 'files']).exec(function(err, post) {
         res.render('mentor-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer')});
       });
     }else{
       User.userHasPrivatePostById(req.user._id, postID, function(found) {
         if(found == true)
         {
-          // console.log("Found: " + found);
-          User.PostSchema.findOne({_id: postID}).populate(['answers', 'files']).exec(function(err, post) {
-            res.render('mentor-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer')});
+          User.PostSchema.findOne({_id: postID}).populate([{
+        		path: 'answers',
+        		options: {sort: {'timestamp': 1}},
+        		populate: {path: 'author'}}, 'files']).exec(function(err, post) {
+            var today = moment(Date.now());
+            var description = JSON.parse(post.description);
+            if(description.length == 0 || description[0].insert.trim() == "") {
+              description = null;
+            }else{
+              description = post.description;
+            }
+
+            res.render('mentor-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description, username: req.user.username});
           });
         }else{
-          // console.log("Found: " + found);
-          res.render('private-post.handlebars', {layout: 'dashboard-layout'});
+          res.redirect('/mentor');
         }
       });
     }
@@ -454,7 +468,7 @@ router.post('/:id/answer', function(req, res) {
         if(err) throw err;
         var newAnswer = new User.AnswerSchema();
         newAnswer.answer = message;
-        newAnswer.author = author;
+        newAnswer.author = req.user;
 
         newAnswer.save(function(err) {
           if(err) throw err;
@@ -509,7 +523,7 @@ router.post('/:id/answer', function(req, res) {
             if(err) throw err;
             var newAnswer = new User.AnswerSchema();
             newAnswer.answer = message;
-            newAnswer.author = author;
+            newAnswer.author = req.user;
 
             newAnswer.save(function(err) {
               if(err) throw err;
@@ -629,6 +643,35 @@ router.post('/:id/answer', function(req, res) {
     req.flash('saved_answer', message);
     res.send('/login');
   }
+});
+
+router.post('/:id/answers/edit/:answerid', function(req, res) {
+  var postID = req.params.id;
+	var answerID = req.params.answerid;
+	var answer = req.body.answer;
+
+	if(req.user) {
+		User.AnswerSchema.findOne({_id: answerID}).populate('author').exec(function(err, answer) {
+			if(err) throw err;
+			if(answer) {
+				if(answer.author.id === req.user.id) {
+					answer.answer = answer;
+					answer.status.edited = true;
+					answer.save(function(err) {
+						if(err) throw err;
+						console.log("Answer Updated");
+						res.send({auth: true});
+					});
+				}
+			}else{
+				res.send({auth: false, url: '/community/'+postID});
+			}
+		});
+	}else{
+		req.flash('origin');
+    req.flash('origin', '/community/'+postID);
+    res.send({url: '/login'});
+	}
 });
 
 router.get('/post/edit/:id', function(req, res) {

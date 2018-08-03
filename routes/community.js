@@ -251,7 +251,12 @@ router.post('/post', upload.array('file'), function(req, res) {
 
 router.get('/:id', function(req, res) {
   var postID = req.params.id;
-  User.PostSchema.findOne({_id: postID}).populate([{path: 'answers', options: {sort: {'timestamp': 1}}}, 'files']).exec(function(err, post) {
+  User.PostSchema.findOne({_id: postID}).populate([{
+		path: 'answers',
+		options: {sort: {'timestamp': 1}},
+		populate: {path: 'author'}},
+		{path: 'files'}])
+		.exec(function(err, post) {
 		if(post) {
 			if (req.user) {
 				for (var i = 0; i < post.answers.length; i++) {
@@ -269,7 +274,6 @@ router.get('/:id', function(req, res) {
 				if (userLikedPost)
 				post.liked = true;
 			}
-
 
 			var today = moment(Date.now());
 			var description = JSON.parse(post.description);
@@ -395,19 +399,15 @@ router.post('/:id/delete', function(req, res){
 
 router.post('/:id/answer', function(req, res){
   var postID = req.params.id;
-  // console.log("Id: " + postID);
   var message = req.body.answer;
 
   if(req.user)
   {
-    // console.log("User exists");
-    var author = req.user.username;
-
     User.PostSchema.findOne({_id: postID}).populate('answers').exec(function(err, post) {
 
       var newAnswer = new User.AnswerSchema();
       newAnswer.answer = message;
-      newAnswer.author = author;
+      newAnswer.author = req.user;
       newAnswer.save(function(err) {
         if(err) throw err;
         // saved
@@ -416,7 +416,6 @@ router.post('/:id/answer', function(req, res){
       post.answers.push(newAnswer);
       post.save(function(err) {
         if(err) throw err;
-        // console.log("Answer saved");
       });
 
 			User.UserSchema.findOne({username: post.author}, function(err, user) {
@@ -432,7 +431,7 @@ router.post('/:id/answer', function(req, res){
 					<h3>Contact details</h3>
 					<ul>
 						<li>Date Replied: ${newTimestamp.format('MMM D')}</li>
-						<li>User's Name: ${author}</li>
+						<li>User's Name: ${req.user.username}</li>
 					</ul>
 				`;
 				const msg = {
@@ -686,45 +685,25 @@ router.post('/post/edit/:id', upload.array('file'), function(req, res) {
 });
 
 router.post('/:id/answers/edit/:answerid', function(req, res) {
-	console.log("GOT IT");
   var postID = req.params.id;
 	var answerID = req.params.answerid;
 	var answer = req.body.answer;
 
 	if(req.user) {
-		User.UserSchema.findOne({_id: req.user._id}).populate('posts').exec(function(err, user) {
+		User.AnswerSchema.findOne({_id: answerID}).populate('author').exec(function(err, answer) {
 			if(err) throw err;
-			if(user) {
-				var foundPost = false;
-				var allPosts = user.posts;
-				for(var i = 0; i < allPosts.length; i++) {
-					if(allPosts[i]._id == postID) {
-						foundPost = true;
-						break;
-					}
-				}
-
-				if(foundPost) {
-					User.PostSchema.findOne({_id: postID}).populate('answers').exec(function(err, post) {
+			if(answer) {
+				if(answer.author.id === req.user.id) {
+					answer.answer = answer;
+					answer.status.edited = true;
+					answer.save(function(err) {
 						if(err) throw err;
-						var foundAnswer = false;
-						var allAnswers = post.answers;
-						for (var j = 0; j < allAnswers.length; j++) {
-							if(allAnswers[j]._id == answerID) {
-								var answerToChange = allAnswers[i];
-								if(answerToChange.author == req.user.username) {
-									answerToChange.answer = answer;
-									answerToChange.status.edited = true;
-									answerToChange.save(function(err) {
-										if(err) throw err;
-										console.log("Answer Updated");
-										res.send({auth: true});
-									});
-								}
-							}
-						}
+						console.log("Answer Updated");
+						res.send({auth: true});
 					});
 				}
+			}else{
+				res.send({auth: false, url: '/community/'+postID});
 			}
 		});
 	}else{
