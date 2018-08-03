@@ -26,7 +26,7 @@
   <div class="card mb-5">
     <div class="card-header bg-white">
       <span>{{post.author}}</span>
-      <span class="text-muted">Asked <span class="moment-timestamp" style="display: none;">{{post.timestamp}}</span></span>
+      <span class="text-muted">asked <span class="moment-timestamp" style="display: none;">{{post.timestamp}}</span></span>
     </div>
     <div class="card-body">
       <h3 class="card-title">{{post.question}}</h3>
@@ -65,10 +65,13 @@
       </div>
 
       <div class="card-footer text-muted">
-        <p><span class="answer-author">{{this.author.username}}</span> <span>answered <span class="moment-timestamp d-none">{{this.timestamp}}</span></span></p>
+        <p><span class="answer-author text-dark">{{this.author.username}}</span> <span>answered <span class="moment-timestamp d-none">{{this.timestamp}}</span></span></p>
       </div>
     </div>
     {{/each}}
+  {{else}}
+  <hr class="mx-5 my-5">
+  <a href="#answer-editor" style="text-decoration: none;"><button type="button" name="button" class="btn btn-outline-primary btn-lg btn-block mb-3 py-3">Answer this Post</button></a>
   {{/if}}
 
   <div class="jumbotron bg-white">

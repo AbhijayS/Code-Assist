@@ -707,16 +707,16 @@ router.post('/post/edit/:id', upload.array('file'), function(req, res) {
 router.post('/:id/answers/edit/:answerid', function(req, res) {
   var postID = req.params.id;
 	var answerID = req.params.answerid;
-	var answer = req.body.answer;
+	var newAnswer = req.body.answer;
 
 	if(req.user) {
-		User.AnswerSchema.findOne({_id: answerID}).populate('author').exec(function(err, answer) {
+		User.AnswerSchema.findOne({_id: answerID}).populate('author').exec(function(err, foundAnswer) {
 			if(err) throw err;
-			if(answer) {
-				if(answer.author.id === req.user.id) {
-					answer.answer = answer;
-					answer.status.edited = true;
-					answer.save(function(err) {
+			if(foundAnswer) {
+				if(foundAnswer.author.id === req.user.id) {
+					foundAnswer.answer = newAnswer;
+					foundAnswer.status.edited = true;
+					foundAnswer.save(function(err) {
 						if(err) throw err;
 						console.log("Answer Updated");
 						res.send({auth: true});

@@ -47,7 +47,7 @@
     <div class="card-header bg-white">
       <span>{{post.author}}</span>
 
-      <span class="text-muted">Asked <span class="moment-timestamp" style="display: none;">{{post.timestamp}}</span></span>
+      <span class="text-muted">asked <span class="moment-timestamp" style="display: none;">{{post.timestamp}}</span></span>
       <span class="float-right d-inline-flex">
         {{#if post.likeCount}}
         <span class="likeCounter m-0 mr-2">{{post.likeCount}}</span>
@@ -95,7 +95,7 @@
       </div>
 
       <div class="card-footer text-muted">
-        <p><span class="answer-author">{{this.author.username}}</span> <span>answered <span class="moment-timestamp d-none">{{this.timestamp}}</span></span></p>
+        <p><span class="answer-author text-dark">{{this.author.username}}</span> <span>answered <span class="moment-timestamp d-none">{{this.timestamp}}</span></span></p>
 
         <div class="float-right d-inline-flex">
           {{#if this.likeCount}}
@@ -309,16 +309,6 @@
       });
     });
 
-
-    // Editing answers
-    // function cancelEdit(item, quill) {
-    //   var answerBox = item.closest('.card');
-    //   var answerEditor = answerBox.find('.answer-view');
-    //
-    //   answerBox.find('.utils').attr('hidden', true);
-    //   answerBox.find('.answer-edit-btn').attr('hidden', false);
-    // };
-    //
     $('.answer-author').each(function() {
       var username = '{{username}}';
       if($(this).text() == username) {
