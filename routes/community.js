@@ -20,6 +20,8 @@ router.get('/', function(req, res) {
 	 User.CommunitySchema.findOne({}).populate({path: 'posts', options: {sort: {'timestamp': -1}, limit: postLimit}}).exec(function(err, community) {
     var posts = community.posts;
 
+    addDescriptionPreviews(posts);
+
     var morePosts = false;
     if (posts.length > 0) {
       User.CommunitySchema.findOne({}).populate({
@@ -39,6 +41,18 @@ router.get('/', function(req, res) {
 	});
 
 });
+
+function addDescriptionPreviews(posts) {
+  for (var i = 0; i < posts.length; i++) {
+    var descriptionObj = JSON.parse(posts[i].description);
+    var descriptionPreview = descriptionObj.filter(op => typeof op.insert === 'string').map(op => op.insert).join('').trim();
+    if (descriptionPreview.length < 200)
+      descriptionPreview = descriptionPreview.substring(0, 200)
+    else
+      descriptionPreview = descriptionPreview.substring(0, 200) + "...";
+    posts[i].descriptionPreview = descriptionPreview;
+  }
+}
 
 router.post('/morePosts', function(req, res) {
   var lastPostID = req.body.lastPostID;
@@ -75,8 +89,10 @@ router.post('/morePosts', function(req, res) {
         ]},
         options: {sort: {'timestamp': -1}, limit: postLimit},
         select: '_id timestamp author question description prog_lang answers likeCount'
-      }).exec(function(err, community) {
+      }).lean().exec(function(err, community) {
         var postsToAdd = community.posts;
+
+        addDescriptionPreviews(postsToAdd);
 
         if (postsToAdd.length > 0) {
           User.CommunitySchema.findOne({}).populate({
@@ -485,10 +501,12 @@ router.post('/Search',function(req,res){
     ]},
     options: {sort: {'timestamp': -1}, limit: postLimit},
     select: '_id timestamp author question description prog_lang answers likeCount'
-  }).exec(function(err, community) {
+  }).lean().exec(function(err, community) {
 		if (err) console.log(err);
 
     var postsToAdd = community.posts;
+
+    addDescriptionPreviews(postsToAdd);
 
     if (postsToAdd.length > 0) {
       User.CommunitySchema.findOne({}).populate({
@@ -560,8 +578,10 @@ router.post('/filter', function(req, res) {
     ]},
     options: {sort: {'timestamp': -1}, limit: postLimit},
     select: '_id timestamp author question description prog_lang answers likeCount'
-  }).exec(function(err, community) {
+  }).lean().exec(function(err, community) {
     var postsToAdd = community.posts;
+
+    addDescriptionPreviews(postsToAdd);
 
     if (postsToAdd.length > 0) {
       User.CommunitySchema.findOne({}).populate({
