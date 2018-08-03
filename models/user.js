@@ -23,6 +23,7 @@ var UserSchema = new Schema({
 			type: String,
 			index:true
 		},
+		pic: String,
 	  email: {
 	    type: String
 	  },

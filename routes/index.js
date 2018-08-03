@@ -236,8 +236,10 @@ router.post('/register', function(req, res){
     username: username,
     email: email,
     password: password,
-    title: 'user'
+    title: 'user',
+    pic: "https://github.com/identicons/"+ username + ".png"
   });
+
   // var check = new RegExp();
   // console.log("Match: " + /^[a-z0-9]+$/.test(username));
   var passwordMatch = req.body.password2 == password;
