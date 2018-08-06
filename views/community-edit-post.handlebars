@@ -65,7 +65,7 @@
       <div id="fileContainer" class="d-flex w-100 justify-content-between mb-3">
         {{#each post.files}}
         <div class="btn-group" role="group">
-          <a class="btn btn-secondary fileBtn" href="/community/file/{{this.fileID}}" role="button">{{this.name}}</a>
+          <a id="{{this._id}}" class="btn btn-secondary fileBtn" href="/community/file/{{this.fileID}}" role="button">{{this.name}}</a>
           <button class="btn btn-danger deleteFileBtn"><i class="fa fa-trash" aria-hidden="true"></i></button>
         </div>
         {{/each}}
@@ -126,28 +126,41 @@
     quillEditor.setContents({{{post.description}}});
 
     function editPost() {
-      console.log("POSTING");
+      // console.log("POSTING");
+
       var description = JSON.stringify(quillEditor.getContents().ops);
-      var formData = {};
 
-      /* Chris please take care of sending files to the backend here */
+      var formData = new FormData();
 
-      formData.programming = $('#language-choose').val();
-      formData.question = $("#question").val();
-      formData.description = description;
+      for (var i = 0; i < fileList.length; i++) {
+        formData.append('file', fileList[i]);
+      }
+      formData.append('programming', $('#language-choose').val());
+      formData.append('question', $("#question").val());
+      formData.append('description', description);
+      for (var i = 0; i < removedFileIds.length; i++) {
+        formData.append('removedFileIds', removedFileIds[i]);
+      }
 
-      $.post('/community/post/edit/{{post._id}}', formData, function(data) {
-        if(data.auth) {
-          window.location.replace('http://' + window.location.host + data.url);
-        }else{
-          if(data.url) {
-            window.location.replace('http://' + window.location.host + data.url);
+      $.ajax({
+          url: "/community/post/edit/{{post._id}}",
+          data: formData,
+          type: 'POST',
+          contentType: false,
+          processData: false,
+          success: function(data) {
+            if(data.auth) {
+              window.location.replace('http://' + window.location.host + data.url);
+            }else{
+              if(data.url) {
+                window.location.replace('http://' + window.location.host + data.url);
+              }
+
+              if(data.questionInvalid) {
+                $('#invalid-question').attr('hidden', false);
+              }
+            }
           }
-
-          if(data.questionInvalid) {
-            $('#invalid-question').attr('hidden', false);
-          }
-        }
       });
     };
 
@@ -165,6 +178,7 @@
     });
 
     var fileList = [];
+    var removedFileIds = [];
     var fileUpload = $("#fileUpload")[0];
 
     $("#fileUpload").on('change', function(event) {
@@ -200,7 +214,7 @@
         for (var i = fileList.length-1; i >= 0; i--) {
           if (fileList[i].name == $(this).siblings(".btn").attr('id')) {
             fileList.splice(i, 1);
-            console.log(fileList);
+            // console.log(fileList);
             break;
           }
         }
@@ -213,12 +227,13 @@
       });
 
 
-      console.log(fileList);
+      // console.log(fileList);
     });
 
     $('#fileContainer .deleteFileBtn').click(function(event) {
       event.preventDefault();
-      console.log("Remove file here!!!");
+      removedFileIds.push($(this).siblings('.fileBtn').attr('id'));
+      // console.log(removedFileIds);
 
       $(this).parent().remove();
       $('#fileUpload').val("");
