@@ -62,17 +62,22 @@
 
     {{#if post.files}}
       <label><strong>Files</strong></label>
-      <div class="d-flex w-100 justify-content-between mb-3">
+      <div id="fileContainer" class="d-flex w-100 justify-content-between mb-3">
         {{#each post.files}}
-        <a class="btn btn-primary" href="/community/file/{{this.fileID}}" role="button">{{this.name}}</a>
+        <div class="btn-group" role="group">
+          <a class="btn btn-secondary fileBtn" href="/community/file/{{this.fileID}}" role="button">{{this.name}}</a>
+          <button class="btn btn-danger deleteFileBtn"><i class="fa fa-trash" aria-hidden="true"></i></button>
+        </div>
         {{/each}}
       </div>
     {{/if}}
 
-    <div class="form-group">
+    <div id="fileUploadContainer" class="form-group">
       <label for="fileUpload"><strong>File Upload (optional)</strong></label>
-      <input name="file" type="file" class="form-control-file" id="fileUpload" multiple="">
-
+      <br>
+      <label class="btn btn-primary mb-0">
+        Add Files<input type="file" id="fileUpload" multiple="" hidden>
+      </label>
     </div>
 
     <button type="submit" class="btn btn-outline-primary btn-lg mt-3 btn-block py-3">Save Changes</button>
@@ -157,6 +162,66 @@
 
     $('#no-description-submit').click(function(event) {
       editPost();
+    });
+
+    var fileList = [];
+    var fileUpload = $("#fileUpload")[0];
+
+    $("#fileUpload").on('change', function(event) {
+      var existingFileNames = $('#fileContainer .fileBtn').map(function(){return $(this).text()}).get();
+      var uploadFileNames = fileList.map(a => a.name);
+
+      var fileNames = existingFileNames.concat(uploadFileNames);
+
+      for (var i = 0; i < fileUpload.files.length; i++) {
+
+        var breakOut = false;
+        for (var j = 0; j < fileNames.length; j++) {
+          if (fileUpload.files[i].name == fileNames[j]) {
+            breakOut = true;
+            $('<div class="alert alert-danger alert-dismissible fade show" role="alert">A file with the name <strong>' + fileNames[j] + '</strong> already exists<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>').insertAfter(".mentor-overview hr")
+            break;
+          }
+        }
+
+        if (breakOut)
+          break;
+
+        fileList.push(fileUpload.files[i]);
+        $("#fileUploadContainer").append(`
+        <div class="btn-group mx-1" role="group">
+          <button id='${fileUpload.files[i].name}' class='btn btn-secondary fileBtn'>${fileUpload.files[i].name}</button>
+          <button class="btn btn-danger deleteFileBtn"><i class="fa fa-trash" aria-hidden="true"></i></button>
+        </div>`);
+      }
+      $("#fileUploadContainer .deleteFileBtn").click(function(event) {
+        event.preventDefault();
+
+        for (var i = fileList.length-1; i >= 0; i--) {
+          if (fileList[i].name == $(this).siblings(".btn").attr('id')) {
+            fileList.splice(i, 1);
+            console.log(fileList);
+            break;
+          }
+        }
+        $(this).parent().remove();
+        $('#fileUpload').val("");
+      });
+
+      $('#fileUploadContainer .fileBtn').click(function(event) {
+        event.preventDefault();
+      });
+
+
+      console.log(fileList);
+    });
+
+    $('#fileContainer .deleteFileBtn').click(function(event) {
+      event.preventDefault();
+      console.log("Remove file here!!!");
+
+      $(this).parent().remove();
+      $('#fileUpload').val("");
     });
   };
 </script>

@@ -79,9 +79,12 @@ clip-path: polygon(7% 85%, 18% 89%, 32% 100%, 0 100%, 0 57%); height: 405px; z-i
       </div>
     </div>
 
-    <div class="form-group">
-      <label for="fileUpload">File Upload (optional)</label>
-      <input name="file" type="file" class="form-control-file" id="fileUpload" multiple="">
+    <div id="fileUploadContainer" class="form-group">
+      <label for="fileUpload"><strong>File Upload (optional)</strong></label>
+      <br>
+      <label class="btn btn-primary mb-0">
+        Select Files<input type="file" id="fileUpload" multiple="" hidden>
+      </label>
     </div>
 
     <button id="submit" class="btn btn-outline-primary btn-lg mt-3 btn-block py-3">Submit Request</button>
