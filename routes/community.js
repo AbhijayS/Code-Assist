@@ -17,7 +17,11 @@ var postLimit = 10; // how many posts to show user at a time
 // var User = require('../models/test-user');
 
 router.get('/', function(req, res) {
-	 User.CommunitySchema.findOne({}).populate({path: 'posts', options: {sort: {'timestamp': -1}, limit: postLimit}}).exec(function(err, community) {
+	 User.CommunitySchema.findOne({}).populate({
+		 path: 'posts',
+		 options: {sort: {'timestamp': -1},limit: postLimit},
+		 populate: {path: 'author'}
+	 }).exec(function(err, community) {
     var posts = community.posts;
 
     addDescriptionPreviews(posts);
@@ -27,6 +31,7 @@ router.get('/', function(req, res) {
       User.CommunitySchema.findOne({}).populate({
         path: 'posts',
         match: {timestamp: {$lt: posts[posts.length-1].timestamp}},
+				populate: 'author'
       }).exec(function(err, communityRemainingPosts) {
         var count =  communityRemainingPosts.posts.length;
         if (count > 0)
@@ -189,7 +194,7 @@ router.get('/file/:fileID', (req, res) => {
 router.post('/post', upload.array('file'), function(req, res) {
   var question = req.body.question;
   var description = req.body.description;
-  var author = req.user.username;
+  var author = req.user;
 	var prog_lang = req.body.programming;
   var authorid=req.user._id;
   var questionInvalid = false;
@@ -271,7 +276,7 @@ router.get('/:id', function(req, res) {
 		path: 'answers',
 		options: {sort: {'timestamp': 1}},
 		populate: {path: 'author'}},
-		{path: 'files'}])
+		{path: 'files'}, {path: 'author'}])
 		.exec(function(err, post) {
 		if(post) {
 			if (req.user) {
@@ -299,7 +304,7 @@ router.get('/:id', function(req, res) {
 				description = post.description;
 			}
 
-			if(req.user && req.user._id==post.authorid){
+			if(req.user && req.user._id==post.author._id){
 				res.render('community-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description, isowner: true, username: req.user.username});
 			}else{
 				res.render('community-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description, username: req.user.username});
@@ -374,7 +379,7 @@ router.post('/flag-post', function(req, res) {
 				<hr>
 
 				<ul>
-					<li>Author: ${post.author}</li>
+					<li>Author: ${post.author.username}</li>
 					<li>Question: ${post.question}</li>
 					<li>Description: ${post.description}</li>
 					<li>Date Posted: ${timestamp.format('MMM D')}</li>
@@ -419,7 +424,7 @@ router.post('/:id/answer', function(req, res){
 
   if(req.user)
   {
-    User.PostSchema.findOne({_id: postID}).populate('answers').exec(function(err, post) {
+    User.PostSchema.findOne({_id: postID}).populate(['answers', 'author']).exec(function(err, post) {
 
       var newAnswer = new User.AnswerSchema();
       newAnswer.answer = message;
@@ -434,10 +439,10 @@ router.post('/:id/answer', function(req, res){
         if(err) throw err;
       });
 
-			User.UserSchema.findOne({username: post.author}, function(err, user) {
+			User.UserSchema.findOne({_id: post.author._id}, function(err, user) {
 				var newTimestamp = moment(newAnswer.timestamp);
 				const output = `
-					<p>Hi ${post.author},</p>
+					<p>Hi ${post.author.username},</p>
 					<p>The Community has recently replied to your question:</p>
 					<h2>New Answer Details</h2>
 					<hr>
@@ -654,7 +659,7 @@ router.post('/post/edit/:id', upload.array('file'), function(req, res) {
 	if(req.user) {
 		var question = req.body.question;
 		var description = req.body.description;
-		var author = req.user.username;
+		var author = req.user;
 		var prog_lang = req.body.programming;
 		var authorid = req.user._id;
 

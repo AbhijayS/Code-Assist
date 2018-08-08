@@ -20,7 +20,7 @@ router.get('/', function(req, res) {
       User.UserSchema.findOne({_id: req.user._id}).populate({
         path: 'private_posts',
         options: {sort: {'timestamp': -1}, limit: postLimit},
-        populate: {path: 'assignedMentor'}
+        populate: {path: 'assignedMentor', path: 'author'}
       }).exec(function(err, user) {
         var posts = user.private_posts;
         for (var i = 0; i < posts.length; i++) {
@@ -51,7 +51,8 @@ router.get('/', function(req, res) {
     }else{
       User.UserSchema.findOne({_id: req.user._id}).populate({
         path: 'private_posts',
-        options: {sort: {'timestamp': -1}, limit: postLimit}
+        options: {sort: {'timestamp': -1}, limit: postLimit},
+        populate: {path: 'author'}
       }).exec(function(err, user) {
         var posts = user.private_posts;
 
@@ -132,7 +133,7 @@ router.post('/post', upload.array('file'), function(req, res) {
       // console.log("Post");
 
       var pPost = new User.PostSchema();
-      pPost.author = req.user.username;
+      pPost.author = req.user;
       pPost.question = question;
       pPost.description = description;
       pPost.prog_lang = req.body.programming;
@@ -440,8 +441,8 @@ router.get('/:id', function(req, res) {
       User.PostSchema.findOne({_id: postID}).populate([{
     		path: 'answers',
     		options: {sort: {'timestamp': 1}},
-    		populate: {path: 'author'}}, 'files']).exec(function(err, post) {
-        res.render('mentor-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer')});
+    		populate: {path: 'author'}}, 'files', {path: 'author'}]).exec(function(err, post) {
+          res.render('mentor-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer')});
       });
     }else{
       User.userHasPrivatePostById(req.user._id, postID, function(found) {
@@ -450,7 +451,7 @@ router.get('/:id', function(req, res) {
           User.PostSchema.findOne({_id: postID}).populate([{
         		path: 'answers',
         		options: {sort: {'timestamp': 1}},
-        		populate: {path: 'author'}}, 'files']).exec(function(err, post) {
+        		populate: {path: 'author'}}, 'files', {path: 'author'}]).exec(function(err, post) {
             var today = moment(Date.now());
             var description = JSON.parse(post.description);
             if(description.length == 0 || description[0].insert.trim() == "") {
@@ -458,7 +459,6 @@ router.get('/:id', function(req, res) {
             }else{
               description = post.description;
             }
-
             res.render('mentor-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description, username: req.user.username});
           });
         }else{

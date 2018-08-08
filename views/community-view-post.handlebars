@@ -45,9 +45,15 @@
 
   <div id="post-{{post._id}}" class="card mb-5">
     <div class="card-header bg-white">
-      <span>{{post.author}}</span>
+      <div class="float-left d-flex" style="font-size: 16px;">
+        <div class="profile-pic" style="background-image: url({{post.author.pic}});">
+        </div>
+        <div class="ml-2">
+          <p class="m-0">{{post.author.username}}</p>
+          <span class="text-muted">asked <span class="moment-timestamp" style="display: none;">{{post.timestamp}}</span></span>
+        </div>
+      </div>
 
-      <span class="text-muted">asked <span class="moment-timestamp" style="display: none;">{{post.timestamp}}</span></span>
       <span class="float-right d-inline-flex">
         {{#if post.likeCount}}
         <span class="likeCounter m-0 mr-2">{{post.likeCount}}</span>
@@ -77,7 +83,7 @@
   </div>
 
   {{#if post.answers}}
-    <h1>{{post.answers.length}} Answers</h1>
+    <h1 style="font-weight: 200;">{{post.answers.length}} Answers</h1>
     <hr>
     {{#each post.answers}}
     <div id="answer-{{this._id}}" class="card mb-3">
@@ -91,11 +97,18 @@
         <button type="button" name="button" class="utils answer-edit-save btn btn-primary" hidden>Save Changes</button>
 
         <button type="button" name="button" class="utils answer-edit-cancel btn btn-secondary" hidden>Cancel</button>
-
+w
       </div>
 
       <div class="card-footer text-muted">
-        <p><span class="answer-author text-dark">{{this.author.username}}</span> <span>answered <span class="moment-timestamp d-none">{{this.timestamp}}</span></span></p>
+        <div class="float-left d-flex" style="font-size: 16px;">
+          <div class="profile-pic" style="background-image: url({{this.author.pic}});">
+          </div>
+          <div class="ml-2">
+            <p class="m-0">{{this.author.username}}</p>
+            <span class="text-muted">asked <span class="moment-timestamp" style="display: none;">{{this.timestamp}}</span></span>
+          </div>
+        </div>
 
         <div class="float-right d-inline-flex">
           {{#if this.likeCount}}

@@ -21,7 +21,7 @@ var ChatSchema = new Schema({
 var UserSchema = new Schema({
 		username: {
 			type: String,
-			index:true
+			index: true
 		},
 		pic: String,
 	  email: {
@@ -102,8 +102,11 @@ var ProjectSchema = new Schema({
 
 // Post Schema
 var PostSchema = new Schema ({
-	author: String,
-	authorid:String,
+	author: {
+		type: Schema.Types.ObjectId,
+		ref: 'UserSchema'
+	},
+	authorid: String,
 	timestamp: {type: Date, default: Date.now},
 	question: String,
 	description: String,
