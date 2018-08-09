@@ -53,4 +53,27 @@ window.onload = function(){
       });
     }
   });
+
+  $('#profilePicModal').on('show.bs.modal', function(e) {
+    $('#picUpload').val('');
+  });
+
+  $('#saveProfilePic').click(function() {
+
+    $('#profilePicModal').modal('hide');
+      var formData = new FormData();
+      formData.append('file', $('#picUpload')[0].files[0]);
+      $.ajax({
+          url: "/profile-pic-change",
+          data: formData,
+          type: 'POST',
+          contentType: false,
+          processData: false,
+          success: function(data) {
+            if (data.pic) {
+              $('#userPic').attr('src', data.pic);
+            }
+          }
+      });
+  });
 };
