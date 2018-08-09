@@ -70,7 +70,17 @@ var profilePicStorage = new GridFsStorage({
 });
 
 var upload = multer({storage});
-var profilePicUpload = multer({storage: profilePicStorage});
+var profilePicUpload = multer({
+  storage: profilePicStorage,
+  fileFilter: function (req, file, callback) {
+    var ext = path.extname(file.originalname);
+    if(ext !== '.png' && ext !== '.jpg' && ext !== '.gif' && ext !== '.jpeg') {
+      // return callback(new Error('Only images are allowed'));
+      return callback(null, false);
+    }
+    callback(null, true)
+  },
+});
 
 module.exports.upload = upload;
 module.exports.profilePicUpload = profilePicUpload;
