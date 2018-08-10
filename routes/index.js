@@ -405,14 +405,20 @@ router.post('/username-change', function(req, res) {
 });
 
 router.post('/profile-pic-change', profilePicUpload.single('file'), function(req, res) {
-  console.log(req.file);
+  // console.log("profile pic change");
+  // console.log(req.file);
   if(req.user)
   {
     User.UserSchema.findOne({_id: req.user._id}, function(err, user) {
       if (user.pic && user.pic.split("/profilePic/")[1]) {
         var fileID = new mongoose.mongo.ObjectId(user.pic.split("/profilePic/")[1]);
-        gfs.remove({_id: fileID, root: 'profilePics'}, function (err) {
+        gfs.exist({_id: fileID, root: 'profilePics'}, function (err, found) {
           if (err) throw err;
+          if (found) {
+            gfs.remove({_id: fileID, root: 'profilePics'}, function (err) {
+              if (err) throw err;
+            });      
+          }
         });
       }
 

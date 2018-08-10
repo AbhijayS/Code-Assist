@@ -9,9 +9,12 @@
         </button>
       </div>
       <div class="modal-body">
-        <input type="file" id="picUpload" accept='image/*'>
+        {{!-- <input type="file" id="picUpload" accept='image/*'> --}}
+        <button class="btn btn-primary" id="browse">Choose Picture...</button>
+        <p id="fileInfo" class="ml-2 d-inline-block"></p>
       </div>
       <div class="modal-footer">
+        <img id="loadingWheel" src="/images/loadingwheel.gif" style="width: 30px; display: none;">
         <button id="saveProfilePic" type="button" class="btn btn-primary">Save changes</button>
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
       </div>
@@ -22,7 +25,8 @@
 <div class="container mt-5">
   <div class="row">
     <div class="col-sm-5 text-center">
-      <img id="userPic" src="{{user.pic}}" alt="" width="50%;" class="text-center" style="border-radius: 10px;">
+      {{!-- <img id="userPic" src="{{user.pic}}" alt="" width="50%;" class="text-center" style="border-radius: 10px;"> --}}
+      <div id="userPic" class="profile-pic" style="background-image: url({{user.pic}});" class="text-center" style="border-radius: 10px;"></div>
       <div>
         <button data-toggle="modal" data-target="#profilePicModal" class="btn btn-outline-info mt-2"><i class="fas fa-edit"></i> Edit Profile Picture</button>
         <p class="lead my-3">Welcome <strong>{{user.username}}</strong></p>
@@ -117,4 +121,5 @@
   </div>
 
 </div>
+<script type="text/javascript" src="/js/plupload.full.min.js"></script>
 <script type="text/javascript" src="/js/account.js"></script>
