@@ -304,7 +304,7 @@ router.get('/:id', function(req, res) {
 				description = post.description;
 			}
 
-			if(req.user && req.user._id==post.author._id){
+			if(req.user && req.user.id==post.author.id){
 				res.render('community-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description, isowner: true, username: req.user.username});
 			}else{
 				res.render('community-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description, username: req.user.username});
