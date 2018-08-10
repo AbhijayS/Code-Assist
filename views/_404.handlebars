@@ -15,7 +15,7 @@
 
     <div class="col-sm-6">
       <img src="/images/error.svg" alt="" style="width: 100%;">
-      <button type="button" name="button" class="btn btn-dark btn-lg btn-block py-2">Go to Home <i class="fas fa-arrow-right"></i></button>
+      <button type="button" name="button" class="btn btn-dark btn-lg btn-block py-2" onclick="goHome()">Go to Home <i class="fas fa-arrow-right align-middle"></i></button>
     </div>
   </div>
 </div>
@@ -32,3 +32,9 @@
   <br>
   <a href="/community">Ask someone</a>
 </div>
+
+<script type="text/javascript">
+  function goHome() {
+    window.location.replace("http://" + window.location.host);
+  }
+</script>
