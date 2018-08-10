@@ -689,19 +689,19 @@ router.post('/sendpassresetemail',function(req,res){
 =====================================================
 */
 
-router.get('/blog', function(req, res){
-  res.render('blog', {layout: 'blog-layout'});
-})
-
-router.get('/blog/:name', function(req, res){
-  res.render(req.params.name, {layout: 'blog-layout'}, function(err){
-    if(err){
-      res.redirect('/urldoesntexist');
-    }else{
-      res.render(req.params.name, {layout: 'blog-layout'});
-    }
-  });
-});
+// router.get('/blog', function(req, res){
+//   res.render('blog', {layout: 'blog-layout'});
+// })
+//
+// router.get('/blog/:name', function(req, res){
+//   res.render(req.params.name, {layout: 'blog-layout'}, function(err){
+//     if(err){
+//       res.redirect('/urldoesntexist');
+//     }else{
+//       res.render(req.params.name, {layout: 'blog-layout'});
+//     }
+//   });
+// });
 
 router.get('/users/profile/:id', function(req, res) {
   var userID = req.params.id;
