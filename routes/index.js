@@ -52,7 +52,6 @@ router.get('/', function(req, res){
 router.get('/login', function(req, res){
   if(req.user) {
     res.redirect('/');
-  // console.log('User exists');
   }else{
     var username = req.flash('username');
     var error = req.flash('error');
@@ -773,6 +772,10 @@ router.post('/admin', function(req, res){
   }else{
     res.send({auth: false});
   }
+});
+
+router.get('/test', function(req, res) {
+  res.render('test', {layout: 'dashboard-layout'});
 });
 
 module.exports = router;
