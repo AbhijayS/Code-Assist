@@ -51,6 +51,12 @@ window.onload = function(){
   var fileUpload = $("#fileUpload")[0];
   $("#fileUpload").on('change', function(event) {
     for (var i = 0; i < fileUpload.files.length; i++) {
+      var allowedExts = ['java','py','cpp','dat','txt','html','css','js','zip','jpg','jpeg','png'];
+      var fileExt = fileUpload.files[i].name.split('.').pop();
+      if (allowedExts.indexOf(fileExt) == -1) {
+        $('<div class="alert alert-danger alert-dismissible fade show" role="alert"><strong>.' + fileExt + '</strong> file types are not allowed<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>').insertAfter(".mentor-overview hr")
+        continue;
+      }
 
       var breakOut = false;
       for (var j = 0; j < fileList.length; j++) {
@@ -62,7 +68,7 @@ window.onload = function(){
       }
 
       if (breakOut)
-        break;
+        continue;
 
       fileList.push(fileUpload.files[i]);
       $("#fileUploadContainer").append(`
@@ -78,7 +84,7 @@ window.onload = function(){
       for (var i = fileList.length-1; i >= 0; i--) {
         if (fileList[i].name == $(this).siblings(".btn").attr('id')) {
           fileList.splice(i, 1);
-          console.log(fileList);
+          // console.log(fileList);
           break;
         }
       }
@@ -90,6 +96,6 @@ window.onload = function(){
       event.preventDefault();
     });
     
-    console.log(fileList);
+    // console.log(fileList);
   });
 };

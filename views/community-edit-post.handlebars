@@ -76,7 +76,7 @@
       <label for="fileUpload"><strong>File Upload (optional)</strong></label>
       <br>
       <label class="btn btn-primary mb-0">
-        Add Files<input type="file" id="fileUpload" multiple="" hidden>
+        Add Files<input type="file" id="fileUpload" multiple="" hidden accept=".java,.py,.cpp,.dat,.txt,.html,.css,.js,.zip,.jpg,.jpeg,.png">
       </label>
     </div>
 
@@ -188,6 +188,12 @@
       var fileNames = existingFileNames.concat(uploadFileNames);
 
       for (var i = 0; i < fileUpload.files.length; i++) {
+        var allowedExts = ['java','py','cpp','dat','txt','html','css','js','zip','jpg','jpeg','png'];
+        var fileExt = fileUpload.files[i].name.split('.').pop();
+        if (allowedExts.indexOf(fileExt) == -1) {
+          $('<div class="alert alert-danger alert-dismissible fade show" role="alert"><strong>.' + fileExt + '</strong> file types are not allowed<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>').insertAfter(".mentor-overview hr")
+          continue;
+        }
 
         var breakOut = false;
         for (var j = 0; j < fileNames.length; j++) {
