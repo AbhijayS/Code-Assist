@@ -208,3 +208,24 @@ Team Page (team.handlebars)
 #team-body #left-col {
   border-left: solid black 1px;
 } */
+
+/*
+========================================
+User Profile Page (user-profile.handlebars)
+========================================
+*/
+
+#achievements li{
+  border-radius: 28px;
+  /* border-right: none; */
+  width: max-content;
+  padding-right: 50%;
+  /* border-image: linear-gradient(to right, #cecbcb, #f4f5ff00) 30; */
+
+  font-weight: 100;
+}
+
+#achievements li * {
+  font-weight: 100;
+  font-size: 24px;
+}

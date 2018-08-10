@@ -1,0 +1,61 @@
+<div class="jumbotron bg-white text-bottom pb-0 d-md-none border-bottom rounded-0" style="">
+  <div class="d-flex" style="align-items: flex-end">
+    <div class="col-sm">
+      <h3 class="mt-5" style="font-weight: 300;">First Last</h3>
+      <p style="font-weight: 100;">{{profile.username}}</p>
+    </div>
+
+    <div class="text-center my-3 mb-4">
+      <img class="" src="{{profile.pic}}" alt="Profile Picture" style="width: 100%; max-width: 170px;">
+    </div>
+  </div>
+</div>
+
+<div class="container d-none d-md-block">
+  <div class="jumbotron bg-light text-bottom pb-1" style="max-height: 200px;">
+    <div class="row">
+      <div class="col-sm-3 bg-white rounded d-none d-md-block" style="height: 500px; box-shadow: 0px 2px 9px 2px #eee;">
+        <div class="text-center my-3 mb-4">
+          <img class="" src="{{profile.pic}}" alt="Profile Picture" style="width: 100%; max-width: 220px;">
+        </div>
+
+        <div class="container">
+          <p class="text-muted" style="font-size: 14px;">{{profile.bio}}</p>
+        </div>
+      </div>
+
+      <div class="col-sm">
+        <h3 class="mt-5" style="font-weight: 300;">First Last</h3>
+        <p style="font-weight: 100;">{{profile.username}}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-4 d-none d-md-block">
+
+    </div>
+
+    <div class="col-sm-8">
+      <ul class="list-group" id="achievements">
+        <li class="list-group-item mb-4">
+          <h4 class="p-0 m-0"><i class="fas fa-medal"></i> {{profile.qualities.rank}}</h4>
+        </li>
+
+        <li class="list-group-item mb-4">
+          <h4 class="p-0 m-0">{{profile.numPosts}} Posts</h4>
+        </li>
+
+        <li class="list-group-item mb-4">
+          <h4 class="p-0 m-0"><i class="far fa-thumbs-up"></i> {{profile.numPosts}} Likes</h4>
+        </li>
+        <li class="list-group-item mb-4">
+          <h4 class="p-0 m-0"><i class="far fa-hand-peace"></i> {{profile.qualities.assists}} Assists</h4>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+</div>

@@ -1,11 +1,7 @@
-// var mongo = require('mongodb');
-// var MongoClient = mongo.MongoClient;
 require('dotenv').config();
 var bcrypt = require('bcryptjs');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-// mongoose.connect(process.env.DB_HOST);
-// mongoose.connect(process.env.DB_HOST_TEST);
 var db = mongoose.connection;
 
 // Chat Schema
@@ -19,19 +15,36 @@ var ChatSchema = new Schema({
 
 // User Schema
 var UserSchema = new Schema({
+
+		membership: {type: String, default: "free"}, // "free", "premium"
+
+		first: String,
+		last: String,
+
 		username: {
 			type: String,
 			index: true
 		},
+
 		pic: String,
+
+		profile: {
+			status: {type: String, default: "public"} // "public", private"
+		},
+
 	  email: {
 	    type: String
 	  },
+
 		password: {
 			type: String
 		},
 
 		title: String,
+
+		bio: String,
+
+		e_link: String,
 		forgotpasslastattempt:{type:Date, default:new Date()},
 		forgotpasscode:{type:Number ,default:Math.floor(Math.random()*9999999)+1000000},
 
@@ -49,7 +62,13 @@ var UserSchema = new Schema({
 			type: Schema.Types.ObjectId,
 			ref: 'ProjectSchema'
 		}],
-		e_link: String
+
+		qualities: {
+			rank: {type: String, default: "bronze"},
+			// bronze, silver, gold, platinum
+
+			assists: {type: Number, default: 0}
+		}
 });
 
 var CommunitySchema = new Schema ({

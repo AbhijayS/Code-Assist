@@ -537,7 +537,7 @@ router.post('/delete-account', function(req, res) {
 });
 
 router.get('/team', function(req, res) {
-  res.render('team', {layout: 'dashboard-layout'});
+  res.render('team', {layout: 'dashboard-layout'})
 });
 
 //password forget functions
@@ -648,7 +648,48 @@ router.get('/blog/:name', function(req, res){
       res.render(req.params.name, {layout: 'blog-layout'});
     }
   });
-})
+});
+
+router.get('/users/profile/:id', function(req, res) {
+  var userID = req.params.id;
+  if(req.user) {
+    User.UserSchema.findOne({_id: userID}).populate({
+      path: 'posts',
+      populate: {path: 'answers'}
+    }).exec(function(err, user) {
+      if(err) throw err;
+      if(user) {
+        if(user.profile.status == "public") {
+          if(req.user._id == req.params.id) {
+            // user viewing himself
+            res.render('user-profile', {layout: 'dashboard-layout'});
+          }else{
+            // someone viewing user
+            var person = {
+              username: user.username,
+              bio: user.bio,
+              pic: user.pic,
+              firstName: user.first,
+              lastName: user.last,
+              numPosts: user.posts.length,
+              qualities: user.qualities
+            };
+
+            res.render('user-profile', {layout: 'dashboard-layout', profile: person});
+          }
+        }else{
+          res.redirect('/');
+        }
+      }else{
+        res.redirect('/');
+      }
+    })
+  }else{
+    req.flash('origin');
+    req.flash('origin', '/users/profile/'+req.params.id);
+    res.redirect('/login');
+  }
+});
 
 /*
 =====================================================
