@@ -10,7 +10,16 @@ body{
   /* background-position: center; */
   background-size: contain;
   display: inline-block;
-  display:
+
+  background-repeat: no-repeat;
+  background-size: auto 100%;
+  background-position-x: center;
+}
+
+#userPic {
+  width: 200px;
+  height: 200px;
+  border-radius: 10px;
 }
 
 #feedback-floating-btn {

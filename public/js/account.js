@@ -55,25 +55,64 @@ window.onload = function(){
   });
 
   $('#profilePicModal').on('show.bs.modal', function(e) {
-    $('#picUpload').val('');
+    uploader.splice(0);
+    $('#fileInfo').text('');
   });
 
   $('#saveProfilePic').click(function() {
-
-    $('#profilePicModal').modal('hide');
-      var formData = new FormData();
-      formData.append('file', $('#picUpload')[0].files[0]);
-      $.ajax({
-          url: "/profile-pic-change",
-          data: formData,
-          type: 'POST',
-          contentType: false,
-          processData: false,
-          success: function(data) {
-            if (data.pic) {
-              $('#userPic').attr('src', data.pic);
+      $('#saveProfilePic').attr("disabled", true);
+      uploader.start();
+      $('#loadingWheel').show();
+      if (uploader.files.length == 0) {
+        var formData = new FormData();
+        $.ajax({
+            url: "/profile-pic-change",
+            data: formData,
+            type: 'POST',
+            contentType: false,
+            processData: false,
+            success: function(data) {
+              if (data.pic) {
+                $('#userPic').css('background-image', 'url(' + data.pic + ')');
+              }
+              $('#profilePicModal').modal('hide');
+              $('#loadingWheel').hide();
+              $('#saveProfilePic').attr("disabled", false);
             }
-          }
-      });
+        });
+      }
+  });
+
+  var uploader = new plupload.Uploader({
+    browse_button: 'browse', // this can be an id of a DOM element or the DOM element itself
+    url: '/profile-pic-change',
+    multi_selection: false,
+    resize: {
+      height: 420,
+      width: 420
+    },
+    filters: {
+      mime_types: [{title : "Image files", extensions : "jpg,jpeg,png"}]
+    }
+  });
+   
+  uploader.init();
+
+  uploader.bind('FilesAdded', function (up, files) {
+    // keep only latest file
+    uploader.splice(0, uploader.files.length - 1);
+
+    var file = files[0];
+    $('#fileInfo').text(file.name + ' (' + plupload.formatSize(file.size) + ')');
+  });
+
+  uploader.bind('FileUploaded', function(up, file, result) {
+    var data = JSON.parse(result.response);
+    if (data.pic) {
+      $('#userPic').css('background-image', 'url(' + data.pic + ')');
+    }
+    $('#profilePicModal').modal('hide');
+    $('#loadingWheel').hide();
+    $('#saveProfilePic').attr("disabled", false);
   });
 };
