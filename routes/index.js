@@ -10,8 +10,10 @@ var passport = require('passport');
 //var nodemailer = require('nodemailer');
 const sgMail = require('@sendgrid/mail');
 var QuillDeltaToHtmlConverter = require('quill-delta-to-html');
+var mongoose = require('mongoose');
 var multer = require('multer');
-var upload = multer();
+var uploadNoDest = multer();
+var profilePicUpload = require('../database').profilePicUpload;
 
 var saltRounds=10;
 
@@ -91,7 +93,7 @@ router.get('/contact', function(req, res){
 });
 
 // Contact feedback form
-router.post('/contact', upload.array('file'), function(req, res) {
+router.post('/contact', uploadNoDest.array('file'), function(req, res) {
   var name = req.body.name;
   var email = req.body.email;
   var subject = req.body.subject;
@@ -374,7 +376,7 @@ router.post('/username-change', function(req, res) {
             // console.log("Username Doesn't Exist! :)");
             req.user.username = username;
             // console.log(req.user.username);
-              User.PostSchema.find({authorid:req.user._id},function(err,posts){
+/*              User.PostSchema.find({authorid:req.user._id},function(err,posts){
                 for(var oof=0;oof<posts.length;oof++){
                   posts[oof].author=username;
                   posts[oof].save(function (err) {
@@ -382,7 +384,7 @@ router.post('/username-change', function(req, res) {
                     // saved!
                   });
                 }
-              });
+              });*/
             req.user.save(function (err) {
               if (err) throw err;
               // saved!
@@ -401,6 +403,57 @@ router.post('/username-change', function(req, res) {
     req.flash('origin', '/account');
     res.send({url: '/login'});
   }
+});
+
+router.post('/profile-pic-change', profilePicUpload.single('file'), function(req, res) {
+  console.log(req.file);
+  if(req.user)
+  {
+    User.UserSchema.findOne({_id: req.user._id}, function(err, user) {
+      if (user.pic && user.pic.split("/profilePic/")[1]) {
+        var fileID = new mongoose.mongo.ObjectId(user.pic.split("/profilePic/")[1]);
+        gfs.remove({_id: fileID, root: 'profilePics'}, function (err) {
+          if (err) throw err;
+        });
+      }
+
+      if (req.file) {
+        user.pic = '/profilePic/' + req.file.id;
+      } else {
+        user.pic = "https://github.com/identicons/"+ user.username + ".png"
+      }
+
+      res.send({pic: user.pic});
+
+      user.save(function (err) {
+        if (err) throw err;
+      });
+    });
+  }else{
+    req.flash('origin');
+    req.flash('origin', '/account');
+    res.send({url: '/login'});
+  }
+});
+
+router.get('/profilePic/:fileID', (req, res) => {
+  // converts fileID into object id
+  // allows for file searching by _id
+  var fileID = new mongoose.mongo.ObjectId(req.params.fileID);
+  gfs.collection('profilePics').findOne({_id: fileID}, (err, file) => {
+    // Check if file
+    if (!file || file.length === 0) {
+      return res.status(404).json({
+        err: 'No file exists'
+      });
+    }
+
+    res.set('Content-Type', file.contentType);
+    res.set('Content-Disposition', 'attachment; filename="' + file.filename + '"');
+
+    const readstream = gfs.createReadStream(file.filename);
+    readstream.pipe(res);
+  });
 });
 
 router.post('/email-change', function(req, res) {
