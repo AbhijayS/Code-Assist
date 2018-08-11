@@ -123,6 +123,10 @@ clip-path: polygon(0 87%, 100% 81%, 100% 100%, 0% 100%); height: 351px; z-index:
 
 <script type="text/javascript">
   window.onload = function(){
+    var notifyio=io('/{{user._id}}');
+    notifyio.on('notify',function(message){
+      alert(message);
+    });
     /* Post Description Viewer (Quill) */
     var postViewEditor = new Quill('#post-view-editor', {
       modules: {
