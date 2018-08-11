@@ -50,6 +50,7 @@
     "quill-delta-to-html": "^0.8.4",
     "sendgrid": "^5.2.3",
     "socket.io": "^2.1.1",
+    "superagent": "^3.8.3",
     "underscore": "1.5.x",
     "uniqid": "^5.0.3",
     "yes-https": "0.0.4"

@@ -7,13 +7,17 @@ var path = require('path');
 var User = require('../models/user');
 var LocalStrategy = require('passport-local').Strategy;
 var passport = require('passport');
-//var nodemailer = require('nodemailer');
 const sgMail = require('@sendgrid/mail');
 var QuillDeltaToHtmlConverter = require('quill-delta-to-html');
 var mongoose = require('mongoose');
 var multer = require('multer');
 var uploadNoDest = multer();
 var profilePicUpload = require('../database').profilePicUpload;
+var request = require('superagent');
+
+var mailchimpInstance   = process.env.MAILCHIMP_SERVER_INSTANCE,
+    listUniqueId        = process.env.MAILCHIMP_LIST,
+    mailchimpApiKey     = process.env.MAILCHIMP_API_KEY;
 
 var saltRounds=10;
 
@@ -223,9 +227,9 @@ router.post('/register', function(req, res){
   var email = req.body.email;
   var password = req.body.password;
 
-  // req.checkBody('email', 'Email is required').notEmpty();
-  // var CS_Class = req.body.CS_class;
-  req.checkBody('username', 'Username is required').len(3);
+  const regex = /^[a-z][a-z0-9_\.]{2,24}$/i;
+  if(!regex.exec(username))
+    var invalidUsername = true;
 
   req.checkBody('email', 'Email is invalid').isEmail();
   req.checkBody('password', 'Password must be at least 8 characters long').len(8);
@@ -241,36 +245,44 @@ router.post('/register', function(req, res){
     pic: "https://github.com/identicons/"+ username + ".png"
   });
 
-  // var check = new RegExp();
-  // console.log("Match: " + /^[a-z0-9]+$/.test(username));
-  var passwordMatch = req.body.password2 == password;
-
   try{
     User.getUserByUsername(username, function(err, userWithUsername) {
       User.getUserByEmail(email, function(err, userWithEmail) {
-        if (!passwordMatch || userWithUsername || userWithEmail || errors) {
+        if (invalidUsername || userWithUsername || userWithEmail || errors) {
           console.log('============================================');
           if (userWithEmail) console.log("Email taken");
           if (userWithUsername) console.log("Username taken");
           console.log("Redirecting to: Register from: Register");
           console.log('============================================');
-          res.render('register', {layout: false, username: username, email: email, usernameTaken: userWithUsername, emailTaken: userWithEmail, notMatch: !passwordMatch});
+          res.render('register', {layout: false, username: username, email: email, usernameTaken: userWithUsername, emailTaken: userWithEmail, invalidChars: invalidUsername});
         } else {
           User.createUser(newUser, function(err, user){
             if(err) throw err;
-            // console.log('--------------------------------------------');
-            // console.log('User Created ->')
-            // console.log(user);
-            // console.log('--------------------------------------------');
-            // console.log('');
-            // req.user = true;
-            console.log('============================================');
-            console.log("Registering New User");
-            console.log("Redirecting to: Login from: Register");
-            console.log('============================================');
-            req.flash('username');
-            req.flash('username', username);
-            res.redirect('/login');
+            if(user) {
+
+              // log in user after created
+              passport.authenticate('local')(req, res, function () {
+                  request
+                  .post('https://' + mailchimpInstance + '.api.mailchimp.com/3.0/lists/' + listUniqueId + '/members/')
+                  .set('Content-Type', 'application/json;charset=utf-8')
+                  .set('Authorization', 'Basic ' + new Buffer('any:' + mailchimpApiKey ).toString('base64'))
+                  .send({
+                    'email_address': email,
+                    'status': 'subscribed',
+                    'merge_fields': {
+                      'FNAME': req.body.firstName,
+                      'LNAME': req.body.lastName
+                    }
+                  }).end(function(err, response) {
+                    if (response.status < 300 || (response.status === 400 && response.body.title === "Member Exists")) {
+                      // sign up successful
+                      res.redirect('/account');
+                    } else {
+                      res.send('Sign Up Failed :( Sorry, this is on our end');
+                    }
+                });
+              })
+            }
             // console.log(req.user);
           });
         }
@@ -359,8 +371,9 @@ router.post('/username-change', function(req, res) {
   if(req.user)
   {
     var username = req.body.username;
-    if(username.length >= 3)
-    {
+    console.log("New username:", username);
+    const regex = /^[a-z][a-z0-9_\.]{2,24}$/i;
+    if(regex.exec(username)) {
       if(username == req.user.username)
       {
         res.send({status: true});
@@ -368,22 +381,9 @@ router.post('/username-change', function(req, res) {
         User.UserSchema.findOne({username: username}, function(err, user) {
           if(user)
           {
-            // console.log("Username Exists :(");
-            res.send({status: false});
+            res.send({status: false, message: 'Username already exists.'});
           }else{
-
-            // console.log("Username Doesn't Exist! :)");
             req.user.username = username;
-            // console.log(req.user.username);
-/*              User.PostSchema.find({authorid:req.user._id},function(err,posts){
-                for(var oof=0;oof<posts.length;oof++){
-                  posts[oof].author=username;
-                  posts[oof].save(function (err) {
-                    if (err) throw err;
-                    // saved!
-                  });
-                }
-              });*/
             req.user.save(function (err) {
               if (err) throw err;
               // saved!
@@ -391,11 +391,51 @@ router.post('/username-change', function(req, res) {
             res.send({status: true});
           }
         });
-
       }
 
     }else{
-      res.send({status: false});
+      res.send({status: false, message: 'Invalid username!'});
+    }
+  }else{
+    req.flash('origin');
+    req.flash('origin', '/account');
+    res.send({url: '/login'});
+  }
+});
+
+router.post('/first-name-change', function(req, res) {
+  var firstName = req.body.firstName;
+  if(req.user) {
+    console.log(firstName);
+    if(firstName && firstName.length >=1) {
+      req.user.first = firstName;
+      req.user.save(function (err) {
+        if (err) throw err;
+        // saved!
+      });
+      res.send({auth: true});
+    }else{
+      res.send({auth: false, message: 'Invalid characters.'});
+    }
+  }else{
+    req.flash('origin');
+    req.flash('origin', '/account');
+    res.send({url: '/login'});
+  }
+});
+
+router.post('/last-name-change', function(req, res) {
+  var lastName = req.body.lastName;
+  if(req.user) {
+    if(lastName && lastName.length >=1) {
+      req.user.last = lastName;
+      req.user.save(function (err) {
+        if (err) throw err;
+        // saved!
+      });
+      res.send({auth: true});
+    }else{
+      res.send({auth: false, message: 'Invalid characters!'});
     }
   }else{
     req.flash('origin');
@@ -417,7 +457,7 @@ router.post('/profile-pic-change', profilePicUpload.single('file'), function(req
           if (found) {
             gfs.remove({_id: fileID, root: 'profilePics'}, function (err) {
               if (err) throw err;
-            });      
+            });
           }
         });
       }
@@ -470,7 +510,7 @@ router.post('/email-change', function(req, res) {
 
     if(errors)
     {
-      res.send({status: false});
+      res.send({status: false, message: "Invalid Email."});
     }else{
       if(email == req.user.email)
       {
@@ -480,7 +520,7 @@ router.post('/email-change', function(req, res) {
           if(user)
           {
             // console.log("Email Exists :(");
-            res.send({status: false});
+            res.send({status: false, message: "Email has been taken."});
           }else{
             // console.log("Email Doesn't Exist! :)");
             req.user.email = email;
@@ -551,8 +591,6 @@ router.post('/password-change', function(req, res) {
           sendData.msg.push('Invalid Password!');
         }
       }
-      // console.log("Login status: " + sendData.status);
-      // console.log("Msg: " + sendData.msg);
       req.flash('account-status');
       req.flash('account-status', sendData);
       res.redirect('/account');

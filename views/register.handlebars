@@ -32,40 +32,31 @@
 	<div class="limiter">
 		<div class="container-login100">
 			<div class="wrap-login100">
-				<form class="login100-form validate-form" method="post" action="/register">
-					<span class="login100-form-title p-b-26" style="font-family: 'Nunito', sans-serif !important;">
-						Welcome to
-					</span>
+				<a href="/"><span>< Home</span></a>
+				{{#if invalidChars}}
+				<div class="alert alert-danger">
+					Invalid <strong>Username or Email</strong>
+				</div>
+				{{/if}}
 
-					<div class="container text-center">
-						<a href="/" id="brand"><h1>Code Assist</h1></a>
-					</div>
+				{{#if usernameTaken}}
+				<div class="alert alert-danger">
+					<strong>Username</strong> has been taken
+				</div>
+				{{/if}}
+
+				{{#if emailTaken}}
+				<div class="alert alert-danger">
+					This <strong>Email</strong> has been taken
+				</div>
+				{{/if}}
+				<hr>
+				<form class="login100-form validate-form" method="post" action="/register">
+					<h2 style="text-align: center; font-weight: lighter; font-family: 'Nunito', sans-serif !important;">Create an Account</h2>
+					<hr>
 					<!-- <span class="login100-form-title p-b-48">
 						<i class="zmdi zmdi-font"></i>
 					</span> -->
-					{{#if invalidChars}}
-					<div style="margin-bottom: 2rem;" class="alert alert-danger">
-						<strong>Username and Email</strong> can only contain alphanumeric characters, period or underscore
-					</div>
-					{{/if}}
-
-					{{#if usernameTaken}}
-						<div style="margin-bottom: 2rem;" class="alert alert-danger">
-						  <strong>Username</strong> is taken
-						</div>
-					{{/if}}
-
-					{{#if emailTaken}}
-						<div style="margin-bottom: 2rem;" class="alert alert-danger">
-						  <strong>Email</strong> is already registered
-						</div>
-					{{/if}}
-
-					{{#if notMatch}}
-						<div style="margin-bottom: 2rem;" class="alert alert-danger">
-							<strong>Passwords</strong> don't match
-						</div>
-					{{/if}}
 
 					<div class="wrap-input100 validate-input" data-validate = "At least 3 characters">
 						{{#if username}}
@@ -92,14 +83,6 @@
 						<input class="input100" type="password" name="password">
 						<span class="focus-input100" data-placeholder="Password"></span>
 					</div>
-
-          <div class="wrap-input100 validate-input" data-validate="Passwords don't match">
-            <span class="btn-show-pass">
-              <i class="zmdi zmdi-eye"></i>
-            </span>
-            <input class="input100" type="password" name="password2">
-            <span class="focus-input100" data-placeholder="Re-enter Password"></span>
-          </div>
 
 					<div class="container-login100-form-btn">
 						<div class="wrap-login100-form-btn">

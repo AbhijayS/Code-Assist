@@ -1,45 +1,69 @@
 
 window.onload = function(){
+  $('#first-name').change(function() {
+    console.log("Changing first name");
+    var inputBox = $(this);
+    $.post('/first-name-change', {firstName: inputBox.val()}, function(data) {
+      if(data.url) {
+        window.location.replace("http://" + window.location.host + data.url);
+      }else{
+        if(data.auth) {
+          inputBox.attr('class', 'form-control is-valid');
+        }else{
+          inputBox.attr('class', 'form-control is-invalid');
+          inputBox.next().text(data.message);
+        }
+      }
+    })
+  });
+
+  $('#last-name').change(function() {
+    var inputBox = $(this);
+    $.post('/last-name-change', {lastName: inputBox.val()}, function(data) {
+      if(data.url) {
+        window.location.replace("http://" + window.location.host + data.url);
+      }else{
+        if(data.auth) {
+          inputBox.attr('class', 'form-control is-valid');
+        }else{
+          inputBox.attr('class', 'form-control is-invalid');
+          inputBox.next().text(data.message);
+        }
+      }
+    })
+  });
+
   $('#usernameInput').change(function() {
+    var inputBox = $(this);
     var change = $(this).val();
     $.post('/username-change', {username: change}, function(data) {
       if(data.url)
       {
         window.location.replace(data.url);
       }else{
-        if(data.status == true)
-        {
-          // console.log("Available: " + data.status);
-          $('#user-status').removeClass();
-          $('#user-status').addClass('glyphicon glyphicon-ok');
-          $('#username').empty();
-          var newContent = `
-          <strong>Username</strong>: ${change}
-          `;
-          $('#username').append(newContent);
+        if(data.status == true){
+          inputBox.attr('class', 'form-control is-valid');
         }else{
-          $('#user-status').removeClass();
-          $('#user-status').addClass('glyphicon glyphicon-remove');
+          inputBox.attr('class', 'form-control is-invalid');
+          inputBox.next().text(data.message);
         }
       }
     });
   });
 
   $('#emailInput').change(function() {
-    console.log("User is email...");
-    $.post('/email-change', {email: $(this).val()}, function(data) {
+    var inputBox = $(this);
+    $.post('/email-change', {email: inputBox.val()}, function(data) {
       if(data.url)
       {
-        window.location.replace(data.url);
+        window.location.replace("http://" + window.location.host + data.url);
       }else{
         if(data.status == true)
         {
-          console.log("Available: " + data.status);
-          $('#email-status').removeClass();
-          $('#email-status').addClass('glyphicon glyphicon-ok');
+          inputBox.attr('class', 'form-control is-valid');
         }else{
-          $('#email-status').removeClass();
-          $('#email-status').addClass('glyphicon glyphicon-remove');
+          inputBox.attr('class', 'form-control is-invalid');
+          inputBox.next().text(data.message);
         }
       }
     });
@@ -95,7 +119,7 @@ window.onload = function(){
       mime_types: [{title : "Image files", extensions : "jpg,jpeg,png"}]
     }
   });
-   
+
   uploader.init();
 
   uploader.bind('FilesAdded', function (up, files) {
