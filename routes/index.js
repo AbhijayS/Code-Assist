@@ -14,6 +14,9 @@ var multer = require('multer');
 var uploadNoDest = multer();
 var profilePicUpload = require('../database').profilePicUpload;
 var request = require('superagent');
+var server = require('../app').server;
+var socket=require('socket.io');
+var io=socket(server);
 
 var mailchimpInstance   = process.env.MAILCHIMP_SERVER_INSTANCE,
     listUniqueId        = process.env.MAILCHIMP_LIST,
@@ -726,6 +729,18 @@ router.post('/sendpassresetemail',function(req,res){
   }
   });
 });
+function Notify(userid,message){
+  console.log("Notify user"+userid);
+  this.nnsp=io.of("/"+userid);
+  this.nnsp.on('connection',function(socket){
+    console.log("connected");
+  });
+  User.UserSchema.findOne({_id:userid},function(err,user){
+    if(user){
+      this.nnsp.emit('notify',message);
+    }
+  });
+}
 /*
 =====================================================
                         BLOG
