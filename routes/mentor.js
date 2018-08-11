@@ -244,7 +244,7 @@ router.get('/file/:fileID', (req, res) => {
   // converts fileID into object id
   // allows for file searching by _id
   var fileID = new mongoose.mongo.ObjectId(req.params.fileID);
-  gfs.files.findOne({_id: fileID}, (err, file) => {
+  gfs.collection('uploads').findOne({_id: fileID}, (err, file) => {
     // Check if file
     if (!file || file.length === 0) {
       return res.status(404).json({
