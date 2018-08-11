@@ -182,7 +182,7 @@ router.get('/register', function(req, res){
     if(req.user) {
       res.redirect('/');
     }else{
-      res.render('register', {layout: false, username: req.flash('username')});
+      res.render('register', {layout: 'dashboard-layout', username: req.flash('username')});
     }
 });
 
@@ -254,12 +254,11 @@ router.post('/register', function(req, res){
           if (userWithUsername) console.log("Username taken");
           console.log("Redirecting to: Register from: Register");
           console.log('============================================');
-          res.render('register', {layout: false, username: username, email: email, usernameTaken: userWithUsername, emailTaken: userWithEmail, invalidChars: invalidUsername});
+          res.render('register', {layout: 'dashboard-layout', username: username, email: email, usernameTaken: userWithUsername, emailTaken: userWithEmail, invalidUsername: invalidUsername, invalidEmail: errors.email, invalidPassword: errors.password});
         } else {
           User.createUser(newUser, function(err, user){
             if(err) throw err;
             if(user) {
-
               // log in user after created
               passport.authenticate('local')(req, res, function () {
                   request
@@ -293,7 +292,7 @@ router.post('/register', function(req, res){
     console.log("Register page has invalid characters");
     console.log("Redirecting to: Register from: Register");
     console.log('============================================');
-    res.render('register', {layout: false, username: username, email: email, invalidChars: true});
+    res.render('register', {layout: 'dashboard-layout', username: username, email: email, invalidChars: true});
   }
 });
 
