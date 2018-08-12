@@ -68,7 +68,7 @@ router.get('/login', function(req, res){
       console.log("Rendering Login from Login");
       console.log("Username: blank");
       console.log('============================================');
-      res.render('login', {layout: false, error: error});
+      res.render('login', {layout: 'dashboard-layout', error: error});
     }else{
       User.getUserByUsername(username, function(err, user) {
         if(err) throw err;
@@ -78,7 +78,7 @@ router.get('/login', function(req, res){
           console.log("Rendering Login from Login");
           console.log("Username exists: " + username);
           console.log('============================================');
-          res.render('login', {layout: false, username: username, error: error});
+          res.render('login', {layout: 'dashboard-layout', username: username, error: error});
         }else {
           // console.log("Doesn't exist");
           console.log('============================================');
