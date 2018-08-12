@@ -827,7 +827,7 @@ router.post('/admin', function(req, res){
 });
 
 router.get('/test', function(req, res) {
-  res.render('test', {layout: 'dashboard-layout'});
+  res.render('login-test', {layout: 'dashboard-layout'});
 });
 
 module.exports = router;
