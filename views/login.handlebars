@@ -27,7 +27,7 @@
       <span class="text-muted">Please Sign In to continue</span>
       <p><a href="/register">Don't have an account? Sign up now.</a></p>
 
-      <div class="p-1 mb-4">
+      <div class="p-1 pt-4 my-4">
         <form method="post" action="/login">
           <div class="form-group mb-4">
             <input type="text" class="form-control p-3 {{#if error}}is-invalid{{/if}}" placeholder="username" style="border-radius: 40px;" value="{{username}}" name="username" {{#if username}}{{else}}autofocus {{/if}}>
@@ -53,45 +53,29 @@
 
 <div class="jumbotron container bg-white d-md-none">
   <p><a href="/"><i class="fas fa-home"></i> Home</a></p>
-  <h1 style="font-weight: bold;">Welcome Back</h1>
-  <span class="text-muted">Sign in to continue</span>
-  <p href="/login"><a href="/login">Have an account already? Login instead.</a></p>
+	<hr>
+  <h1 style="font-weight: bold;">Welcome</h1>
+  <span class="text-muted">Please Sign In to continue</span>
+	<p><a href="/register">Don't have an account? Sign up now.</a></p>
 
-
-	<div class="p-1 mb-4">
-		<form method="post" action="/register">
+	<div class="p-1 pt-4 my-4">
+		<form method="post" action="/login">
 			<div class="form-group mb-4">
-				<input type="text" class="form-control p-3 {{#if usernameTaken}}is-invalid{{else if invalidUsername}}is-invalid{{/if}}" placeholder="username" style="border-radius: 40px;" value="{{username}}" name="username" autofocus>
+				<input type="text" class="form-control p-3 {{#if error}}is-invalid{{/if}}" placeholder="username" style="border-radius: 40px;" value="{{username}}" name="username" {{#if username}}{{else}}autofocus {{/if}}>
 				<div class="invalid-feedback">
-					{{#if invalidUsername}}
-					Invalid Username.
-					{{else if usernameTaken}}
-					Username has been taken.
-					{{/if}}
+					Username or Password is incorrect
 				</div>
 			</div>
 
 			<div class="form-group mb-4">
-				<input type="text" class="form-control p-3 {{#if emailTaken}}is-invalid{{else if invalidEmail}}is-invalid{{/if}}" placeholder="email" style="border-radius: 40px;" value="{{email}}" name="email">
+				<input type="password" class="form-control p-3" placeholder="password" style="border-radius: 40px;" name="password" {{#if username}}autofocus {{/if}}>
 				<div class="invalid-feedback">
-					{{#if invalidEmail}}
-					Invalid Email.
-					{{else if emailTaken}}
-					Email has been taken.
-					{{/if}}
+					Incorrect Password.
 				</div>
 			</div>
 
-			<div class="form-group mb-4">
-				<input type="password" class="form-control p-3 {{#if invalidPassword}}is-invalid{{/if}}" placeholder="password" style="border-radius: 40px;" name="password">
-				<div class="invalid-feedback">
-					Invalid Password.
-				</div>
-			</div>
-
-			<button type="submit" name="button" class="btn btn-primary btn-block btn-lg p-3 mx-auto mb-2" style="border-radius: 40px;">Create an Account</button>
-			<input type="checkbox" aria-label="Checkbox for following text input" checked>
-			<span class="text-muted" style="font-size: 12px;">Dont' miss out on Code Assist email Updates and Notifications.</span>
+			<button type="submit" name="button" class="btn btn-primary btn-block btn-lg p-3 mx-auto mb-2" style="border-radius: 40px;">Log In</button>
 		</form>
 	</div>
+
 </div>
