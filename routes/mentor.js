@@ -748,6 +748,7 @@ router.post('/post/edit/:id', upload.array('file'), function(req, res) {
 		var author = req.user.username;
 		var prog_lang = req.body.programming;
 		var authorid = req.user._id;
+    var removedFileIds = req.body.removedFileIds;
 
 		if (question.trim().split(' ').length < 3) {
 			data.questionInvalid = true;
@@ -769,7 +770,35 @@ router.post('/post/edit/:id', upload.array('file'), function(req, res) {
 						post.description = description;
 						post.prog_lang = prog_lang;
 
-						/* Chris please take of the new Files coming in here */
+            for (var i = 0; i < req.files.length; i++) {
+							// console.log(req.files[i]);
+
+							// new file reference
+							var newFileRef = new User.FileRefSchema();
+							newFileRef.name = req.files[i].filename;
+							newFileRef.fileID = req.files[i].id;
+							newFileRef.save(function(err) {
+								if(err) throw err;
+								// saved
+							});
+							post.files.push(newFileRef);
+						}
+
+						if (removedFileIds) {
+							// in case only one file needs to be removed
+							if (!Array.isArray(removedFileIds)) {
+								removedFileIds = [removedFileIds];
+							}
+
+
+							for (var i = 0; i < removedFileIds.length; i++) {
+								console.log("removing file: " + removedFileIds[i])
+								post.files.pull({_id: removedFileIds[i]});
+								User.FileRefSchema.findOneAndRemove({_id: removedFileIds[i]}, function(err, fileRef) {
+									gfs.files.remove({_id: fileRef.fileID});
+								});
+							}
+						}
 
 						post.status.edited = true;
 						post.save(function(err) {
