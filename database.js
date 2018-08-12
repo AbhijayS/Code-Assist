@@ -73,7 +73,7 @@ var upload = multer({storage});
 var profilePicUpload = multer({
   storage: profilePicStorage,
   fileFilter: function (req, file, callback) {
-    var ext = path.extname(file.originalname);
+    var ext = path.extname(file.originalname).toLowerCase();
     if(ext !== '.png' && ext !== '.jpg' && ext !== '.jpeg') {
       // return callback(new Error('Only images are allowed'));
       return callback(null, false);
