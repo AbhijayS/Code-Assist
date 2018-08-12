@@ -17,12 +17,15 @@ var request = require('superagent');
 var server = require('../app').server;
 var socket=require('socket.io');
 var io=socket(server);
+const nanoid = require('nanoid');
+
 
 var mailchimpInstance   = process.env.MAILCHIMP_SERVER_INSTANCE,
     listUniqueId        = process.env.MAILCHIMP_LIST,
     mailchimpApiKey     = process.env.MAILCHIMP_API_KEY;
 
 var saltRounds=10;
+const safe_chars = 50;
 
 
 // Get current user
@@ -281,6 +284,7 @@ router.post('/register', function(req, res){
                       res.redirect('/account');
                     } else {
                       res.send('Sign Up Failed :( Sorry, this is on our end');
+                      res.redirect('/register');
                     }
                 });
               })
@@ -639,95 +643,184 @@ router.get('/team', function(req, res) {
 });
 
 //password forget functions
-router.get('/forgotpass',function(req,res){
-  res.render('forgotpass',{layout:'layout'})
-});
-
-router.post('/resetpass',function(req,res){
-  if(req.body.username){
-//  console.log(req.body.code+"   "+req.body.username);
-  User.UserSchema.findOne({username:req.body.username},function(err,user){
-    if(req.body.code==user.forgotpasscode){
-      console.log("let user reset their password");
-      res.send("activatereset")
-    }
-  });
-}
-});
+// router.get('/forgotpass',function(req,res){
+//   res.render('forgotpass',{layout:'layout'})
+// });
+//
+// router.post('/resetpass',function(req,res){
+//   if(req.body.username){
+//   //  console.log(req.body.code+"   "+req.body.username);
+//     User.UserSchema.findOne({username:req.body.username},function(err,user){
+//       if(req.body.code==user.forgotpasscode){
+//         res.send(true);
+//       }
+//     });
+//   }
+// });
 
 //where the actual resetting happens
-router.post('/makenewpass',function(req,res){
-  if(req.body.username!="undefined"){
-    console.log(req.body.newpass+" "+req.body.username)
-    res.send("message recieved, making new password");
-      //encryption for the new password
-    User.UserSchema.findOne({username:req.body.username},function(err,user){
-      if(err){
-        console.log(err);
-      }
-      bcrypt.genSalt(saltRounds, function(err, salt) {
-  	     bcrypt.hash(req.body.newpass, salt, function(err, hash) {
-  	        console.log(hash);
-            user.password=hash;
-            user.save(function(err){
-              if(err){
-                console.log(err);
-              }
-            })
-  	     });
-  	   });
-    });
+// router.post('/makenewpass',function(req,res){
+//   if(req.body.username!="undefined"){
+//     console.log(req.body.newpass+" "+req.body.username)
+//     res.send("message recieved, making new password");
+//       //encryption for the new password
+//     User.UserSchema.findOne({username:req.body.username},function(err,user){
+//       if(err){
+//         console.log(err);
+//       }
+//       bcrypt.genSalt(saltRounds, function(err, salt) {
+//   	     bcrypt.hash(req.body.newpass, salt, function(err, hash) {
+//   	        console.log(hash);
+//             user.password=hash;
+//             user.save(function(err){
+//               if(err){
+//                 console.log(err);
+//               }
+//             })
+//   	     });
+//   	   });
+//     });
+//   }
+// });
 
-  }
-});
-router.post('/sendpassresetemail',function(req,res){
-//  console.log(req.body.email);
-  //find the user that the person is trying to pass reset
-  User.UserSchema.findOne({email:req.body.email},function(err,user){
-    if(err){
-      console.log(err);
+router.post('/reset-password',function(req,res){
+  var email = req.body.email;
+  User.UserSchema.findOne({email: email}, function(err, user) {
+    if(err) throw err;
+
+    if(user) {
+      if(user.password_reset_attempts < 3) {
+        var secret = nanoid(safe_chars);
+        user.forgotpass_link = secret;
+        user.password_reset_attempts = user.password_reset_attempts + 1;
+
+        user.save(function (err) {
+          if (err) throw err;
+
+          var resetLink = "http://codeassist.org/forgot_pass/" + user.id + "/" + secret;
+          const output = `
+            <p>Hi ${user.username},</p>
+            <p>We are sorry to know that you lost your account. Use this link to reset your password: ${resetLink}.</p>
+            <p>If you don't recognize this activity, please contact Code Assist at contact@codeassist.org and we will try to help resolve the issue.</p>
+          `;
+
+          const msg = {
+            to: user.email,
+            from: `Code Assist <${process.env.SENDER_EMAIL}>`,
+            subject: 'Code Assist Password Recovery Link',
+            html: output,
+          };
+          sgMail.send(msg);
+          res.send({auth: true});
+        });
+      }else{
+        res.send({auth: false, message: "Reached maximum password reset attempts"});
+      }
+    }else{
+      res.send({auth: false, message: "Invalid email"});
     }
-    if(user){
-      console.log("this is a valid email");
-
-    //Generate random number to serve as the reset codeform
-      var passresetnumber=Math.floor(Math.random()*9999999)+1000000;
-      user.forgotpasslastattempt=new Date();
-      user.forgotpasscode=passresetnumber;
-      user.save(function(err){
-        if(err){
-          console.log(err);
-        }
-
-      res.send(user.username);
-
-      const output = `
-        <p>Hi ${user.username},</p>
-        <p>Password reset</p>
-        <h2>New Question Details<h2>
-        <hr>
-        <h3>Use This Code To Reset Your Password</h3>
-        <strong><p>${passresetnumber}</p></strong>
-
-        <h3>Contact details</h3>
-        <ul>
-          <li>User's Name: ${user.username}</li>
-          <li>User's Email: ${user.email}</li>
-        </ul>
-      `;
-
-      const forgotpassmsg={
-        to:user.email,
-        from: `Code Assist <${process.env.SENDER_EMAIL}>`,
-        subject: 'Reset Your CodeAssist Password |',
-        html: output
-      }
-      sgMail.send(forgotpassmsg);
-      console.log("email sent to "+user.email);
-    });
-  }
   });
 });
+
+router.get("/forgot_pass/:userid/:secretid", function(req, res) {
+  var userID = req.params.userid;
+  var secretID = req.params.secretid;
+
+  User.UserSchema.findOne({_id: userID}, function(err, user) {
+    if(err) throw err;
+    if(user) {
+      if(user.forgotpass_link == secretID) {
+        if(user.forgotpasslastattempt) {
+          User.isLinkValid(user.forgotpasslastattempt, new Date(), 2, function(valid) {
+            if(valid) {
+              // valid
+              console.log("Valid");
+              res.render('login', {layout: 'dashboard-layout', password_recovery: user.username});
+            }else{
+              // not valid
+              console.log("Not Valid");
+              user.forgotpass_link = "";
+              user.password_reset_attempts = 0;
+              res.render('login', {layout: 'dashboard-layout', link_expired: true});
+            }
+          });
+        }else{
+          user.forgotpasslastattempt = new Date();
+          user.save(function (err) {
+            if (err) throw err;
+            res.render('login', {layout: 'dashboard-layout', password_recovery: user.username});
+          });
+        }
+      }else{
+        res.redirect('/login');
+      }
+    }else{
+      // not found
+      res.redirect('/');
+    }
+  });
+});
+
+router.post("/forgot_pass/:userid/:secretid", function(req, res) {
+  var userID = req.params.userid;
+  var secretID = req.params.secretid;
+
+  User.UserSchema.findOne({_id: userID}, function(err, user) {
+    if(err) throw err;
+    if(user) {
+      if(user.forgotpass_link == secretID) {
+        // take care of link expiration here later
+        var newPass = req.body.newPassword;
+        var confirmPass = req.body.confirmPassword;
+
+        if((newPass) && (confirmPass) && (newPass.length >= 8) && (newPass.length <= 128))
+        {
+          if(newPass == confirmPass) {
+            User.createHash(newPass, function(err, hash) {
+              if(err) throw err;
+              user.password = hash;
+              user.save(function (err) {
+                if (err) throw err;
+                // saved!
+                req.body.password = newPass;
+                req.body.username = user.username;
+                var sendData = {
+                  status: true,
+                  msg: []
+                };
+                passport.authenticate('local')(req, res, function () {
+                  // console.log("authenticated");
+                  sendData.status = true;
+                  sendData.msg.push("Password successfully changed");
+                  req.flash('account-status');
+                  req.flash('account-status', sendData);
+                  user.forgotpass_link = "";
+                  user.password_reset_attempts = 0;
+                  user.forgotpasslastattempt = null;
+                  user.save(function (err) {
+                    if (err) throw err;
+                    res.send({auth: true});
+                  });
+                });
+              });
+            });
+          }else{
+            res.send({auth: false, message: "Passwords don't match"});
+          }
+
+        }else{
+          res.send({auth: false, message: "Invalid password length"})
+        }
+      }else{
+        res.redirect('/login');
+      }
+    }else{
+      // not found
+      res.redirect('/');
+    }
+  });
+});
+
 function Notify(userid,message){
   console.log("Notify user"+userid);
   this.nnsp=io.of("/"+userid);

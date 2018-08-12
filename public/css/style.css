@@ -4,6 +4,10 @@ body{
   background-attachment:fixed;
 }
 
+.hide {
+  display: none;
+}
+
 .navbar .nav-item .nav-link {
   color: rgba(64, 62, 62, 0.9);
 }
