@@ -1,135 +1,97 @@
-<head>
-	<title>Login V2</title>
-	<meta charset="UTF-8">
-    <link rel="shortcut icon" type="image/png" href="/favicon.png"/>
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-<!--===============================================================================================-->
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="/vendors/vendor/bootstrap/css/bootstrap.min.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="/vendors/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="/vendors/fonts/iconic/css/material-design-iconic-font.min.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="/vendors/vendor/animate/animate.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="/vendors/vendor/css-hamburgers/hamburgers.min.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="/vendors/vendor/animsition/css/animsition.min.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="/vendors/vendor/select2/select2.min.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="/vendors/vendor/daterangepicker/daterangepicker.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="/vendors/css/util.css">
-	<link rel="stylesheet" type="text/css" href="/vendors/css/main.css">
-<!--===============================================================================================-->
+<style>
+  .navbar {
+    display: none;
+  }
+</style>
 
-<link href="https://fonts.googleapis.com/css?family=Nunito:200,300,300i,400,400i,700" rel="stylesheet">
+<div class="jumbotron container p-0 bg-white d-none d-md-block" style="margin-top: 5%; min-height: 500px; box-shadow: 0px 3px 20px 0px #0000000d; width: 65%;">
+  <div class="row w-100 m-0 rounded" style="min-height: 500px;">
 
-</head>
-<body>
+    <div class="col-sm-6 bg-white rounded-left pt-5 pl-5 p-0">
+      <p><a href="/"><i class="fas fa-home"></i> Home</a></p>
+      <div class="clippy rounded" style="-webkit-clip-path: ellipse(87% 49% at 31% 98%); clip-path: ellipse(87% 49% at 31% 98%); top:0; left: 0; height: 100%; z-index: 0; background-color: #0d75e8de;"></div>
 
-	<div class="limiter">
-		<div class="container-login100">
-			<div class="wrap-login100">
-				<form class="login100-form validate-form" action="/login" method="post">
-					<span class="login100-form-title p-b-26" style="margin-bottom: 10%; font-family: 'Nunito', sans-serif !important;">
-						Login <span style="color: #0d75e8; text-decoration: underline;">{{username}}</span>
-					</span>
+      <h1 class="text-left text-muted" style="font-weight: 200;">Code Assist</h1>
+      <p class="pr-4 pt-3">All in one collaboration tool for students, mentors, and teachers.</p>
 
-					<div class="container text-center">
-						<a href="/" id="brand"><h1>Code Assist</h1></a>
-					</div>
-					<!-- <span class="login100-form-title p-b-48">
-						<i class="zmdi zmdi-font"></i>
-					</span> -->
+      <ul class="list-group text-right" style="position: absolute; bottom: 5%; right: 0px;">
+        <li class="list-group-item mb-4 ml-auto border-0" style="border-radius: 30px 0 0 30px; width: max-content; box-shadow: -3px 6px 4px 1px #00000026; background: linear-gradient(to right, white, #ffffffdb);"><i class="far fa-paper-plane"></i> Responsive Mentors</li>
+        <li class="list-group-item mb-4 ml-auto border-0" style="border-radius: 30px 0 0 30px; width: max-content; box-shadow: -3px 6px 4px 1px #00000026; background: linear-gradient(to right, white, #ffffffdb);"><i class="fas fa-people-carry"></i> Ask anyone in the Community</li>
+        <li class="list-group-item mb-4 ml-auto border-0" style="border-radius: 30px 0 0 30px; width: max-content; box-shadow: -3px 6px 4px 1px #00000026; background: linear-gradient(to right, white, #ffffffdb);"><i class="fas fa-project-diagram"></i> Collaborate on Projects</li>
+      </ul>
 
-					{{#if error}}
-						<div style="margin-bottom: 2rem;" class="alert alert-danger">
-						  {{error}}
+    </div>
+
+    <div class="col-sm-6 pt-5 p-4" style="box-shadow: -4px 10px 9px 0px #0000000d;">
+      <h1 style="font-weight: bold;">Welcome</h1>
+      <span class="text-muted">Please Sign In to continue</span>
+      <p><a href="/register">Don't have an account? Sign up now.</a></p>
+
+      <div class="p-1 mb-4">
+        <form method="post" action="/login">
+          <div class="form-group mb-4">
+            <input type="text" class="form-control p-3 {{#if error}}is-invalid{{/if}}" placeholder="username" style="border-radius: 40px;" value="{{username}}" name="username" {{#if username}}{{else}}autofocus {{/if}}>
+						<div class="invalid-feedback">
+		          Username or Password is incorrect
+		        </div>
+          </div>
+
+          <div class="form-group mb-4">
+            <input type="password" class="form-control p-3" placeholder="password" style="border-radius: 40px;" name="password" {{#if username}}autofocus {{/if}}>
+						<div class="invalid-feedback">
+							Incorrect Password.
 						</div>
+          </div>
+
+          <button type="submit" name="button" class="btn btn-primary btn-block btn-lg p-3 mx-auto mb-2" style="border-radius: 40px;">Log In</button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="jumbotron container bg-white d-md-none">
+  <p><a href="/"><i class="fas fa-home"></i> Home</a></p>
+  <h1 style="font-weight: bold;">Welcome Back</h1>
+  <span class="text-muted">Sign in to continue</span>
+  <p href="/login"><a href="/login">Have an account already? Login instead.</a></p>
+
+
+	<div class="p-1 mb-4">
+		<form method="post" action="/register">
+			<div class="form-group mb-4">
+				<input type="text" class="form-control p-3 {{#if usernameTaken}}is-invalid{{else if invalidUsername}}is-invalid{{/if}}" placeholder="username" style="border-radius: 40px;" value="{{username}}" name="username" autofocus>
+				<div class="invalid-feedback">
+					{{#if invalidUsername}}
+					Invalid Username.
+					{{else if usernameTaken}}
+					Username has been taken.
 					{{/if}}
-
-					{{#if invalidChars}}
-						<div style="margin-bottom: 2rem;" class="alert alert-danger">
-							<strong>Username and Email</strong> can only contain alphanumeric characters, period or underscore
-						</div>
-					{{/if}}
-					
-					<div class="wrap-input100">
-						{{#if username}}
-						<input class="input100 has-val" type="text" name="username" value="{{username}}">
-						{{else}}
-						<input class="input100" type="text" name="username" value="{{username}}" autofocus>
-						{{/if}}
-						<span class="focus-input100" data-placeholder="Username"></span>
-					</div>
-
-					<div class="wrap-input100">
-						<span class="btn-show-pass">
-							<i class="zmdi zmdi-eye"></i>
-						</span>
-						{{#if username}}
-						<input class="input100" type="password" name="password" autofocus>
-						{{else}}
-						<input class="input100" type="password" name="password">
-						{{/if}}
-						<span class="focus-input100" data-placeholder="Password"></span>
-					</div>
-
-					<div class="container-login100-form-btn">
-						<div class="wrap-login100-form-btn">
-							<div class="login100-form-bgbtn"></div>
-							<button class="login100-form-btn">
-								Login
-							</button>
-						</div>
-					</div>
-
-					<div class="text-center p-t-115">
-						<span class="txt1">
-							Don’t have an account?
-						</span>
-
-						<a class="txt2" href="/register">
-							Sign Up
-						</a>
-					</div>
-
-					<div class="text-center p-t-115">
-						<span class="txt1">
-							Forgot Your Password?
-						</span>
-
-						<a class="txt2" href="/forgotpass">
-							Reset Password
-						</a>
-					</div>
-
-				</form>
+				</div>
 			</div>
-		</div>
+
+			<div class="form-group mb-4">
+				<input type="text" class="form-control p-3 {{#if emailTaken}}is-invalid{{else if invalidEmail}}is-invalid{{/if}}" placeholder="email" style="border-radius: 40px;" value="{{email}}" name="email">
+				<div class="invalid-feedback">
+					{{#if invalidEmail}}
+					Invalid Email.
+					{{else if emailTaken}}
+					Email has been taken.
+					{{/if}}
+				</div>
+			</div>
+
+			<div class="form-group mb-4">
+				<input type="password" class="form-control p-3 {{#if invalidPassword}}is-invalid{{/if}}" placeholder="password" style="border-radius: 40px;" name="password">
+				<div class="invalid-feedback">
+					Invalid Password.
+				</div>
+			</div>
+
+			<button type="submit" name="button" class="btn btn-primary btn-block btn-lg p-3 mx-auto mb-2" style="border-radius: 40px;">Create an Account</button>
+			<input type="checkbox" aria-label="Checkbox for following text input" checked>
+			<span class="text-muted" style="font-size: 12px;">Dont' miss out on Code Assist email Updates and Notifications.</span>
+		</form>
 	</div>
-
-
-	<div id="dropDownSelect1"></div>
-
-<!--===============================================================================================-->
-	<script src="/vendors/vendor/jquery/jquery-3.2.1.min.js"></script>
-<!--===============================================================================================-->
-	<script src="/vendors/vendor/animsition/js/animsition.min.js"></script>
-<!--===============================================================================================-->
-	<script src="/vendors/vendor/bootstrap/js/popper.js"></script>
-	<script src="/vendors/vendor/bootstrap/js/bootstrap.min.js"></script>
-<!--===============================================================================================-->
-	<script src="/vendors/vendor/select2/select2.min.js"></script>
-<!--===============================================================================================-->
-	<script src="/vendors/vendor/daterangepicker/moment.min.js"></script>
-	<script src="/vendors/vendor/daterangepicker/daterangepicker.js"></script>
-<!--===============================================================================================-->
-	<script src="/vendors/vendor/countdowntime/countdowntime.js"></script>
-<!--===============================================================================================-->
-	<script src="/vendors/js/main.js"></script>
-
-</body>
+</div>
