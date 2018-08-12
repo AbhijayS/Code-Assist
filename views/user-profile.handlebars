@@ -1,12 +1,12 @@
 <div class="jumbotron bg-white text-bottom pb-0 d-md-none border-bottom rounded-0" style="">
   <div class="d-flex" style="align-items: flex-end">
     <div class="col-sm">
-      <h3 class="mt-5" style="font-weight: 300;">First Last</h3>
+      <h3 class="mt-5" style="font-weight: 300;">{{profile.firstName}} {{profile.lastName}}</h3>
       <p style="font-weight: 100;">{{profile.username}}</p>
     </div>
 
     <div class="text-center my-3 mb-4">
-      <img class="" src="{{profile.pic}}" alt="Profile Picture" style="width: 100%; max-width: 170px;">
+      <img src="{{profile.pic}}" alt="Profile Picture" style="width: 100%; max-width: 170px;">
     </div>
   </div>
 </div>
@@ -16,16 +16,14 @@
     <div class="row">
       <div class="col-sm-3 bg-white rounded d-none d-md-block" style="height: 500px; box-shadow: 0px 2px 9px 2px #eee;">
         <div class="text-center my-3 mb-4">
-          <img class="" src="{{profile.pic}}" alt="Profile Picture" style="width: 100%; max-width: 220px;">
+          <img src="{{profile.pic}}" alt="Profile Picture" style="width: 100%; max-width: 220px;">
         </div>
 
-        <div class="container">
-          <p class="text-muted" style="font-size: 14px;">{{profile.bio}}</p>
-        </div>
+        <div class="text-muted w-100" style="font-size: 16px; word-wrap: break-word;">{{profile.bio}}</div>
       </div>
 
       <div class="col-sm">
-        <h3 class="mt-5" style="font-weight: 300;">First Last</h3>
+        <h3 class="mt-5" style="font-weight: 300;">{{profile.firstName}} {{profile.lastName}}</h3>
         <p style="font-weight: 100;">{{profile.username}}</p>
       </div>
     </div>

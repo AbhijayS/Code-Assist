@@ -29,7 +29,8 @@
       <div id="userPic" class="profile-pic" style="background-image: url({{user.pic}});" class="text-center" style="border-radius: 10px;"></div>
       <div>
         <button data-toggle="modal" data-target="#profilePicModal" class="btn btn-outline-info mt-2"><i class="fas fa-edit"></i> Edit Profile Picture</button>
-        <p class="lead my-3">Welcome <strong>{{user.username}}</strong></p>
+        <p class="lead my-4">Welcome <strong>{{user.username}}</strong></p>
+        <a href="/users/profile/{{user.id}}" style="text-decoration: none;"><button type="button" name="button" class="btn btn-dark btn-block w-75 mx-auto btn-lg mb-5 py-3"><i class="fas fa-user-edit"></i> Edit Profile</button></a>
       </div>
     </div>
 
@@ -77,6 +78,22 @@
           </div>
           <input id="email-checkbox" type="checkbox" aria-label="Checkbox for following text input" checked>
           <label for="#email-checkbox" class="text-muted" style="font-size: 14px;">Stay on top of Code Assist email Updates and Notifications!</label>
+        </div>
+
+        <div class="form-group">
+          <label><strong>Bio</strong></label>
+
+          <textarea class="form-control" id="bio-textarea" rows="3" maxlength="120" placeholder="Tell your friends a little bit about yourself ...">{{user.bio}}</textarea>
+          <div class="invalid-feedback">
+
+          </div>
+
+          <div class="valid-feedback">
+            Changes saved.
+          </div>
+
+          <p class="text-info"><i class="fas fa-info-circle"></i> <strong>Pro tip</strong>: A good bio helps you connect with more people</p>
+
         </div>
       </div>
 
@@ -133,16 +150,55 @@
             </div>
 
             <div class="col-md-6 text-right">
-              <button id="deleteAccount" class="btn btn-outline-danger btn-lg d-none d-lg-block">Delete Account</button>
+              <button class="deleteAccount btn btn-outline-danger btn-lg d-none d-lg-block" data-toggle="modal" data-target="#delete-account-warning">Delete Account</button>
 
-              <button id="deleteAccount" class="btn btn-outline-danger btn-block btn-lg d-lg-none">Delete Account</button>
+              <button class="deleteAccount btn btn-outline-danger btn-block btn-lg d-lg-none" data-toggle="modal" data-target="#delete-account-warning">Delete Account</button>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-
 </div>
+
+<!-- Modal -->
+<div class="modal fade" id="delete-account-warning" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h3 class="modal-title" id="exampleModalLabel"><strong class="text-danger">Watch out!</strong></h3>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body text-muted">
+        <!-- <div class="alert alert-info" role="alert">
+          <a href="#"><strong>Pro tip!</strong></a> Having a description increases the chances of your question being answered by the community!
+        </div> -->
+        <p>If you are experiencing issues, please feel free to <a href="/contact">Contact Us</a></p>
+        <p class="text-muted">This will delete all data associated with your account including, but not limited to:</p>
+        <ul>
+          <li>Community and Mentor Posts</li>
+          <li>Saved Projects</li>
+          <li>Likes, connections and other meta data</li>
+        </ul>
+        <strong>🙁 We are sorry to see you go. Do you really want to DELETE your account?</strong>
+      </div>
+      <div class="modal-footer text-right d-none d-md-block">
+        <button id="no-description-submit" type="button" class="btn btn-primary" data-dismiss="modal">Cancel. Why would I do that?</button>
+
+        <button type="button" class="btn btn-outline-danger confirm-delete-account" data-dismiss="modal">Delete Account</button>
+      </div>
+
+      <div class="modal-footer text-right d-md-none">
+        <button id="no-description-submit" type="button" class="btn btn-primary btn-block" data-dismiss="modal">Cancel</button>
+
+        <button type="button" class="btn btn-outline-danger btn-block confirm-delete-account" data-dismiss="modal">Delete Account</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script type="text/javascript" src="/js/plupload.full.min.js"></script>
 <script type="text/javascript" src="/js/account.js"></script>

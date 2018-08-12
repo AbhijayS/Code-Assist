@@ -450,6 +450,29 @@ router.post('/last-name-change', function(req, res) {
   }
 });
 
+router.post('/change-bio', function(req, res) {
+  var newBio = req.body.bio;
+  if(req.user) {
+    if(newBio.length <= 120) {
+      if(newBio.length > 0) {
+        req.user.bio = newBio;
+        req.user.save(function(err) {
+          if(err) throw err;
+          // saved!
+          res.send({auth: true});
+        });
+      }else{
+        res.send({auth: false});
+      }
+    }else{
+      res.send({auth: false, message: "Must be less than 120 characters"})
+    }
+  }else{
+    req.flash('origin');
+    req.flash('origin', '/account');
+    res.send({auth: false, url: '/login'});
+  }
+})
 router.post('/profile-pic-change', profilePicUpload.single('file'), function(req, res) {
   // console.log("profile pic change");
   // console.log(req.file);
@@ -733,12 +756,10 @@ router.get("/forgot_pass/:userid/:secretid", function(req, res) {
         if(user.forgotpasslastattempt) {
           User.isLinkValid(user.forgotpasslastattempt, new Date(), 2, function(valid) {
             if(valid) {
-              // valid
-              console.log("Valid");
+              // forgot password link valid
               res.render('login', {layout: 'dashboard-layout', password_recovery: user.username});
             }else{
-              // not valid
-              console.log("Not Valid");
+              // forgot password link not valid
               user.forgotpass_link = "";
               user.password_reset_attempts = 0;
               res.render('login', {layout: 'dashboard-layout', link_expired: true});
@@ -863,21 +884,20 @@ router.get('/users/profile/:id', function(req, res) {
       if(err) throw err;
       if(user) {
         if(user.profile.status == "public") {
+          var person = {
+            username: user.username,
+            bio: user.bio,
+            pic: user.pic,
+            firstName: user.first,
+            lastName: user.last,
+            numPosts: user.posts.length,
+            qualities: user.qualities
+          };
           if(req.user._id == req.params.id) {
             // user viewing himself
-            res.render('user-profile', {layout: 'dashboard-layout'});
+            res.render('user-profile', {layout: 'dashboard-layout', profile: person});
           }else{
             // someone viewing user
-            var person = {
-              username: user.username,
-              bio: user.bio,
-              pic: user.pic,
-              firstName: user.first,
-              lastName: user.last,
-              numPosts: user.posts.length,
-              qualities: user.qualities
-            };
-
             res.render('user-profile', {layout: 'dashboard-layout', profile: person});
           }
         }else{
