@@ -25,8 +25,12 @@ var server = app.listen(app.get('port'), function(){
   // console.log('Server started on port '+app.get('port'));
 });
 
-// server used in codehat.js, so that socket.io can be initialized
+// socket.io initialized to be used in codehat.js, index.js
+var socket = require('socket.io');
+var io = socket(server);
+
 module.exports.server = server;
+module.exports.io = io;
 var codehat = require('./routes/codehat');
 
 app.use(yes_https());
