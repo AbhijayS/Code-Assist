@@ -7,9 +7,6 @@ var expressValidator = require('express-validator');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var flash = require('connect-flash');
-var routes = require('./routes/index');
-var com = require('./routes/community');
-var men = require('./routes/mentor');
 var session = require('cookie-session');
 var yes_https = require('yes-https');
 // var quill = require('quill');
@@ -29,8 +26,10 @@ var server = app.listen(app.get('port'), function(){
 var socket = require('socket.io');
 var io = socket(server);
 
-module.exports.server = server;
 module.exports.io = io;
+var routes = require('./routes/index');
+var com = require('./routes/community');
+var men = require('./routes/mentor');
 var codehat = require('./routes/codehat');
 
 app.use(yes_https());
