@@ -4,7 +4,7 @@ var async = require('async');
 var router = express.Router();
 // var router = express.Router({'strict' : true});
 var User = require('../models/user');
-var server = require('../app').server;
+// var server = require('../app').server;
 var upload = require('../database').upload;
 var uniqid = require('uniqid');
 var mongoose = require('mongoose');
@@ -16,7 +16,8 @@ const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 var socket = require('socket.io');
-var io = socket(server);
+// var io = socket(server);
+var io = require('../app').io;
 
 var currentProjects = [];
 

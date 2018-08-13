@@ -15,10 +15,10 @@ var uploadNoDest = multer();
 var profilePicUpload = require('../database').profilePicUpload;
 var request = require('superagent');
 var server = require('../app').server;
-var socket=require('socket.io');
-var io=socket(server);
+var socket = require('socket.io');
+// var io=socket(server);
+var io = require('../app').io;
 const nanoid = require('nanoid');
-
 
 var mailchimpInstance   = process.env.MAILCHIMP_SERVER_INSTANCE,
     listUniqueId        = process.env.MAILCHIMP_LIST,
