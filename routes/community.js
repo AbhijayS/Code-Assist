@@ -249,6 +249,9 @@ router.post('/post', upload.array('file'), function(req, res) {
     community.posts.push(newPost);
     req.user.posts.push(newPost);
 
+		req.user.qualities.assists += 15;
+		User.updateRank(req.user);
+
     community.save(function(err) {
       if(err) throw err;
       console.log("Post Saved");
@@ -434,7 +437,13 @@ router.post('/:id/answer', function(req, res){
         // saved
       });
 
-      post.answers.push(newAnswer);
+			// make sure the person isn't cheating the system
+			if(req.user.id != post.author.id) {
+				req.user.qualities.assists += 10;
+				User.updateRank(req.user);
+			}
+
+			post.answers.push(newAnswer);
       post.save(function(err) {
         if(err) throw err;
       });

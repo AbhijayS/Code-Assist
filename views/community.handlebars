@@ -82,19 +82,19 @@ clip-path: polygon(7% 85%, 18% 89%, 32% 100%, 0 100%, 0 57%); height: 405px; z-i
     <div id="all-posts">
       {{#each posts}}
 
-        <li id="{{this._id}}" class="list-group-item list-group-item-action lead" style="font-weight: 400;">
+        <li id="{{this._id}}" class="list-group-item lead" style="font-weight: 400;">
+
           <div class="d-flex mb-2" style="font-size: 16px;">
-            <div class="profile-pic" style="background-image: url({{this.author.pic}});">
-            </div>
+            <a href="/users/profile/{{this.author.id}}"><div class="profile-pic" style="background-image: url({{this.author.pic}});"></div></a>
             <div class="ml-2">
               <p class="m-0">{{this.author.username}}</p>
               <span class="text-muted">asked <span class="moment-timestamp" style="display: none;">{{this.timestamp}}</span></span>
             </div>
           </div>
 
-          <a class="breakWord mb-4" href="/community/{{this._id}}">{{this.question}}</a>
+          <a class="breakWord mb-4" href="/community/{{this._id}}" style="font-size: 20px;">{{this.question}}</a>
           <br>
-          <p class="breakWord quill-content">{{this.descriptionPreview}}</p>
+          <p class="breakWord quill-content text-muted">{{this.descriptionPreview}}</p>
           <div class="ml-auto text-right">
             {{#if this.userLikes}}
             <button class="btn btn-outline-secondary badge-pill p-0 px-2"><span class="badge badge-pill">{{this.likeCount}} <i class="far fa-thumbs-up"></i></span></button>

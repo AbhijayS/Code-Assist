@@ -43,6 +43,7 @@ body{
   vertical-align: baseline;
   transition: 0.7s;
   overflow: hidden;
+  z-index: 999;
 }
 
 #feedback-floating-btn > span {

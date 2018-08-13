@@ -40,7 +40,7 @@ var UserSchema = new Schema({
 			type: String
 		},
 
-		title: String,
+		title: {type: String, default: "user"}, // user, mentor, admin
 
 		bio: String,
 
@@ -362,6 +362,20 @@ module.exports.isLinkValid = function(originalDate, compareDate, days, callback)
 	}
 	callback(false);
 	return;
+};
+
+module.exports.updateRank = function(user) {
+	if(user.qualities.assists >= 50) {
+		user.qualities.rank = "silver";
+	}else if(user.qualities.assists >= 100) {
+		user.qualities.rank = "gold";
+	}else if(user.qualities.assists >= 250) {
+		user.qualities.rank = "platinum";
+	}
+	user.save(function(err) {
+		if(err) throw err;
+		// rank updated!
+	})
 };
 /*
 ==============================

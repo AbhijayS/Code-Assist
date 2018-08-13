@@ -156,6 +156,10 @@ router.post('/post', upload.array('file'), function(req, res) {
         // saved
       });
       req.user.private_posts.push(pPost);
+
+      req.user.qualities.assists += 15;
+  		User.updateRank(req.user);
+
       req.user.save(function(err) {
         if(err) throw err;
         console.log("Private post saved");
@@ -500,6 +504,9 @@ router.post('/:id/answer', function(req, res) {
           if(err) throw err;
           // saved
         });
+
+        req.user.qualities.assists += 10;
+				User.updateRank(req.user);
 
         post.answers.push(newAnswer);
         post.save(function(err) {

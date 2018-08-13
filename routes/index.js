@@ -119,7 +119,10 @@ router.post('/contact', uploadNoDest.array('file'), function(req, res) {
     return;
   }
 
-
+  if(req.user && (req.user.title!='mentor')) {
+    req.user.qualities.assists += 10;
+    User.updateRank(req.user);
+  }
   // For generating quill HTML
   var converter = new QuillDeltaToHtmlConverter(JSON.parse(description), {});
   // var imageCounter = 0;
