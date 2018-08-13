@@ -88,13 +88,13 @@
 
     <script>
     //Notification Reciever
-      window.onload = function() {
+    $( document ).ready(function() {
         var socket = io("/Notify{{user._id}}");
         console.log(socket);
         socket.on("notify",function(message){
           alert(message);
         });
-      }
+      });
     </script>
   </body>
 </html>
