@@ -164,7 +164,16 @@
         window.location.replace('http://' + window.location.host + '/contact');
       }
     </script>
-
+    <script>
+    //Notification Reciever
+      window.onload = function() {
+        var socket = io("/Notify{{user._id}}");
+        console.log(socket);
+        socket.on("notify",function(message){
+          alert(message);
+        });
+      }
+    </script>
     <script
     src="https://code.jquery.com/jquery-3.3.1.min.js"
     integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="

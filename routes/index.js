@@ -52,10 +52,7 @@ router.get('/', function(req, res){
       res.render('account-deleted', {layout: 'dashboard-layout'});
     }else{
       console.log('============================================');
-      res.render('index', {layout: 'layout'});
-      if(req.user){
-        Notify(req.user._id,"test")
-      }
+      res.render('index', {layout: 'layout'})
 
     }
 });
