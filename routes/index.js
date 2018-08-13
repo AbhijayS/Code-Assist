@@ -53,6 +53,9 @@ router.get('/', function(req, res){
     }else{
       console.log('============================================');
       res.render('index', {layout: 'layout'});
+      if(req.user){
+        Notify(req.user._id,"test")
+      }
 
     }
 });
@@ -846,11 +849,12 @@ router.post("/forgot_pass/:userid/:secretid", function(req, res) {
 });
 
 function Notify(userid,message){
-  console.log("Notify user"+userid);
-  this.nnsp=io.of("/"+userid);
+  //console.log("Notify user"+userid);
+  this.nnsp=io.of("/Notify"+userid);
   this.nnsp.on('connection',function(socket){
-    console.log("connected");
+  //  console.log("connected21");
   });
+
   User.UserSchema.findOne({_id:userid},function(err,user){
     if(user){
       this.nnsp.emit('notify',message);

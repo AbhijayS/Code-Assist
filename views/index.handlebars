@@ -24,8 +24,11 @@
 
 <script>
   window.onload = function() {
-    var socket = io();
+    var socket = io("/Notify{{user._id}}");
     console.log(socket);
+    socket.on("notify",function(message){
+      alert(message);
+    });
   }
 </script>
 
