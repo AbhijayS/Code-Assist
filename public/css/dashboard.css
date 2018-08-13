@@ -228,15 +228,13 @@ User Profile Page (user-profile.handlebars)
 ========================================
 */
 
-#achievements li{
+/* #achievements li{
   border-radius: 28px;
-  /* width: max-content; */
   box-shadow: 1px 1px 20px 0px #00000024;
-  /* font-weight: 100; */
 }
 
 #achievements li * {
   font-weight: 300;
   font-size: 22px;
   user-select: none;
-}
+} */

@@ -1,3 +1,13 @@
+<style>
+  .qualities .col {
+    max-width: 100px;
+  }
+
+  .qualities .col * {
+    user-select: none;
+  }
+</style>
+
 <div class="jumbotron bg-white text-bottom pb-0 d-md-none border-bottom rounded-0" style="">
   <div class="d-flex" style="align-items: flex-end">
     <div class="col-sm">
@@ -32,7 +42,7 @@
         </div>
 
         {{#if profile.bio}}
-          <div class="text-muted w-100" style="font-size: 16px; word-wrap: break-word;">{{profile.bio}}</div>
+          <div class="text-muted w-100 container" style="font-size: 16px; word-wrap: break-word; user-select: none;">{{profile.bio}}</div>
         {{else}}
           {{#if viewing}}
           <p class="text-secondary text-center" style="font-size: 20px;"><a href="/account#bio-textarea">Add a bio</a></p>
@@ -62,29 +72,32 @@
 
 <div class="container">
   <div class="row">
-    <div class="col-4 d-none d-md-block">
+    <div class="col-3 d-none d-md-block mr-5">
 
     </div>
 
-    <div class="col-sm-8">
-      <ul class="list-group flex-row" id="achievements">
-        <li class="list-group-item mr-4 border-0 p-4 w-100">
-          <h4 class="p-0 m-0 level"><span class="prize"><i class="fas fa-medal" hidden></i></span><br>{{profile.qualities.rank}}</h4>
-        </li>
+    <div class="col-sm-8 p-3">
+      <div class="container">
+        <div class="row qualities">
+          <div class="col py-3 mx-auto">
+            <h5 class="level"><span class="prize"><i class="fas fa-medal" hidden></i></span><br>{{profile.qualities.rank}}</h5>
+          </div>
 
-        <li class="list-group-item mr-4 border-0 p-4 w-100">
-          <h4 class="p-0 m-0"><i class="far fa-list-alt"></i> {{profile.numPosts}}<br>posts</h4>
-        </li>
+          <div class="col py-3 mx-auto">
+            <h5><i class="far fa-list-alt"></i> {{profile.numPosts}}<br>posts</h5>
+          </div>
 
-        <li class="list-group-item mr-4 border-0 p-4 w-100">
-          <h4 class="p-0 m-0"><i class="far fa-thumbs-up"></i> {{profile.numPosts}}<br>likes</h4>
-        </li>
+          <div class="col py-3 mx-auto">
+            <h5><i class="far fa-thumbs-up"></i> {{profile.numPosts}}<br>likes</h5>
+          </div>
 
-        <li class="list-group-item mr-4 border-0 p-4 w-100">
-          <h4 class="p-0 m-0"><i class="far fa-hand-peace"></i> {{profile.qualities.assists}}<br>assists</h4>
-        </li>
-      </ul>
+          <div class="col py-3 mx-auto">
+            <h5><i class="far fa-hand-peace"></i> {{profile.qualities.assists}}<br>assists</h5>
+          </div>
+        </div>
+      </div>
     </div>
+
   </div>
 </div>
 
