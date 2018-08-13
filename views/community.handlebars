@@ -87,7 +87,7 @@ clip-path: polygon(7% 85%, 18% 89%, 32% 100%, 0 100%, 0 57%); height: 405px; z-i
           <div class="d-flex mb-2" style="font-size: 16px;">
             <a href="/users/profile/{{this.author.id}}"><div class="profile-pic" style="background-image: url({{this.author.pic}});"></div></a>
             <div class="ml-2">
-              <p class="m-0">{{this.author.username}}</p>
+              <p class="m-0"><span class="prize" hidden>{{this.author.qualities.rank}}</span> {{this.author.username}}</p>
               <span class="text-muted">asked <span class="moment-timestamp" style="display: none;">{{this.timestamp}}</span></span>
             </div>
           </div>

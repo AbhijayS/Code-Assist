@@ -1,13 +1,67 @@
-window.onload = function(){
+window.onload = function() {
+  const bronze = {
+    color: "#d06f10",
+    html: `<i class="fas fa-medal"></i>`
+  };
+  const silver = {
+    color: "#9e9e9e",
+    html: `<i class="fas fa-award"></i>`
+  };
+  const gold = {
+    color: "#ffc107",
+    html: `<i class="fas fa-trophy"></i>`
+  };
+  const platinum = {
+    color: "#007bff",
+    html: `<i class="fas fa-user-tie"></i>`
+  };
+
+  function setElementColor(element, color) {
+    element.css({'color': color});
+  }
+
+  function displayElement(element) {
+    element.show();
+    element.attr('hidden', false);
+  }
+
   // Date Modifications
   $('.moment-timestamp').each(function() {
-
     var timestamp = new Date($(this).text());
     timestamp = moment(timestamp, "MM-DD");
     $(this).text(timestamp.format("MMM D"));
     $(this).show();
   });
-  // 
+
+  $('.prize').each(function() {
+    var text = $(this).text();
+    if(text == "bronze") {
+
+      $(this).html(bronze.html);
+      setElementColor($(this), bronze.color);
+      displayElement($(this));
+
+    }else if(text == "silver"){
+
+      $(this).html(silver.html);
+      setElementColor($(this), silver.color);
+      displayElement($(this));
+
+    }else if(text == "gold") {
+
+      $(this).html(gold.html);
+      setElementColor($(this), gold.color);
+      displayElement($(this));
+
+    }else if(text == "platinum") {
+
+      $(this).html(platinum.html);
+      setElementColor($(this), platinum.color)
+      displayElement($(this));
+
+    }
+  });
+  //
   // function updateQuillContent() {
   //   /* All of the Answers Viewer (Quill) */
   //   var posts = $('.quill-content');
