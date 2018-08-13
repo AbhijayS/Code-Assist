@@ -45,8 +45,10 @@ var UserSchema = new Schema({
 		bio: String,
 
 		e_link: String,
-		forgotpasslastattempt:{type:Date, default:new Date()},
-		forgotpasscode:{type:Number ,default:Math.floor(Math.random()*9999999)+1000000},
+
+		forgotpasslastattempt:{type:Date},
+		forgotpass_link: String, // nanoid module 21-characters
+		password_reset_attempts: {type: Number, default: 0}, // max 3 attempts
 
 		posts: [{
 			type: Schema.Types.ObjectId,
@@ -350,7 +352,17 @@ module.exports.userHasPrivatePostById = function(userID, postID, callback) {
 			return;
 		}
 	});
-}
+};
+
+module.exports.isLinkValid = function(originalDate, compareDate, days, callback) {
+	var diff = (((((Math.abs(originalDate-compareDate))/1000)/60)/60)/24);
+	if(diff <= days) {
+		callback(true);
+		return;
+	}
+	callback(false);
+	return;
+};
 /*
 ==============================
 Database Utilities

@@ -4,6 +4,10 @@ body{
   background-attachment:fixed;
 }
 
+.hide {
+  display: none;
+}
+
 .profile-pic {
   width: 50px;
   height: 50px;
@@ -226,15 +230,13 @@ User Profile Page (user-profile.handlebars)
 
 #achievements li{
   border-radius: 28px;
-  /* border-right: none; */
-  width: max-content;
-  padding-right: 50%;
-  /* border-image: linear-gradient(to right, #cecbcb, #f4f5ff00) 30; */
-
-  font-weight: 100;
+  /* width: max-content; */
+  box-shadow: 1px 1px 20px 0px #00000024;
+  /* font-weight: 100; */
 }
 
 #achievements li * {
-  font-weight: 100;
-  font-size: 24px;
+  font-weight: 300;
+  font-size: 22px;
+  user-select: none;
 }

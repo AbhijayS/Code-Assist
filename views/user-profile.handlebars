@@ -1,12 +1,24 @@
 <div class="jumbotron bg-white text-bottom pb-0 d-md-none border-bottom rounded-0" style="">
   <div class="d-flex" style="align-items: flex-end">
     <div class="col-sm">
-      <h3 class="mt-5" style="font-weight: 300;">First Last</h3>
-      <p style="font-weight: 100;">{{profile.username}}</p>
+      {{#if profile.firstName}}
+        <h3 class="mt-5" style="font-weight: 300;">{{profile.firstName}} {{profile.lastName}}</h3>
+        <p style="font-weight: 100;">@{{profile.username}}</p>
+      {{else if profile.lastName}}
+        <h3 class="mt-5" style="font-weight: 300;">{{profile.firstName}} {{profile.lastName}}</h3>
+        <p style="font-weight: 100;">@{{profile.username}}</p>
+      {{else}}
+        {{#if viewing}}
+        <h3 class="mt-5" style="font-weight: 300;">Add First and Last name</h3>
+        <p style="font-weight: 400;">@{{profile.username}}</p>
+        {{else}}
+        <h3 style="font-weight: 200;">@{{profile.username}}</h3>
+        {{/if}}
+      {{/if}}
     </div>
 
     <div class="text-center my-3 mb-4">
-      <img class="" src="{{profile.pic}}" alt="Profile Picture" style="width: 100%; max-width: 170px;">
+      <img src="{{profile.pic}}" alt="Profile Picture" style="width: 100%; max-width: 170px;">
     </div>
   </div>
 </div>
@@ -14,19 +26,35 @@
 <div class="container d-none d-md-block">
   <div class="jumbotron bg-light text-bottom pb-1" style="max-height: 200px;">
     <div class="row">
-      <div class="col-sm-3 bg-white rounded d-none d-md-block" style="height: 500px; box-shadow: 0px 2px 9px 2px #eee;">
+      <div class="col-sm-3 bg-white rounded d-none d-md-block" style="height: 500px; box-shadow: 0px 2px 9px 2px #eee; z-index: 1;">
         <div class="text-center my-3 mb-4">
-          <img class="" src="{{profile.pic}}" alt="Profile Picture" style="width: 100%; max-width: 220px;">
+          <img src="{{profile.pic}}" alt="Profile Picture" style="width: 100%; max-width: 220px;">
         </div>
 
-        <div class="container">
-          <p class="text-muted" style="font-size: 14px;">{{profile.bio}}</p>
-        </div>
+        {{#if profile.bio}}
+          <div class="text-muted w-100" style="font-size: 16px; word-wrap: break-word;">{{profile.bio}}</div>
+        {{else}}
+          {{#if viewing}}
+          <p class="text-secondary text-center" style="font-size: 20px;"><a href="/account#bio-textarea">Add a bio</a></p>
+          {{/if}}
+        {{/if}}
       </div>
 
       <div class="col-sm">
-        <h3 class="mt-5" style="font-weight: 300;">First Last</h3>
-        <p style="font-weight: 100;">{{profile.username}}</p>
+        {{#if profile.firstName}}
+          <h3 class="mt-5" style="font-weight: 300;">{{profile.firstName}} {{profile.lastName}}</h3>
+          <p style="font-weight: 100;">@{{profile.username}}</p>
+        {{else if profile.lastName}}
+          <h3 class="mt-5" style="font-weight: 300;">{{profile.firstName}} {{profile.lastName}}</h3>
+          <p style="font-weight: 100;">@{{profile.username}}</p>
+        {{else}}
+          {{#if viewing}}
+            <h3 class="mt-5" style="font-weight: 300;"><a href="/account#first-name">Add First and Last name</a></h3>
+            <p style="font-weight: 400;">@{{profile.username}}</p>
+          {{else}}
+            <h3 style="font-weight: 200;">@{{profile.username}}</h3>
+          {{/if}}
+        {{/if}}
       </div>
     </div>
   </div>
@@ -39,23 +67,44 @@
     </div>
 
     <div class="col-sm-8">
-      <ul class="list-group" id="achievements">
-        <li class="list-group-item mb-4">
-          <h4 class="p-0 m-0"><i class="fas fa-medal"></i> {{profile.qualities.rank}}</h4>
+      <ul class="list-group flex-row" id="achievements">
+        <li class="list-group-item mr-4 border-0 p-4 w-100">
+          <h4 class="p-0 m-0 level"><span class="prize"><i class="fas fa-medal" hidden></i></span><br>{{profile.qualities.rank}}</h4>
         </li>
 
-        <li class="list-group-item mb-4">
-          <h4 class="p-0 m-0">{{profile.numPosts}} Posts</h4>
+        <li class="list-group-item mr-4 border-0 p-4 w-100">
+          <h4 class="p-0 m-0"><i class="far fa-list-alt"></i> {{profile.numPosts}}<br>posts</h4>
         </li>
 
-        <li class="list-group-item mb-4">
-          <h4 class="p-0 m-0"><i class="far fa-thumbs-up"></i> {{profile.numPosts}} Likes</h4>
+        <li class="list-group-item mr-4 border-0 p-4 w-100">
+          <h4 class="p-0 m-0"><i class="far fa-thumbs-up"></i> {{profile.numPosts}}<br>likes</h4>
         </li>
-        <li class="list-group-item mb-4">
-          <h4 class="p-0 m-0"><i class="far fa-hand-peace"></i> {{profile.qualities.assists}} Assists</h4>
+
+        <li class="list-group-item mr-4 border-0 p-4 w-100">
+          <h4 class="p-0 m-0"><i class="far fa-hand-peace"></i> {{profile.qualities.assists}}<br>assists</h4>
         </li>
       </ul>
     </div>
   </div>
-
 </div>
+
+<script>
+  window.onload = function() {
+    var rankColor = "{{profile.qualities.rank}}";
+    var level = $('.level');
+    var prize = $('.prize');
+    if(rankColor == "bronze") {
+      level.css({'color':'#d06f10'});
+      prize.children().attr('hidden', false);
+    }else if(rankColor == "silver") {
+      level.css({'color':'#9e9e9e'});
+      prize.html('<i class="fas fa-award"></i>');
+    }else if (rankColor == "gold"){
+      level.css({'color':'#ffc107'});
+      prize.html('<i class="fas fa-trophy"></i>');
+    }else if (rankColor == "platinum"){
+      level.css({'color':'#007bff'});
+      prize.html('<i class="fas fa-user-tie"></i>');
+    }
+  }
+</script>

@@ -69,13 +69,28 @@ window.onload = function(){
     });
   });
 
-  $("#deleteAccount").click(function() {
-    var confirmDeletion = confirm("Are you sure you want to delete your account?");
-    if (confirmDeletion) {
-      $.post('/delete-account', function(url) {
-        window.location.replace(url);
-      });
-    }
+  $('#bio-textarea').change(function() {
+    var textBox = $(this);
+    $.post('/change-bio', {bio: textBox.val()}, function(data) {
+      console.log(data);
+      if(data.auth) {
+        textBox.attr('class', 'form-control is-valid');
+      }else{
+        textBox.attr('class', 'form-control is-invalid');
+        textBox.next().text(data.message);
+        if(data.url) {
+          window.location.replace("http://"+window.location.host+data.url);
+        }
+      }
+    })
+  })
+  $(".deleteAccount").click(function() {
+    $('.confirm-delete-account').click(function() {
+      console.log("Confirmed");
+        $.post('/delete-account', function(url) {
+          window.location.replace(url);
+        });
+    })
   });
 
   $('#profilePicModal').on('show.bs.modal', function(e) {

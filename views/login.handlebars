@@ -22,7 +22,51 @@
 
     </div>
 
-    <div class="col-sm-6 pt-5 p-4" style="box-shadow: -4px 10px 9px 0px #0000000d;">
+
+    <div class="col-sm-6 pt-5 p-4 login-card" style="box-shadow: -4px 10px 9px 0px #0000000d;">
+      {{#if password_recovery}}
+
+      <h1 style="font-weight: bold;">Password Help</h1>
+      <span class="text-muted">Choose your new, secure password</span>
+
+      <div class="p-1 pt-4 my-4">
+        <form class="password-reset">
+          <div class="form-group mb-4">
+            <input type="password" class="form-control p-3 new-Password" placeholder="New password" style="border-radius: 40px;" name="password" autofocus>
+            <div class="invalid-feedback">
+              Password must be atleast 8 characters long
+            </div>
+          </div>
+
+          <div class="form-group mb-4">
+            <input type="password" class="form-control p-3 confirm-password" placeholder="Confirm password" style="border-radius: 40px;" name="password" autofocus>
+            <div class="invalid-feedback">
+              Password must be atleast 8 characters long
+            </div>
+          </div>
+
+          <button type="submit" name="button" class="btn btn-primary btn-block btn-lg p-3 mx-auto mb-2" style="border-radius: 40px;">Change password</button>
+        </form>
+      </div>
+
+      {{else}}
+
+      <div class="alert alert-success alert-dismissible fade show" id="alert-forgotpass-sent" role="alert" hidden>
+        <i class="far fa-paper-plane"></i> Forgot password email successfully sent
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      {{#if link_expired}}
+      <div class="alert alert-danger alert-dismissible fade show" id="alert-forgotpass-sent" role="alert">
+        <i class="fas fa-unlink"></i> Password reset link has expired
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      {{/if}}
+
       <h1 style="font-weight: bold;">Welcome</h1>
       <span class="text-muted">Please Sign In to continue</span>
       <p><a href="/register">Don't have an account? Sign up now.</a></p>
@@ -41,12 +85,36 @@
 						<div class="invalid-feedback">
 							Incorrect Password.
 						</div>
+            <p class="p-2"><a href="#forgot" class="forgot">Forgot password?</a></p>
           </div>
 
           <button type="submit" name="button" class="btn btn-primary btn-block btn-lg p-3 mx-auto mb-2" style="border-radius: 40px;">Log In</button>
         </form>
       </div>
+      {{/if}}
+    </div>
 
+    <div class="col-sm-6 pt-5 p-4 forgot-card" style="box-shadow: -4px 10px 9px 0px #0000000d;" hidden>
+      <h1 style="font-weight: bold;">Password Help</h1>
+      <span class="text-muted">First, let's verify it's really you</span>
+      <p><a href="#" class="back-to-login">Go back</a></p>
+
+      <div class="p-1 pt-4 my-4">
+        <form class='forgotpass mb-3'>
+          <div class="form-group">
+            <input type="text" class="form-control p-3" placeholder="recovery email" style="border-radius: 40px;" name="forgotEmail" autocomplete="off">
+            <div class="valid-feedback">
+              Verification email sent
+            </div>
+
+            <div class="invalid-feedback">
+
+            </div>
+
+            <button type="submit" name="button" class="btn btn-primary btn-block btn-lg my-4">Recover Password</button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </div>
@@ -54,28 +122,148 @@
 <div class="jumbotron container bg-white d-md-none">
   <p><a href="/"><i class="fas fa-home"></i> Home</a></p>
 	<hr>
-  <h1 style="font-weight: bold;">Welcome</h1>
-  <span class="text-muted">Please Sign In to continue</span>
-	<p><a href="/register">Don't have an account? Sign up now.</a></p>
 
-	<div class="p-1 pt-4 my-4">
-		<form method="post" action="/login">
-			<div class="form-group mb-4">
-				<input type="text" class="form-control p-3 {{#if error}}is-invalid{{/if}}" placeholder="username" style="border-radius: 40px;" value="{{username}}" name="username" {{#if username}}{{else}}autofocus {{/if}}>
-				<div class="invalid-feedback">
-					Username or Password is incorrect
-				</div>
-			</div>
 
-			<div class="form-group mb-4">
-				<input type="password" class="form-control p-3" placeholder="password" style="border-radius: 40px;" name="password" {{#if username}}autofocus {{/if}}>
-				<div class="invalid-feedback">
-					Incorrect Password.
-				</div>
-			</div>
+  <div class="login-card">
+    {{#if password_recovery}}
 
-			<button type="submit" name="button" class="btn btn-primary btn-block btn-lg p-3 mx-auto mb-2" style="border-radius: 40px;">Log In</button>
-		</form>
-	</div>
+    <h1 style="font-weight: bold;">Password Help</h1>
+    <span class="text-muted">Choose your new, secure password</span>
+
+    <div class="p-1 pt-4 my-4">
+      <form class="password-reset">
+        <div class="form-group mb-4">
+          <input type="password" class="form-control p-3" placeholder="New password" style="border-radius: 40px;" name="password" autofocus>
+          <div class="invalid-feedback">
+            Password must be atleast 8 characters long
+          </div>
+        </div>
+
+        <div class="form-group mb-4">
+          <input type="password" class="form-control p-3" placeholder="Confirm password" style="border-radius: 40px;" name="password" autofocus>
+          <div class="invalid-feedback">
+            Password must be atleast 8 characters long
+          </div>
+        </div>
+
+        <button type="submit" name="button" class="btn btn-primary btn-block btn-lg p-3 mx-auto mb-2" style="border-radius: 40px;">Change password</button>
+      </form>
+    </div>
+    {{else}}
+    <h1 style="font-weight: bold;">Welcome</h1>
+    <span class="text-muted">Please Sign In to continue</span>
+    <p><a href="/register">Don't have an account? Sign up now.</a></p>
+
+    <div class="p-1 pt-4 my-4">
+      <form method="post" action="/login">
+        <div class="form-group mb-4">
+          <input type="text" class="form-control p-3 {{#if error}}is-invalid{{/if}}" placeholder="username" style="border-radius: 40px;" value="{{username}}" name="username" {{#if username}}{{else}}autofocus {{/if}}>
+          <div class="invalid-feedback">
+            Username or Password is incorrect
+          </div>
+        </div>
+
+        <div class="form-group mb-4">
+          <input type="password" class="form-control p-3" placeholder="password" style="border-radius: 40px;" name="password" {{#if username}}autofocus {{/if}}>
+          <div class="invalid-feedback">
+            Incorrect Password.
+          </div>
+          <p class="p-2"><a href="#forgot" class="forgot">Forgot password?</a></p>
+        </div>
+
+        <button type="submit" name="button" class="btn btn-primary btn-block btn-lg p-3 mx-auto mb-2" style="border-radius: 40px;">Log In</button>
+      </form>
+    </div>
+    {{/if}}
+  </div>
+
+  <div class="forgot-card" hidden>
+    <form class='emailform'>
+      <input type="text" class="form-control p-3" placeholder="recovery email" style="border-radius: 40px;" name="forgotEmail" autocomplete="off">
+      <div class="valid-feedback">
+        Verification code sent.
+      </div>
+    </form>
+
+    <form action="" class='codeform' hidden>
+      <h3>Code</h3>
+      <input class="resetcode" autocomplete="off"/>
+    </form>
+
+    <form action="" class='passresetform' hidden>
+      <h3>New Password</h3>
+        <input class="newpassword" autocomplete="off"/>
+      <h3>Confirm New Password</h3>
+      <input class="confirmnewpassword" autocomplete="off"/>
+      <button type='submit'>Reset Password</button>
+    </form>
+  </div>
 
 </div>
+
+<script>
+  window.onload = function() {
+
+    $('.forgot').click(function() {
+      $('.login-card').hide();
+      $('.forgot-card').show();
+      $('.forgot-card').attr('hidden', false);
+    });
+
+    $('.back-to-login').click(function() {
+      $('.login-card').show();
+      $('.forgot-card').hide();
+    })
+
+    $('.forgotpass').submit(function(e) {
+      console.log("Sending reset request ...");
+      e.preventDefault();
+      var recoveryForm = $(this);
+      $.post('/reset-password',{email: recoveryForm.find('input').val()},function(data){
+        console.log(data);
+        if(data.auth) {
+          recoveryForm.find('input').removeClass('is-invalid');
+          recoveryForm.find('input').removeClass('is-valid');
+          recoveryForm.find('input').addClass('is-valid');
+          $('.login-card').show();
+          $('.forgot-card').hide();
+          $('#alert-forgotpass-sent').attr('hidden', false);
+        }else{
+          recoveryForm.find('input').removeClass('is-invalid');
+          recoveryForm.find('input').removeClass('is-valid');
+          recoveryForm.find('input').addClass('is-invalid');
+          recoveryForm.find('.invalid-feedback').text(data.message);
+        }
+      });
+    });
+
+    $('.password-reset').submit(function(e) {
+      e.preventDefault();
+      var pass = $(this).find('.new-Password');
+      var confirmPass = $(this).find('.confirm-password');
+      $.post(window.location.pathname, {newPassword: pass.val(), confirmPassword: confirmPass.val()}, function(data) {
+        // console.log();
+        if(data.auth) {
+          pass.removeClass('is-invalid');
+          pass.removeClass('is-valid');
+          confirmPass.removeClass('is-invalid');
+          confirmPass.removeClass('is-valid');
+          pass.addClass('is-valid');
+          confirmPass.addClass('is-valid');
+          window.location.replace("http://"+window.location.host+"/account");
+        }else{
+          pass.removeClass('is-invalid');
+          pass.removeClass('is-valid');
+          confirmPass.removeClass('is-invalid');
+          confirmPass.removeClass('is-valid');
+
+          pass.addClass('is-invalid');
+          confirmPass.addClass('is-invalid');
+          pass.next().text(data.message);
+          confirmPass.next().text(data.message);
+        }
+      })
+
+    })
+  }
+</script>

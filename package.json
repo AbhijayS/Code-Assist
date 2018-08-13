@@ -40,6 +40,7 @@
     "mongoose": "*",
     "multer": "^1.3.0",
     "multer-gridfs-storage": "^3.0.1",
+    "nanoid": "^1.2.0",
     "node-uuid": "^1.4.8",
     "node-zip": "^1.1.1",
     "nodemailer": "^4.6.4",
