@@ -895,7 +895,7 @@ router.get('/users/profile/:id', function(req, res) {
           };
           if(req.user._id == req.params.id) {
             // user viewing himself
-            res.render('user-profile', {layout: 'dashboard-layout', profile: person});
+            res.render('user-profile', {layout: 'dashboard-layout', profile: person, viewing: true});
           }else{
             // someone viewing user
             res.render('user-profile', {layout: 'dashboard-layout', profile: person});
