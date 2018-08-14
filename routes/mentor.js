@@ -299,7 +299,7 @@ router.post('/morePosts', function(req, res) {
           match: {prog_lang: prog_lang, timestamp: {$lt: lastPost.timestamp}},
           options: {sort: {'timestamp': -1}, limit: postLimit},
           select: '_id timestamp author question description prog_lang answers',
-          populate: {path: 'assignedMentor', select: '_id username'}
+          populate: [{path: 'assignedMentor', select: '_id username'}, {path: 'author', select: 'qualities.rank username pic'}]
         }).lean().exec(function(err, user) {
           // .lean() converts mongoose objects to normal js objects
           // assignedToSelf is needed in postschema model if .lean() is not used
@@ -340,7 +340,8 @@ router.post('/morePosts', function(req, res) {
           path: 'private_posts',
           match: {prog_lang: prog_lang, timestamp: {$lt: lastPost.timestamp}},
           options: {sort: {'timestamp': -1}, limit: postLimit},
-          select: '_id timestamp author question description prog_lang answers'
+          select: '_id timestamp author question description prog_lang answers',
+          populate: {path: 'author', select: 'qualities.rank username pic'}
         }).exec(function(err, user) {
           var postsToAdd = user.private_posts;
 
@@ -851,7 +852,7 @@ router.post('/filter', function(req, res) {
         match: {prog_lang: option},
         options: {sort: {'timestamp': -1}, limit: postLimit},
         select: '_id timestamp author question description prog_lang answers',
-        populate: {path: 'assignedMentor', select: '_id username'}
+        populate: [{path: 'assignedMentor', select: '_id username'}, {path: 'author', select: 'qualities.rank username pic'}]
       }).lean().exec(function(err, user) {
         var postsToAdd = user.private_posts;
 
@@ -889,7 +890,8 @@ router.post('/filter', function(req, res) {
         path: 'private_posts',
         match: {prog_lang: option},
         options: {sort: {'timestamp': -1}, limit: postLimit},
-        select: '_id timestamp author question description prog_lang answers'
+        select: '_id timestamp author question description prog_lang answers',
+        populate: {path: 'author', select: 'qualities.rank username pic'}
       }).exec(function(err, user) {
         var postsToAdd = user.private_posts;
 
