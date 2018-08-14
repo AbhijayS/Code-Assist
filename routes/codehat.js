@@ -239,6 +239,7 @@ router.get('/invite/:projectID/:randomID', function(req, res){
 });
 
 router.get('/:id', function(req, res) {
+	console.log("PROJECTS PAGE LOADING ...");
 	var isThumbnail = req.query.thumbnail;
 	console.log("isThumbnail:", isThumbnail);
 	var projectID = req.params.id;
@@ -272,18 +273,20 @@ router.get('/:id', function(req, res) {
 					}else{
 						projectStatus = false;
 					}
-
+					console.log("Project status:", projectStatus);
+					console.log('-------------------------------');
+					console.log('');
 					project.save(function(err) {
 						if(err) throw err;
 						res.render('codehat-project', {layout: 'codehat-project-layout', isThumbnail: isThumbnail, namespace: '/' + projectID, clearance:userAccessLevel, isNew: projectStatus, project: project, users: project.usersWithAccess, owner: project.owner, isowner: project.owner.id == req.user.id ? true : false});
 					})
 				} else {
-					req.redirect('/codehat');
+					res.redirect('/codehat');
 				}
 			} else {
-				req.redirect('/codehat');
+				res.redirect('/codehat');
 			}
-		} else {
+		}else {
 			req.flash('origin');
 			req.flash('origin', '/codehat/'+req.params.id);
 			res.redirect("/login");
