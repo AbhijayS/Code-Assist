@@ -446,7 +446,11 @@ router.get('/:id', function(req, res) {
     		path: 'answers',
     		options: {sort: {'timestamp': 1}},
     		populate: {path: 'author'}}, 'files', {path: 'author'}]).exec(function(err, post) {
-          res.render('mentor-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer')});
+          if(post) {
+            res.render('mentor-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer')});
+          }else{
+            req.redirect('/mentor');
+          }
       });
     }else{
       User.userHasPrivatePostById(req.user._id, postID, function(found) {

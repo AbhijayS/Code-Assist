@@ -70,7 +70,9 @@ var UserSchema = new Schema({
 			// bronze, silver, gold, platinum
 
 			assists: {type: Number, default: 0}
-		}
+		},
+
+		profile_url: String
 });
 
 var CommunitySchema = new Schema ({
@@ -371,6 +373,8 @@ module.exports.updateRank = function(user) {
 		user.qualities.rank = "gold";
 	}else if(user.qualities.assists >= 250) {
 		user.qualities.rank = "platinum";
+	}else{
+		user.qualities.rank = "bronze";
 	}
 	user.save(function(err) {
 		if(err) throw err;

@@ -326,15 +326,26 @@ router.post('/like', function(req, res) {
 
   if(req.user) {
     if (type == "post") {
-      User.PostSchema.findOne({_id: id}, function(err, post) {
+      User.PostSchema.findOne({_id: id}).populate({path: 'author'}).exec(function(err, post) {
         var index = post.userLikes.indexOf(req.user._id);
         if (index == -1) {
           post.userLikes.push(req.user);
           post.likeCount++;
+
+					if(post.author.id != req.user.author.id) {
+						post.author.qualities.assists += 5;
+						User.updateRank(post.author);
+					}
         } else {
           post.userLikes.splice(index, 1);
           post.likeCount--;
+
+					if(post.author.id != req.user.author.id) {
+						post.author.qualities.assists -= 5;
+				    User.updateRank(post.author);
+					}
         }
+
         post.save(function(err) {
           if(err) throw err;
         });

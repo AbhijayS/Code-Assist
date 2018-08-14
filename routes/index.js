@@ -246,12 +246,19 @@ router.post('/register', function(req, res){
 
   var errors = req.validationErrors(true);
 
+  function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
+  };
+
   var newUser = new User.UserSchema({
     username: username,
     email: email,
     password: password,
     title: 'user',
-    pic: "https://github.com/identicons/"+ username + ".png"
+    pic: "https://github.com/identicons/"+ username + ".png",
+    profile_url: username + "-" + getRandomInt(2001, 9000)
   });
 
   try{
@@ -286,8 +293,8 @@ router.post('/register', function(req, res){
                       // sign up successful
                       res.redirect('/account');
                     } else {
-                      res.send('Sign Up Failed :( Sorry, this is on our end');
-                      res.redirect('/register');
+                      // res.send('Sign Up Failed :( Sorry, this is on our end');
+                      res.redirect('/login');
                     }
                 });
               })
@@ -879,7 +886,8 @@ function Notify(userid,message){
 // });
 
 router.get('/users/profile/:id', function(req, res) {
-  var userID = req.params.id;
+  var userID = (req.params.id);
+
   if(req.user) {
     User.UserSchema.findOne({_id: userID}).populate({
       path: 'posts',
@@ -945,6 +953,12 @@ router.post('/admin', function(req, res){
 
 router.get('/test', function(req, res) {
   res.render('login-test', {layout: 'dashboard-layout'});
+});
+
+router.get('/:userid-:randomNum', function(req, res) {
+  console.log("TEst");
+  console.log(req.params.userid);
+  console.log(req.params.randomNum);
 });
 
 module.exports = router;
