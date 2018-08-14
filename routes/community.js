@@ -93,7 +93,8 @@ router.post('/morePosts', function(req, res) {
           searchMatch
         ]},
         options: {sort: {'timestamp': -1}, limit: postLimit},
-        select: '_id timestamp author question description prog_lang answers likeCount'
+        select: '_id timestamp author question description prog_lang answers likeCount',
+				populate: {path: 'author', select: 'qualities.rank username pic'}
       }).lean().exec(function(err, community) {
         var postsToAdd = community.posts;
 
@@ -513,7 +514,8 @@ router.post('/Search',function(req,res){
       }
     ]},
     options: {sort: {'timestamp': -1}, limit: postLimit},
-    select: '_id timestamp author question description prog_lang answers likeCount'
+    select: '_id timestamp author question description prog_lang answers likeCount',
+		populate: {path: 'author', select: 'qualities.rank username pic'}
   }).lean().exec(function(err, community) {
 		if (err) console.log(err);
 
@@ -590,7 +592,8 @@ router.post('/filter', function(req, res) {
       searchMatch
     ]},
     options: {sort: {'timestamp': -1}, limit: postLimit},
-    select: '_id timestamp author question description prog_lang answers likeCount'
+    select: '_id timestamp author question description prog_lang answers likeCount',
+		populate: {path: 'author', select: 'qualities.rank username pic'}
   }).lean().exec(function(err, community) {
     var postsToAdd = community.posts;
 

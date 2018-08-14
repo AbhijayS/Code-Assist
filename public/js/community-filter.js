@@ -25,42 +25,48 @@ window.onload = function() {
     element.attr('hidden', false);
   }
 
-  // Date Modifications
-  $('.moment-timestamp').each(function() {
-    var timestamp = new Date($(this).text());
-    timestamp = moment(timestamp, "MM-DD");
-    $(this).text(timestamp.format("MMM D"));
-    $(this).show();
-  });
+  function updateTimestamps() {
+    // Date Modifications
+    $('.moment-timestamp').each(function() {
+      var timestamp = new Date($(this).text());
+      timestamp = moment(timestamp, "MM-DD");
+      $(this).text(timestamp.format("MMM D"));
+      $(this).show();
+    });
+  }
+  updateTimestamps();
 
-  $('.prize').each(function() {
-    var text = $(this).text();
-    if(text == "bronze") {
+  function updateRanks() {
+    $('.prize').each(function() {
+      var text = $(this).text();
+      if(text == "bronze") {
 
-      $(this).html(bronze.html);
-      setElementColor($(this), bronze.color);
-      displayElement($(this));
+        $(this).html(bronze.html);
+        setElementColor($(this), bronze.color);
+        displayElement($(this));
 
-    }else if(text == "silver"){
+      }else if(text == "silver"){
 
-      $(this).html(silver.html);
-      setElementColor($(this), silver.color);
-      displayElement($(this));
+        $(this).html(silver.html);
+        setElementColor($(this), silver.color);
+        displayElement($(this));
 
-    }else if(text == "gold") {
+      }else if(text == "gold") {
 
-      $(this).html(gold.html);
-      setElementColor($(this), gold.color);
-      displayElement($(this));
+        $(this).html(gold.html);
+        setElementColor($(this), gold.color);
+        displayElement($(this));
 
-    }else if(text == "platinum") {
+      }else if(text == "platinum") {
 
-      $(this).html(platinum.html);
-      setElementColor($(this), platinum.color)
-      displayElement($(this));
+        $(this).html(platinum.html);
+        setElementColor($(this), platinum.color)
+        displayElement($(this));
 
-    }
-  });
+      }
+    });
+  }
+  updateRanks();
   //
   // function updateQuillContent() {
   //   /* All of the Answers Viewer (Quill) */
@@ -85,6 +91,53 @@ window.onload = function() {
   // }
   // updateQuillContent();
 
+  function addPosts(postsToAdd) {
+    var postsContainer = $('#all-posts');
+    for(var i = 0; i < postsToAdd.length; i++)
+    {
+      var id = postsToAdd[i]._id;
+      var question = postsToAdd[i].question;
+      var answers = postsToAdd[i].answers.length;
+      var author = postsToAdd[i].author;
+      var lang = postsToAdd[i].prog_lang;
+      // console.log(lang);
+      var description = postsToAdd[i].descriptionPreview;
+      var likeCount = postsToAdd[i].likeCount;
+      if (!likeCount)
+        likeCount = "";
+
+      var timestamp = new Date(postsToAdd[i].timestamp);
+      timestamp = moment(timestamp, "MM-DD");
+      timestamp = timestamp.format("MMM D");
+      // console.log(timestamp);
+
+      var newPost = `
+      <li id="${id}" class="list-group-item lead" style="font-weight: 400;">
+
+        <div class="d-flex mb-2" style="font-size: 16px;">
+          <a href="/users/profile/${author._id}"><div class="profile-pic" style="background-image: url(${author.pic});"></div></a>
+          <div class="ml-2">
+            <p class="m-0"><span class="prize" hidden>${author.qualities.rank}</span> ${author.username}</p>
+            <span class="text-muted">asked <span class="moment-timestamp" style="display: none;">${timestamp}</span></span>
+          </div>
+        </div>
+
+        <a class="breakWord mb-4" href="/community/${id}" style="font-size: 20px;">${question}</a>
+        <br>
+        <p class="breakWord quill-content text-muted">${description}</p>
+        <div class="ml-auto text-right">
+          <button class="btn btn-outline-secondary badge-pill p-0 px-2"><span class="badge badge-pill">${likeCount} <i class="far fa-thumbs-up"></i></span></button>
+          <span class="badge badge-warning badge-pill">${answers} Answers</span>
+          <span class="badge badge-primary badge-pill">${lang}</span>
+        </div>
+      </li>`
+      postsContainer.append(newPost);
+    }
+
+    updateTimestamps();
+    updateRanks();
+  }
+
   $("#getMorePosts").click(function() {
     var data = {
       lastPostID: $("#all-post-container .list-group-item").last().attr('id'),
@@ -98,43 +151,7 @@ window.onload = function() {
       } else {
         $("#getMorePosts").attr("disabled", false);
       }
-      var postsContainer = $('#all-posts');
-      var postsToAdd = data.postsToAdd;
-      for(var i = 0; i < postsToAdd.length; i++)
-      {
-        var id = postsToAdd[i]._id;
-        var question = postsToAdd[i].question;
-        var answers = postsToAdd[i].answers.length;
-        var author = postsToAdd[i].author;
-        var lang = postsToAdd[i].prog_lang;
-        // console.log(lang);
-        var description = postsToAdd[i].descriptionPreview;
-        var likeCount = postsToAdd[i].likeCount;
-        if (!likeCount)
-          likeCount = "";
-
-        var timestamp = new Date(postsToAdd[i].timestamp);
-        timestamp = moment(timestamp, "MM-DD");
-        timestamp = timestamp.format("MMM D");
-        // console.log(timestamp);
-
-        var newPost = `
-        <li id="${id}" class="list-group-item list-group-item-action lead" style="font-weight: 400;">
-          <div style="font-size: 16px;" class="d-none d-sm-block">
-            <p class="text-gray pt-2 my-0">asked <span class="moment-timestamp">${timestamp}</span> ${author}</p>
-          </div>
-
-          <a href="/community/${id}">${question}</a>
-          <p class="w-100">${description}</p>
-          <div class="ml-auto text-right">
-            <button class="btn btn-outline-secondary badge-pill p-0 px-2"><span class="badge badge-pill">${likeCount}<i class="far fa-thumbs-up"></i></span></button>
-            <span class="badge badge-warning badge-pill">${answers} Answers</span>
-            <span class="badge badge-primary badge-pill">${lang}</span>
-          </div>
-        </li>`;
-
-        postsContainer.append(newPost);
-      }
+      addPosts(data.postsToAdd);
     });
   });
 
@@ -176,43 +193,7 @@ window.onload = function() {
           `;
           postsContainer.append(alert);
         }else{
-          var postsToAdd = data.postsToAdd;
-          for(var i = 0; i < postsToAdd.length; i++)
-          {
-            var id = postsToAdd[i]._id;
-            var question = postsToAdd[i].question;
-            var answers = postsToAdd[i].answers.length;
-            var author = postsToAdd[i].author;
-            var lang = postsToAdd[i].prog_lang;
-            // console.log(lang);
-            var description = postsToAdd[i].descriptionPreview;
-            var likeCount = postsToAdd[i].likeCount;
-            if (!likeCount)
-              likeCount = "";
-
-            var timestamp = new Date(postsToAdd[i].timestamp);
-            timestamp = moment(timestamp, "MM-DD");
-            timestamp = timestamp.format("MMM D");
-            // console.log(timestamp);
-
-            var newPost = `
-            <li id="${id}" class="list-group-item list-group-item-action lead" style="font-weight: 400;">
-              <div style="font-size: 16px;" class="d-none d-sm-block">
-                <p class="text-gray pt-2 my-0">asked <span class="moment-timestamp">${timestamp}</span> ${author}</p>
-              </div>
-
-              <a href="/community/${id}">${question}</a>
-              <p class="w-100">${description}</p>
-              <div class="ml-auto text-right">
-                <button class="btn btn-outline-secondary badge-pill p-0 px-2"><span class="badge badge-pill">${likeCount}<i class="far fa-thumbs-up"></i></span></button>
-                <span class="badge badge-warning badge-pill">${answers} Answers</span>
-                <span class="badge badge-primary badge-pill">${lang}</span>
-              </div>
-            </li>`;
-
-            postsContainer.append(newPost);
-          }
-
+          addPosts(data.postsToAdd);
         }
       }
       $("#filterLoading").hide();
@@ -244,38 +225,7 @@ window.onload = function() {
         `;
         postsContainer.append(alert);
       }else{
-        for(var i = 0; i < postsToAdd.length; i++)
-        {
-          var id = postsToAdd[i]._id;
-          var question = postsToAdd[i].question;
-          var answers = postsToAdd[i].answers.length;
-          var author = postsToAdd[i].author;
-          var lang = postsToAdd[i].prog_lang;
-          var description = postsToAdd[i].descriptionPreview;
-          var likeCount = postsToAdd[i].likeCount;
-          if (!likeCount)
-            likeCount = "";
-          var timestamp = new Date(postsToAdd[i].timestamp);
-          timestamp = moment(timestamp, "MM-DD");
-          timestamp = timestamp.format("MMM D");
-
-          var newPost = `
-          <li id="${id}" class="list-group-item list-group-item-action lead" style="font-weight: 400;">
-            <div style="font-size: 16px;" class="d-none d-sm-block">
-              <p class="text-gray pt-2 my-0">asked <span class="moment-timestamp">${timestamp}</span> ${author}</p>
-            </div>
-
-            <a href="/community/${id}">${question}</a>
-            <p class="w-100">${description}</p>
-            <div class="ml-auto text-right">
-              <button class="btn btn-outline-secondary badge-pill p-0 px-2"><span class="badge badge-pill">${likeCount}<i class="far fa-thumbs-up"></i></span></button>
-              <span class="badge badge-warning badge-pill">${answers} Answers</span>
-              <span class="badge badge-primary badge-pill">${lang}</span>
-            </div>
-          </li>`;
-
-          postsContainer.append(newPost);
-        }
+        addPosts(postsToAdd);
       }
       // $('#m').val('');
     });
