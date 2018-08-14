@@ -63,8 +63,7 @@ clip-path: polygon(93% 77%, 100% 26%, 100% 100%, 59% 85%); height: 405px; z-inde
           </div>
 
           <div class="d-flex mb-2" style="font-size: 16px;">
-            <div class="profile-pic" style="background-image: url({{this.author.pic}});">
-            </div>
+            <a href="/users/profile/{{this.author.id}}"><div class="profile-pic" style="background-image: url({{this.author.pic}});"></div></a>
             <div class="ml-2">
               <p class="m-0">{{this.author.username}}</p>
               <span class="text-muted">asked <span class="moment-timestamp" style="display: none;">{{this.timestamp}}</span></span>
