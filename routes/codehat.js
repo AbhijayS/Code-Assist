@@ -107,7 +107,7 @@ router.post('/', function(req, res){
 				});
 				data.auth = true;
 				data.message = 'is-valid';
-				data.url = "/codehat/" + newProject.id;
+				data.url = "/codehat/" + newProject.id + "/";
 			}
 			console.log("Data:\n" + data.auth + '\n' + data.url + '\n' + data.message);
 			res.send(data);
