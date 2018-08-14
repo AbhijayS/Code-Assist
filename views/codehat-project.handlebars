@@ -116,7 +116,8 @@
 <!-- Settings Section -->
 <!-- <i id="close-settings" class="far fa-times-circle"></i> -->
 {{#unless isThumbnail}}
-<div id="settings" class="hide">
+
+<div id="settings" class="{{#unless isNew}}hide{{/unless}}">
 	<div id="box" class="mx-auto p-5" style="max-width: 1100px;">
 		<div id="sharing" class="mb-5">
 

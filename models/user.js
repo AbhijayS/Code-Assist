@@ -117,7 +117,7 @@ var ProjectSchema = new Schema({
 	  type: Schema.Types.ObjectId,
 	  ref:'ChatSchema'
 	}],
-	status: String, // new, using, unused
+	status: {type: String, default: "new"} // new, using, unused
 
 	// description: String,
 	// name: String,
