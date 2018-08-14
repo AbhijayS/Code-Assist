@@ -30,7 +30,7 @@
     </nav>
 
     <!-- Side Bar -->
-    <div id="sidebar">
+    <div id="sidebar" style="user-select: none;">
       <div id="create-project-box" class="sidebar-box"
       {{#if expanded}}style="width: 350px;"{{/if}}>
         <div class="content container">
@@ -41,7 +41,7 @@
               <div class="row">
                 <div class="col-12">
                   <div class="form-group">
-                    <input type="text" class="form-control" name="project_name" id="project_name" {{#if expanded}}value="{{expanded}}"{{/if}} placeholder="Project Name" required autofocus>
+                    <input type="text" class="form-control" name="project_name" id="project_name" {{#if expanded}}value="{{expanded}}"{{/if}} placeholder="Project Name" required autofocus autocomplete="off">
                     <div class="text-light invalid-feedback">
                       Project with this name already exists
                     </div>
@@ -69,7 +69,7 @@
       <ul class="list-group">
         <li id="create-project" class="list-group-item"><i class="fas fa-plus"></i></li>
         <!-- <li id="global-chat" class="list-group-item"><i class="far fa-comment-alt"></i></li> -->
-        <li id="global-settings" class="list-group-item"><i class="fas fa-sliders-h"></i></li>
+        <!-- <li id="global-settings" class="list-group-item"><i class="fas fa-sliders-h"></i></li> -->
       </ul>
     </div>
 

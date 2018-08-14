@@ -264,13 +264,24 @@ router.get('/:id', function(req, res) {
 						// currentProjects.push(new Project(project._id, project.text));
 						currentProjects.push(new Project(project._id, project.files));
 					}
-					console.log(project.owner.id == req.user.id ? true : false);
-					res.render('codehat-project', {layout: 'codehat-project-layout', isThumbnail: isThumbnail, namespace: '/' + projectID, clearance:userAccessLevel, project: project, users: project.usersWithAccess, owner: project.owner, isowner: project.owner.id == req.user.id ? true : false});
+					// console.log(project.owner.id == req.user.id ? true : false);
+					var projectStatus = project.status;
+					if(projectStatus == "new") {
+						projectStatus = true;
+						project.status = "using";
+					}else{
+						projectStatus = false;
+					}
+
+					project.save(function(err) {
+						if(err) throw err;
+						res.render('codehat-project', {layout: 'codehat-project-layout', isThumbnail: isThumbnail, namespace: '/' + projectID, clearance:userAccessLevel, isNew: projectStatus, project: project, users: project.usersWithAccess, owner: project.owner, isowner: project.owner.id == req.user.id ? true : false});
+					})
 				} else {
-					res.send("You don't have access to this project");
+					req.redirect('/codehat');
 				}
 			} else {
-				res.send("Project Not Found");
+				req.redirect('/codehat');
 			}
 		} else {
 			req.flash('origin');

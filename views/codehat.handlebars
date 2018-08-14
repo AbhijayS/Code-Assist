@@ -37,16 +37,16 @@
     </div>
   </div>
 {{else}}
-  <div id="codehat-start" class="container px-5 text-center">
-    <h1 class="display-4 text-secondary">Welcome to Code Hat</h1>
+  <div id="codehat-start" class="container px-5 text-center" style="user-select: none;">
+    <h1 class="display-4 text-secondary">Welcome to Projects</h1>
     <hr>
     <br>
 
-    <p class="lead"><span style="text-primary">New to Code Assist? </span>Collaborate on a problem Today</p>
+    <p class="lead"><span style="text-primary">New to Code Assist? </span>Collaborate on a problem with a mentor or friend today</p>
     <div class="container">
       <form class="createNewProject form-inline text-center justify-content-center" novalidate>
         <div class="form-group">
-          <input type="text" class="mr-1 form-control btn-lg" name="project_name" id="project_name" placeholder="Project Name" required>
+          <input type="text" class="mr-1 form-control btn-lg" name="project_name" id="project_name" placeholder="Project Name" required autocomplete="off">
           <div class="text-light invalid-feedback">
             Please choose a username.
           </div>
