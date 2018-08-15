@@ -89,7 +89,7 @@ clip-path: polygon(93% 77%, 100% 26%, 100% 100%, 59% 85%); height: 405px; z-inde
       </label>
     </div>
 
-    <button id="submit" class="btn btn-outline-primary btn-lg mt-3 btn-block py-3">Submit Request</button>
+    <button id="submit" class="btn btn-outline-primary btn-lg mt-3 btn-block py-3">Submit Request<img id="postLoading" class="transparentBack ml-2" src="/images/loadingwheel.gif" style="height: 32px; display: none;"></button>
 
   </form>
 </div>
@@ -109,6 +109,8 @@ clip-path: polygon(93% 77%, 100% 26%, 100% 100%, 59% 85%); height: 405px; z-inde
 
     $('#submit').on('click', function(event) {
       event.preventDefault();
+      $("#submit").attr("disabled", true);
+      $("#postLoading").show();
       console.log('');
       console.log('-------------------------------------');
       console.log('community-post clicked');
@@ -137,6 +139,8 @@ clip-path: polygon(93% 77%, 100% 26%, 100% 100%, 59% 85%); height: 405px; z-inde
             if (!resData.questionInvalid && !resData.descriptionInvalid) {
               window.location.replace(resData.url);
             } else {
+              $("#postLoading").hide();
+              $("#submit").attr("disabled", false);
               if (resData.questionInvalid)
                 $("#questionInvalid").show();
               if (resData.descriptionInvalid)

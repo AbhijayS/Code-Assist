@@ -14,6 +14,8 @@ window.onload = function(){
 
   $('#submit').on('click', function(event) {
     event.preventDefault();
+    $("#submit").attr("disabled", true);
+    $("#postLoading").show();
     var description = JSON.stringify(quillEditor.getContents().ops);
 
     var formData = new FormData();
@@ -38,6 +40,8 @@ window.onload = function(){
           if (!resData.questionInvalid && !resData.descriptionInvalid) {
             window.location.replace(resData.url);
           } else {
+            $("#postLoading").hide();
+            $("#submit").attr("disabled", false);
             if (resData.questionInvalid)
               $("#questionInvalid").show();
             if (resData.descriptionInvalid)
@@ -95,7 +99,7 @@ window.onload = function(){
     $('#fileUploadContainer .fileBtn').click(function(event) {
       event.preventDefault();
     });
-    
+
     // console.log(fileList);
   });
 };
