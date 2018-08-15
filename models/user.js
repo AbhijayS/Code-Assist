@@ -3,6 +3,8 @@ var bcrypt = require('bcryptjs');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var db = mongoose.connection;
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 // Chat Schema
 var ChatSchema = new Schema({
@@ -117,6 +119,12 @@ var ProjectSchema = new Schema({
 	  type: Schema.Types.ObjectId,
 	  ref:'ChatSchema'
 	}],
+
+	assignedMentor: {
+		type: Schema.Types.ObjectId,
+		ref: 'UserSchema'
+	},
+
 	status: {type: String, default: "new"} // new, using, unused
 
 	// description: String,
@@ -380,6 +388,10 @@ module.exports.updateRank = function(user) {
 		if(err) throw err;
 		// rank updated!
 	})
+};
+
+module.exports.emailAllMentors = function(msg) {
+
 };
 /*
 ==============================

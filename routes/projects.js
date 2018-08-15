@@ -59,7 +59,7 @@ router.get('/', function(req, res){
 		});
 	}else{
 		req.flash('origin');
-		req.flash('origin', '/codehat');
+		req.flash('origin', '/projects');
 		res.redirect("/login");
 
 	}
@@ -103,11 +103,11 @@ router.post('/', function(req, res){
 				// console.log(req.user.projectsWithAccess);
 				user.save(function(err) {
 					if(err) throw err;
-					console.log('new codehat project saved');
+					console.log('new project saved');
 				});
 				data.auth = true;
 				data.message = 'is-valid';
-				data.url = "/codehat/" + newProject.id + "/";
+				data.url = "/projects/" + newProject.id + "/";
 			}
 			console.log("Data:\n" + data.auth + '\n' + data.url + '\n' + data.message);
 			res.send(data);
@@ -117,7 +117,7 @@ router.post('/', function(req, res){
 		data.url = "/login"
 		data.message = '';
 		req.flash('origin');
-		req.flash('origin', '/codehat');
+		req.flash('origin', '/projects');
 		console.log("Data:\n" + data.auth + '\n' + data.url + '\n' + data.message);
 		res.send(data);
 	}
