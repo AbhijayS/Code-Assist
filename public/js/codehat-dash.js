@@ -27,8 +27,7 @@ function() {
   $('.createNewProject').submit(function(event) {
     var form = $(this);
     event.preventDefault();
-    console.log('clicked');
-    $.post('/codehat/', {project_name: $(this).find('input').val()}, function(data){
+    $.post('/codehat/', {project_name: $(this).find('input').val(), invite_mentor: $(this).hasClass('mentor-invite')}, function(data){
       if(data.auth) {
         window.location.replace(data.url);
       }else{

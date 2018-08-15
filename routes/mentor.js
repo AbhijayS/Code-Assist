@@ -441,8 +441,7 @@ router.get('/:id', function(req, res) {
   var postID = req.params.id;
   if(req.user)
   {
-    if(req.user.title == 'mentor')
-    {
+    if(req.user.title == 'mentor') {
       User.PostSchema.findOne({_id: postID}).populate([{
     		path: 'answers',
     		options: {sort: {'timestamp': 1}},
@@ -468,7 +467,7 @@ router.get('/:id', function(req, res) {
             }else{
               description = post.description;
             }
-            res.render('mentor-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description, username: req.user.username});
+            res.render('mentor-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description, username: req.user.username, isowner: true});
           });
         }else{
           res.redirect('/mentor');

@@ -26,9 +26,9 @@
     <a href="#flagPost" data-toggle="modal" data-target="#flagPost" class="text-secondary"><i class="far fa-flag"></i> Flag Post</a>
     {{/if}}
 
-    <button type="button" class="d-none d-md-block btn btn-info btn-lg float-right" id="start-codehat"><i class="fas fa-code-branch"></i> Create Project</button>
+    <button type="button" class="d-none d-md-block btn btn-info btn-lg float-right" data-toggle="modal" data-target="#start-codehat-modal"><i class="fas fa-code-branch"></i> Create Project</button>
 
-    <button type="button" class="d-md-none btn btn-info float-right" id="start-codehat"><i class="fas fa-code-branch"></i> Create Project</button>
+    <button type="button" class="d-md-none btn btn-info float-right" data-toggle="modal" data-target="#start-codehat-modal"><i class="fas fa-code-branch"></i> Create Project</button>
   </div>
 </div>
 
@@ -122,7 +122,7 @@
     {{/each}}
   {{else}}
   <hr class="mx-5 my-5">
-  <a href="#answer-editor" style="text-decoration: none;"><button type="button" name="button" class="btn btn-outline-primary btn-lg btn-block mb-3 py-3">Answer this Post</button></a>
+  <a href="#answer-editor" style="text-decoration: none;"><button type="button" name="button" class="btn btn-lg btn-block mb-3 py-3">Answer this Post</button></a>
   {{/if}}
 
   <div class="jumbotron bg-white">
@@ -186,6 +186,79 @@
     </div>
   </div>
 </div>
+
+{{#if isowner}}
+<!-- start-codehat modal (invite mentors)-->
+<div class="modal fade" id="start-codehat-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="exampleModalLabel"><i class="fas fa-people-carry"></i> Collaboration = Efficiency 📈</h3>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Would you like to have a mentor help you out?</p>
+        <p class="text-muted">Our mentors are always here for you. Ask them just about anything! They know what they're doing. 😉</p>
+      </div>
+      <div class="modal-footer">
+        <div class="container text-right">
+          <div class="row">
+            <div class="col">
+              <button type="button" class="btn btn-primary btn-block mb-3 start-codehat" name="mentor">Get Help from a Mentor</button>
+            </div>
+
+            <div class="col">
+              <button type="button" class="btn btn-secondary start-codehat btn-block">Continue without help</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{else}}
+<!-- start-codehat modal (invite other users)-->
+<div class="modal fade" id="start-codehat-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="exampleModalLabel">Make someone's day <i class="fas fa-sun text-warning"></i></h3>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Would you like to help out the author (@{{post.author.username}})?</p>
+        <p class="text-muted">Start a new project and code collaboratively using our built-in Code Editor <i class="fas fa-laptop-code"></i>:</p>
+        <ul class="text-muted">
+          <li>Collaborate on multiple code files at the same time!</li>
+          <li>Get a Mentor to help you out</li>
+          <li>Video and voice calling are supported, all for free</li>
+          <li>Learn through Collaboration</li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <div class="container text-right">
+          <div class="row">
+            <div class="col">
+              <button type="button" class="btn btn-primary btn-block mb-3 start-codehat" name="user">Collaborate today</button>
+            </div>
+
+            <div class="col">
+              <button type="button" class="btn btn-secondary btn-block" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{/if}}
+
 
 <script type="text/javascript">
   window.onload = function(){
@@ -274,14 +347,22 @@
       });
     });
 
-    $('#start-codehat').on('click', function(event) {
+    $('.start-codehat').on('click', function(event) {
       event.preventDefault();
+      // 1 = invite mentor
+      // 2 = without mentor
       var stringID = window.location.pathname.split('/');
       stringID = stringID[stringID.length-1];
 
-      $.post('/codehat/' + stringID + '/start-codehat', {postID: stringID}, function(){
-        window.location.replace("http://" + window.location.host + "/codehat");
+      if($(this).attr('name') == "mentor")
+        var inviteMentor = true;
+      else if($(this).attr('name') == "user")
+        var inviteUser = true;
+
+      $.post('/codehat/' + stringID + '/start-codehat', {postID: stringID, inviteMentor: inviteMentor, inviteUser: inviteUser}, function(url){
+        window.location.replace("http://" + window.location.host + url);
       });
+
     });
 
     $('#flag-post').submit(function(event) {

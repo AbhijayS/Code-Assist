@@ -37,13 +37,6 @@ function projectActive(id) {
 
 router.get('/', function(req, res){
 	if(req.user) {
-		// User.
-	  // findOne({ name: 'Val' }).
-	  // populate({
-	  //   path: 'friends',
-	  //   // Get friends of friends - populate the 'friends' array for every friend
-	  //   populate: { path: 'friends' }
-	  // });
 		User.UserSchema.findOne({_id: req.user._id}).
 		populate({
 			path: 'projectsWithAccess',
@@ -51,17 +44,24 @@ router.get('/', function(req, res){
 		}).
 		exec(function(err, user) {
 			if(err) throw err;
-			var projects = [];
-			for(var i = 0; i < user.projectsWithAccess.length; i++) {
-				projects.push(user.projectsWithAccess[i]);
+			if(user) {
+				var projects = [];
+				for(var i = 0; i < user.projectsWithAccess.length; i++) {
+					projects.push(user.projectsWithAccess[i]);
+				}
+
+				var inviteUser = req.flash('invite-user');
+				var inviteMentor = req.flash('invite-mentor');
+
+				console.log("Flashing",inviteMentor);
+
+				res.render('codehat', {layout: 'codehat-layout', expanded: req.flash('start-codehat'), projects: projects, invite_mentor: inviteMentor, invite_user: inviteUser});
 			}
-			res.render('codehat', {layout: 'codehat-layout', expanded: req.flash('start-codehat'), projects: projects});
 		});
 	}else{
 		req.flash('origin');
 		req.flash('origin', '/codehat');
 		res.redirect("/login");
-
 	}
 });
 
@@ -75,42 +75,50 @@ router.post('/', function(req, res){
 	console.log("Received Name: " + project_name);
 	if(req.user) {
 		User.UserSchema.findOne({_id: req.user._id}).populate('projectsWithAccess').exec(function(err, user) {
-			var projects = user.projectsWithAccess;
-			// console.log(projects);
-			for(var i = 0; i < projects.length; i++) {
-				console.log("Checking Name: " + projects[i].name);
-				if(projects[i].name == project_name) {
-					data.auth = false;
-					data.message = "is-invalid";
-					console.log("invalid");
+			if(user) {
+				var projects = user.projectsWithAccess;
+				// console.log(projects);
+				for(var i = 0; i < projects.length; i++) {
+					// console.log("Checking Name: " + projects[i].name);
+					if(projects[i].name == project_name) {
+						data.auth = false;
+						data.message = "is-invalid";
+						// console.log("invalid");
+					}
 				}
-			}
-			if(!data.auth == false) {
-				console.log("Valid");
-				var newProject = new User.ProjectSchema();
-				newProject.name = project_name.trim();
-				newProject.owner = req.user._id;
-				newProject.thumbnail = project_name.trim().substring(0, 1);
-				// newProject.usersWithAccess.push(req.user);
+				if(!data.auth == false) {
+					// console.log("Valid");
+					var newProject = new User.ProjectSchema();
+					newProject.name = project_name.trim();
+					newProject.owner = req.user._id;
+					newProject.thumbnail = project_name.trim().substring(0, 1);
+					// newProject.usersWithAccess.push(req.user);
 
-				newProject.status = "new";
+					newProject.status = "new";
 
-				newProject.save(function(err) {
-					if(err) throw err;
-				});
-				// console.log('Project ID: ' + newProject._id);
-				user.projectsWithAccess.push(newProject._id);
-				// console.log(req.user.projectsWithAccess);
-				user.save(function(err) {
-					if(err) throw err;
-					console.log('new codehat project saved');
-				});
-				data.auth = true;
-				data.message = 'is-valid';
-				data.url = "/codehat/" + newProject.id + "/";
+					newProject.save(function(err) {
+						if(err) throw err;
+					});
+					// console.log('Project ID: ' + newProject._id);
+					user.projectsWithAccess.push(newProject._id);
+					// console.log(req.user.projectsWithAccess);
+					user.save(function(err) {
+						if(err) throw err;
+						// console.log('new codehat project saved');
+					});
+					data.auth = true;
+					data.message = 'is-valid';
+					data.url = "/codehat/" + newProject.id + "/";
+
+					if(req.body.invite_mentor == "true") {
+						console.log("Invite a mentor?", req.body.invite_mentor);
+						req.flash('invite-mentor');
+						req.flash('invite-mentor', true);
+					}
+				}
+				console.log("Data:\n" + data.auth + '\n' + data.url + '\n' + data.message);
+				res.send(data);
 			}
-			console.log("Data:\n" + data.auth + '\n' + data.url + '\n' + data.message);
-			res.send(data);
 		});
 	}else {
 		data.auth = false;
@@ -278,6 +286,9 @@ router.get('/:id', function(req, res) {
 					console.log('');
 					project.save(function(err) {
 						if(err) throw err;
+						if(req.flash('invite-mentor')) {
+
+						}
 						res.render('codehat-project', {layout: 'codehat-project-layout', isThumbnail: isThumbnail, namespace: '/' + projectID, clearance:userAccessLevel, isNew: projectStatus, project: project, users: project.usersWithAccess, owner: project.owner, isowner: project.owner.id == req.user.id ? true : false});
 					})
 				} else {
@@ -295,14 +306,26 @@ router.get('/:id', function(req, res) {
 });
 
 router.post('/:id/start-codehat', function(req, res) {
-	User.PostSchema.findOne({_id: req.body.postID}, function(err, post) {
-		if(err) throw err;
-		if(post){
-			req.flash('start-codehat');
-			req.flash('start-codehat', post.question);
-		}
-		res.send("");
-	});
+	if(req.user) {
+		User.PostSchema.findOne({_id: req.body.postID}, function(err, post) {
+			if(err) throw err;
+			if(post){
+				req.flash('start-codehat');
+				req.flash('invite-mentor');
+				req.flash('invite-user');
+				req.flash('start-codehat', post.question);
+				req.flash('invite-mentor', req.body.inviteMentor);
+				req.flash('invite-user', req.body.inviteUser);
+				res.send("/codehat");
+			}else{
+				res.send('/codehat/'+req.params.id);
+			}
+		});
+	}else{
+		req.flash('origin');
+		req.flash('origin', '/codehat/'+req.params.id);
+		res.send("/login");
+	}
 });
 
 router.post('/:id/delete', function(req, res) {
@@ -553,7 +576,7 @@ function Project(id) {
 
 
 	this.nsp.on('connection', function connection(socket) {
-		console.log("new codehat connection");
+		// console.log("new codehat connection");
 		socket.emit("socketID", socket.id);
 		socket.emit("files", self.files);
 
