@@ -175,4 +175,12 @@ $(document).ready(function() {
       }
     });
   });
+
+  // Block Ctrl-s for people who have a habit of pressing it
+  $(document).bind('keydown', function(e) {
+    if(e.ctrlKey && (e.which == 83)) {
+      e.preventDefault();
+      return false;
+    }
+  });
 });
