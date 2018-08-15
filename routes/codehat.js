@@ -229,7 +229,7 @@ router.get('/invite/:projectID/:randomID', function(req, res){
 						project.save(function(err) {
 							if(err) throw err;
 
-							res.redirect("/codehat/" + projectID);
+							res.redirect("/codehat/" + projectID + "/");
 						});
 
 					}
@@ -237,7 +237,7 @@ router.get('/invite/:projectID/:randomID', function(req, res){
 			});
 
 		} else {
-			res.redirect("/codehat/" + projectID);
+			res.redirect("/codehat/" + projectID + "/");
 		}
 	} else {
 		req.flash('origin');

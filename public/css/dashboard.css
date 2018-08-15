@@ -239,3 +239,25 @@ User Profile Page (user-profile.handlebars)
   font-size: 22px;
   user-select: none;
 } */
+
+/*
+========================================
+Pricing page
+========================================
+*/
+
+.price {
+  color: #007bff;
+  font-size: 3em;
+  margin-bottom: 40px;
+}
+
+.price span {
+  font-size: 20px;
+  margin-left: 3px;
+}
+
+.selectBtn {
+  width: 150px;
+  height: 50px;
+}
