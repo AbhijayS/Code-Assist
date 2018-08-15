@@ -43,7 +43,7 @@ clip-path: polygon(0 87%, 100% 81%, 100% 100%, 0% 100%); height: 351px; z-index:
       <p class="moment-timestamp" style="display: none;">{{post.timestamp}}</p>
       {{#if isowner}}
         <div class="btn-group" role="group">
-          <button type="button" class="btn btn-default" id="start-codehat">+ Start a CodeHat Project</button>
+          <button type="button" class="btn btn-default" id="start-project">+ Start a Project</button>
           <button class="btn btn-danger" id="delete" type="button" name="button">Delete Post</button>
         </div>
       {{/if}}
@@ -212,13 +212,13 @@ clip-path: polygon(0 87%, 100% 81%, 100% 100%, 0% 100%); height: 351px; z-index:
       });
     });
 
-    $('#start-codehat').on('click', function(event) {
+    $('#start-project').on('click', function(event) {
       event.preventDefault();
       var stringID = window.location.pathname.split('/');
       stringID = stringID[stringID.length-1];
 
-      $.post('/codehat/' + stringID + '/start-codehat', {postID: stringID}, function(){
-        window.location.replace("http://" + window.location.host + "/codehat");
+      $.post('/projects/' + stringID + '/start-project', {postID: stringID}, function(){
+        window.location.replace("http://" + window.location.host + "/projects");
       });
     });
 

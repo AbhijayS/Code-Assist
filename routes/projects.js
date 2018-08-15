@@ -55,7 +55,7 @@ router.get('/', function(req, res){
 			for(var i = 0; i < user.projectsWithAccess.length; i++) {
 				projects.push(user.projectsWithAccess[i]);
 			}
-			res.render('codehat', {layout: 'codehat-layout', expanded: req.flash('start-codehat'), projects: projects});
+			res.render('projects', {layout: 'projects-layout', expanded: req.flash('start-project'), projects: projects});
 		});
 	}else{
 		req.flash('origin');
@@ -278,7 +278,7 @@ router.get('/:id', function(req, res) {
 					console.log('');
 					project.save(function(err) {
 						if(err) throw err;
-						res.render('codehat-project', {layout: 'codehat-project-layout', isThumbnail: isThumbnail, namespace: '/' + projectID, clearance:userAccessLevel, isNew: projectStatus, project: project, users: project.usersWithAccess, owner: project.owner, isowner: project.owner.id == req.user.id ? true : false});
+						res.render('view-project', {layout: 'view-project-layout', isThumbnail: isThumbnail, namespace: '/' + projectID, clearance:userAccessLevel, isNew: projectStatus, project: project, users: project.usersWithAccess, owner: project.owner, isowner: project.owner.id == req.user.id ? true : false});
 					})
 				} else {
 					res.redirect('/codehat');
@@ -294,12 +294,12 @@ router.get('/:id', function(req, res) {
 	});
 });
 
-router.post('/:id/start-codehat', function(req, res) {
+router.post('/:id/start-project', function(req, res) {
 	User.PostSchema.findOne({_id: req.body.postID}, function(err, post) {
 		if(err) throw err;
 		if(post){
-			req.flash('start-codehat');
-			req.flash('start-codehat', post.question);
+			req.flash('start-project');
+			req.flash('start-project', post.question);
 		}
 		res.send("");
 	});
@@ -339,7 +339,7 @@ router.get('/:id/file/:fileIndex', function(req, res) {
 	var projectObject = getCurrentProject(projectID);
 	if (projectObject && projectObject.files[fileIndex] && projectObject.files[fileIndex].fileName) {
 		var fileName = projectObject.files[fileIndex].fileName;
-		var file = "./codehat_files/" + projectID + "/" + fileName;
+		var file = "./project_files/" + projectID + "/" + fileName;
 
 		if (fs.existsSync(file)) {
 			fs.writeFile(file, projectObject.files[fileIndex].text, function(err) {
@@ -359,7 +359,7 @@ router.get('/:id/file/:fileIndex', function(req, res) {
 // for downloading project .zip file
 router.get('/:id/downloadAll', function(req, res) {
 	var projectID = req.params.id;
-	var projectDir = "./codehat_files/" + projectID + "/";
+	var projectDir = "./project_files/" + projectID + "/";
 
 	User.ProjectSchema.findOne({_id: projectID}, function(err, project) {
 		async.each(project.fileNames, function(fileName, callback) {
@@ -409,7 +409,7 @@ router.get('/:id/htmlPreview/:fileIndex/:fileName', function(req, res) {
 	var projectObject = getCurrentProject(projectID);
 	if (projectObject && projectObject.getFileByName(fileName)) {
 		var file = projectObject.getFileByName(fileName);
-		var filePath = "./codehat_files/" + projectID + "/" + file.fileName;
+		var filePath = "./project_files/" + projectID + "/" + file.fileName;
 
 		if (fs.existsSync(filePath)) {
 			fs.writeFile(filePath, file.text, function(err) {
@@ -430,7 +430,7 @@ var child_process = require('child_process');
 var exec = child_process.exec;
 var spawn = child_process.spawn;
 var fs = require('fs');
-// var folderPath = "./codehat_files/";
+// var folderPath = "./project_files/";
 
 function File(fileName, text, untitledName) {
 	this.fileName = fileName;
@@ -474,7 +474,7 @@ function getCurrentProject(id) {
 function Project(id) {
 	var self = this;
 	this.id = id;
-	this.folderPath = "./codehat_files/" + id + "/";
+	this.folderPath = "./project_files/" + id + "/";
 
 	this.files = [];
 

@@ -109,7 +109,7 @@ $(document).ready(function() {
       toSend.push($(form.find("input[name=emailInput]")[i]).val());
     }
     // console.log(window.location.pathname.split('/')[2]);
-    $.post('/codehat/share', {emailInput: toSend, projectID: window.location.pathname.split('/')[2]}, function(data) {
+    $.post('/projects/share', {emailInput: toSend, projectID: window.location.pathname.split('/')[2]}, function(data) {
       console.log("Data Length: " + data.length);
       if(!data || data.length == 0) {
         console.log("Success");

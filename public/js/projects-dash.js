@@ -28,7 +28,7 @@ function() {
     var form = $(this);
     event.preventDefault();
     console.log('clicked');
-    $.post('/codehat/', {project_name: $(this).find('input').val()}, function(data){
+    $.post('/projects/', {project_name: $(this).find('input').val()}, function(data){
       if(data.auth) {
         window.location.replace(data.url);
       }else{
@@ -126,7 +126,7 @@ function() {
       $('#projects #rename-project input').change(function(){
         var name = $(this).val();
         console.log("Name changed: " + name);
-        $.post('/codehat/change-project-name', {oldName: target.closest('.card').find('.card-footer .project-name').text().trim(), newName: name}, function(data) {
+        $.post('/projects/change-project-name', {oldName: target.closest('.card').find('.card-footer .project-name').text().trim(), newName: name}, function(data) {
           console.log("Server: " + data.message);
         });
       });
@@ -171,7 +171,7 @@ function() {
         defaultContextMenu.find('a').last().toggleClass('hide');
       }else if(target.is(defaultContextMenu.find('button'))) {
         event.preventDefault();
-        $.post('/codehat/', {project_name: defaultContextMenu.find('input').val()}, function(data){
+        $.post('/projects/', {project_name: defaultContextMenu.find('input').val()}, function(data){
           if(data.auth) {
             window.location.replace(data.url);
           }else{

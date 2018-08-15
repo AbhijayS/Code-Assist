@@ -5,7 +5,7 @@
 # Dev use node install for setup
 node_modules
 
-# CodeHat Project Files
-codehat_files
+# Project Files
+project_files
 
 package-lock.json

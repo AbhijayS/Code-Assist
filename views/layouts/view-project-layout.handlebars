@@ -6,13 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link href="https://fonts.googleapis.com/css?family=Nunito:300,300i,400,700" rel="stylesheet">
 
-    <link rel="stylesheet" type="text/css" href="/css/codehat.css">
+    <link rel="stylesheet" type="text/css" href="/css/projects.css">
 
     <!-- Project Files Layout -->
-    <link rel="stylesheet" href="/codehat/ace-collab-ext/ace-collab-ext.css"/>
-    <script src="/codehat/ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
-    <script src="/codehat/ace-builds/src-noconflict/ext-modelist.js"></script>
-    <script src="/codehat/ace-collab-ext/umd/ace-collab-ext.js" type="text/javascript" charset="utf-8"></script>
+    <link rel="stylesheet" href="/projects/ace-collab-ext/ace-collab-ext.css"/>
+    <script src="/projects/ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/projects/ace-builds/src-noconflict/ext-modelist.js"></script>
+    <script src="/projects/ace-collab-ext/umd/ace-collab-ext.js" type="text/javascript" charset="utf-8"></script>
 
 
     <!-- Bootstrap CSS -->
@@ -52,7 +52,7 @@
 
         <li id="chat-btn" class="list-group-item"><i class="fas fa-comments"></i></li>
         <li id="settings-btn" class="list-group-item"><i class="fas fa-sliders-h"></i></li>
-        <a href="/codehat"><li id="exit-btn" class="list-group-item"><i class="fas fa-sign-out-alt"></i></li></a>
+        <a href="/projects"><li id="exit-btn" class="list-group-item"><i class="fas fa-sign-out-alt"></i></li></a>
       </ul>
     </div>
     {{/unless}}
@@ -137,10 +137,10 @@
       layout.resizeAll();
     </script>
 
-    <script src="/codehat/script.js"></script>
+    <script src="/projects/script.js"></script>
     {{#unless isThumbnail}}
-    <script src="/js/codehat-project.js"></script>
-    <script src="/js/codehat-videocall.js"></script>
+    <script src="/js/view-project.js"></script>
+    <script src="/js/projects-videocall.js"></script>
     {{/unless}}
   </body>
 </html>

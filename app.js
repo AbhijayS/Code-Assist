@@ -22,7 +22,7 @@ var server = app.listen(app.get('port'), function(){
   // console.log('Server started on port '+app.get('port'));
 });
 
-// socket.io initialized to be used in codehat.js, index.js
+// socket.io initialized to be used in projects.js, index.js
 var socket = require('socket.io');
 var io = socket(server);
 
@@ -30,7 +30,7 @@ module.exports.io = io;
 var routes = require('./routes/index');
 var com = require('./routes/community');
 var men = require('./routes/mentor');
-var codehat = require('./routes/codehat');
+var projects = require('./routes/projects');
 
 app.use(yes_https());
 
@@ -85,8 +85,8 @@ app.use('/', routes);
 app.use('/community', com);
 app.use('/mentor', men);
 
-app.use('/codehat', codehat);
-// app.use('/codehat/', toSlash('/codehat/'));
+app.use('/projects', projects);
+// app.use('/projects/', toSlash('/projects/'));
 
 app.use(function(req, res, next){
   res.status(404).render('_404.handlebars', {layout: 'dashboard-layout'});

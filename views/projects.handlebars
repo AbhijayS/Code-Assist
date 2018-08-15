@@ -5,13 +5,13 @@
       <hr>
       <div class="flex-container">
         {{#each projects}}
-        <a class="card-link" href="/codehat/{{this._id}}/" style="text-decoration: none;">
+        <a class="card-link" href="/projects/{{this._id}}/" style="text-decoration: none;">
           <div class="card">
             <div class="card-body text-center">
               <div class="thumbnailLetter">{{this.thumbnail}}</div>
               <div class="thumbnail-container">
                 <div class="thumbnail">
-                 <iframe src="/codehat/{{this._id}}/?thumbnail=true" frameborder="0" onload="this.style.opacity = 1"></iframe>
+                 <iframe src="/projects/{{this._id}}/?thumbnail=true" frameborder="0" onload="this.style.opacity = 1"></iframe>
                 </div>
               </div>
             </div>
@@ -37,7 +37,7 @@
     </div>
   </div>
 {{else}}
-  <div id="codehat-start" class="container px-5 text-center" style="user-select: none;">
+  <div id="projects-start" class="container px-5 text-center" style="user-select: none;">
     <h1 class="display-4 text-secondary">Welcome to Projects</h1>
     <hr>
     <br>
