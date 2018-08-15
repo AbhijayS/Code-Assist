@@ -170,10 +170,10 @@ router.post('/share', function(req, res){
 						console.log("sharing with: " + user.email);
 						const output = `
 						<p>Hi ${user.username},</p>
-						<p>You have been invited to a CodeHat project</p>
+						<p>You have been invited to a project</p>
 
-						<h3><a href="http://localhost:8080/codehat/invite/${e_link}">Accept invitation</a></h3>
-						<!-- <h3><a href="https://codeassist.org/codehat/invite/${e_link}">Accept invitation</a></h3> -->
+						<h3><a href="http://localhost:8080/projects/invite/${e_link}">Accept invitation</a></h3>
+						<!-- <h3><a href="https://codeassist.org/projects/invite/${e_link}">Accept invitation</a></h3> -->
 						`;
 						const msg = {
 							to: user.email,
@@ -221,7 +221,7 @@ router.get('/invite/:projectID/:randomID', function(req, res){
 						project.save(function(err) {
 							if(err) throw err;
 
-							res.redirect("/codehat/" + projectID + "/");
+							res.redirect("/projects/" + projectID + "/");
 						});
 
 					}
@@ -229,11 +229,11 @@ router.get('/invite/:projectID/:randomID', function(req, res){
 			});
 
 		} else {
-			res.redirect("/codehat/" + projectID + "/");
+			res.redirect("/projects/" + projectID + "/");
 		}
 	} else {
 		req.flash('origin');
-		req.flash('origin', '/codehat/invite/' + e_link);
+		req.flash('origin', '/projects/invite/' + e_link);
 		res.redirect("/login");
 	}
 });
@@ -259,7 +259,7 @@ router.get('/:id', function(req, res) {
 				}
 				// console.log(userAccessLevel);
 				if (userAccessLevel != 0) {
-					console.log("user connecting to codehat project with access level "+userAccessLevel);
+					console.log("user connecting to project with access level "+userAccessLevel);
 
 					if (!projectActive(projectID)){
 						// currentProjects.push(new Project(project._id, project.text));
@@ -281,14 +281,14 @@ router.get('/:id', function(req, res) {
 						res.render('view-project', {layout: 'view-project-layout', isThumbnail: isThumbnail, namespace: '/' + projectID, clearance:userAccessLevel, isNew: projectStatus, project: project, users: project.usersWithAccess, owner: project.owner, isowner: project.owner.id == req.user.id ? true : false});
 					})
 				} else {
-					res.redirect('/codehat');
+					res.redirect('/projects');
 				}
 			} else {
-				res.redirect('/codehat');
+				res.redirect('/projects');
 			}
 		}else {
 			req.flash('origin');
-			req.flash('origin', '/codehat/'+req.params.id);
+			req.flash('origin', '/projects/'+req.params.id);
 			res.redirect("/login");
 		}
 	});
@@ -317,7 +317,7 @@ router.post('/:id/delete', function(req, res) {
 		if(req.user && project) {
 			if(project.name == projectName) {
 				data.auth = true;
-				data.url = '/codehat';
+				data.url = '/projects';
 				User.ProjectSchema.deleteOne({_id: projectID}, function (err) {
 				  if (err) throw err;
 					console.log("Project deleted");
@@ -326,7 +326,7 @@ router.post('/:id/delete', function(req, res) {
 		}else{
 			data.url = '/login';
 			req.flash('origin');
-			req.flash('origin', '/codehat/'+projectID);
+			req.flash('origin', '/projects/'+projectID);
 		}
 		res.send(data);
 	});
@@ -553,7 +553,7 @@ function Project(id) {
 
 
 	this.nsp.on('connection', function connection(socket) {
-		console.log("new codehat connection");
+		console.log("new projects connection");
 		socket.emit("socketID", socket.id);
 		socket.emit("files", self.files);
 
@@ -868,7 +868,7 @@ function Project(id) {
 					exec('javac "' + file.fileName, {cwd: self.folderPath}, function(error, stdout, stderr) {
 
 						if (error) {
-							console.log("Codehat - Compile Error Given");
+							console.log("Projects - Compile Error Given");
 							console.log(stderr.replace(/\n$/, "")); //regex gets rid of newline character
 
 							self.output = stderr;
@@ -933,7 +933,7 @@ function Project(id) {
 					exec('g++ "' + file.fileName, {cwd: self.folderPath}, function(error, stdout, stderr) {
 
 						if (error) {
-							console.log("Codehat - Compile Error Given");
+							console.log("Projects - Compile Error Given");
 							console.log(stderr.replace(/\n$/, "")); //regex gets rid of newline character
 
 							self.output = stderr;

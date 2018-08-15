@@ -20,9 +20,9 @@
     <a href="/mentor/post/edit/{{post._id}}"><i class="fas fa-pencil-alt"></i> Edit</a>
     {{/if}}
 
-    <button type="button" class="d-none d-md-block btn btn-info btn-lg float-right" id="start-codehat"><i class="fas fa-code-branch"></i> Create Project</button>
+    <button type="button" class="d-none d-md-block btn btn-info btn-lg float-right" id="start-project"><i class="fas fa-code-branch"></i> Create Project</button>
 
-    <button type="button" class="d-md-none btn btn-info float-right" id="start-codehat"><i class="fas fa-code-branch"></i> Create Project</button>
+    <button type="button" class="d-md-none btn btn-info float-right" id="start-project"><i class="fas fa-code-branch"></i> Create Project</button>
 
   </div>
 </div>
@@ -232,16 +232,16 @@
         });
       });
 
-      $('#start-codehat').on('click', function(event) {
+      $('#start-project').on('click', function(event) {
         event.preventDefault();
         var stringID = window.location.pathname.split('/');
         stringID = stringID[stringID.length-1];
 
-        $.post('/codehat/' + stringID + '/start-codehat', {postID: stringID}, function(){
-          window.location.replace("http://" + window.location.host + "/codehat");
+        $.post('/projects/' + stringID + '/start-project', {postID: stringID}, function(){
+          window.location.replace("http://" + window.location.host + "/projects");
         });
       });
-      
+
     });
   };
 </script>
