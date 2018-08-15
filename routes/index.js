@@ -28,7 +28,7 @@ var saltRounds=10;
 const safe_chars = 50;
 
 router.get('/plans', function(req, res){
-    res.render('plans', {layout: 'dashboard-layout'});
+    res.render('plans', {layout: 'dashboard-layout', hideGoPremiumBtn: true});
 });
 
 // Get current user
