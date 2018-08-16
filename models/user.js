@@ -101,12 +101,13 @@ var ProjectSchema = new Schema({
 	thumbnail: String,
 	date_created: {type: Date, default: Date.now},
 	last_modified: {type: Date, default: Date.now},
+
 	owner: {
 		type: Schema.Types.ObjectId,
 		ref: 'UserSchema'
 	},
 
-	usersWithAccess: [{ // Users including the owner ==> Level 0: View; Level 1: Edit; Level 2: Owner
+	usersWithAccess: [{ // Users including the owner ==> Level 0: Unauthorized; Level 1: Edit; Level 2: Owner
 		type: Schema.Types.ObjectId,
 		ref: 'UserSchema'
 	}],
@@ -125,10 +126,10 @@ var ProjectSchema = new Schema({
 		ref: 'UserSchema'
 	},
 
-	status: {type: String, default: "new"} // new, using, unused
+	invitationPending: false,
+	mentor_invitation_secret: String,
 
-	// description: String,
-	// name: String,
+	status: {type: String, default: "new"} // new, using, unused
 });
 
 // Post Schema
@@ -390,8 +391,22 @@ module.exports.updateRank = function(user) {
 	})
 };
 
-module.exports.emailAllMentors = function(msg) {
+module.exports.emailAllMentors = function(subject, msg) {
+	var meta = {
+		from: `Code Assist <${process.env.SENDER_EMAIL}>`,
+		subject: subject,
+		html: msg
+	};
 
+	User.find({title: "mentor"}, function(err, mentors) {
+		console.log("Emailing", mentors.length, "mentors for:", subject);
+		for (var i = 0; i < mentors.length; i++) {
+			var mentor = mentors[i];
+			meta.to = mentor.email;
+			sgMail.send(meta);
+		}
+	});
+	return;
 };
 /*
 ==============================

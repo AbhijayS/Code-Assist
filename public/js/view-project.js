@@ -146,6 +146,14 @@ $(document).ready(function() {
 
   });
 
+  $('#invite-mentor').submit(function(event) {
+    event.preventDefault();
+    $.post(window.location.pathname+'invite-mentor', function(data) {
+      console.log(data);
+      window.location.replace("http://"+window.location.host+data.url);
+    });
+  })
+
   $("#settings #change-project-name").change(function() {
     var input_field = $(this);
     $.post(window.location.pathname+'/change-project-name', {newName: $(this).val()}, function(data) {
