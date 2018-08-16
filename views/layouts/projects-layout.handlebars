@@ -50,7 +50,7 @@
               <div class="row">
                 <div class="col-12">
                   <div class="form-group">
-                    <input type="text" class="form-control" name="project_name" id="project_name" {{#if expanded}}value="{{expanded}}"{{/if}} placeholder="Project Name" required autofocus autocomplete="off">
+                    <input type="text" class="form-control" maxlength="30" name="project_name" id="project_name" {{#if expanded}}value="{{expanded}}"{{/if}} placeholder="Project Name" required autofocus autocomplete="off">
                     <div class="text-light invalid-feedback">
                       Project with this name already exists
                     </div>
