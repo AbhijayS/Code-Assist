@@ -21,7 +21,7 @@ var htmlStarter = `<!DOCTYPE html>
 	<title></title>
 </head>
 <body>
-	
+
 </body>
 </html>`;
 
@@ -103,6 +103,7 @@ function addFile(fileName, text) {
 	editorSessions.push(new EditorSession(ace.createEditSession(text, mode)));
 
 	var sessionIndex = editorSessions.length-1;
+  editorSessions[sessionIndex].session.setUseWrapMode(true);
 	$("#code-editor .nav-item .close").eq(sessionIndex).click(function() {
 		var fileIndex = $(".close").index($(this));
 		if(confirm("Are you sure you want to delete this file?")) {
@@ -131,7 +132,7 @@ function addFile(fileName, text) {
 		editorSessions[sessionIndex].session.selection.on('changeSelection', function(e) {
 			var fileIndex = getSessionIndex(editor.session);
 			socket.emit("selectionChange", editor.selection.getRange(), fileIndex);
-		});	
+		});
 	}
 
 	if (editorSessions.length == 1) {
@@ -386,6 +387,7 @@ function updateHtmlPreviewWindow(fileIndex) {
 	} else {
 		$("#previewContainer").hide();
 	}
+  editor.resize();
 }
 
 function runProgram() {
