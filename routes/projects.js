@@ -429,23 +429,48 @@ router.get('/:id/file/:fileIndex', function(req, res) {
 	var projectID = req.params.id;
 	var fileIndex = req.params.fileIndex;
 
-	var projectObject = getCurrentProject(projectID);
-	if (projectObject && projectObject.files[fileIndex] && projectObject.files[fileIndex].fileName) {
-		var fileName = projectObject.files[fileIndex].fileName;
-		var file = "./project_files/" + projectID + "/" + fileName;
+	if(req.user) {
+		User.ProjectSchema.findOne({_id: projectID}).populate(['usersWithAccess', 'owner']).exec(function(err, project) {
+			if (project) {
+				// Check if user has access to project
+				var userAccessLevel = 0;
+				for (var i = 0; i < project.usersWithAccess.length; i++) {
+					if (project.usersWithAccess[i].id === req.user.id)
+						userAccessLevel = 1;
+				}
 
-		if (fs.existsSync(file)) {
-			fs.writeFile(file, projectObject.files[fileIndex].text, function(err) {
-				if (err)
-					console.log(err);
+				if (req.user._id.equals(project.owner.id)) {
+					userAccessLevel = 2;
+				}
 
-				res.download(file);
-			});
-		} else {
-			res.end();
-		}
+				if (userAccessLevel != 0) {
+					var projectObject = getCurrentProject(projectID);
+					if (projectObject && projectObject.files[fileIndex] && projectObject.files[fileIndex].fileName) {
+						var fileName = projectObject.files[fileIndex].fileName;
+						var file = "./project_files/" + projectID + "/" + fileName;
+
+						if (fs.existsSync(file)) {
+							fs.writeFile(file, projectObject.files[fileIndex].text, function(err) {
+								if (err)
+								console.log(err);
+
+								res.download(file);
+							});
+						} else {
+							res.end();
+						}
+					} else {
+						res.end();
+					}
+				} else {
+					res.redirect("/projects");
+				}
+			}
+		});
 	} else {
-		res.end();
+		req.flash('origin');
+		req.flash('origin', `/projects/${projectID}/file/${fileIndex}`);
+		res.redirect("/login");
 	}
 });
 
@@ -454,25 +479,47 @@ router.get('/:id/downloadAll', function(req, res) {
 	var projectID = req.params.id;
 	var projectDir = "./project_files/" + projectID + "/";
 
-	User.ProjectSchema.findOne({_id: projectID}, function(err, project) {
-		async.each(project.fileNames, function(fileName, callback) {
-			if (fs.existsSync(projectDir + fileName)) {
-				fs.readFile(projectDir + fileName, {encoding: 'utf-8'}, function(err, text) {
-					if (err) {
-						console.log(err);
-					}
+	if(req.user) {
+		User.ProjectSchema.findOne({_id: projectID}).populate(['usersWithAccess', 'owner']).exec(function(err, project) {
+			if (project) {
+				// Check if user has access to project
+				var userAccessLevel = 0;
+				for (var i = 0; i < project.usersWithAccess.length; i++) {
+					if (project.usersWithAccess[i].id === req.user.id)
+						userAccessLevel = 1;
+				}
 
-					zip.file(fileName, text);
-					callback();
-				});
+				if (req.user._id.equals(project.owner.id)) {
+					userAccessLevel = 2;
+				}
+
+				if (userAccessLevel != 0) {
+					async.each(project.fileNames, function(fileName, callback) {
+						if (fs.existsSync(projectDir + fileName)) {
+							fs.readFile(projectDir + fileName, {encoding: 'utf-8'}, function(err, text) {
+								if (err) {
+									console.log(err);
+								}
+
+								zip.file(fileName, text);
+								callback();
+							});
+						}
+					}, function() {
+						var data = zip.generate({base64: false, compression:'DEFLATE'});
+						res.set('Content-Disposition', 'attachment; filename="Project_Files.zip"');
+						res.end(data, 'binary')	;
+					});
+				} else {
+					res.redirect("/projects");
+				}
 			}
-		}, function() {
-			var data = zip.generate({base64: false, compression:'DEFLATE'});
-			res.set('Content-Disposition', 'attachment; filename="Project_Files.zip"');
-			res.end(data, 'binary')	;
 		});
-	});
-
+	} else {
+		req.flash('origin');
+		req.flash('origin', `/projects/${projectID}/downloadAll`);
+		res.redirect("/login");
+	}
 });
 
 // to host html file previews

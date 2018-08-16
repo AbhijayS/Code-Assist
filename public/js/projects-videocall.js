@@ -98,6 +98,7 @@ function joinCall() {
 }
 
 $("#hangUp").click(function() {
+	easyrtc.closeLocalMediaStream();
 	easyrtc.disconnect();
 	selfEasyrtcid = "";
 	connected = false;

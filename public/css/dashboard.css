@@ -161,6 +161,10 @@ Community Post Page (community-post.handlebars)
   line-height: 1.9;
 }
 
+.transparentBack {
+  mix-blend-mode: multiply;
+}
+
 /*
 ========================================
 Community Post Page (community-post.handlebars)
