@@ -193,85 +193,75 @@ router.get('/file/:fileID', (req, res) => {
 
 /* Chris this needs to get updated */
 router.post('/post', upload.array('file'), function(req, res) {
-  var question = req.body.question;
-  var description = req.body.description;
-  var author = req.user;
-	var prog_lang = req.body.programming;
-  var authorid=req.user._id;
-  var questionInvalid = false;
-  var descriptionInvalid = false;
+	var data = {
+		auth: false
+		// url
+		// questionInvalid
+	};
 
-  if (question.length == 0)
-    questionInvalid = true;
+	if(req.user) {
+		var question = req.body.question;
+		var description = req.body.description;
+		var author = req.user;
+		var prog_lang = req.body.programming;
+		var authorid=req.user._id;
+		var questionInvalid = false;
+		var descriptionInvalid = false;
 
-  if (JSON.parse(description)[0].insert == "\n") {
-    descriptionInvalid = true;
-  }
+		if (question.trim().split(' ').length < 3) {
+			data.questionInvalid = true;
+			res.send(data);
+		}else{
+			User.CommunitySchema.findOne({}, function(err, community) {
+				var newPost = new User.PostSchema();
+				newPost.question = question;
+				newPost.description = description;
+				newPost.author = author;
+				newPost.authorid=authorid;
+				newPost.prog_lang = prog_lang;
 
-  // console.log("description: " + description);
-  if (questionInvalid || descriptionInvalid) {
-    var data = {
-      questionInvalid: questionInvalid,
-      descriptionInvalid: descriptionInvalid
-    }
-    res.send(data);
-    return;
-  }
+				for (var i = 0; i < req.files.length; i++) {
+					var newFileRef = new User.FileRefSchema();
+					newFileRef.name = req.files[i].filename;
+					newFileRef.fileID = req.files[i].id;
+					newFileRef.save(function(err) {
+						if(err) throw err;
+						// saved
+					});
+					newPost.files.push(newFileRef);
+				}
 
-  User.CommunitySchema.findOne({}, function(err, community) {
-    var newPost = new User.PostSchema();
-    newPost.question = question;
-    newPost.description = description;
-    newPost.author = author;
-		newPost.authorid=authorid;
-		newPost.prog_lang = prog_lang;
+				newPost.save(function(err) {
+					if(err) throw err;
+					// saved
+				});
 
-    for (var i = 0; i < req.files.length; i++) {
-      // console.log(req.files[i]);
+				community.posts.push(newPost);
+				req.user.posts.push(newPost);
 
-      // new file reference
-      var newFileRef = new User.FileRefSchema();
-      newFileRef.name = req.files[i].filename;
-      newFileRef.fileID = req.files[i].id;
-      newFileRef.save(function(err) {
-        if(err) throw err;
-        // saved
-      });
-      newPost.files.push(newFileRef);
-    }
+				req.user.qualities.assists += 15;
+				User.updateRank(req.user);
 
-		console.log("Programming Language: " + newPost.prog_lang);
+				community.save(function(err) {
+					if(err) throw err;
+					// saved
+					data.auth = true;
+					data.url = "/community/" + newPost._id;
+					res.send(data);
+				});
 
-    newPost.save(function(err) {
-      if(err) throw err;
-      console.log('new post saved');
-    });
+				req.user.save(function(err) {
+					if(err) throw err;
+				});
+			});
+		}
 
-    community.posts.push(newPost);
-    req.user.posts.push(newPost);
-
-		req.user.qualities.assists += 15;
-		User.updateRank(req.user);
-
-    community.save(function(err) {
-      if(err) throw err;
-      console.log("Post Saved");
-      // console.log(community);
-      // console.log('-----------------------------');
-      // console.log('');
-      var data = {
-        questionInvalid: questionInvalid,
-        descriptionInvalid: descriptionInvalid,
-        url: "/community/" + newPost._id
-      }
-      res.send(data);
-
-    });
-
-    req.user.save(function(err) {
-      if(err) throw err;
-    });
-  });
+	}else{
+		req.flash('origin');
+		req.flash('origin', '/community/post');
+		data.url = '/login';
+		res.send(data);
+	}
 });
 
 router.get('/:id', function(req, res) {
@@ -672,7 +662,6 @@ router.get('/post/edit/:id', function(req, res) {
 
 router.post('/post/edit/:id', upload.array('file'), function(req, res) {
 	var postID = req.params.id;
-	console.log("Editing: " + postID);
 	var data = {
 		auth: false
 		// url
@@ -731,7 +720,6 @@ router.post('/post/edit/:id', upload.array('file'), function(req, res) {
 
 
 							for (var i = 0; i < removedFileIds.length; i++) {
-								console.log("removing file: " + removedFileIds[i])
 								post.files.pull({_id: removedFileIds[i]});
 								User.FileRefSchema.findOneAndRemove({_id: removedFileIds[i]}, function(err, fileRef) {
 									gfs.files.remove({_id: fileRef.fileID});
