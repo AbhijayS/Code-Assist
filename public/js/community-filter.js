@@ -167,7 +167,7 @@ window.onload = function() {
 
     updateTimestamps();
     updateRanks();
-    addLikeBtnClickListener();
+    addLikeBtnClickListeners();
   }
 
   $("#getMorePosts").click(function() {
