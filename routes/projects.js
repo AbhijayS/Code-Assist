@@ -284,9 +284,13 @@ router.get('/:id', function(req, res) {
 						projectStatus = false;
 					}
 					console.log("Invitation status: " + project.invitationPending);
+
+					var mentor;
+					if (project.assignedMentor)
+						mentor = (req.user.id == project.assignedMentor.id);
 					project.save(function(err) {
 						if(err) throw err;
-						res.render('view-project', {layout: 'view-project-layout', isThumbnail: isThumbnail, namespace: '/' + projectID, clearance:userAccessLevel, isNew: projectStatus, mentor: (req.user.id == project.assignedMentor.id), popup: req.flash('display-settings'), project: project, users: project.usersWithAccess, owner: project.owner, isowner: project.owner.id == req.user.id ? true : false});
+						res.render('view-project', {layout: 'view-project-layout', isThumbnail: isThumbnail, namespace: '/' + projectID, clearance:userAccessLevel, isNew: projectStatus, mentor: mentor, popup: req.flash('display-settings'), project: project, users: project.usersWithAccess, owner: project.owner, isowner: project.owner.id == req.user.id ? true : false});
 					})
 				} else {
 					res.redirect('/projects');
