@@ -332,7 +332,7 @@ router.post('/like', function(req, res) {
           post.userLikes.push(req.user);
           post.likeCount++;
 
-					if(post.author.id != req.user.author.id) {
+					if(post.author.id != req.user.id) {
 						post.author.qualities.assists += 5;
 						User.updateRank(post.author);
 					}
@@ -340,7 +340,7 @@ router.post('/like', function(req, res) {
           post.userLikes.splice(index, 1);
           post.likeCount--;
 
-					if(post.author.id != req.user.author.id) {
+					if(post.author.id != req.user.id) {
 						post.author.qualities.assists -= 5;
 				    User.updateRank(post.author);
 					}
