@@ -13,6 +13,15 @@ var editor = ace.edit("editor");
 
 var editorSessions = [];
 
+$('#terminal').terminal(function(input) {
+  socket.emit("programInput", input);
+}, {
+  prompt: '> ',
+  greetings: false
+});
+
+var terminal = $('#terminal').terminal();
+
 // var htmlPreviewDoc = $("#htmlPreview").get(0).contentWindow.document;
 
 var htmlStarter = `<!DOCTYPE html>
@@ -42,7 +51,7 @@ var AceRange = ace.require('ace/range').Range;
 
 var applyingChanges = false;
 
-$('#output').val("");
+// $('#output').val("");
 
 $("input:file").change(function() {
 	let file = $(this)[0].files[0];
@@ -306,11 +315,11 @@ function initFileTab(newTab) {
 	});
 }
 
-$("#programInputForm").submit(function(e) {
+/*$("#programInputForm").submit(function(e) {
 	e.preventDefault();
 	socket.emit("programInput", $("#programInput").val());
 	$("#programInput").val("");
-});
+});*/
 
 socket.on("files", function(files) { // only for when client first joins
 	for (var i = 0; i < files.length; i++) {
@@ -397,8 +406,9 @@ function runProgram() {
 	socket.emit("run", fileIndex);
 	$("#loadingWheel").show();
 	$("#run").prop("disabled", true);
-	$('#output').removeClass("outputError");
-	$('#output').val("");
+	// $('#output').removeClass("outputError");
+	// $('#output').val("");
+  terminal.clear();
 
 	if (fileName.split('.').pop() == "html") {
 		reloadIframe();
@@ -408,8 +418,9 @@ function runProgram() {
 socket.on("programRunning", function(fileIndex) {
 	$("#loadingWheel").show();
 	$("#run").prop("disabled", true);
-	$('#output').removeClass("outputError");
-	$('#output').val("");
+	// $('#output').removeClass("outputError");
+	// $('#output').val("");
+  terminal.clear();
 
 	var fileName = $(".fileName").eq(fileIndex).val();
 
@@ -419,24 +430,30 @@ socket.on("programRunning", function(fileIndex) {
 });
 
 socket.on("output", function(text) {
-	$('#output').removeClass("outputError");
-	$('#output').val($('#output').val() + text);
-	$('#output').get(0).scrollTop = $('#output').get(0).scrollHeight;
+  terminal.echo(text);
+	// $('#output').removeClass("outputError");
+	// $('#output').val($('#output').val() + text);
+	// $('#output').get(0).scrollTop = $('#output').get(0).scrollHeight;
 });
 
 socket.on("runFinished", function() {
 	$("#loadingWheel").hide();
 	$("#run").prop("disabled", false);
-	$("#programInput").prop("disabled", true);
+	// $("#programInput").prop("disabled", true);
 });
 
 socket.on("readyForInput", function() {
-	$("#programInput").prop("disabled", false);
+	// $("#programInput").prop("disabled", false);
+});
+
+socket.on("programInput", function(text) {
+	terminal.echo(terminal.get_prompt() + text);
 });
 
 socket.on("outputError", function(text) {
-	$('#output').addClass("outputError");
-	$('#output').val($('#output').val() + text);
+  terminal.error(text);
+	// $('#output').addClass("outputError");
+	// $('#output').val($('#output').val() + text);
 });
 
 

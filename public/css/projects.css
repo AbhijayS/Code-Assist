@@ -136,6 +136,15 @@ html, body {
   overflow: hidden !important;
 }
 
+.ui-layout-south {
+  padding: 0 !important;
+}
+
+#terminal {
+  /* height: calc(100% - 60px); */
+  height: 100%;
+}
+
 #code-editor {
   height: 100%;
 }
@@ -219,10 +228,14 @@ html, body {
 }
 
 #buttons {
-	width: 104px;
+	/* width: 104px;
 	margin: 0 auto;
 	margin-top: 20px;
+  position: relative; */
 	position: relative;
+  width: 100%;
+  text-align: center;
+  margin-top: -50px;
 }
 
 #run {
@@ -237,11 +250,9 @@ button:enabled {
 #loadingWheel {
 	margin: 0 10px;
 	height: 40px;
-    display: inline-block;
-    vertical-align: top;
-
-    position: absolute;
-    left: 100%;
+  display: inline-block;
+  vertical-align: top;
+  position: absolute;
 }
 
 [hidden] {

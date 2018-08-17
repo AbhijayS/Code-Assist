@@ -25,6 +25,9 @@
     <!-- EasyRTC -->
     <link rel="stylesheet" type="text/css" href="/easyrtc/easyrtc.css" />
 
+    <!-- Terminal emulator -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/jquery.terminal/1.19.1/css/jquery.terminal.min.css" rel="stylesheet"/>
+
     <title>Code HAT</title>
   </head>
   <body>
@@ -92,6 +95,8 @@
     <script type="text/javascript" src="/js/jquery-ui.js"></script>
     <script type="text/javascript" src="/js/jquery.layout.js"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.terminal/1.19.1/js/jquery.terminal.min.js"></script>
+
     <!-- EasyRTC -->
     <script type="text/javascript" src="/easyrtc/easyrtc.js"></script>
 
@@ -137,6 +142,9 @@
               }
           },
           south: {
+            size: "25%",
+            minSize: 100,
+            maxSize: "85%",
             onresize: function() {
               editor.resize();
             }

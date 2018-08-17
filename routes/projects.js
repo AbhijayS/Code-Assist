@@ -964,6 +964,7 @@ function Project(id) {
 			if (self.runner) {
 				self.runner.stdin.write(text+"\n");
 				// runner.stdin.end();
+				socket.broadcast.emit("programInput", text);
 			}
 		});
 
