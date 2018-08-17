@@ -142,6 +142,9 @@
               }
           },
           south: {
+            {{#if isThumbnail}}
+              initClosed: true,
+            {{/if}}
             size: "25%",
             minSize: 100,
             maxSize: "85%",
