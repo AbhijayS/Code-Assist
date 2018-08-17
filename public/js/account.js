@@ -69,6 +69,13 @@ window.onload = function(){
     });
   });
 
+  $('#email-checkbox').change(function() {
+    $.post('/update-subscription', {data: JSON.stringify($(this).is(':checked'))}, function(data) {
+      if(data.url)
+        window.location.replace("http://"+window.location.host+url);
+    })
+  })
+
   $('#bio-textarea').change(function() {
     var textBox = $(this);
     $.post('/change-bio', {bio: textBox.val()}, function(data) {

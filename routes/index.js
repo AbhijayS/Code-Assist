@@ -234,10 +234,11 @@ router.post('/dashboard', function(req, res) {
 });
 
 // Register User
-router.post('/register', function(req, res){
+router.post('/register', function(req, res) {
   var username = req.body.username;
   var email = req.body.email;
   var password = req.body.password;
+  var subscribe = (req.body.subscribe == "on") ? true : false;
 
   const regex = /^[a-z][a-z0-9_\.]{2,24}$/i;
   if(!regex.exec(username))
@@ -261,7 +262,8 @@ router.post('/register', function(req, res){
     password: password,
     title: 'user',
     pic: "https://github.com/identicons/"+ username + ".png",
-    profile_url: username + "-" + getRandomInt(2001, 9000)
+    profile_url: username + "-" + getRandomInt(2001, 9000),
+    subscribed: subscribe
   });
 
   try{
@@ -576,6 +578,20 @@ router.post('/email-change', function(req, res) {
         });
       }
     }
+  }else{
+    req.flash('origin');
+    req.flash('origin', '/account');
+    res.send({url: '/login'});
+  }
+});
+
+router.post('/update-subscription', function(req, res) {
+  if(req.user) {
+    req.user.subscribed = JSON.parse(req.body.data);
+    req.user.save(function(err) {
+      if(err) throw err;
+      // saved
+    })
   }else{
     req.flash('origin');
     req.flash('origin', '/account');

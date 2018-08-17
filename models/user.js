@@ -19,7 +19,8 @@ var ChatSchema = new Schema({
 var UserSchema = new Schema({
 
 		membership: {type: String, default: "free"}, // "free", "premium"
-
+		subscribed: false,
+		
 		first: String,
 		last: String,
 
