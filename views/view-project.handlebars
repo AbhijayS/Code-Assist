@@ -117,7 +117,7 @@
 {{#unless isThumbnail}}
 <div id="settings" {{#if isNew}}{{else}}{{#if popup}}{{else}} style="display: none;" {{/if}}{{/if}}>
 	<div id="box" class="mx-auto p-5" style="max-width: 1100px;">
-		{{#unless mentor}}
+		{{#unless ismentor}}
 		<div id="sharing" class="mb-5">
 
 			<h1 class="title mb-4" style="font-weight: 200;">Invite Members to<input id="change-project-name" type="text" class="form-control" value="{{project.name}}" style="
@@ -127,12 +127,9 @@
 						width: auto;
 						font-size: inherit;
 						border: none;
-						width: 250px;
+						/* width: 250px; */
 			" required>
-			<span class="text-secondary lead" style="
-			font-size: 1rem;
-			">
-			(Click to Change)</span></h1>
+			</h1>
 
 			<hr>
 			<div class="container">
@@ -141,12 +138,20 @@
 					<div class="form-group">
 						<div class="row">
 							<div class="col-sm-10 offset-sm-1">
+								{{#if project.assignedMentor}}
+								<div class="alert alert-success" role="alert">
+								  Mentor <strong><a href="/users/profile/{{project.assignedMentor.id}}" target="_blank">@{{project.assignedMentor.username}}</a></strong> has accepted your invitation.
+									<br>
+									Feel free to contact them through the <a href="#chat" id="display-chat"><strong>integrated chat</strong></a>, <a href="mailto:{{project.assignedMentor.email}}" target="_blank"><strong>email</strong></a>, or <a href="/mentor/post" target="_blank"><strong>a mentor post.</strong></a>
+								</div>
+								{{else}}
 								<div class="alert alert-success alert-dismissible fade show invite-mentor" role="alert" {{#if project.assignedMentor}} {{else if project.invitationPending}} {{else}}hidden {{/if}}>
 									<strong><i class="fas fa-paper-plane"></i> Invitations Sent!</strong> Our mentors have been notified and will get back to you shortly!
 									<button type="button" class="close" data-dismiss="alert" aria-label="Close">
 										<span aria-hidden="true">&times;</span>
 									</button>
 								</div>
+								{{/if}}
 								<label for="exampleInputEmail1"><span style="font-weight: bold;">Mentors</span> <span class="badge badge-primary align-top"><i class="fas fa-crown text-warning"></i> Premium Feature</span></label>
 								<div class="input-group mb-3 input-group-lg">
 								  <div class="input-group-prepend">
@@ -252,13 +257,13 @@
 								<td>
 									<p class="text-right">Owner</p>
 								</td>
-								{{#unless mentor}}
+								{{#unless ismentor}}
 								<td></td>
 								{{/unless}}
 							</tr>
 						{{/if}}
 
-						{{#if mentor}}
+						{{#if ismentor}}
 							{{#each users}}
 							<tr>
 								<td>{{this.username}}</td>
@@ -300,7 +305,7 @@
 			<br>
 			<br>
 
-			{{#unless mentor}}
+			{{#unless ismentor}}
 			<!-- DANGER ZONE -->
 			<h1 style="font-weight: 200;">Danger Zone</h1>
 			<hr>

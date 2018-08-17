@@ -41,9 +41,17 @@
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
+
+          {{else}}
+          <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <strong>Welcome!</strong> Please create a new project and then you can invite collaborators to the project.
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
           {{/if}}
 
-          <form class="createNewProject {{#if invite_mentor}}mentor-invite{{/if}}" novalidate>
+          <form class="createNewProject {{#if invite_mentor}}mentor-invite{{else if invite_user}}user-invite{{/if}}" novalidate>
             <div class="container">
               <h3>Create New Project</h3>
               <hr>

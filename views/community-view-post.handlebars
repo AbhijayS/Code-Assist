@@ -190,7 +190,7 @@
 {{#if isowner}}
 <!-- start-projects modal (invite mentors)-->
 <div class="modal fade" id="start-projects-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h3 class="modal-title" id="exampleModalLabel"><i class="fas fa-people-carry"></i> Collaboration = Efficiency 📈</h3>
@@ -347,19 +347,19 @@
       });
     });
 
-    $('#start-project').on('click', function(event) {
+    $('.start-project').on('click', function(event) {
       event.preventDefault();
       // 1 = invite mentor
       // 2 = without mentor
-      var stringID = window.location.pathname.split('/');
-      stringID = stringID[stringID.length-1];
+      var postID = window.location.pathname.split('/');
+      postID = postID[postID.length-1];
 
       if($(this).attr('name') == "mentor")
         var inviteMentor = true;
       else if($(this).attr('name') == "user")
         var inviteUser = true;
 
-      $.post('/projects/' + stringID + '/start-project', {postID: stringID, inviteMentor: inviteMentor, inviteUser: inviteUser}, function(url){
+      $.post('/projects/' + postID + '/start-project', {inviteMentor: inviteMentor, inviteUser: inviteUser}, function(url){
         window.location.replace("http://" + window.location.host + url);
       });
 
