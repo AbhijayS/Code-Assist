@@ -67,6 +67,36 @@ window.onload = function() {
     });
   }
   updateRanks();
+
+  function addLikeBtnClickListeners() {
+    $(".likeBtn").click(function() {
+      if ($(this).hasClass("btn-outline-secondary")) {
+        $(this).addClass("btn-success");
+        $(this).removeClass("btn-outline-secondary");
+
+        var likeCount = Number($(this).find(".likeCount").text());
+        $(this).find(".likeCount").text(likeCount + 1);
+      } else {
+        $(this).addClass("btn-outline-secondary");
+        $(this).removeClass("btn-success");
+
+        var likeCount = Number($(this).find(".likeCount").text());
+        if (likeCount - 1 > 0)
+          $(this).find(".likeCount").text(likeCount - 1);
+        else
+          $(this).find(".likeCount").text("");
+      }
+
+      var id = $(this).parents(".post").attr("id");
+      $.post('/community/like', {type: "post", id: id, postID: id}, function(data) {
+        if (data.url) {
+          window.location.replace(data.url);
+        }
+      });
+    });
+  }
+  addLikeBtnClickListeners();
+
   //
   // function updateQuillContent() {
   //   /* All of the Answers Viewer (Quill) */
@@ -103,6 +133,7 @@ window.onload = function() {
       // console.log(lang);
       var description = postsToAdd[i].descriptionPreview;
       var likeCount = postsToAdd[i].likeCount;
+      var likeBtnClass = postsToAdd[i].liked ? "btn-success" : "btn-outline-secondary";
       if (!likeCount)
         likeCount = "";
 
@@ -112,7 +143,7 @@ window.onload = function() {
       // console.log(timestamp);
 
       var newPost = `
-      <li id="${id}" class="list-group-item lead" style="font-weight: 400;">
+      <li id="${id}" class="list-group-item lead post" style="font-weight: 400;">
 
         <div class="d-flex mb-2" style="font-size: 16px;">
           <a href="/users/profile/${author._id}"><div class="profile-pic" style="background-image: url(${author.pic});"></div></a>
@@ -126,7 +157,7 @@ window.onload = function() {
         <br>
         <p class="breakWord quill-content text-muted">${description}</p>
         <div class="ml-auto text-right">
-          <button class="btn btn-outline-secondary badge-pill p-0 px-2"><span class="badge badge-pill">${likeCount} <i class="far fa-thumbs-up"></i></span></button>
+          <button class="likeBtn btn ${likeBtnClass} badge-pill p-0 px-2"><span class="badge badge-pill"><span class="likeCount">${likeCount}</span> <i class="far fa-thumbs-up"></i></span></button>
           <span class="badge badge-warning badge-pill">${answers} Answers</span>
           <span class="badge badge-primary badge-pill">${lang}</span>
         </div>
@@ -136,6 +167,7 @@ window.onload = function() {
 
     updateTimestamps();
     updateRanks();
+    addLikeBtnClickListeners();
   }
 
   $("#getMorePosts").click(function() {

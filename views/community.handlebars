@@ -82,7 +82,7 @@ clip-path: polygon(7% 85%, 18% 89%, 32% 100%, 0 100%, 0 57%); height: 405px; z-i
     <div id="all-posts">
       {{#each posts}}
 
-        <li id="{{this._id}}" class="list-group-item lead" style="font-weight: 400;">
+        <li id="{{this._id}}" class="list-group-item lead post" style="font-weight: 400;">
 
           <div class="d-flex mb-2" style="font-size: 16px;">
             <a href="/users/profile/{{this.author.id}}"><div class="profile-pic" style="background-image: url({{this.author.pic}});"></div></a>
@@ -97,9 +97,9 @@ clip-path: polygon(7% 85%, 18% 89%, 32% 100%, 0 100%, 0 57%); height: 405px; z-i
           <p class="breakWord quill-content text-muted">{{this.descriptionPreview}}</p>
           <div class="ml-auto text-right">
             {{#if this.userLikes}}
-            <button class="btn btn-outline-secondary badge-pill p-0 px-2"><span class="badge badge-pill">{{this.likeCount}} <i class="far fa-thumbs-up"></i></span></button>
+            <button class="likeBtn btn {{#if this.liked}}btn-success{{else}}btn-outline-secondary{{/if}} badge-pill p-0 px-2"><span class="badge badge-pill"><span class="likeCount">{{this.likeCount}}</span> <i class="far fa-thumbs-up"></i></span></button>
             {{else}}
-            <button class="btn btn-outline-secondary badge-pill p-0 px-2"><span class="badge badge-pill"><i class="far fa-thumbs-up"></i></span></button>
+            <button class="likeBtn btn {{#if this.liked}}btn-success{{else}}btn-outline-secondary{{/if}} badge-pill p-0 px-2"><span class="badge badge-pill"><span class="likeCount"></span> <i class="far fa-thumbs-up"></i></span></button>
             {{/if}}
 
             <span class="badge badge-warning badge-pill">{{this.answers.length}} Answers</span>

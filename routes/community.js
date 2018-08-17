@@ -25,6 +25,7 @@ router.get('/', function(req, res) {
     var posts = community.posts;
 
     addDescriptionPreviews(posts);
+		addLikedProperty(posts, req.user);
 
     var morePosts = false;
     if (posts.length > 0) {
@@ -57,6 +58,18 @@ function addDescriptionPreviews(posts) {
       descriptionPreview = descriptionPreview.substring(0, 200) + "...";
     posts[i].descriptionPreview = descriptionPreview;
   }
+}
+
+function addLikedProperty(posts, reqUser) {
+	if (reqUser) {
+		for (var i = 0; i < posts.length; i++) {
+			var userLikedPost = posts[i].userLikes.some(function(userID) {
+				return userID.equals(reqUser._id);
+			});
+			if (userLikedPost)
+				posts[i].liked = true;
+		}
+	}
 }
 
 router.post('/morePosts', function(req, res) {
@@ -93,12 +106,13 @@ router.post('/morePosts', function(req, res) {
           searchMatch
         ]},
         options: {sort: {'timestamp': -1}, limit: postLimit},
-        select: '_id timestamp author question description prog_lang answers likeCount',
+        select: '_id timestamp author question description prog_lang answers likeCount userLikes',
 				populate: {path: 'author', select: 'qualities.rank username pic'}
       }).lean().exec(function(err, community) {
         var postsToAdd = community.posts;
 
         addDescriptionPreviews(postsToAdd);
+				addLikedProperty(postsToAdd, req.user);
 
         if (postsToAdd.length > 0) {
           User.CommunitySchema.findOne({}).populate({
@@ -515,7 +529,7 @@ router.post('/Search',function(req,res){
       }
     ]},
     options: {sort: {'timestamp': -1}, limit: postLimit},
-    select: '_id timestamp author question description prog_lang answers likeCount',
+    select: '_id timestamp author question description prog_lang answers likeCount userLikes',
 		populate: {path: 'author', select: 'qualities.rank username pic'}
   }).lean().exec(function(err, community) {
 		if (err) console.log(err);
@@ -523,6 +537,7 @@ router.post('/Search',function(req,res){
     var postsToAdd = community.posts;
 
     addDescriptionPreviews(postsToAdd);
+		addLikedProperty(postsToAdd, req.user);
 
     if (postsToAdd.length > 0) {
       User.CommunitySchema.findOne({}).populate({
@@ -593,12 +608,13 @@ router.post('/filter', function(req, res) {
       searchMatch
     ]},
     options: {sort: {'timestamp': -1}, limit: postLimit},
-    select: '_id timestamp author question description prog_lang answers likeCount',
+    select: '_id timestamp author question description prog_lang answers likeCount userLikes',
 		populate: {path: 'author', select: 'qualities.rank username pic'}
   }).lean().exec(function(err, community) {
     var postsToAdd = community.posts;
 
     addDescriptionPreviews(postsToAdd);
+		addLikedProperty(postsToAdd, req.user);
 
     if (postsToAdd.length > 0) {
       User.CommunitySchema.findOne({}).populate({
