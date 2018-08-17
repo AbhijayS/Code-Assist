@@ -25,18 +25,16 @@ function() {
   }
 
   $('.createNewProject').submit(function(event) {
-    var form = $(this);
     event.preventDefault();
-    console.log('clicked');
-    $.post('/projects/', {project_name: $(this).find('input').val()}, function(data){
+    var submitForm = $(this);
+    $.post('/projects/', {project_name: submitForm.find('input').val(), inviteMentor: submitForm.hasClass('mentor-invite'), inviteUser: submitForm.hasClass('user-invite')}, function(data){
       if(data.auth) {
         window.location.replace(data.url);
       }else{
-        if(data.url == '') {
-          // console.log(data.message);
-          form.find('input').toggleClass(data.message);
-        }else {
+        if(data.url) {
           window.location.replace(data.url);
+        }else{
+          submitForm.find('input').toggleClass('is-invalid');
         }
       }
     });

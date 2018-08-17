@@ -27,7 +27,7 @@ var mailchimpInstance   = process.env.MAILCHIMP_SERVER_INSTANCE,
 var saltRounds=10;
 const safe_chars = 50;
 
-router.get('/plans', function(req, res){
+router.get('/plans', function(req, res) {
     res.render('plans', {layout: 'dashboard-layout', hideGoPremiumBtn: true});
 });
 
