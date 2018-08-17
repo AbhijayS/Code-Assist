@@ -26,6 +26,16 @@ router.get('/', function(req, res) {
 
     addDescriptionPreviews(posts);
 
+		if (req.user) {
+			for (var i = 0; i < posts.length; i++) {
+				var userLikedPost = posts[i].userLikes.some(function(userID) {
+					return userID.equals(req.user._id);
+				});
+				if (userLikedPost)
+					posts[i].liked = true;
+			}
+		}
+
     var morePosts = false;
     if (posts.length > 0) {
       User.CommunitySchema.findOne({}).populate({

@@ -230,4 +230,30 @@ window.onload = function() {
       // $('#m').val('');
     });
   });
+
+  $(".likeBtn").click(function() {
+    if ($(this).hasClass("btn-outline-secondary")) {
+      $(this).addClass("btn-success");
+      $(this).removeClass("btn-outline-secondary");
+
+      var likeCount = Number($(this).find(".likeCount").text());
+      $(this).find(".likeCount").text(likeCount + 1);
+    } else {
+      $(this).addClass("btn-outline-secondary");
+      $(this).removeClass("btn-success");
+
+      var likeCount = Number($(this).find(".likeCount").text());
+      if (likeCount - 1 > 0)
+        $(this).find(".likeCount").text(likeCount - 1);
+      else
+        $(this).find(".likeCount").text("");
+    }
+
+    var id = $(this).parents(".post").attr("id");
+    $.post('/community/like', {type: "post", id: id, postID: id}, function(data) {
+      if (data.url) {
+        window.location.replace(data.url);
+      }
+    });
+  });
 };
