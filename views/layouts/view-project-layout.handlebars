@@ -25,7 +25,10 @@
     <!-- EasyRTC -->
     <link rel="stylesheet" type="text/css" href="/easyrtc/easyrtc.css" />
 
-    <title>Code HAT</title>
+    <!-- Terminal emulator -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/jquery.terminal/1.19.1/css/jquery.terminal.min.css" rel="stylesheet"/>
+
+    <title>Project - {{project.name}}</title>
   </head>
   <body>
     <!-- Navbar Template -->
@@ -92,6 +95,8 @@
     <script type="text/javascript" src="/js/jquery-ui.js"></script>
     <script type="text/javascript" src="/js/jquery.layout.js"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.terminal/1.19.1/js/jquery.terminal.min.js"></script>
+
     <!-- EasyRTC -->
     <script type="text/javascript" src="/easyrtc/easyrtc.js"></script>
 
@@ -131,7 +136,21 @@
               initClosed: true,
               size: "25%",
               minSize: 200,
-              maxSize: "70%"
+              maxSize: "70%",
+              onresize: function() {
+                editor.resize();
+              }
+          },
+          south: {
+            {{#if isThumbnail}}
+              initClosed: true,
+            {{/if}}
+            size: "25%",
+            minSize: 100,
+            maxSize: "85%",
+            onresize: function() {
+              editor.resize();
+            }
           }
       });
       layout.resizeAll();
