@@ -1,4 +1,61 @@
 $(document).ready(function() {
+  const bronze = {
+    color: "#d06f10",
+    html: `<i class="fas fa-medal"></i>`
+  };
+  const silver = {
+    color: "#9e9e9e",
+    html: `<i class="fas fa-award"></i>`
+  };
+  const gold = {
+    color: "#ffc107",
+    html: `<i class="fas fa-trophy"></i>`
+  };
+  const platinum = {
+    color: "#007bff",
+    html: `<i class="fas fa-user-tie"></i>`
+  };
+
+  function setElementColor(element, color) {
+    element.css({'color': color});
+  }
+
+  function displayElement(element) {
+    element.show();
+    element.attr('hidden', false);
+  }
+
+  function updateRanks() {
+    $('.prize').each(function() {
+      var text = $(this).text();
+      if(text == "bronze") {
+
+        $(this).html(bronze.html);
+        setElementColor($(this), bronze.color);
+        displayElement($(this));
+
+      }else if(text == "silver"){
+
+        $(this).html(silver.html);
+        setElementColor($(this), silver.color);
+        displayElement($(this));
+
+      }else if(text == "gold") {
+
+        $(this).html(gold.html);
+        setElementColor($(this), gold.color);
+        displayElement($(this));
+
+      }else if(text == "platinum") {
+
+        $(this).html(platinum.html);
+        setElementColor($(this), platinum.color)
+        displayElement($(this));
+
+      }
+    });
+  }
+  updateRanks();
 
   /* socket io */
   $('#group-chat #send-message-form').submit(function(event){
@@ -158,12 +215,17 @@ $(document).ready(function() {
 
   $("#settings #change-project-name").change(function() {
     var input_field = $(this);
-    $.post(window.location.pathname+'/change-project-name', {newName: $(this).val()}, function(data) {
+    console.log("Changing name ...");
+    $.post(window.location.pathname+'change-project-name', {newName: $(this).val()}, function(data) {
       // console.log(input_field.attr('class'));
-      input_field.removeClass();
-      input_field.addClass('form-control');
-      input_field.css({'border' : ''});
-      input_field.addClass(data.message);
+      console.log(data);
+      if(data.auth) {
+        input_field.attr('class', 'form-control is-valid')
+      }else{
+        input_field.attr('class', 'form-control is-invalid');
+        if(data.url)
+          window.location.replace(data.url);
+      }
     });
   });
 

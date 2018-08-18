@@ -484,6 +484,43 @@ router.get('/invite-mentor/:projectid/:secret', function(req, res) {
 	}
 });
 
+router.post('/:id/change-project-name', function(req, res) {
+	var projectID = req.params.id;
+	if(req.user) {
+		User.ProjectSchema.findOne({_id: projectID}, function(err, project) {
+			if(err) throw err;
+			if(project) {
+				var found = project.usersWithAccess.some(function(userID) {
+					return userID.equals(req.user.id);
+				});
+
+				if(project.owner.equals(req.user.id) || found) {
+					var name = req.body.newName;
+					console.log(name.length);
+					if((name.length > 1) && (name.length <= 25) && !(name.includes('/'))) {
+						project.name = name;
+						project.save(function(err) {
+							if(err) throw err;
+							// saved
+							res.send({auth: true});
+						})
+					}else{
+						res.send({auth: false});
+					}
+				}else{
+					res.send({auth: false, url: '/projects/'+projectID+'/'});
+				}
+			}else{
+				res.send({auth: false, url: '/projects/'});
+			}
+		})
+	}else{
+		req.flash('origin');
+		req.flash('origin', '/projects/');
+		res.send({auth: false, url: '/login'});
+	}
+})
+
 router.post('/:id/delete', function(req, res) {
 	var projectID = req.params.id;
 	var projectName = req.body.projectName;
