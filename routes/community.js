@@ -480,7 +480,7 @@ router.post('/:id/answer', function(req, res){
 				var newTimestamp = moment(newAnswer.timestamp);
 				const output = `
 					<p>Hi ${post.author.username},</p>
-					<p>The Community has recently replied to your question:</p>
+					<p>A Community member has recently replied to your question:</p>
 					<h2>New Answer Details</h2>
 					<hr>
 
@@ -489,7 +489,7 @@ router.post('/:id/answer', function(req, res){
 					<h3>Contact details</h3>
 					<ul>
 						<li>Date Replied: ${newTimestamp.format('MMM D')}</li>
-						<li>User's Name: ${req.user.username}</li>
+						<li>User: <a href="http://codeassist.org/users/profile/${req.user._id}">${req.user.username}</a></li>
 					</ul>
 				`;
 				const msg = {
@@ -629,7 +629,7 @@ router.post('/filter', function(req, res) {
     addDescriptionPreviews(postsToAdd);
 		addLikedProperty(postsToAdd, req.user);
 		addIsOwner(postsToAdd, req.user);
-		
+
     if (postsToAdd.length > 0) {
       User.CommunitySchema.findOne({}).populate({
         path: 'posts',

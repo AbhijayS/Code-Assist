@@ -199,6 +199,7 @@ router.post('/share', function(req, res){
 
 										console.log("sharing with: " + user.email);
 										const output = `
+										<img src="http://codeassist.org/images/logo.png">
 										<p>Hi ${user.username},</p>
 										<p><a href="http://codeassist.org/users/profile/${fromUser.id}">${fromUser.username}</a> invited you to a project titled <strong>${project.name}</strong></p>
 
@@ -207,7 +208,7 @@ router.post('/share', function(req, res){
 										const msg = {
 											to: user.email,
 											from: `Code Assist <${process.env.SENDER_EMAIL}>`,
-											subject: "You're invited to a new project",
+											subject: "You've been invited to a new project",
 											html: output
 										};
 										sentEmails.push(email);
