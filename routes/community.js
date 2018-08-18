@@ -26,6 +26,7 @@ router.get('/', function(req, res) {
 
     addDescriptionPreviews(posts);
 		addLikedProperty(posts, req.user);
+		addIsOwner(posts, req.user);
 
     var morePosts = false;
     if (posts.length > 0) {
@@ -72,6 +73,16 @@ function addLikedProperty(posts, reqUser) {
 	}
 }
 
+function addIsOwner(posts, reqUser) {
+	if (reqUser) {
+		for (var i = 0; i < posts.length; i++) {
+			if (posts[i].author._id.equals(reqUser._id)) {
+				posts[i].isOwner = true;
+			}
+		}
+	}
+}
+
 router.post('/morePosts', function(req, res) {
   var lastPostID = req.body.lastPostID;
   var prog_lang = req.body.filter_opt;
@@ -113,6 +124,7 @@ router.post('/morePosts', function(req, res) {
 
         addDescriptionPreviews(postsToAdd);
 				addLikedProperty(postsToAdd, req.user);
+				addIsOwner(postsToAdd, req.user);
 
         if (postsToAdd.length > 0) {
           User.CommunitySchema.findOne({}).populate({
@@ -548,6 +560,7 @@ router.post('/Search',function(req,res){
 
     addDescriptionPreviews(postsToAdd);
 		addLikedProperty(postsToAdd, req.user);
+		addIsOwner(postsToAdd, req.user);
 
     if (postsToAdd.length > 0) {
       User.CommunitySchema.findOne({}).populate({
@@ -625,7 +638,8 @@ router.post('/filter', function(req, res) {
 
     addDescriptionPreviews(postsToAdd);
 		addLikedProperty(postsToAdd, req.user);
-
+		addIsOwner(postsToAdd, req.user);
+		
     if (postsToAdd.length > 0) {
       User.CommunitySchema.findOne({}).populate({
         path: 'posts',

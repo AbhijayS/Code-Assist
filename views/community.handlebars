@@ -83,6 +83,11 @@ clip-path: polygon(7% 85%, 18% 89%, 32% 100%, 0 100%, 0 57%); height: 405px; z-i
       {{#each posts}}
 
         <li id="{{this._id}}" class="list-group-item lead post" style="font-weight: 400;">
+          {{#if this.isOwner}}
+          <div style="position: absolute; top: 5px; right: 5px;">
+            <a href="/community/post/edit/{{this._id}}"><button type="button" name="button" class="utils answer-edit-btn btn btn-outline-primary py-0"><i class="fas fa-pencil-alt"></i></button></a>
+          </div>
+          {{/if}}
 
           <div class="d-flex mb-2" style="font-size: 16px;">
             <a href="/users/profile/{{this.author.id}}"><div class="profile-pic" style="background-image: url({{this.author.pic}});"></div></a>
