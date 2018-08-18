@@ -248,6 +248,7 @@ $(document).ready(function() {
     });
   });
 
+
   $('#display-chat').click(function() {
     $('#settings').hide();
     $('.ui-layout-east .video-chat-view').hide();
@@ -268,6 +269,20 @@ $(document).ready(function() {
     })
   });
 
+  $('.delete-user-btn').click(function() {
+    var btn = $(this);
+    var userID = btn.attr('name');
+    $.post(window.location.pathname+'delete-user', {to: userID}, function(data) {
+      if(data.auth) {
+        btn.closest('.row').remove();
+        window.location.replace(data.url);
+      }else{
+        if(data.url) {
+          window.location.replace(data.url);
+        }
+      }
+    });
+  });
 
   // Block Ctrl-s for people who have a habit of pressing it LOL!!
   $(document).bind('keydown', function(e) {

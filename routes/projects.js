@@ -312,6 +312,56 @@ router.post('/:projectid/transfer-ownership', function(req, res) {
 	}
 });
 
+router.post('/:projectid/delete-user', function(req, res) {
+	if(req.user) {
+		User.ProjectSchema.findOne({_id: req.params.projectid}, function(err, project) {
+			if(err) throw err;
+			if(project) {
+				if(project.owner.equals(req.user.id)) {
+					if(project.usersWithAccess.indexOf(req.body.to) > -1) { // make sure the user exists
+						User.UserSchema.findOne({_id: req.body.to}, function(err, user) {
+							if(err) throw err;
+							if(user) {
+								if(user.projectsWithAccess.indexOf(req.params.projectid) > -1) { // make sure user has project
+									user.projectsWithAccess.splice(user.projectsWithAccess.indexOf(req.params.projectid), 1);
+
+									user.save(function(err) {
+										if(err) throw err;
+										// saved
+									});
+
+									project.usersWithAccess.splice(project.usersWithAccess.indexOf(req.body.to), 1);
+									project.save(function(err) {
+										if(err) throw err;
+										// saved
+										req.flash('display-settings');
+										req.flash('display-settings', true);
+										res.send({auth: true, url: '/projects/'+projectID+'/'});
+									});
+								}else{
+									res.send({auth: false, url: '/projects/'+projectID+'/'});
+								}
+							}else{
+								res.send({auth: false, url: '/projects/'+projectID+'/'});
+							}
+						});
+					}else{
+						res.send({auth: false, url: '/projects/'+projectID+'/'});
+					}
+				}else{
+					res.send({auth: false, url: '/projects/'+projectID+'/'});
+				}
+			}else{
+				res.send({auth: false, url: '/projects/'+projectID+'/'});
+			}
+		});
+	}else{
+		req.flash('origin');
+		req.flash('origin', '/projects/'+projectID+'/');
+		res.send({auth: false, url: '/login'});
+	}
+});
+
 router.get('/:id', function(req, res) {
 	console.log("Project");
 	var isThumbnail = req.query.thumbnail;
