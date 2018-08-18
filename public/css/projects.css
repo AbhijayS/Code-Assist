@@ -87,12 +87,6 @@ nav {
   display: none;
 }
 
-#projects-start {
-  position: fixed;
-  top: 160px;
-  left: 120px;
-}
-
 #sidebar .sidebar-box {
   background: linear-gradient(#009688, #007bff);
   box-shadow: 8px 2px 20px 1px rgba(0,0,0,.14);
