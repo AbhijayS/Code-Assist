@@ -227,90 +227,88 @@
 			<h1 style="font-weight: 200;" id="members">Members with Access</h1>
 			<hr>
 			<div class="container">
-				<table class="mx-auto table" style="overflow-y: scroll; width: 82%;">
-					<!-- <thead>
-						<tr>
-							<th scope="col">#</th>
-							<th scope="col">First</th>
-							<th scope="col">Last</th>
-							<th scope="col">Handle</th>
-						</tr>
-					</thead> -->
-					<tbody>
-						{{#if isowner}}
-							<tr class="bg-light">
-								<td>{{owner.username}}</td>
-								<td>
-									<p class="text-right">Owner</p>
-								</td>
-								<td class="text-right">
-									<div class="dropdown">
-										<button type="button" class="btn btn-primary dropdown-toggle" id="transfer-ownership-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Transfer Ownership</button>
-										{{#if project.usersWithAccess}}
-										  <div class="dropdown-menu" aria-labelledby="transfer-ownership-button">
-													{{#each project.usersWithAccess}}
-											    	<a class="transfer-ownership dropdown-item" href="#" id="{{this.id}}" data-toggle="modal" data-target="#transfer-ownership-modal">{{this.username}}</a>
-													{{/each}}
-										  </div>
-										{{/if}}
+				<div class="jumbotron container w-75 bg-light">
+					{{#if isowner}}
+						<div class="row mb-3">
+							<div class="col-sm-4 offset-sm-2">
+								<div class="d-flex" style="font-size: 16px;">
+									<a href="/users/profile/{{project.owner.id}}" target="_blank"><div class="profile-pic" style="background-image: url({{project.owner.pic}});"></div></a>
+									<div class="ml-2">
+										<p class="pt-4 m-0"><span class="prize" hidden>{{project.owner.qualities.rank}}</span>{{project.owner.username}}</p>
 									</div>
-								</td>
-							</tr>
-						{{else}}
-							<tr>
-								<td>{{owner.username}}</td>
-								<td>
-									<p class="text-right">Owner</p>
-								</td>
-								{{#unless ismentor}}
-								<td></td>
-								{{/unless}}
-							</tr>
-						{{/if}}
+								</div>
+							</div>
 
-						{{#if ismentor}}
-							{{#each users}}
-							<tr>
-								<td>{{this.username}}</td>
-								<td></td>
-							</tr>
-							{{/each}}
-						{{else}}
-							{{#each users}}
-							<tr>
-								<td style="width: 33.33%">{{this.username}}</td>
-								<td style="width: 33.33%">
-									<select class="custom-select" id="inlineFormCustomSelect">
-										<option selected>Choose...</option>
-										<option value="1">One</option>
-										<option value="2">Two</option>
-										<option value="3">Three</option>
-									</select>
-								</td>
-								<td class="text-right" style="width: 33.33%">
-									<button class="btn btn-danger" type="button" name="button">Delete User</button>
+							<div class="col pt-3">
+								<div class="dropdown">
+									<button type="button" class="btn btn-primary dropdown-toggle" id="transfer-ownership-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" {{#unless project.usersWithAccess}}disabled {{/unless}}>Transfer Ownership</button>
+									{{#if project.usersWithAccess}}
+										<div class="dropdown-menu" aria-labelledby="transfer-ownership-button">
+												{{#each project.usersWithAccess}}
+													<a class="transfer-ownership dropdown-item" href="#" id="{{this.id}}" data-toggle="modal" data-target="#transfer-ownership-modal">{{this.username}}</a>
+												{{/each}}
+										</div>
+									{{/if}}
+								</div>
+							</div>
+						</div>
 
-								</td>
-							</tr>
-							{{/each}}
-						{{/if}}
+						{{#each users}}
+						<div class="row mb-3">
+							<div class="col-sm-4 offset-sm-2">
+								<div class="d-flex" style="font-size: 16px;">
+									<a href="/users/profile/{{this.id}}" target="_blank"><div class="profile-pic" style="background-image: url({{this.pic}});"></div></a>
+									<div class="ml-2">
+										<p class="pt-4 m-0"><span class="prize" hidden>{{this.qualities.rank}}</span>{{this.username}}</p>
+									</div>
+								</div>
+							</div>
 
-						<!-- <tr>
-							<td>Jacob</td>
-							<td>Thornton</td>
-							<td>@fat</td>
-						</tr>
-						<tr>
-							<td colspan="2">Larry the Bird</td>
-							<td>@twitter</td>
-						</tr> -->
-					</tbody>
-				</table>
+							<div class="col pt-3">
+								<button class="btn btn-danger" type="button" name="button">Delete User</button>
+							</div>
+						</div>
+						{{/each}}
+
+					{{else}}
+						<div class="row mb-3">
+							<div class="col">
+								<div class="d-flex" style="font-size: 16px; justify-content: center;">
+									<a href="/users/profile/{{project.owner.id}}" target="_blank"><div class="profile-pic" style="background-image: url({{project.owner.pic}});"></div></a>
+									<div class="ml-2">
+										<p class="m-0"><span class="prize" hidden>{{project.owner.qualities.rank}}</span>{{project.owner.username}}</p>
+									</div>
+								</div>
+							</div>
+
+							<div class="col pt-3">
+								<strong>Owner</strong>
+							</div>
+						</div>
+
+						{{#each users}}
+						<div class="row mb-3">
+							<div class="col-sm-4 offset-sm-2">
+								<div class="d-flex" style="font-size: 16px;">
+									<a href="/users/profile/{{this.id}}" target="_blank"><div class="profile-pic" style="background-image: url({{this.pic}});"></div></a>
+									<div class="ml-2">
+										<p class="pt-4 m-0"><span class="prize" hidden>{{this.qualities.rank}}</span>{{this.username}}</p>
+									</div>
+								</div>
+							</div>
+
+							<div class="col pt-3">
+								<button class="btn btn-danger" type="button" name="button">Delete User</button>
+							</div>
+						</div>
+						{{/each}}
+					{{/if}}
+				</div>
 			</div>
 			<br>
 			<br>
 
-			{{#unless ismentor}}
+			{{#if isowner}}
 			<!-- DANGER ZONE -->
 			<h1 style="font-weight: 200;">Danger Zone</h1>
 			<hr>
@@ -327,7 +325,7 @@
 					</div>
 				</div>
 			</div>
-			{{/unless}}
+			{{/if}}
 
 		<!-- </div> -->
 	</div>
