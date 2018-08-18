@@ -104,6 +104,7 @@ $(document).ready(function() {
   $('#share-project').submit(function(event) {
     event.preventDefault();
     var form = $(this);
+    var allEmails = form.find("input[name=emailInput]");
     var toSend = [];
     for(var i = 0; i < form.find("input[name=emailInput]").length; i++) {
       toSend.push($(form.find("input[name=emailInput]")[i]).val());
@@ -114,32 +115,32 @@ $(document).ready(function() {
       if(!data || data.length == 0) {
         console.log("Success");
         var emailsSent = $(`
-        <div id="emailsSent" class="alert alert-success alert-dismissible fade show" role="alert">
-          Email Invitations sent successfully
-          <button type="button" class="close" onclick="$('.alert').alert('close')" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
+          <div class="row">
+            <div class="col-sm-10 offset-sm-1">
+              <div id="emailsSent" class="alert alert-success alert-dismissible fade show" role="alert">
+              Email Invitations sent successfully
+              <button type="button" class="close" onclick="$('.alert').alert('close')" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+              </button>
+              </div>
+            </div>
+          </div>
         `);
-        $('#settings #box').prepend((emailsSent));
-        for(var i = 0; i < form.find("input[name=emailInput]").length; i++) {
-          var temp = form.find("input[name=emailInput]");
-          temp.removeClass();
-          temp.addClass('form-control');
-          temp.addClass("is-valid");
-        }
+        $('#settings #box #share-project').prepend((emailsSent));
+
+        allEmails.removeClass();
+        allEmails.addClass('form-control');
+        allEmails.addClass("is-valid");
 
       }else{
-        for(var i = 0; i < form.find("input[name=emailInput]").length; i++) {
-          var temp = form.find("input[name=emailInput]");
-          temp.removeClass();
-          temp.addClass('form-control');
-          temp.addClass("is-valid");
-        }
+        allEmails.removeClass();
+        allEmails.addClass('form-control');
+        allEmails.addClass("is-valid");
+
         for(var i = 0; i < data.length; i++) {
           // console.log(data[i]);
           var temp = data[i];
-          $(form.find("input[name=emailInput]").get(toSend.indexOf(temp))).addClass('is-invalid');
+          $(allEmails.get(toSend.indexOf(temp))).addClass('is-invalid');
         }
       }
     });

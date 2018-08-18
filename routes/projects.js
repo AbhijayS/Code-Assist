@@ -159,6 +159,8 @@ router.post('/share', function(req, res){
 	console.log("Share post request ----------------")
 	console.log("projectID: " + projectID);
 
+	// sort between emails and usernames
+
 	var failedEmails = [];
 	async.parallel([
 			function(callback) {
