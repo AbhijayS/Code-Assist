@@ -314,6 +314,7 @@ router.post('/:projectid/transfer-ownership', function(req, res) {
 });
 
 router.post('/:projectid/delete-user', function(req, res) {
+	var projectID = req.params.projectid;
 	if(req.user) {
 		User.ProjectSchema.findOne({_id: req.params.projectid}, function(err, project) {
 			if(err) throw err;
