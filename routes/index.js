@@ -261,7 +261,7 @@ router.post('/register', function(req, res) {
     email: email,
     password: password,
     title: 'user',
-    pic: "https://github.com/identicons/"+ username + ".png",
+    pic: "https://github.com/identicons/"+ getRandomInt(0, 9999) + ".png",
     profile_url: username + "-" + getRandomInt(2001, 9000),
     subscribed: subscribe
   });
