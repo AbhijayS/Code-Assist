@@ -16,6 +16,9 @@ var profilePicUpload = require('../database').profilePicUpload;
 var request = require('superagent');
 var server = require('../app').server;
 var socket = require('socket.io');
+var fs = require('fs');
+var handlebars = require('handlebars');
+var emailTemplate = handlebars.compile(fs.readFileSync('./views/email.handlebars', 'utf8'));
 // var io=socket(server);
 var io = require('../app').io;
 const nanoid = require('nanoid');
@@ -165,7 +168,6 @@ router.post('/contact', uploadNoDest.array('file'), function(req, res) {
         console.log('============================================');
 
         const output = `
-          <p>Hi ${mentor.username},</p>
           <p>A user recently left feedback through the contact page.</p>
           <h2>Feedback Details</h2>
           <p><strong>Name:</strong> ${name}</p>
@@ -179,7 +181,11 @@ router.post('/contact', uploadNoDest.array('file'), function(req, res) {
           to: mentor.email,
           from: `Code Assist <${process.env.SENDER_EMAIL}>`,
           subject: 'Code Assist Feedback | ' + subject,
-          html: output,
+          html: emailTemplate({
+            username: mentor.username,
+            text: output,
+            rawHTML: true
+          }),
           attachments: attachments
         };
         sgMail.send(msg);
@@ -751,8 +757,7 @@ router.post('/reset-password',function(req,res){
 
           var resetLink = "http://codeassist.org/forgot_pass/" + user.id + "/" + secret;
           const output = `
-            <p>Hi ${user.username},</p>
-            <p>We are sorry to know that you lost your account. Use this link to reset your password: ${resetLink}.</p>
+            <p>We are sorry to know that you lost your account. Click the button below to reset your password.</p>
             <p>If you don't recognize this activity, please contact Code Assist at contact@codeassist.org and we will try to help resolve the issue.</p>
           `;
 
@@ -760,7 +765,13 @@ router.post('/reset-password',function(req,res){
             to: user.email,
             from: `Code Assist <${process.env.SENDER_EMAIL}>`,
             subject: 'Code Assist Password Recovery Link',
-            html: output,
+            html: emailTemplate({
+              username: user.username,
+              rawHTML: true,
+              text: output,
+              btnText: "Reset Password",
+              btnLink: resetLink
+            })
           };
           sgMail.send(msg);
           res.send({auth: true});

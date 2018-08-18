@@ -8,6 +8,9 @@ var User = require('../models/user');
 var upload = require('../database').upload;
 var uniqid = require('uniqid');
 var mongoose = require('mongoose');
+var fs = require('fs');
+var handlebars = require('handlebars');
+var emailTemplate = handlebars.compile(fs.readFileSync('./views/email.handlebars', 'utf8'));
 
 var zip = new require('node-zip')();
 var easyrtc_server = require('../easyrtc/easyrtc_server_setup');
@@ -198,18 +201,23 @@ router.post('/share', function(req, res){
 										});
 
 										console.log("sharing with: " + user.email);
-										const output = `
-										<img src="http://codeassist.org/images/logo.png">
+/*										const output = `
 										<p>Hi ${user.username},</p>
 										<p><a href="http://codeassist.org/users/profile/${fromUser.id}">${fromUser.username}</a> invited you to a project titled <strong>${project.name}</strong></p>
 
 										<h3><a href="http://codeassist.org/projects/invite/${e_link}">Accept invitation</a></h3>
-										`;
+										`;*/
+
 										const msg = {
 											to: user.email,
 											from: `Code Assist <${process.env.SENDER_EMAIL}>`,
 											subject: "You've been invited to a new project",
-											html: output
+											html: emailTemplate({
+												username: user.username,
+												text: `<a href="http://codeassist.org/users/profile/${fromUser.id}">${fromUser.username}</a> invited you to a project titled <strong>${project.name}</strong>`,
+												btnText: "Accept Invitation",
+												btnLink: `http://codeassist.org/projects/invite/${e_link}`
+											})
 										};
 										sentEmails.push(email);
 										sgMail.send(msg);
@@ -692,7 +700,6 @@ router.get('/:id/htmlPreview/:fileIndex/:fileName', function(req, res) {
 var child_process = require('child_process');
 var exec = child_process.exec;
 var spawn = child_process.spawn;
-var fs = require('fs');
 // var folderPath = "./project_files/";
 
 function File(fileName, text, untitledName) {

@@ -11,6 +11,9 @@ const escapeRegex = require('escape-string-regexp');
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
+var fs = require('fs');
+var handlebars = require('handlebars');
+var emailTemplate = handlebars.compile(fs.readFileSync('./views/email.handlebars', 'utf8'));
 
 var postLimit = 10; // how many posts to show user at a time
 
@@ -478,25 +481,20 @@ router.post('/:id/answer', function(req, res){
 
 			User.UserSchema.findOne({_id: post.author._id}, function(err, user) {
 				var newTimestamp = moment(newAnswer.timestamp);
-				const output = `
-					<p>Hi ${post.author.username},</p>
-					<p>A Community member has recently replied to your question:</p>
-					<h2>New Answer Details</h2>
-					<hr>
-
-					<h3>Link to the <a href="https://codeassist.org/community/${postID}">Answer</a></h3>
-
-					<h3>Contact details</h3>
-					<ul>
-						<li>Date Replied: ${newTimestamp.format('MMM D')}</li>
-						<li>User: <a href="http://codeassist.org/users/profile/${req.user._id}">${req.user.username}</a></li>
-					</ul>
-				`;
+				const text = `
+					<p><a href="http://codeassist.org/users/profile/${req.user._id}">${req.user.username}</a> has recently replied to your question titled, <em>${post.question}</em>.</p>
+				`
 				const msg = {
 					to: user.email,
 					from: `Code Assist <${process.env.SENDER_EMAIL}>`,
 					subject: 'New Answer to Community Post',
-					html: output
+					html: emailTemplate({
+						username: post.author.username,
+						rawHTML: true,
+						text: text,
+						btnText: "View Answer",
+						btnLink: "https://codeassist.org/community/" + postID
+					})
 				};
 
 				sgMail.send(msg);
