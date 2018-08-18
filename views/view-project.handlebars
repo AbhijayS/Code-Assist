@@ -227,14 +227,14 @@
 			<h1 style="font-weight: 200;" id="members">Members with Access</h1>
 			<hr>
 			<div class="container">
-				<div class="jumbotron container w-75 bg-light">
+				<div class="jumbotron container w-75 bg-light" style="max-height: 500px; overflow-y: scroll;">
 					{{#if isowner}}
 						<div class="row mb-3">
 							<div class="col-sm-4 offset-sm-2">
 								<div class="d-flex" style="font-size: 16px;">
 									<a href="/users/profile/{{project.owner.id}}" target="_blank"><div class="profile-pic" style="background-image: url({{project.owner.pic}});"></div></a>
 									<div class="ml-2">
-										<p class="pt-4 m-0"><span class="prize" hidden>{{project.owner.qualities.rank}}</span>{{project.owner.username}}</p>
+										<p class="m-0"><span class="prize" hidden>{{project.owner.qualities.rank}}</span>{{project.owner.username}}</p>
 									</div>
 								</div>
 							</div>
@@ -259,13 +259,13 @@
 								<div class="d-flex" style="font-size: 16px;">
 									<a href="/users/profile/{{this.id}}" target="_blank"><div class="profile-pic" style="background-image: url({{this.pic}});"></div></a>
 									<div class="ml-2">
-										<p class="pt-4 m-0"><span class="prize" hidden>{{this.qualities.rank}}</span>{{this.username}}</p>
+										<p class="m-0"><span class="prize" hidden>{{this.qualities.rank}}</span>{{this.username}}</p>
 									</div>
 								</div>
 							</div>
 
 							<div class="col pt-3">
-								<button class="btn btn-danger" type="button" name="button">Delete User</button>
+								<button class="btn btn-danger delete-user-btn" type="button" name="{{this.id}}" data-toggle="modal" data-target="#delete-user-modal">Delete User <span class="name" hidden>{{this.username}}</span></button>
 							</div>
 						</div>
 						{{/each}}
@@ -276,7 +276,7 @@
 								<div class="d-flex" style="font-size: 16px;">
 									<a href="/users/profile/{{project.owner.id}}" target="_blank"><div class="profile-pic" style="background-image: url({{project.owner.pic}});"></div></a>
 									<div class="ml-2">
-										<p class="pt-4 m-0"><span class="prize" hidden>{{project.owner.qualities.rank}}</span>{{project.owner.username}}</p>
+										<p class="m-0"><span class="prize" hidden>{{project.owner.qualities.rank}}</span>{{project.owner.username}}</p>
 									</div>
 								</div>
 							</div>
@@ -292,13 +292,13 @@
 								<div class="d-flex" style="font-size: 16px;">
 									<a href="/users/profile/{{this.id}}" target="_blank"><div class="profile-pic" style="background-image: url({{this.pic}});"></div></a>
 									<div class="ml-2">
-										<p class="pt-4 m-0"><span class="prize" hidden>{{this.qualities.rank}}</span>{{this.username}}</p>
+										<p class="m-0"><span class="prize" hidden>{{this.qualities.rank}}</span>{{this.username}}</p>
 									</div>
 								</div>
 							</div>
 
 							<div class="col pt-3">
-								<button class="btn btn-danger" type="button" name="button">Delete User</button>
+								<!-- <button class="btn btn-danger" type="button" name="button">Delete User</button> -->
 							</div>
 						</div>
 						{{/each}}
@@ -382,6 +382,29 @@
 				</div>
 				<div class="modal-footer">
 					<button type="submit" class="btn btn-danger btn-block" id="confirm-transfer">Confirm</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="delete-user-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<form id="delete-project-confirm">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel"><b>Remove User Access</b></h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<p>This action will remove the user <strong><span class="recipient"></span></strong> from this project.</p>
+					<p class="text-muted">The user will no longer be able to View or Edit this project.</p>
+				</div>
+				<div class="modal-footer">
+					<button type="submit" class="btn btn-danger btn-block" id="delete-user-confirm">Confirm</button>
 				</div>
 			</div>
 		</form>

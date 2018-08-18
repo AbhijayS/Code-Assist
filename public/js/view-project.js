@@ -122,9 +122,10 @@ $(document).ready(function() {
       var container = $("#box");
       var modal1 = $('#delete-project-modal');
       var modal2 = $('#transfer-ownership-modal');
+      var modal3 = $('#delete-user-modal');
 
       // if the target of the click isn't the container nor a descendant of the container
-      if (!container.is(e.target) && !modal1.is(e.target) && !modal2.is(e.target) && (container.has(e.target).length === 0) && (modal1.has(e.target).length === 0) && (modal2.has(e.target).length === 0))
+      if (!container.is(e.target) && !modal1.is(e.target) && !modal2.is(e.target) && !modal3.is(e.target) && (container.has(e.target).length === 0) && (modal1.has(e.target).length === 0) && (modal2.has(e.target).length === 0) && (modal3.has(e.target).length === 0))
       {
           $('#settings').hide();
       }
@@ -248,6 +249,7 @@ $(document).ready(function() {
     });
   });
 
+
   $('#display-chat').click(function() {
     $('#settings').hide();
     $('.ui-layout-east .video-chat-view').hide();
@@ -268,6 +270,25 @@ $(document).ready(function() {
     })
   });
 
+  $('.delete-user-btn').click(function() {
+    var btn = $(this);
+    var userID = btn.attr('name');
+    var username = btn.find('.name').text();
+    $('#delete-user-modal').find('.recipient').text(username);
+    $('#delete-user-confirm').click(function(event) {
+      event.preventDefault();
+      $.post(window.location.pathname+'delete-user', {to: userID}, function(data) {
+        if(data.auth) {
+          btn.closest('.row').remove();
+          window.location.replace(data.url);
+        }else{
+          if(data.url) {
+            window.location.replace(data.url);
+          }
+        }
+      });
+    })
+  });
 
   // Block Ctrl-s for people who have a habit of pressing it LOL!!
   $(document).bind('keydown', function(e) {
