@@ -134,6 +134,15 @@ window.onload = function() {
       var description = postsToAdd[i].descriptionPreview;
       var likeCount = postsToAdd[i].likeCount;
       var likeBtnClass = postsToAdd[i].liked ? "btn-success" : "btn-outline-secondary";
+      var isOwner = postsToAdd[i].isOwner;
+      var editBtn = "";
+
+      if (isOwner) {
+        editBtn = `<div style="position: absolute; top: 5px; right: 5px;">
+          <a href="/community/post/edit/${id}"><button type="button" name="button" class="utils answer-edit-btn btn btn-outline-primary py-0"><i class="fas fa-pencil-alt"></i></button></a>
+        </div>`;
+      }
+
       if (!likeCount)
         likeCount = "";
 
@@ -144,7 +153,7 @@ window.onload = function() {
 
       var newPost = `
       <li id="${id}" class="list-group-item lead post" style="font-weight: 400;">
-
+        ${editBtn}
         <div class="d-flex mb-2" style="font-size: 16px;">
           <a href="/users/profile/${author._id}"><div class="profile-pic" style="background-image: url(${author.pic});"></div></a>
           <div class="ml-2">
