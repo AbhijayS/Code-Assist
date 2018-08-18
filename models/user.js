@@ -20,7 +20,7 @@ var UserSchema = new Schema({
 
 		membership: {type: String, default: "free"}, // "free", "premium"
 		subscribed: false,
-		
+
 		first: String,
 		last: String,
 
@@ -108,7 +108,7 @@ var ProjectSchema = new Schema({
 		ref: 'UserSchema'
 	},
 
-	usersWithAccess: [{ // Users including the owner ==> Level 0: Unauthorized; Level 1: Edit; Level 2: Owner
+	usersWithAccess: [{ // Doesn't include owner
 		type: Schema.Types.ObjectId,
 		ref: 'UserSchema'
 	}],

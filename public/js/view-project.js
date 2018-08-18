@@ -63,10 +63,11 @@ $(document).ready(function() {
   $(document).mouseup(function(e)
   {
       var container = $("#box");
-      var modal = $('#delete-project-modal');
+      var modal1 = $('#delete-project-modal');
+      var modal2 = $('#transfer-ownership-modal');
 
       // if the target of the click isn't the container nor a descendant of the container
-      if (!container.is(e.target) && !modal.is(e.target) && (container.has(e.target).length === 0) && (modal.has(e.target).length === 0))
+      if (!container.is(e.target) && !modal1.is(e.target) && !modal2.is(e.target) && (container.has(e.target).length === 0) && (modal1.has(e.target).length === 0) && (modal2.has(e.target).length === 0))
       {
           $('#settings').hide();
       }
@@ -191,11 +192,24 @@ $(document).ready(function() {
     $('.ui-layout-east #chat').show();
     if(layout.state.east.isClosed)
       layout.toggle("east");
-  })
+  });
 
-  // Block Ctrl-s for people who have a habit of pressing it
+  $('.transfer-ownership.dropdown-item').click(function() {
+    var name = $(this).text();
+    var userId = $(this).attr('id');
+    $('#transfer-ownership-modal .recipient').text(name);
+    $('#confirm-transfer').click(function(e) {
+      e.preventDefault()
+      $.post(window.location.pathname+'transfer-ownership/', {to: userId}, function(data) {
+        window.location.replace(data.url);
+      })
+    })
+  });
+
+
+  // Block Ctrl-s for people who have a habit of pressing it LOL!!
   $(document).bind('keydown', function(e) {
-    if(e.ctrlKey && (e.which == 83)) {
+    if(e.ctrlKey && ((e.which == 83) || (e.which == 76))) {
       e.preventDefault();
       return false;
     }

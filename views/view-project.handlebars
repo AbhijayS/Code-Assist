@@ -224,7 +224,7 @@
 		{{/unless}}
 
 			<!-- <div id="members"> -->
-			<h1 style="font-weight: 200;">Members with Access</h1>
+			<h1 style="font-weight: 200;" id="members">Members with Access</h1>
 			<hr>
 			<div class="container">
 				<table class="mx-auto table" style="overflow-y: scroll; width: 82%;">
@@ -245,11 +245,11 @@
 								</td>
 								<td class="text-right">
 									<div class="dropdown">
-										<button type="button" class="btn btn-warning dropdown-toggle" id="transfer-ownership-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Transfer Ownership</button>
+										<button type="button" class="btn btn-primary dropdown-toggle" id="transfer-ownership-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Transfer Ownership</button>
 										{{#if project.usersWithAccess}}
 										  <div class="dropdown-menu" aria-labelledby="transfer-ownership-button">
 													{{#each project.usersWithAccess}}
-											    	<a class="dropdown-item" href="#">{{this.username}}</a>
+											    	<a class="transfer-ownership dropdown-item" href="#" id="{{this.id}}" data-toggle="modal" data-target="#transfer-ownership-modal">{{this.username}}</a>
 													{{/each}}
 										  </div>
 										{{/if}}
@@ -366,3 +366,26 @@
 	</div>
 </div>
 {{/unless}}
+
+<!-- Modal -->
+<div class="modal fade" id="transfer-ownership-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document">
+		<form id="delete-project-confirm">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel"><b>Transfer Ownership</b></h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<p>This action will transfer the ownership to <strong><span class="recipient"></span>.</strong></p>
+					<p class="text-muted">You will no longer be an owner of this project.</p>
+				</div>
+				<div class="modal-footer">
+					<button type="submit" class="btn btn-danger btn-block" id="confirm-transfer">Confirm</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>

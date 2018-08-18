@@ -263,7 +263,48 @@ router.get('/invite/:projectID/:randomID', function(req, res){
 	}
 });
 
+router.post('/:projectid/transfer-ownership', function(req, res) {
+	var projectID = req.params.projectid;
+	var recipient = req.body.to;
+
+	if(req.user) {
+		User.ProjectSchema.findOne({_id: projectID}, function(err, project) {
+			if(err) throw err;
+			if(project) {
+				if(project.owner == req.user.id) {
+					var found = project.usersWithAccess.some(function(userID) {
+						return userID.equals(recipient);
+					});
+					if(found) {
+						project.owner = recipient;
+						project.usersWithAccess.splice(project.usersWithAccess.indexOf(recipient), 1);
+						project.usersWithAccess.push(req.user);
+						project.save(function(err) {
+							if(err) throw err;
+							// saved
+							req.flash('display-settings');
+		          req.flash('display-settings', true);
+							res.send({auth: true, url: '/projects/'+projectID+'/'});
+						})
+					}else{
+						res.send({auth: false, url: '/projects/'+projectID+'/'});
+					}
+				}else{
+					res.send({auth: false, url: '/projects/'+projectID+'/'});
+				}
+			}else{
+				res.send({auth: false, url: '/projects/'});
+			}
+		})
+	}else{
+		req.flash('origin');
+		req.flash('origin', '/projects/'+projectID+'/');
+		res.send({auth: false, url: '/login'});
+	}
+});
+
 router.get('/:id', function(req, res) {
+	console.log("Project");
 	var isThumbnail = req.query.thumbnail;
 	// console.log("isThumbnail:", isThumbnail);
 	var projectID = req.params.id;
@@ -278,14 +319,12 @@ router.get('/:id', function(req, res) {
 					console.log("Owner is accessing");
 				}else if (project.assignedMentor && (project.assignedMentor.id == req.user.id)) {
 					userAccessLevel = 1;
-					console.log("Mentor is accessing");
 				}else{
 					for (var i = 0; i < project.usersWithAccess.length; i++) {
 						// console.log(typeof req.user._id);
 						// console.log(typeof project.usersWithAccess[i].id);
 						if (project.usersWithAccess[i].id === req.user.id) {
 							userAccessLevel = 1;
-							console.log("Regular user is accessing");
 							break;
 						}
 					}
@@ -306,7 +345,6 @@ router.get('/:id', function(req, res) {
 					}else{
 						projectStatus = false;
 					}
-					console.log("Invitation status: " + project.invitationPending);
 
 					var mentor;
 					if (project.assignedMentor)
