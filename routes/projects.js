@@ -148,79 +148,88 @@ router.post('/', function(req, res){
 });
 
 router.post('/share', function(req, res){
-	var emails = req.body.emailInput;
 	var projectID = req.body.projectID;
+	if (req.user) {
+		User.UserSchema.findOne({_id: req.user._id}, function(err, fromUser) {
+			User.ProjectSchema.findOne({_id: projectID}, function(err, project) {
+				if (fromUser && project) {
+					var emails = req.body.emailInput;
 
-	// in case only one email given
-	if (!Array.isArray(emails)) {
-		emails = [emails];
-	}
-
-	console.log("Share post request ----------------")
-	console.log("projectID: " + projectID);
-
-	// sort between emails and usernames
-
-	var failedEmails = [];
-	async.parallel([
-			function(callback) {
-				async.each(emails, function(email, checkCallback) {
-					User.UserSchema.findOne({email: email}, function(err, user) {
-						if(err) checkCallback(err);
-						if(!user) {
-							failedEmails.push(email);
-						}
-						checkCallback();
-					});
-				}, function(err) {
-					callback(err);
-				});
-			}
-	],
-	// optional callback
-	function(err) {
-		if(err) throw err;
-		if(failedEmails.length == 0) {
-			var sentEmails = [];
-			async.each(emails, function(email, finalCallback) {
-				User.UserSchema.findOne({email: email}, function(err, user) {
-					if(err) finalCallback(err);
-
-					if(!sentEmails.includes(email)) {
-						var e_link = projectID + "/" + uniqid();
-						user.e_link = e_link;
-						user.save(function(err) {
-							if(err) throw err;
-						});
-
-						console.log("sharing with: " + user.email);
-						const output = `
-						<p>Hi ${user.username},</p>
-						<p>You have been invited to a project</p>
-
-						<h3><a href="http://codeassist.org/projects/invite/${e_link}">Accept invitation</a></h3>
-						`;
-						const msg = {
-							to: user.email,
-							from: `Code Assist <${process.env.SENDER_EMAIL}>`,
-							subject: "You're invited to a new project",
-							html: output
-						};
-						sentEmails.push(email);
-						sgMail.send(msg);
+					// in case only one email given
+					if (!Array.isArray(emails)) {
+						emails = [emails];
 					}
-					finalCallback();
-				});
-			}, function(err) {
-				if(err) throw err;
-				console.log("All Emails sent successfully");
-				res.send([]);
+
+					console.log("Share post request ----------------")
+					console.log("projectID: " + projectID);
+
+					// sort between emails and usernames
+
+					var failedEmails = [];
+					async.parallel([
+						function(callback) {
+							async.each(emails, function(email, checkCallback) {
+								User.UserSchema.findOne({email: email}, function(err, user) {
+									if(err) checkCallback(err);
+									if(!user) {
+										failedEmails.push(email);
+									}
+									checkCallback();
+								});
+							}, function(err) {
+								callback(err);
+							});
+						}
+					],
+					// optional callback
+					function(err) {
+						if(err) throw err;
+						if(failedEmails.length == 0) {
+							var sentEmails = [];
+							async.each(emails, function(email, finalCallback) {
+								User.UserSchema.findOne({email: email}, function(err, user) {
+									if(err) finalCallback(err);
+
+									if(!sentEmails.includes(email)) {
+										var e_link = projectID + "/" + uniqid();
+										user.e_link = e_link;
+										user.save(function(err) {
+											if(err) throw err;
+										});
+
+										console.log("sharing with: " + user.email);
+										const output = `
+										<p>Hi ${user.username},</p>
+										<p><a href="http://codeassist.org/users/profile/${fromUser.id}">${fromUser.username}</a> invited you to a project titled <strong>${project.name}</strong></p>
+
+										<h3><a href="http://codeassist.org/projects/invite/${e_link}">Accept invitation</a></h3>
+										`;
+										const msg = {
+											to: user.email,
+											from: `Code Assist <${process.env.SENDER_EMAIL}>`,
+											subject: "You're invited to a new project",
+											html: output
+										};
+										sentEmails.push(email);
+										sgMail.send(msg);
+									}
+									finalCallback();
+								});
+							}, function(err) {
+								if(err) throw err;
+								console.log("All Emails sent successfully");
+								res.send([]);
+							});
+						}else{
+							console.log("Failed emails: " + failedEmails);
+							res.send(failedEmails);
+						}
+					});
+				}
+
 			});
-		}else{
-			console.log("Failed emails: " + failedEmails);
-			res.send(failedEmails);
-		}
-	});
+		});
+	}
 
 });
 

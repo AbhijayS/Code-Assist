@@ -44,7 +44,7 @@ body {
 
 nav {
   z-index: 6;
-  background-color: #eee;
+  background-color: #f9f9f9;
 }
 
 #sidebar {
@@ -194,9 +194,9 @@ html, body {
 	padding: 0;
 }
 
-.nav-link {
+/* .nav-link {
 	padding-right: 1.5rem !important;
-}
+} */
 /*----------*/
 
 #topBar {
