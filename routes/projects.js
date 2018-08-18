@@ -364,6 +364,40 @@ router.post('/:projectid/delete-user', function(req, res) {
 	}
 });
 
+router.post('/:projectid/leave-project-confirm', function(req, res) {
+	var projectID = req.params.projectid;
+	if(req.user) {
+		User.ProjectSchema.findOne({_id: req.params.projectid}, function(err, project) {
+			if(err) throw err;
+			if(project) {
+				if((project.usersWithAccess.indexOf(req.user.id) > -1) && (req.user.projectsWithAccess.indexOf(projectID) > -1)) { // make sure the user exists
+					project.usersWithAccess.splice(project.usersWithAccess.indexOf(req.user.id), 1);
+					project.save(function(err) {
+						if(err) throw err;
+						// saved
+					});
+
+					req.user.projectsWithAccess.splice(req.user.projectsWithAccess.indexOf(projectID), 1);
+					req.user.save(function(err) {
+						if(err) throw err;
+						// saved
+						res.send({auth: true, url: '/projects/'});
+
+					})
+				}else{
+					res.send({auth: false, url: '/projects/'+projectID+'/'});
+				}
+			}else{
+				res.send({auth: false, url: '/projects/'+projectID+'/'});
+			}
+		});
+	}else{
+		req.flash('origin');
+		req.flash('origin', '/projects/'+projectID+'/');
+		res.send({auth: false, url: '/login'});
+	}
+})
+
 router.get('/:id', function(req, res) {
 	console.log("Project");
 	var isThumbnail = req.query.thumbnail;
