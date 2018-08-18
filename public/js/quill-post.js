@@ -12,14 +12,13 @@ window.onload = function(){
     theme: 'snow'
   });
 
-  $('#submit').on('click', function(event) {
-    event.preventDefault();
+  function editPost() {
     $("#submit").attr("disabled", true);
     $("#postLoading").show();
     var description = JSON.stringify(quillEditor.getContents().ops);
 
     var formData = new FormData();
-/*    for (var i = 0; i < $('input[type=file]')[0].files.length; i++) {
+    /*  for (var i = 0; i < $('input[type=file]')[0].files.length; i++) {
       formData.append('file', $('input[type=file]')[0].files[i]);
     }*/
     for (var i = 0; i < fileList.length; i++) {
@@ -30,26 +29,43 @@ window.onload = function(){
     formData.append('description', description);
 
     $.ajax({
-        url: "/community/post",
-        data: formData,
-        type: 'POST',
-        contentType: false,
-        processData: false,
-        success: function(resData) {
-          $(".alert-danger").hide();
-          if (!resData.questionInvalid && !resData.descriptionInvalid) {
-            window.location.replace(resData.url);
-          } else {
+      url: "/community/post",
+      data: formData,
+      type: 'POST',
+      contentType: false,
+      processData: false,
+      success: function(data) {
+        if(data.auth) {
+          window.location.replace(data.url);
+        }else{
+          if(data.url) {
+            window.location.replace(data.url);
+          }
+
+          if(data.questionInvalid) {
+            console.log("Invalid question");
+            $('#invalid-question').attr('hidden', false);
             $("#postLoading").hide();
             $("#submit").attr("disabled", false);
-            if (resData.questionInvalid)
-              $("#questionInvalid").show();
-            if (resData.descriptionInvalid)
-              $("#descriptionInvalid").show();
           }
         }
+      }
     });
+  };
+
+  $('#save-post').on('submit', function(event) {
+    event.preventDefault();
+    if((quillEditor.getContents().ops).length == 0 || (quillEditor.getContents().ops)[0].insert.trim() == "") {
+      $('#description-warning').modal('show');
+    }else{
+      editPost();
+    }
   });
+
+  $('#no-description-submit').click(function(event) {
+    editPost();
+  });
+
   var fileList = [];
 
   var fileUpload = $("#fileUpload")[0];

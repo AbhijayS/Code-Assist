@@ -39,15 +39,11 @@ clip-path: polygon(7% 85%, 18% 89%, 32% 100%, 0 100%, 0 57%); height: 405px; z-i
   <hr>
   <br>
 
-  <div id="questionInvalid" style="margin-bottom: 2rem; display: none;" class="alert alert-danger">
-    Please enter a <strong>question</strong>
+  <div id="invalid-question" class="alert alert-danger alert-dismissible fade show" role="alert" hidden>
+    <a href="#question"><strong>Invalid Question!</strong></a> The question must be at least 3 words in length.
   </div>
 
-  <div id="descriptionInvalid" style="margin-bottom: 2rem; display: none;" class="alert alert-danger">
-    Please enter a <strong>description</strong>
-  </div>
-
-  <form action="/mentor/send" method="post">
+  <form id="save-post">
     <div class="form-group mb-4">
       <label for="email-choose"><strong>Choose your email</strong></label>
       <select class="form-control" id="email-choose">
@@ -70,7 +66,7 @@ clip-path: polygon(7% 85%, 18% 89%, 32% 100%, 0 100%, 0 57%); height: 405px; z-i
 
     <div class="form-group mb-4">
       <label for="exampleFormControlInput1"><strong>Question Title</strong></label>
-      <input type="text" class="form-control" id="question" maxlength="40" placeholder="" value="{{question}}" autocomplete="off">
+      <input type="text" class="form-control" id="question" maxlength="40" placeholder="" value="{{question}}" autocomplete="off" required>
     </div>
 
     <div class="form-group mb-4">
@@ -88,8 +84,35 @@ clip-path: polygon(7% 85%, 18% 89%, 32% 100%, 0 100%, 0 57%); height: 405px; z-i
       </label>
     </div>
 
-    <button id="submit" class="btn btn-outline-primary btn-lg mt-3 btn-block py-3">Submit Request<img id="postLoading" class="transparentBack ml-2" src="/images/loadingwheel.gif" style="height: 32px; display: none;"></button>
+    <button type="submit" class="btn btn-outline-primary btn-lg mt-3 btn-block py-3">Submit Request<img id="postLoading" class="transparentBack ml-2" src="/images/loadingwheel.gif" style="height: 32px; display: none;"></button>
 
   </form>
 </div>
+
+<!-- Modal -->
+<div class="modal fade" id="description-warning" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h3 class="modal-title" id="exampleModalLabel"><strong class="text-warning">Warning!</strong></h3>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-info" role="alert">
+          <a href="#"><strong>Pro tip!</strong></a> Having a description increases the chances of your question being answered by the community!
+        </div>
+        <strong>Do you really want to continue without a description?</strong>
+      </div>
+      <div class="modal-footer text-right">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Add a description</button>
+
+        <button id="no-description-submit" type="button" class="btn btn-secondary" data-dismiss="modal">Not necessary<img id="postLoading" class="transparentBack ml-2" src="/images/loadingwheel.gif" style="height: 32px; display: none;"></button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script type="text/javascript" src="/js/quill-post.js"></script>
