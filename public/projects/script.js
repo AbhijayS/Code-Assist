@@ -365,7 +365,7 @@ socket.on("renameFile", function(newFileName, fileIndex) {
 	});
 });
 
-$("#run").click(function() {
+$("#run, #htmlRun").click(function() {
 	runProgram();
 });
 
@@ -393,8 +393,12 @@ function updateHtmlPreviewWindow(fileIndex) {
 		}
 
 		$("#previewContainer").show();
+    $("#htmlRun").show();
+    layout.hide("south");
 	} else {
 		$("#previewContainer").hide();
+    $("#htmlRun").hide();
+    layout.show("south");
 	}
   editor.resize();
 }
@@ -405,7 +409,7 @@ function runProgram() {
 
 	socket.emit("run", fileIndex);
 	$("#loadingWheel").show();
-	$("#run").prop("disabled", true);
+	$("#run, #htmlRun").prop("disabled", true);
 	// $('#output').removeClass("outputError");
 	// $('#output').val("");
   terminal.clear();
@@ -417,7 +421,7 @@ function runProgram() {
 
 socket.on("programRunning", function(fileIndex) {
 	$("#loadingWheel").show();
-	$("#run").prop("disabled", true);
+	$("#run, #htmlRun").prop("disabled", true);
 	// $('#output').removeClass("outputError");
 	// $('#output').val("");
   terminal.clear();
@@ -438,7 +442,7 @@ socket.on("output", function(text) {
 
 socket.on("runFinished", function() {
 	$("#loadingWheel").hide();
-	$("#run").prop("disabled", false);
+	$("#run, #htmlRun").prop("disabled", false);
 	// $("#programInput").prop("disabled", true);
 });
 

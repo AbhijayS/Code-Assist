@@ -287,3 +287,9 @@ Pricing page
   color: #343a40 !important;
   font-weight: bold;
 }
+
+@media (min-width: 576px) {
+  #mainContainer {
+    height: 120vh !important;
+  }
+}
