@@ -37,21 +37,28 @@
     </div>
   </div>
 {{else}}
-  <div id="projects-start" class="mt-5 container-fluid text-center pr-5" style="user-select: none;">
-    <h1 class="display-4 text-secondary">Welcome to Projects</h1>
-    <hr>
+  <div id="projects-start" class="mt-5 pt-5 container-fluid text-center pr-5" style="user-select: none; margin-left: 75px;">
+    <h1 class="display-4 text-secondary">Welcome to Projects <i class="fas fa-project-diagram"></i></h1>
+    <!-- <hr> -->
     <br>
 
-    <p class="lead"><span style="text-primary">New to Code Assist? </span>Collaborate on a problem with a mentor or friend today</p>
-    <div class="container">
-      <form class="createNewProject form-inline text-center justify-content-center" novalidate>
-        <div class="form-group">
-          <input type="text" class="mr-1 form-control btn-lg" name="project_name" id="project_name" maxlength="30" placeholder="Project Name" required autocomplete="off">
-          <div class="text-light invalid-feedback">
-            Please choose a username.
-          </div>
+    <div class="container pt-5">
+      <h5 style="font-weight: 400;" class="text-primary mb-3"><span>New to Code Assist? </span>Collaborate on a problem with a mentor or friend today</h5>
 
-          <button type="submit" class="btn btn-outline-success btn-lg"><i class="fas fa-plus"></i><span> Start New Project</span></button>
+      <form class="createNewProject form-inline justify-content-center">
+        <div class="container">
+          <div class="form-group row w-75 mx-auto">
+            <div class="col">
+              <input type="text" class="mr-1 form-control btn-lg w-100" name="project_name" id="project_name" maxlength="25" placeholder="Project Name" autocomplete="off" required>
+              <div class="invalid-feedback text-left">
+                Invalid project name.
+              </div>
+            </div>
+
+            <div class="col">
+              <button type="submit" class="btn btn-primary btn-lg w-100"><i class="fas fa-plus"></i><span> Start New Project</span></button>
+            </div>
+          </div>
         </div>
       </form>
     </div>

@@ -72,82 +72,32 @@ router.post('/', function(req, res){
 	var project_name = req.body.project_name;
 
 	if(req.user) {
-		User.UserSchema.findOne({_id: req.user._id}).populate('projectsWithAccess').exec(function(err, user) {
-			if(user) {
-				var projects = user.projectsWithAccess;
-				for(var i = 0; i < projects.length; i++) {
-					if(projects[i].name.toLowerCase() == project_name.toLowerCase())
-						return res.send({auth: false});
-				}
+		if((project_name.length > 1) && (project_name.length <= 25) && !(project_name.includes('/'))) {
+			var newProject = new User.ProjectSchema();
+			newProject.name = project_name.trim();
+			newProject.owner = req.user._id;
+			newProject.thumbnail = project_name.trim().substring(0, 1);
+			newProject.status = "new";
 
-				var newProject = new User.ProjectSchema();
-				newProject.name = project_name.trim();
-				newProject.owner = req.user._id;
-				newProject.thumbnail = project_name.trim().substring(0, 1);
-				// newProject.usersWithAccess.push(req.user);
-
-				newProject.status = "new";
-
-				newProject.save(function(err) {
+			newProject.save(function(err) {
+				if(err) throw err;
+				// saved
+				req.user.projectsWithAccess.push(newProject._id);
+				req.user.save(function(err) {
 					if(err) throw err;
 					// saved
-
-					user.projectsWithAccess.push(newProject._id);
-
-					user.save(function(err) {
-						if(err) throw err;
-
-						if(req.body.inviteMentor == "true") {
-							console.log("Inviting mentor also ...");
-
-							if(req.user.membership == "premium") {
-								var secret = nanoid(safe_chars);
-
-								// send email to all Mentors
-								const body = `
-								<p>Hi Code Assist Mentors,</p>
-								<p>A user recently requested a mentor session with the details below:</p>
-
-								<ul>
-								<li>Project owner's username: ${req.user.username}</li>
-								<li>Project name: ${newProject.name}</li>
-								<li><a href="http://codeassist.org/projects/invite-mentor/${newProject.id}/${secret}">Accept mentor invitation link</a></li>
-								</ul>
-								`;
-
-								User.emailAllMentors("Invitation to collaborate on a project", body);
-
-								newProject.mentor_invitation_secret = secret;
-								newProject.invitationPending = true;
-								newProject.save(function(err) {
-									if(err) throw err;
-									// saved
-									req.flash('display-settings');
-									req.flash('display-settings', true);
-									res.send({auth: true, url: "/projects/"+newProject.id+"/"});
-								})
-
-							}else{
-								// redirect to plans page
-								res.send({auth: true, url: "/projects/"+newProject.id+"/"}); // temp
-							}
-						}else if(req.body.inviteUser == "true") {
-							req.flash();
-						}else{
-							res.send({auth: true, url: "/projects/"+newProject.id+"/"});
-						}
-					});
+					res.send({auth: true, url: '/projects/'+newProject.id+'/'});
 				});
-
-			}else{
-				return res.send({auth: false, url: "/projects/"});
-			}
-		});
+			});
+		}else{
+			res.send({auth: false});
+		}
 	}else {
 		req.flash('origin');
-		req.flash('origin', '/projects');
+		req.flash('origin', '/projects/');
 		res.send({auth: false, url: "/login"});
 	}
+
 });
 
 router.post('/share', function(req, res){
