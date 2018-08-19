@@ -163,7 +163,7 @@ html, body {
 
 #editorContainer {
   padding: 0;
-  height: calc(100% - 56px);
+  height: calc(100% - 64px);
 }
 
 #editorContainer .row {
