@@ -426,12 +426,12 @@ router.post('/:postID/start-project', function(req, res) {
 			if(post) {
 				req.flash('start-project');
 				req.flash('start-project', post.question);
-
-				req.flash('invite-mentor');
-				req.flash('invite-mentor', req.body.inviteMentor);
-
-				req.flash('invite-user');
-				req.flash('invite-user', req.body.inviteUser);
+				//
+				// req.flash('invite-mentor');
+				// req.flash('invite-mentor', req.body.inviteMentor);
+				//
+				// req.flash('invite-user');
+				// req.flash('invite-user', req.body.inviteUser);
 			}
 			res.send("/projects/");
 		});
@@ -441,56 +441,56 @@ router.post('/:postID/start-project', function(req, res) {
 		res.send("/login/");
 	}
 });
-
-router.post('/:id/invite-mentor', function(req, res) {
-	var projectID = req.params.id;
-	if(req.user) {
-		if(req.user.membership == "premium") {
-			User.ProjectSchema.findOne({_id: projectID}).populate('owner').exec(function(err, project) {
-				if(project) {
-					if(project.owner.id == req.user.id) {
-						var secret = nanoid(safe_chars);
-
-						// send email to all Mentors
-						const body = `
-						<p>Hi Code Assist Mentors,</p>
-						<p>A user recently requested a mentor session with the details below:</p>
-
-						<ul>
-							<li>Project owner's username: ${project.owner.username}</li>
-							<li>Project name: ${project.name}</li>
-							<li><a href="http://codeassist.org/projects/invite-mentor/${projectID}/${secret}">Accept mentor invitation link</a></li>
-						</ul>
-						`;
-
-						User.emailAllMentors("Invitation to collaborate on a project", body);
-
-						project.mentor_invitation_secret = secret;
-						project.invitationPending = true;
-						project.save(function(err) {
-							if(err) throw err;
-							// saved
-							req.flash('display-settings');
-							req.flash('display-settings', true);
-							res.send({auth: true, url: "/projects/"+projectID+"/"});
-						})
-					}else{
-						res.send({auth: false, url: "/projects/"+projectID+"/"});
-					}
-				}else{
-					res.send({auth: false, url: "/projects/"});
-				}
-			});
-		}else{
-			// redirect to plans page
-			res.send({auth: true, url: "/projects/"+projectID+"/"}); // temp
-		}
-	}else{
-		req.flash('origin');
-		req.flash('origin', '/projects/'+req.params.id);
-		res.send({auth: false, url: "/login"});
-	}
-});
+//
+// router.post('/:id/invite-mentor', function(req, res) {
+// 	var projectID = req.params.id;
+// 	if(req.user) {
+// 		if(req.user.membership == "premium") {
+// 			User.ProjectSchema.findOne({_id: projectID}).populate('owner').exec(function(err, project) {
+// 				if(project) {
+// 					if(project.owner.id == req.user.id) {
+// 						var secret = nanoid(safe_chars);
+//
+// 						// send email to all Mentors
+// 						const body = `
+// 						<p>Hi Code Assist Mentors,</p>
+// 						<p>A user recently requested a mentor session with the details below:</p>
+//
+// 						<ul>
+// 							<li>Project owner's username: ${project.owner.username}</li>
+// 							<li>Project name: ${project.name}</li>
+// 							<li><a href="http://codeassist.org/projects/invite-mentor/${projectID}/${secret}">Accept mentor invitation link</a></li>
+// 						</ul>
+// 						`;
+//
+// 						User.emailAllMentors("Invitation to collaborate on a project", body);
+//
+// 						project.mentor_invitation_secret = secret;
+// 						project.invitationPending = true;
+// 						project.save(function(err) {
+// 							if(err) throw err;
+// 							// saved
+// 							req.flash('display-settings');
+// 							req.flash('display-settings', true);
+// 							res.send({auth: true, url: "/projects/"+projectID+"/"});
+// 						})
+// 					}else{
+// 						res.send({auth: false, url: "/projects/"+projectID+"/"});
+// 					}
+// 				}else{
+// 					res.send({auth: false, url: "/projects/"});
+// 				}
+// 			});
+// 		}else{
+// 			// redirect to plans page
+// 			res.send({auth: true, url: "/projects/"+projectID+"/"}); // temp
+// 		}
+// 	}else{
+// 		req.flash('origin');
+// 		req.flash('origin', '/projects/'+req.params.id);
+// 		res.send({auth: false, url: "/login"});
+// 	}
+// });
 
 router.get('/invite-mentor/:projectid/:secret', function(req, res) {
 	var projectID = req.params.projectid;

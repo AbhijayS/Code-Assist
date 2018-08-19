@@ -83,7 +83,7 @@ app.use(function (req, res, next) {
 app.use('/', routes);
 // app.use('/users', users);
 app.use('/community', com);
-app.use('/mentor', men);
+// app.use('/mentor', men);
 
 app.use('/projects', projects);
 // app.use('/projects/', toSlash('/projects/'));

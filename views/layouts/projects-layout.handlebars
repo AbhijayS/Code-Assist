@@ -108,7 +108,7 @@
       <div id="create-project-box" class="sidebar-box"
       {{#if expanded}}style="width: 350px;"{{/if}}>
         <div class="content container">
-          {{#if invite_mentor}}
+          <!-- {{#if invite_mentor}}
           <div class="alert alert-warning alert-dismissible fade show" role="alert">
             <strong>Welcome!</strong> Please create a new project and our mentors will by notified.
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -123,24 +123,24 @@
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          {{/if}}
+          {{/if}} -->
 
-          <form class="createNewProject {{#if invite_mentor}}mentor-invite{{else if invite_user}}user-invite{{/if}}" novalidate>
+          <form class="createNewProject {{#if invite_mentor}}mentor-invite{{else if invite_user}}user-invite{{/if}}">
             <div class="container">
               <h3>Create New Project</h3>
               <hr>
               <div class="row">
                 <div class="col-12">
                   <div class="form-group">
-                    <input type="text" class="form-control" maxlength="30" name="project_name" id="project_name" {{#if expanded}}value="{{expanded}}"{{/if}} placeholder="Project Name" required autofocus autocomplete="off">
+                    <input type="text" class="form-control" maxlength="25" name="project_name" id="project_name" {{#if expanded}}value="{{expanded}}"{{/if}} placeholder="Project Name" required autofocus autocomplete="off">
                     <div class="text-light invalid-feedback">
-                      Project with this name already exists
+                      Invalid project name.
                     </div>
                   </div>
                 </div>
 
                 <div class="col-12">
-                  <button type="submit" class="btn btn-primary btn-block"><i class="fas fa-plus"></i><span> {{#if invite_mentor}}Create and Invite a Mentor{{else}}Start a Project{{/if}}</span></button>
+                  <button type="submit" class="btn btn-teal btn-block"><i class="fas fa-plus"></i><span> {{#if invite_mentor}}Create and Invite a Mentor{{else}}Start a Project{{/if}}</span></button>
                   {{#if invite_mentor}}
                   <a href="" class="btn btn-secondary btn-block"><span>Invite Later</span></a>
                   {{/if}}

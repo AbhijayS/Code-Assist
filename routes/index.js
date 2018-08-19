@@ -59,7 +59,6 @@ router.get('/', function(req, res){
     }else{
       console.log('============================================');
       res.render('index', {layout: 'layout'})
-
     }
 });
 
