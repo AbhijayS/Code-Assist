@@ -123,9 +123,10 @@ $(document).ready(function() {
       var modal1 = $('#delete-project-modal');
       var modal2 = $('#transfer-ownership-modal');
       var modal3 = $('#delete-user-modal');
+      var modal4 = $('#leave-project-modal');
 
       // if the target of the click isn't the container nor a descendant of the container
-      if (!container.is(e.target) && !modal1.is(e.target) && !modal2.is(e.target) && !modal3.is(e.target) && (container.has(e.target).length === 0) && (modal1.has(e.target).length === 0) && (modal2.has(e.target).length === 0) && (modal3.has(e.target).length === 0))
+      if (!container.is(e.target) && !modal1.is(e.target) && !modal2.is(e.target) && !modal3.is(e.target) && !modal4.is(e.target) && (container.has(e.target).length === 0) && (modal1.has(e.target).length === 0) && (modal2.has(e.target).length === 0) && (modal3.has(e.target).length === 0) && (modal4.has(e.target).length === 0))
       {
           $('#settings').hide();
       }
@@ -288,6 +289,13 @@ $(document).ready(function() {
         }
       });
     })
+  });
+
+  $('#leave-project-confirm').click(function(event) {
+    event.preventDefault();
+    $.post(window.location.pathname+'leave-project-confirm', function(data) {
+      window.location.replace(data.url);
+    });
   });
 
   // Block Ctrl-s for people who have a habit of pressing it LOL!!

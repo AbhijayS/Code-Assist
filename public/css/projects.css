@@ -63,7 +63,6 @@ nav {
 
 #sidebar {
   position: fixed;
-  top: 0;
   left: 0;
   width: 75px;
   min-height: 100vh;
@@ -107,7 +106,7 @@ nav {
   position: fixed;
   width: 0px;
   height: 100%;
-  top: 0;
+  top: 65px;
   left: 75px;
   transition: 0.5s;
   opacity: 0.8;
