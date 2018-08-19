@@ -42,10 +42,10 @@
         </div>
 
         {{#if profile.bio}}
-          <div class="text-muted w-100 container" style="font-size: 16px; word-wrap: break-word; user-select: none;">{{profile.bio}}</div>
+          <div class="text-muted w-100 container" style="font-size: 16px; word-wrap: break-word; user-select: text;">{{profile.bio}}</div>
         {{else}}
           {{#if viewing}}
-          <p class="text-secondary text-center" style="font-size: 20px;"><a href="/account#bio-textarea">Add a bio</a></p>
+          <p class="text-secondary text-center" style="font-size: 20px; user-select: text;"><a href="/account#bio-textarea">Add a bio</a></p>
           {{/if}}
         {{/if}}
       </div>
