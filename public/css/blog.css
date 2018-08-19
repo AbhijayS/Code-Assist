@@ -227,3 +227,23 @@ Dashboard
   text-align: center;
   font-style: italic;
 }
+
+.socialMediaIcons {
+  margin-top: 5px;
+  font-size: 30px !important;
+  letter-spacing: 10px;
+}
+
+.footerLinks {
+  margin-top: 15px;
+}
+
+.footerLink {
+  margin: 0 5px;
+  color: #343a40 !important;
+}
+
+.footerHeader {
+  color: #343a40 !important;
+  font-weight: bold;
+}
