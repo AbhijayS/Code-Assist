@@ -163,7 +163,7 @@ html, body {
 
 #editorContainer {
   padding: 0;
-  height: calc(100% - 56px);
+  height: calc(100% - 64px);
 }
 
 #editorContainer .row {
@@ -620,3 +620,23 @@ canvas {
   border-radius: 0 0 3px 3px;
 }
 */
+
+.socialMediaIcons {
+  margin-top: 5px;
+  font-size: 30px !important;
+  letter-spacing: 10px;
+}
+
+.footerLinks {
+  margin-top: 15px;
+}
+
+.footerLink {
+  margin: 0 5px;
+  color: #343a40 !important;
+}
+
+.footerHeader {
+  color: #343a40 !important;
+  font-weight: bold;
+}
