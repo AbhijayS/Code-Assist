@@ -1,0 +1,455 @@
+<style>
+  #answer-editor .ql-editor{
+    min-height: 150px;
+  }
+
+  /* .card .ql-editor {
+    padding-left: 0;
+  } */
+</style>
+
+<div class="jumbotron bg-white jumbotron-title text-left" style="background-color: #e9ecef4f; box-shadow: 0px 3px 6px 0px #4441412b;">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="/community">Community</a></li>
+        <li class="breadcrumb-item active" aria-current="page">View</li>
+      </ol>
+    </nav>
+
+    <h1 class="breakWord">{{post.question}} {{#if post.status.edited}}<span style="font-size: 14px;" class="text-muted">(edited)</span>{{/if}}</h1>
+    <hr>
+    {{#if isowner}}
+    <a href="/community/post/edit/{{post._id}}"><i class="fas fa-pencil-alt"></i> Edit</a>
+    {{else}}
+    <a href="#flagPost" data-toggle="modal" data-target="#flagPost" class="text-secondary"><i class="far fa-flag"></i> Flag Post</a>
+    {{/if}}
+
+    <button type="button" class="d-none d-md-block btn btn-info btn-lg float-right start-project"><i class="fas fa-code-branch"></i> Create Project</button>
+
+    <button type="button" class="d-md-none btn btn-info float-right start-project" data-toggle="modal"><i class="fas fa-code-branch"></i> Create Project</button>
+  </div>
+</div>
+
+
+<div class="container" id="post-body">
+  <div class="alert alert-info alert-dismissible fade show d-none" role="alert" id="flag-alert">
+    This post has been flagged. The author will be notified.
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <!-- <p class="text-right"><a href="#answer-editor"><button type="button" name="button" class="btn btn-primary btn-lg">Post an Answer</button></a></p> -->
+
+  <div id="post-{{post._id}}" class="card mb-5">
+    <div class="card-header bg-white">
+      <div class="float-left d-flex" style="font-size: 16px;">
+        <div class="profile-pic" style="background-image: url({{post.author.pic}});">
+        </div>
+        <div class="ml-2">
+          <p class="m-0">{{post.author.username}}</p>
+          <span class="text-muted">asked <span class="moment-timestamp" style="display: none;">{{post.timestamp}}</span></span>
+        </div>
+      </div>
+
+      <span class="float-right d-inline-flex">
+        {{#if post.likeCount}}
+        <span class="likeCounter m-0 mr-2">{{post.likeCount}}</span>
+        {{else}}
+        <span class="likeCounter m-0 mr-2"></span>
+        {{/if}}
+        <button class="likeBtn btn {{#if post.liked}}btn-success{{else}}btn-secondary{{/if}}"><i class="fas fa-thumbs-up"></i></button>
+      </span>
+    </div>
+
+    <div class="card-body">
+      <h3 class="card-title">{{post.question}}</h3>
+      {{#if description}}
+      <p id="description"><div id="post-view-editor" class="noborder p-0"></div></p>
+      {{/if}}
+
+      {{#if post.files}}
+      <div class="flex-column align-items-start">
+        <div class="d-flex w-100 justify-content-between">
+          {{#each post.files}}
+          <a class="btn btn-secondary" href="/community/file/{{this.fileID}}" role="button">{{this.name}}</a>
+          {{/each}}
+        </div>
+      </div>
+      {{/if}}
+    </div>
+  </div>
+
+  {{#if post.answers}}
+    <h1 style="font-weight: 200;">{{post.answers.length}} Answers</h1>
+    <hr>
+    {{#each post.answers}}
+    <div id="answer-{{this._id}}" class="card mb-3">
+      <div class="card-body">
+        <p class="card-text answer-view noborder d-none mb-3">{{this.answer}}</p>
+
+        <div style="position: absolute; top: 5px; right: 5px;">
+          <button type="button" name="button" class="utils answer-edit-btn btn btn-outline-primary py-0" hidden><i class="fas fa-pencil-alt"></i></button>
+        </div>
+
+        <button type="button" name="button" class="utils answer-edit-save btn btn-primary" hidden>Save Changes</button>
+
+        <button type="button" name="button" class="utils answer-edit-cancel btn btn-secondary" hidden>Cancel</button>
+      </div>
+
+      <div class="card-footer text-muted">
+        <div class="float-left d-flex" style="font-size: 16px;">
+          <div class="profile-pic" style="background-image: url({{this.author.pic}});">
+          </div>
+          <div class="ml-2">
+            <p class="m-0 answer-author">{{this.author.username}}</p>
+            <span class="text-muted">asked <span class="moment-timestamp" style="display: none;">{{this.timestamp}}</span></span>
+          </div>
+        </div>
+
+        <div class="float-right d-inline-flex">
+          {{#if this.likeCount}}
+          <p class="likeCounter m-0 mr-2">{{this.likeCount}}</p>
+          {{else}}
+          <p class="likeCounter m-0 mr-2"></p>
+          {{/if}}
+          <button class="likeBtn btn {{#if this.liked}}btn-success{{else}}btn-secondary{{/if}}"><i class="fas fa-thumbs-up"></i></button>
+        </div>
+      </div>
+    </div>
+    {{/each}}
+  {{else}}
+  <hr class="mx-5 my-5">
+  <a href="#answer-editor" style="text-decoration: none;"><button type="button" name="button" class="btn btn-lg btn-block mb-3 py-3">Answer this Post</button></a>
+  {{/if}}
+
+  <div class="jumbotron bg-white">
+    <form action="/" method="post">
+      <div class="form-group">
+        <h1 style="font-weight: 200;">Your Answer</h1>
+        <hr>
+        <div id="answer-editor">
+
+        </div>
+      </div>
+
+      <button class="btn btn-outline-primary btn-lg btn-block py-3" id="submit">Post your answer</button>
+    </form>
+  </div>
+</div>
+
+<!-- Flag/reporting post Modal -->
+<div class="modal fade" id="flagPost" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <form id="flag-post">
+      <p hidden id="post-id">{{post._id}}</p>
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel"><strong>Flag / Report</strong> Post</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <textarea placeholder="Please describe the issue ..." class="form-control" id="post-issue" rows="3"></textarea>
+          </div>
+        </div>
+        <div class="container">
+          <button type="submit" class="btn btn-block btn-lg btn-outline-danger mb-2">Submit Report</button>
+          <p class="text-secondary">User will be notified</p>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Answer Editing Modal -->
+<div class="modal fade" id="answer-editing-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{#if isowner}}
+<!-- start-projects modal (invite mentors)-->
+<div class="modal fade" id="start-projects-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="exampleModalLabel"><i class="fas fa-people-carry"></i> Collaboration = Efficiency 📈</h3>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Would you like to have a mentor help you out?</p>
+        <p class="text-muted">Our mentors are always here for you. Ask them just about anything! They know what they're doing. 😉</p>
+      </div>
+      <div class="modal-footer">
+        <div class="container text-right">
+          <div class="row">
+            <div class="col">
+              <button type="button" class="btn btn-primary btn-block mb-3 start-project" name="mentor">Get Help from a Mentor</button>
+            </div>
+
+            <div class="col">
+              <button type="button" class="btn btn-secondary start-project btn-block">Continue without help</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{else}}
+<!-- start-projects modal (invite other users)-->
+<div class="modal fade" id="start-projects-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="exampleModalLabel">Make someone's day <i class="fas fa-sun text-warning"></i></h3>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Would you like to help out the author (@{{post.author.username}})?</p>
+        <p class="text-muted">Start a new project and code collaboratively using our built-in Code Editor <i class="fas fa-laptop-code"></i>:</p>
+        <ul class="text-muted">
+          <li>Collaborate on multiple code files at the same time!</li>
+          <li>Get a Mentor to help you out</li>
+          <li>Video and voice calling are supported, all for free</li>
+          <li>Learn through Collaboration</li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <div class="container text-right">
+          <div class="row">
+            <div class="col">
+              <button type="button" class="btn btn-primary btn-block mb-3 start-project" name="user">Collaborate today</button>
+            </div>
+
+            <div class="col">
+              <button type="button" class="btn btn-secondary btn-block" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{/if}}
+
+
+<script type="text/javascript">
+  window.onload = function(){
+    /* Post Description Viewer (Quill) */
+    if($('#post-view-editor').length != 0) {
+      var postViewEditor = new Quill('#post-view-editor', {
+        modules: {
+          toolbar: false
+        },
+        theme: 'snow'
+      });
+
+      postViewEditor.setContents({{{description}}});
+      postViewEditor.disable();
+    }
+
+    /* All of the Answers Viewer (Quill) */
+
+    var answerViews = $('.answer-view');
+    // console.log("#Answers: " + answerViews.length);
+    var postAnswers = [];
+    {{#each post.answers}}
+    postAnswers.push({{{this.answer}}});
+    {{/each}}
+    for (var i = 0; i < answerViews.length; i++)
+    {
+      var answer = answerViews.get(i);
+      var quill = new Quill(answer, {
+        modules: {
+          toolbar: false
+        },
+        theme: 'snow'
+      });
+      quill.setContents(postAnswers[i]);
+      quill.disable();
+    }
+    answerViews.show();
+    answerViews.removeClass('d-none');
+
+
+    /*New answer posting editor (Quill)
+      Render saved data as well
+    */
+
+    var answerEditor = new Quill('#answer-editor', {
+      modules: {
+        toolbar: [
+          [{ header: [1, 2, false] }],
+          ['bold', 'italic', 'underline'],
+          ['image', 'code-block']
+        ]
+      },
+      theme: 'snow'
+    });
+    answerEditor.setContents({{{saved}}});
+
+    $('#submit').on('click', function(event) {
+      event.preventDefault();
+      var answer = JSON.stringify(answerEditor.getContents().ops);
+      var post_url = "/community/{{post._id}}/answer";
+
+      $.post(post_url, {answer: answer}, function(url) {
+        window.location.replace(url);
+      });
+    });
+
+
+    /*
+    Moment Date format
+    */
+    $('.moment-timestamp').each(function() {
+      var timestamp = new Date($(this).text());
+      timestamp = moment(timestamp, "MM-DD");
+      $(this).text(timestamp.format("MMM D"));
+      $(this).show();
+      $(this).removeClass('d-none');
+    });
+
+    $('#delete').on('click', function(event) {
+      event.preventDefault();
+      var answer2 = JSON.stringify(answerEditor.getContents().ops);
+      var post_url2 = "/community/{{post.id}}/delete";
+      var thepost='ah';
+      $.post(post_url2, {deletedpost:"thepost"}, function(url) {
+        window.location.replace(window.location.host + url);
+      });
+    });
+
+    $('.start-project').on('click', function(event) {
+      event.preventDefault();
+      // 1 = invite mentor
+      // 2 = without mentor
+      var postID = window.location.pathname.split('/');
+      postID = postID[postID.length-1];
+
+      // if($(this).attr('name') == "mentor")
+      //   var inviteMentor = true;
+      // else if($(this).attr('name') == "user")
+      //   var inviteUser = true;
+
+      $.post('/projects/' + postID + '/start-project', function(url){
+        window.location.replace("http://" + window.location.host + url);
+      });
+
+    });
+
+    $('#flag-post').submit(function(event) {
+      event.preventDefault();
+      $.post('/community/flag-post', {postID: $('#post-id').text(), postDescription: $('#post-issue').text()}, function(data) {
+        if(data.auth) {
+          $('.modal').modal('hide')
+          $('#flag-alert').removeClass('d-none');
+        }
+      });
+    });
+
+    $(".likeBtn").click(function() {
+      if ($(this).hasClass("btn-secondary")) {
+        $(this).addClass("btn-success");
+        $(this).removeClass("btn-secondary");
+
+        var likeCount = Number($(this).siblings(".likeCounter").text());
+        $(this).siblings(".likeCounter").text(likeCount + 1);
+      } else {
+        $(this).addClass("btn-secondary");
+        $(this).removeClass("btn-success");
+
+        var likeCount = Number($(this).siblings(".likeCounter").text());
+        if (likeCount - 1 > 0)
+          $(this).siblings(".likeCounter").text(likeCount - 1);
+        else
+          $(this).siblings(".likeCounter").text("");
+      }
+
+      var id = $(this).parents(".card").attr('id').split('-')[1];
+      var type = $(this).parents(".card").attr('id').split('-')[0];
+      $.post('/community/like', {type: type, id: id, postID: $('#post-id').text()}, function(data) {
+        if (data.url) {
+          window.location.replace(data.url);
+        }
+      });
+    });
+
+    $('.answer-author').each(function() {
+      var username = '{{username}}';
+      if($(this).text() == username) {
+        $(this).closest('.card').find($('.answer-edit-btn')).attr('hidden', false);
+      }
+    });
+
+    $('.answer-edit-btn').click(function() {
+      var answerBox = $(this).closest('.card');
+      var answerEditor = answerBox.find('.answer-view');
+      answerEditor.removeClass('noborder');
+      var editQuill = new Quill(answerEditor[0], {
+        modules: {
+          toolbar: [
+            [{ header: [1, 2, false] }],
+            ['bold', 'italic', 'underline'],
+            ['image', 'code-block']
+          ]
+        },
+        theme: 'snow'
+      });
+      editQuill.enable();
+      editQuill.focus();
+      answerBox.find('.utils').attr('hidden', false);
+      $(this).attr('hidden', true);
+
+      $('.answer-edit-cancel').click(function() {
+        answerBox.find('.ql-toolbar').hide();
+        answerEditor.addClass('noborder');
+        editQuill.disable();
+        answerBox.find('.utils').attr('hidden', true);
+        answerBox.find('.answer-edit-btn').attr('hidden', false);
+      });
+
+      $('.answer-edit-save').click(function() {
+        var url = '/community/' + '{{post._id}}' + '/answers/edit/' + ((answerBox.attr('id').split('-'))[1]);
+        $.post(url, {answer: JSON.stringify(editQuill.getContents().ops)}, function(data) {
+          if(data.auth) {
+            answerBox.find('.ql-toolbar').hide();
+            answerEditor.addClass('noborder');
+            editQuill.disable();
+            answerBox.find('.utils').attr('hidden', true);
+            answerBox.find('.answer-edit-btn').attr('hidden', false);
+          }else{
+            window.location.replace("http://" + window.location.host + data.url);
+          }
+        });
+      });
+    });
+  }
+</script>

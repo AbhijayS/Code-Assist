@@ -1,18 +1,70 @@
-<body>
-  <div class="jumbotron jumbotron-title text-center" id="title">
-    <h1>Contact Us</h1>
+<div class="jumbotron container bg-white text-center border-bottom rounded-0 pb-5">
+  <h1 class="display-4" style="font-weight: 200;">Contact Us</h1>
+  <p class="lead text-muted mt-2">Ask us anything! It's what defines us.</p>
+</div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-sm-4">
+      <ul class="list-group mb-4">
+        <li class="list-group-item list-group-item-action active"><h1 style="font-weight: 300;">Need support?</h1></li>
+        <li class="list-group-item list-group-item-action">🛠️ Our support team is here for you. Describe your frustration and we will fix it right away!</li>
+        <li class="list-group-item list-group-item-action">✓ Need help with you Account? Let's solve that together!</li>
+      </ul>
+
+      <ul class="list-group mb-5">
+        <li class="list-group-item list-group-item-action active text-light"><h1 style="font-weight: 300;">Feedback</h1></li>
+        <li class="list-group-item list-group-item-action">🐞 Did you just discover a bug? (Fantastic! You made our job easier 😉)</li>
+        <li class="list-group-item list-group-item-action">💡 Do you have a suggestion? A recommendation? (We 💕those)</li>
+        <li class="list-group-item list-group-item-action">👍 Just give us a thumbs up! Our hard working engineers will really appreciate! 🤙</li>
+        <li class="list-group-item list-group-item-action">🔔 Looking for some tips and tricks? We will hit you up with those ASAP!</li>
+        <li class="list-group-item list-group-item-action">🙋 Wanna help us out? Coding, Designing, Mentoring and lots more options! More help means we can deliver updates faster.</li>
+      </ul>
+
+    </div>
+
+    <div class="col-sm-8 mb-5" id="formCol">
+      <form id="feedbackForm" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input type="text" class="form-control" id="name" placeholder="Your name">
+          <small id="emailHelp" class="form-text text-muted">We'll never share your name with anyone else.</small>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email address</label>
+          <input type="email" class="form-control" id="email" aria-describedby="emailHelp" placeholder="Enter email">
+          <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+        </div>
+
+        <div class="form-group">
+          <label for="subject">Subject</label>
+          <input autocomplete="off" type="text" class="form-control" id="subject" placeholder="Subject">
+        </div>
+
+        <div class="form-group">
+          <label for="editor">Please describe your experience</label>
+          <!-- <textarea class="form-control" id="exampleFormControlTextarea1" name="description" rows="3"></textarea> -->
+
+          <div id="editor">
+
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="fileUpload">File Upload (optional)</label>
+          <input name="file" type="file" class="form-control-file" id="fileUpload" multiple="">
+        </div>
+
+        <div class="form-group form-check">
+          <input type="checkbox" class="form-check-input" id="agreementCheck">
+          <label class="form-check-label" for="agreementCheck">I verify that I am not trying to <em>spam</em> and would like to receive appropriate consideration to my message</label>
+        </div>
+        <button type="submit" id="submit" class="btn btn-primary">Submit</button>
+      </form>
+    </div>
   </div>
 
+</div>
 
-
-  <div class="container" id="community-body">
-    <h3>Send us an email at <a href="mailto:contact@codeassist.club">contact@codeassist.club</a></h3>
-
-    <h3>or email <strong>Chris Smith</strong> at <a href="mailto:christopher.smith4202@gmail.com">christopher.smith4202@gmail.com</a></h3>
-
-    <h3>or <strong>Abhijay Saini</strong> at <a href="mailto:abhijay.saini@gmail.com">abhijay.saini@gmail.com</a></h3>
-
-    <a href="/team"><h3><strong>Learn More</strong> About the Creators</h3></a>
-  </div>
-
-</body>
+<script type="text/javascript" src="/js/contact-quill-post.js"></script>

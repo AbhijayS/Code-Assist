@@ -1,2 +1,11 @@
-
+# API Keys, Database, and other Secret Juices
 .env
+
+# Node Dependencies
+# Dev use node install for setup
+node_modules/
+
+# Project Files
+project_files
+
+package-lock.json

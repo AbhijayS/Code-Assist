@@ -1,158 +1,117 @@
-<head>
-	<title>Register V2</title>
-	<meta charset="UTF-8">
-    <link rel="shortcut icon" type="image/png" href="/favicon.png"/>
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-<!--===============================================================================================-->
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="/vendors/vendor/bootstrap/css/bootstrap.min.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="/vendors/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="/vendors/fonts/iconic/css/material-design-iconic-font.min.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="/vendors/vendor/animate/animate.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="/vendors/vendor/css-hamburgers/hamburgers.min.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="/vendors/vendor/animsition/css/animsition.min.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="/vendors/vendor/select2/select2.min.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="/vendors/vendor/daterangepicker/daterangepicker.css">
-<!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="/vendors/css/util.css">
-	<link rel="stylesheet" type="text/css" href="/vendors/css/main.css">
-<!--===============================================================================================-->
-<link href="https://fonts.googleapis.com/css?family=Nunito:200,300,300i,400,400i,700" rel="stylesheet">
+<style>
+  .navbar {
+    display: none;
+  }
+</style>
 
-</head>
-<body>
+<div class="jumbotron container p-0 bg-white d-none d-md-block" style="margin-top: 5%; min-height: 500px; box-shadow: 0px 3px 20px 0px #0000000d; width: 65%;">
+  <div class="row w-100 m-0 rounded" style="min-height: 500px;">
 
-	<div class="limiter">
-		<div class="container-login100">
-			<div class="wrap-login100">
-				<form class="login100-form validate-form" method="post" action="/register">
-					<span class="login100-form-title p-b-26" style="font-family: 'Nunito', sans-serif !important;">
-						Welcome to
-					</span>
+    <div class="col-sm-6 bg-white rounded-left pt-5 pl-5 p-0">
+      <p><a href="/"><i class="fas fa-home"></i> Home</a></p>
+      <div class="clippy rounded" style="-webkit-clip-path: ellipse(87% 49% at 31% 98%);
+clip-path: ellipse(87% 49% at 31% 98%); top:0; left: 0; height: 100%; z-index: 0; background-color: #0d75e8de;"></div>
 
-					<div class="container text-center">
-						<a href="/" id="brand"><h1>Code Assist</h1></a>
-					</div>
-					<!-- <span class="login100-form-title p-b-48">
-						<i class="zmdi zmdi-font"></i>
-					</span> -->
-					{{#if invalidChars}}
-					<div style="margin-bottom: 2rem;" class="alert alert-danger">
-						<strong>Username and Email</strong> can only contain alphanumeric characters, period or underscore
-					</div>
-					{{/if}}
+      <h1 class="text-left text-muted" style="font-weight: 200;">Code Assist</h1>
+      <p class="pr-4 pt-3">All in one collaboration tool for students, mentors, and teachers.</p>
 
-					{{#if usernameTaken}}
-						<div style="margin-bottom: 2rem;" class="alert alert-danger">
-						  <strong>Username</strong> is taken
-						</div>
-					{{/if}}
+      <ul class="list-group text-right" style="position: absolute; bottom: 5%; right: 0px;">
+        <li class="list-group-item mb-4 ml-auto border-0" style="border-radius: 30px 0 0 30px; width: max-content; box-shadow: -3px 6px 4px 1px #00000026; background: linear-gradient(to right, white, #ffffffdb);"><i class="far fa-paper-plane"></i> Responsive Mentors</li>
+        <li class="list-group-item mb-4 ml-auto border-0" style="border-radius: 30px 0 0 30px; width: max-content; box-shadow: -3px 6px 4px 1px #00000026; background: linear-gradient(to right, white, #ffffffdb);"><i class="fas fa-people-carry"></i> Ask anyone in the Community</li>
+        <li class="list-group-item mb-4 ml-auto border-0" style="border-radius: 30px 0 0 30px; width: max-content; box-shadow: -3px 6px 4px 1px #00000026; background: linear-gradient(to right, white, #ffffffdb);"><i class="fas fa-project-diagram"></i> Collaborate on Projects</li>
+      </ul>
 
-					{{#if emailTaken}}
-						<div style="margin-bottom: 2rem;" class="alert alert-danger">
-						  <strong>Email</strong> is already registered
-						</div>
-					{{/if}}
+    </div>
 
-					{{#if notMatch}}
-						<div style="margin-bottom: 2rem;" class="alert alert-danger">
-							<strong>Passwords</strong> don't match
-						</div>
-					{{/if}}
+    <div class="col-sm-6 pt-5 p-3" style="box-shadow: -4px 10px 9px 0px #0000000d;">
+      <h1 style="font-weight: bold;">Sign Up</h1>
+      <span class="text-muted">Create your own account</span>
+      <p href="/login"><a href="/login">Have an account already? Login instead.</a></p>
 
-					<div class="wrap-input100 validate-input" data-validate = "At least 3 characters">
-						{{#if username}}
-						<input class="input100 has-val" type="text" name="username" value="{{username}}">
-						{{else}}
-						<input class="input100" type="text" name="username" autofocus>
-						{{/if}}
-						<span class="focus-input100" data-placeholder="Username"></span>
-					</div>
-
-					<div class="wrap-input100 validate-input" data-validate = "Valid email is: a@b.c">
-						{{#if email}}
-						<input class="input100 has-val" type="text" name="email" value="{{email}}">
-						{{else}}
-						<input class="input100" type="text" name="email" autofocus>
-						{{/if}}
-						<span class="focus-input100" data-placeholder="Email"></span>
-					</div>
-
-					<div class="wrap-input100 validate-input" data-validate="Valid password: 8 characters">
-						<span class="btn-show-pass">
-							<i class="zmdi zmdi-eye"></i>
-						</span>
-						<input class="input100" type="password" name="password">
-						<span class="focus-input100" data-placeholder="Password"></span>
-					</div>
-
-          <div class="wrap-input100 validate-input" data-validate="Passwords don't match">
-            <span class="btn-show-pass">
-              <i class="zmdi zmdi-eye"></i>
-            </span>
-            <input class="input100" type="password" name="password2">
-            <span class="focus-input100" data-placeholder="Re-enter Password"></span>
+      <div class="p-1 mb-4">
+        <form method="post" action="/register">
+          <div class="form-group mb-4">
+            <input type="text" class="form-control p-3 {{#if usernameTaken}}is-invalid{{else if invalidUsername}}is-invalid{{/if}}" placeholder="username" style="border-radius: 40px;" value="{{username}}" name="username" autofocus>
+						<div class="invalid-feedback">
+		          {{#if invalidUsername}}
+							Invalid Username.
+							{{else if usernameTaken}}
+							Username has been taken.
+							{{/if}}
+		        </div>
           </div>
 
-					<div class="container-login100-form-btn">
-						<div class="wrap-login100-form-btn">
-							<div class="login100-form-bgbtn"></div>
-							<button class="login100-form-btn">
-								Register
-							</button>
+          <div class="form-group mb-4">
+            <input type="text" class="form-control p-3 {{#if emailTaken}}is-invalid{{else if invalidEmail}}is-invalid{{/if}}" placeholder="email" style="border-radius: 40px;" value="{{email}}" name="email">
+						<div class="invalid-feedback">
+							{{#if invalidEmail}}
+							Invalid Email.
+							{{else if emailTaken}}
+							Email has been taken.
+							{{/if}}
 						</div>
-					</div>
+          </div>
 
-{{!-- 					<div class="text-center p-t-115">
-						<span class="txt1">
-							Don’t have an account?
-						</span>
+          <div class="form-group mb-4">
+            <input type="password" class="form-control p-3 {{#if invalidPassword}}is-invalid{{/if}}" placeholder="password" style="border-radius: 40px;" name="password">
+						<div class="invalid-feedback">
+							Invalid Password.
+						</div>
+          </div>
+
+          <button type="submit" name="button" class="btn btn-primary btn-block btn-lg p-3 mx-auto mb-2" style="border-radius: 40px;">Create an Account</button>
+          <input name="subscribe" type="checkbox" aria-label="Checkbox for following text input" checked>
+          <span class="text-muted" style="font-size: 12px;">Don't miss out on Code Assist email Updates and Notifications.</span>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="jumbotron container bg-white d-md-none">
+  <p><a href="/"><i class="fas fa-home"></i> Home</a></p>
+  <hr>
+  <h1 style="font-weight: bold;">Sign Up</h1>
+  <span class="text-muted">Create your own account</span>
+  <p href="/login"><a href="/login">Have an account already? Login instead.</a></p>
 
 
- 						<a class="txt2" href="#">
-							Sign Up
-						</a>
-
-					</div> --}}
-					<div class="text-center p-t-115">
-						<span class="txt1">
-							Already have an account?
-						</span>
-
-						<a class="txt2" href="/login">
-							Log In
-						</a>
-					</div>
-				</form>
+	<div class="p-1 mb-4">
+		<form method="post" action="/register">
+			<div class="form-group mb-4">
+				<input type="text" class="form-control p-3 {{#if usernameTaken}}is-invalid{{else if invalidUsername}}is-invalid{{/if}}" placeholder="username" style="border-radius: 40px;" value="{{username}}" name="username" autofocus>
+				<div class="invalid-feedback">
+					{{#if invalidUsername}}
+					Invalid Username.
+					{{else if usernameTaken}}
+					Username has been taken.
+					{{/if}}
+				</div>
 			</div>
-		</div>
+
+			<div class="form-group mb-4">
+				<input type="text" class="form-control p-3 {{#if emailTaken}}is-invalid{{else if invalidEmail}}is-invalid{{/if}}" placeholder="email" style="border-radius: 40px;" value="{{email}}" name="email">
+				<div class="invalid-feedback">
+					{{#if invalidEmail}}
+					Invalid Email.
+					{{else if emailTaken}}
+					Email has been taken.
+					{{/if}}
+				</div>
+			</div>
+
+			<div class="form-group mb-4">
+				<input type="password" class="form-control p-3 {{#if invalidPassword}}is-invalid{{/if}}" placeholder="password" style="border-radius: 40px;" name="password">
+				<div class="invalid-feedback">
+					Invalid Password.
+				</div>
+			</div>
+
+			<button type="submit" name="button" class="btn btn-primary btn-block btn-lg p-3 mx-auto mb-2" style="border-radius: 40px;">Create an Account</button>
+			<input type="checkbox" aria-label="Checkbox for following text input" checked>
+			<span class="text-muted" style="font-size: 12px;">Dont' miss out on Code Assist email Updates and Notifications.</span>
+		</form>
 	</div>
 
-
-	<div id="dropDownSelect1"></div>
-
-<!--===============================================================================================-->
-	<script src="/vendors/vendor/jquery/jquery-3.2.1.min.js"></script>
-<!--===============================================================================================-->
-	<script src="/vendors/vendor/animsition/js/animsition.min.js"></script>
-<!--===============================================================================================-->
-	<script src="/vendors/vendor/bootstrap/js/popper.js"></script>
-	<script src="/vendors/vendor/bootstrap/js/bootstrap.min.js"></script>
-<!--===============================================================================================-->
-	<script src="/vendors/vendor/select2/select2.min.js"></script>
-<!--===============================================================================================-->
-	<script src="/vendors/vendor/daterangepicker/moment.min.js"></script>
-	<script src="/vendors/vendor/daterangepicker/daterangepicker.js"></script>
-<!--===============================================================================================-->
-	<script src="/vendors/vendor/countdowntime/countdowntime.js"></script>
-<!--===============================================================================================-->
-	<script src="/vendors/js/main.js"></script>
-
-</body>
+</div>

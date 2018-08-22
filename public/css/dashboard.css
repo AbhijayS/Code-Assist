@@ -1,44 +1,75 @@
 body{
   font-family: 'Nunito', sans-serif !important;
-  background-color: none;
+  background-color: rgb(255, 255, 255, 0.7);
   background-attachment:fixed;
 }
 
-.navbar {
-  margin: 0;
-  padding: 0;
-  background-color: #0d75e8 !important;
-  border: 0;
-  border-color: transparent;
-  border-bottom: 0;
+.hide {
+  display: none;
 }
 
-.navbar-collapse {
-  background:none !important;
-  border: none !important;
-  box-shadow: none !important;
+.profile-pic {
+  width: 50px;
+  height: 50px;
+  border: 2px #eee solid !important;
+
+  background-size: contain;
+  display: inline-block;
+
+  background-repeat: no-repeat;
+  background-size: auto 100%;
+  background-position-x: center;
+  border-radius: 5px;
 }
 
-.navbar li a{
-  color: white;
+#userPic {
+  width: 200px;
+  height: 200px;
+  border-radius: 10px;
 }
 
-.navbar li a:hover {
-  background-color: transparent;
+#feedback-floating-btn {
+  display: flex;
+  width: 75px;
+  height: 75px;
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  border-radius: 50%;
+  border: none;
+  background-color: #fffffff2;
+  font-size: 40px;
+  padding: 15px;
+  box-shadow: 0px 3px 20px 3px #1b1b1b5c;
+  cursor: pointer;
+  vertical-align: baseline;
+  transition: 0.7s;
+  overflow: hidden;
+  z-index: 999;
 }
 
-.navbar li a:focus {
-  background-color: transparent;
+#feedback-floating-btn > span {
+  display: none;
+  font-size: 30px;
+  padding-left: 10px;
+  margin-top: auto;
 }
 
-.navbar-brand {
-  color: white;
+#feedback-floating-btn:hover {
+  background-color: white;
+  box-shadow: 0px 7px 13px 2px #1b1b1b5c;
+  border-radius: 15px;
+  padding-right: 200px;
 }
 
-.jumbotron-title {
+#feedback-floating-btn:hover > span {
+  display: inline;
+}
+
+/* .jumbotron-title {
   background-color: #0d75e8;
   color: white;
-}
+} */
 
 .ql-container.noborder  {
   border: 0px !important;
@@ -58,8 +89,22 @@ body{
 Dashboard
 ========================================
 */
-#dashboard-title {
+
+.clippy {
+  position: absolute;
+  z-index: -1;
   background-color: #0d75e8;
+  width: 100%;
+  height: 100vh;
+}
+
+#dashboard-sidepanel {
+  -webkit-clip-path: polygon(0 0, 64% 0, 38% 100%, 0% 100%);
+  clip-path: polygon(0 0, 64% 0, 38% 100%, 0% 100%);
+}
+
+.card-group .card {
+  box-shadow: 9px 12px 0px 1px #eee;
 }
 
 /*
@@ -68,46 +113,14 @@ Mentor Page
 ========================================
 */
 
-#mentor-container {
-  background-color: #0d75e8;
-
-}
-
-#mentor-container h1{
-  text-align: center;
-}
-
-#mentor-container .container{
-  padding-top: 2%;
-}
-
-#history-body #filter-button-body {
-  padding: 0 !important;
-  margin-bottom: 20px;
-}
-
-#history-body #filter-button {
-  border: none;
-}
-
 /*
 ========================================
 Community Page
 ========================================
 */
 
-#community-body #filter-button-body {
-  padding: 0 !important;
-  margin-bottom: 20px;
-}
-
-#community-body #filter-button {
-  border: none;
-}
-
-#community-title {
-  background-color: #0d75e8;
-
+.breakWord {
+  word-wrap: break-word;
 }
 
 /*
@@ -116,7 +129,7 @@ Account Page
 ========================================
 */
 
-#account-body #labels label{
+/* #account-body #labels label{
   font-size: 20px;
   margin-top: 10px;
   height: 100;
@@ -133,7 +146,7 @@ Account Page
 
 #account-body #changePassword {
   margin-top: 2%;
-}
+} */
 
 /*
 ========================================
@@ -143,6 +156,15 @@ Community Post Page (community-post.handlebars)
 
 #community-post-title {
   background-color: #0d75e8;
+}
+
+.likeCounter {
+  font-size: 20px;
+  line-height: 1.9;
+}
+
+.transparentBack {
+  mix-blend-mode: multiply;
 }
 
 /*
@@ -206,3 +228,68 @@ Team Page (team.handlebars)
 #team-body #left-col {
   border-left: solid black 1px;
 } */
+
+/*
+========================================
+User Profile Page (user-profile.handlebars)
+========================================
+*/
+
+/* #achievements li{
+  border-radius: 28px;
+  box-shadow: 1px 1px 20px 0px #00000024;
+}
+
+#achievements li * {
+  font-weight: 300;
+  font-size: 22px;
+  user-select: none;
+} */
+
+/*
+========================================
+Pricing page
+========================================
+*/
+
+.price {
+  color: #007bff;
+  font-size: 3em;
+  margin-bottom: 40px;
+}
+
+.price span {
+  font-size: 20px;
+  margin-left: 3px;
+}
+
+.selectBtn {
+  width: 150px;
+  height: 50px;
+}
+
+.socialMediaIcons {
+  margin-top: 5px;
+  font-size: 30px !important;
+  letter-spacing: 10px;
+}
+
+.footerLinks {
+  margin-top: 15px;
+}
+
+.footerLink {
+  margin: 0 5px;
+  color: #343a40 !important;
+}
+
+.footerHeader {
+  color: #343a40 !important;
+  font-weight: bold;
+}
+
+@media (min-width: 576px) {
+  #mainContainer {
+    /* height: 120vh !important; */
+  }
+}

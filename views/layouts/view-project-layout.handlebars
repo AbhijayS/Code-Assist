@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:300,300i,400,700" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="/css/projects.css">
+
+    <!-- Project Files Layout -->
+    <link rel="stylesheet" href="/projects/ace-collab-ext/ace-collab-ext.css"/>
+    <script src="/projects/ace-builds/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script src="/projects/ace-builds/src-noconflict/ext-modelist.js"></script>
+    <script src="/projects/ace-collab-ext/umd/ace-collab-ext.js" type="text/javascript" charset="utf-8"></script>
+
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/regular.css" integrity="sha384-avJt9MoJH2rB4PKRsJRHZv7yiFZn8LrnXuzvmZoD3fh1aL6aM6s0BBcnCvBe6XSD" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/solid.css" integrity="sha384-TbilV5Lbhlwdyc4RuIV/JhD8NR+BfMrvz4BL5QFa2we1hQu6wvREr3v6XSRfCTRp" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/fontawesome.css" integrity="sha384-ozJwkrqb90Oa3ZNb+yKFW2lToAWYdTiF1vt8JiH5ptTGHTGcN7qdoR1F95e0kYyG" crossorigin="anonymous">
+
+    <!-- EasyRTC -->
+    <link rel="stylesheet" type="text/css" href="/easyrtc/easyrtc.css" />
+
+    <!-- Terminal emulator -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/jquery.terminal/1.19.1/css/jquery.terminal.min.css" rel="stylesheet"/>
+
+    <title>Project - {{project.name}}</title>
+  </head>
+  <body>
+    <!-- Navbar Template -->
+    {{#unless isThumbnail}}
+    <div class="container" style="z-index: 2;">
+      <nav class="navbar navbar-expand-lg navbar-light bg-white pt-3">
+        <a class="navbar-brand" href="/">
+          Code Assist
+        </a>
+
+        <button class="navbar-toggler text-dark" data-toggle="collapse" data-target=".navbarMenu">
+          <i class="fas fa-bars"></i>
+        </button>
+
+        <div class="collapse navbar-collapse navbarMenu pl-5">
+          <ul class="navbar-nav ml-auto">
+            {{#if user}}
+              <li class="nav-item px-3">
+                <a href="/dashboard" class="nav-link">
+                  <i class="fas fa-tachometer-alt d-xl-inline d-md-inline d-lg-none"></i> Dashboard
+                </a>
+              </li>
+            {{else}}
+              <li class="nav-item px-3">
+                <a href="/community" class="nav-link">
+                  <i class="fas fa-people-carry d-xl-inline d-md-inline d-lg-none"></i> Community
+                </a>
+              </li>
+            {{/if}}
+
+            <!-- <li class="nav-item px-3">
+              <a href="/blog" class="nav-link">
+                <i class="far fa-newspaper d-xl-inline d-md-inline d-lg-none"></i> Blog
+              </a>
+            </li> -->
+
+            <li class="nav-item px-3">
+              <a href="/projects" class="nav-link">
+                <i class="fas fa-project-diagram d-xl-inline d-md-inline d-lg-none"></i> Projects
+              </a>
+            </li>
+
+            <li class="nav-item px-3">
+              <a href="/contact" class="nav-link special">
+                <i class="fas fa-envelope-open d-xl-inline d-md-inline d-lg-none"></i> Contact Us
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="collapse navbar-collapse navbarMenu">
+          <ul class="navbar-nav ml-auto">
+            {{#if user}}
+              <!-- <li class="nav-item px-3" {{#if hideGoPremiumBtn}}style="visibility: hidden;"{{/if}}>
+                <a href="/plans" class="btn btn-primary">
+                  <i class="fas fa-crown text-warning"></i> Go Premium
+                </a>
+              </li> -->
+
+              <li class="nav-item px-3">
+                <a href="/account" class="nav-link special">
+                  <i class="far fa-user"></i> {{user.username}}
+                </a>
+              </li>
+
+              <li class="nav-item px-3">
+                <a href="/logout" class="nav-link special">
+                  <i class="fas fa-sign-out-alt"></i> Log Out
+                </a>
+              </li>
+            {{else}}
+              <li class="nav-item px-2">
+                <a href="/register" class="nav-link special">
+                  <i class="fas fa-user-plus"></i> Join
+                </a>
+              </li>
+
+              <li class="nav-item px-2">
+                <a href="/login" class="nav-link special">
+                  <i class="fas fa-sign-in-alt"></i> Sign In
+                </a>
+              </li>
+            {{/if}}
+          </ul>
+        </div>
+      </nav>
+    </div>
+
+    <!-- Side Bar -->
+    <div id="sidebar">
+      <ul class="list-group">
+
+        {{#if namespace}}
+          <li id="videochat-btn" class="list-group-item"><i class="fas fa-headset"></i></li>
+        {{/if}}
+
+        <li id="chat-btn" class="list-group-item"><i class="fas fa-comments"></i></li>
+        <li id="settings-btn" class="list-group-item"><i class="fas fa-sliders-h"></i></li>
+        <a href="/projects"><li id="exit-btn" class="list-group-item"><i class="fas fa-sign-out-alt"></i></li></a>
+      </ul>
+    </div>
+    {{/unless}}
+
+    {{{body}}}
+
+    <div id="feedback-floating-btn" onclick="relocateFeedback()">
+      <i class="fas fa-bullhorn"></i>
+      <span><strong> Feedback</strong></span>
+    </div>
+    <script type="text/javascript">
+      function relocateFeedback() {
+        window.location.replace('http://' + window.location.host + '/contact');
+      }
+    </script>
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script
+    src="https://code.jquery.com/jquery-3.3.1.min.js"
+    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+    crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.slim.js"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.2.0/js/all.js" integrity="sha384-4oV5EgaV02iISL2ban6c/RmotsABqE4yZxZLcYMAdG7FAPsyHYAPpywE9PJo+Khy" crossorigin="anonymous"></script>
+    <script>
+    //Notification Reciever
+    $( document ).ready(function() {
+        var socket = io("/Notify{{user._id}}");
+        console.log(socket);
+        socket.on("notify",function(message){
+          alert(message);
+        });
+      });
+    </script>
+
+    {{!-- jQuery UI Layout Plug-in --}}
+    <script type="text/javascript" src="/js/jquery-ui.js"></script>
+    <script type="text/javascript" src="/js/jquery.layout.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.terminal/1.19.1/js/jquery.terminal.min.js"></script>
+
+    <!-- EasyRTC -->
+    <script type="text/javascript" src="/easyrtc/easyrtc.js"></script>
+
+    <script type="text/javascript">
+      console.log('{{user.username}}'+' is your username and you have a clearance of level '+{{clearance}});
+      var namespace = '{{namespace}}';
+      var socket = io('{{namespace}}');
+      var username = '{{user.username}}';
+      var isThumbnail = false;
+      {{#if isThumbnail}}
+        isThumbnail = true;
+      {{/if}}
+
+      /* Defaults on page load */
+      $('#editorContainer').css({
+        'padding-left' : $('#sidebar').width()
+      });
+
+      // editor
+      var editor = ace.edit("editor");
+      editor.setTheme("ace/theme/textmate");
+      editor.setShowPrintMargin(false);
+      editor.$blockScrolling = Infinity;
+      {{#unless isThumbnail}}
+      editor.focus();
+      {{/unless}}
+
+      // Layout
+      var layout = $('#editorContainer').layout({
+          defaults: {
+              applyDefaultStyles: true,
+              resizeWhileDragging: true,
+              fxName: 0, // prevents close/open animation
+              enableCursorHotkey: false
+          },
+          east: {
+              initClosed: true,
+              size: "25%",
+              minSize: 200,
+              maxSize: "70%",
+              onresize: function() {
+                editor.resize();
+              }
+          },
+          south: {
+            {{#if isThumbnail}}
+              initClosed: true,
+            {{/if}}
+            size: "25%",
+            minSize: 100,
+            maxSize: "85%",
+            onresize: function() {
+              editor.resize();
+            }
+          }
+      });
+      layout.resizeAll();
+    </script>
+
+    <script src="/projects/script.js"></script>
+    {{#unless isThumbnail}}
+    <script src="/js/view-project.js"></script>
+    <script src="/js/projects-videocall.js"></script>
+    {{/unless}}
+  </body>
+</html>

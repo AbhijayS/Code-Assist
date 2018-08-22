@@ -1,0 +1,247 @@
+<style>
+  #answer-editor .ql-editor{
+    min-height: 150px;
+  }
+</style>
+
+<div class="jumbotron jumbotron-title text-left" style="background-color: #e9ecef4f; box-shadow: 0px 3px 6px 0px #4441412b;">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="/mentor">Ask a Mentor</a></li>
+        <li class="breadcrumb-item active" aria-current="page">View</li>
+      </ol>
+    </nav>
+
+    <h1>{{post.question}}</h1>
+    <hr>
+    {{#if isowner}}
+    <a href="/mentor/post/edit/{{post._id}}"><i class="fas fa-pencil-alt"></i> Edit</a>
+    {{/if}}
+
+    <button type="button" class="d-none d-md-block btn btn-info btn-lg float-right" id="start-project"><i class="fas fa-code-branch"></i> Create Project</button>
+
+    <button type="button" class="d-md-none btn btn-info float-right" id="start-project"><i class="fas fa-code-branch"></i> Create Project</button>
+
+  </div>
+</div>
+
+<div class="container" id="mentor-post-body" class="mb-5">
+  <p class="text-right"><a href="#answer-editor"><button type="button" name="button" class="btn btn-primary btn-lg">Post an Answer</button></a></p>
+
+  <div class="card mb-5">
+    <div class="card-header bg-white">
+      <div class="float-left d-flex" style="font-size: 16px;">
+        <div class="profile-pic" style="background-image: url({{post.author.pic}});">
+        </div>
+
+        <div class="ml-2">
+          <p class="m-0">{{post.author.username}}</p>
+          <span class="text-muted">asked <span class="moment-timestamp" style="display: none;">{{post.timestamp}}</span></span>
+        </div>
+      </div>
+
+    </div>
+    <div class="card-body">
+      <h3 class="card-title">{{post.question}}</h3>
+      {{#if description}}
+      <p id="description"><div id="post-view-editor" class="noborder p-0"></div></p>
+      {{/if}}
+
+      {{#if post.files}}
+      <div class="flex-column align-items-start">
+        <div class="d-flex w-100 justify-content-between">
+          {{#each post.files}}
+          <a class="btn btn-secondary" href="/community/file/{{this.fileID}}" role="button">{{this.name}}</a>
+          {{/each}}
+        </div>
+      </div>
+      {{/if}}
+    </div>
+  </div>
+
+  {{#if post.answers}}
+    <h1 style="font-weight: 200;">{{post.answers.length}} Answers</h1>
+    <hr>
+    {{#each post.answers}}
+    <div id="answer-{{this._id}}" class="card mb-3">
+      <div class="card-body">
+        <p class="card-text answer-view noborder d-none mb-3">{{this.answer}}</p>
+
+        <div style="position: absolute; top: 5px; right: 5px;">
+          <button type="button" name="button" class="utils answer-edit-btn btn btn-outline-primary py-0" hidden><i class="fas fa-pencil-alt"></i></button>
+        </div>
+
+        <button type="button" name="button" class="utils answer-edit-save btn btn-primary" hidden>Save Changes</button>
+
+        <button type="button" name="button" class="utils answer-edit-cancel btn btn-secondary" hidden>Cancel</button>
+
+      </div>
+
+      <div class="card-footer text-muted">
+        <div class="float-left d-flex" style="font-size: 16px;">
+          <div class="profile-pic" style="background-image: url({{this.author.pic}});">
+          </div>
+          <div class="ml-2">
+            <p class="m-0 answer-author">{{this.author.username}}</p>
+            <span class="text-muted">asked <span class="moment-timestamp" style="display: none;">{{this.timestamp}}</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    {{/each}}
+  {{else}}
+  <hr class="mx-5 my-5">
+  <a href="#answer-editor" style="text-decoration: none;"><button type="button" name="button" class="btn btn-outline-primary btn-lg btn-block mb-3 py-3">Answer this Post</button></a>
+  {{/if}}
+
+  <div class="jumbotron bg-white">
+    <form action="/" method="post">
+      <div class="form-group">
+        <h1 style="font-weight: 200;">Your Answer</h1>
+        <hr>
+        <div id="answer-editor">
+
+        </div>
+      </div>
+
+      <button class="btn btn-outline-primary btn-lg btn-block py-3" id="submit">Post your answer</button>
+    </form>
+  </div>
+</div>
+
+<script type="text/javascript">
+  window.onload = function(){
+    /* Post Description Viewer (Quill) */
+    if($('#post-view-editor').length != 0) {
+      var postViewEditor = new Quill('#post-view-editor', {
+        modules: {
+          toolbar: false
+        },
+        theme: 'snow'
+      });
+      postViewEditor.setContents({{{post.description}}});
+      postViewEditor.disable();
+    }
+
+    /* All of the Answers Viewer (Quill) */
+    var answerViews = $('.answer-view');
+    // console.log("#Answers: " + answerViews.length);
+    var postAnswers = [];
+    {{#each post.answers}}
+    postAnswers.push({{{this.answer}}});
+    {{/each}}
+    for (var i = 0; i < answerViews.length; i++)
+    {
+      var answer = answerViews[i];
+      var quill = new Quill(answer, {
+        modules: {
+          toolbar: false
+        },
+        theme: 'snow'
+      });
+      quill.setContents(postAnswers[i]);
+      quill.disable();
+    }
+    answerViews.removeClass('d-none');
+
+    /*New answer posting editor (Quill)
+      Render saved data as well
+    */
+
+    var answerEditor = new Quill('#answer-editor', {
+      modules: {
+        toolbar: [
+          [{ header: [1, 2, false] }],
+          ['bold', 'italic', 'underline'],
+          ['image', 'code-block']
+        ]
+      },
+      theme: 'snow'
+    });
+    answerEditor.setContents({{{saved}}});
+
+    $('#submit').on('click', function(event) {
+      event.preventDefault();
+      var answer = JSON.stringify(answerEditor.getContents().ops);
+      var post_url = "/mentor/{{post._id}}/answer";
+
+      $.post(post_url, {answer: answer}, function(url) {
+        window.location.replace(url);
+      });
+    });
+
+    /*
+    Moment Date format
+    */
+    $('.moment-timestamp').each(function() {
+      var timestamp = new Date($(this).text());
+      timestamp = moment(timestamp, "MM-DD");
+      $(this).text(timestamp.format("MMM D"));
+      $(this).removeClass('d-none');
+      $(this).show();
+    });
+
+    $('.answer-author').each(function() {
+      var username = '{{username}}';
+      if($(this).text() == username) {
+        $(this).closest('.card').find($('.answer-edit-btn')).attr('hidden', false);
+      }
+    });
+
+    $('.answer-edit-btn').click(function() {
+      var answerBox = $(this).closest('.card');
+      var answerEditor = answerBox.find('.answer-view');
+      answerEditor.removeClass('noborder');
+      var editQuill = new Quill(answerEditor[0], {
+        modules: {
+          toolbar: [
+            [{ header: [1, 2, false] }],
+            ['bold', 'italic', 'underline'],
+            ['image', 'code-block']
+          ]
+        },
+        theme: 'snow'
+      });
+      editQuill.enable();
+      editQuill.focus();
+      answerBox.find('.utils').attr('hidden', false);
+      $(this).attr('hidden', true);
+
+      $('.answer-edit-cancel').click(function() {
+        answerBox.find('.ql-toolbar').hide();
+        answerEditor.addClass('noborder');
+        editQuill.disable();
+        answerBox.find('.utils').attr('hidden', true);
+        answerBox.find('.answer-edit-btn').attr('hidden', false);
+      });
+
+      $('.answer-edit-save').click(function() {
+        var url = '/mentor/' + '{{post._id}}' + '/answers/edit/' + ((answerBox.attr('id').split('-'))[1]);
+        $.post(url, {answer: JSON.stringify(editQuill.getContents().ops)}, function(data) {
+          if(data.auth) {
+            answerBox.find('.ql-toolbar').hide();
+            answerEditor.addClass('noborder');
+            editQuill.disable();
+            answerBox.find('.utils').attr('hidden', true);
+            answerBox.find('.answer-edit-btn').attr('hidden', false);
+          }else{
+            window.location.replace("http://" + window.location.host + data.url);
+          }
+        });
+      });
+
+      $('#start-project').on('click', function(event) {
+        event.preventDefault();
+        var stringID = window.location.pathname.split('/');
+        stringID = stringID[stringID.length-1];
+
+        $.post('/projects/' + stringID + '/start-project', {postID: stringID}, function(){
+          window.location.replace("http://" + window.location.host + "/projects");
+        });
+      });
+
+    });
+  };
+</script>

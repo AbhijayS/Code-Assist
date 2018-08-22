@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:300,300i,400,700" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/regular.css" integrity="sha384-avJt9MoJH2rB4PKRsJRHZv7yiFZn8LrnXuzvmZoD3fh1aL6aM6s0BBcnCvBe6XSD" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/solid.css" integrity="sha384-TbilV5Lbhlwdyc4RuIV/JhD8NR+BfMrvz4BL5QFa2we1hQu6wvREr3v6XSRfCTRp" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/fontawesome.css" integrity="sha384-ozJwkrqb90Oa3ZNb+yKFW2lToAWYdTiF1vt8JiH5ptTGHTGcN7qdoR1F95e0kYyG" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="/css/projects.css">
+    <title>Projects</title>
+  </head>
+  <body>
+    <!-- Navbar Template -->
+    <div class="container" style="z-index: 2;">
+      <nav class="navbar navbar-expand-lg navbar-light pt-3">
+        <a class="navbar-brand" href="/">
+          Code Assist
+        </a>
+
+        <button class="navbar-toggler text-dark" data-toggle="collapse" data-target=".navbarMenu">
+          <i class="fas fa-bars"></i>
+        </button>
+
+        <div class="collapse navbar-collapse navbarMenu pl-5">
+          <ul class="navbar-nav ml-auto">
+            {{#if user}}
+              <li class="nav-item px-3">
+                <a href="/dashboard" class="nav-link">
+                  <i class="fas fa-tachometer-alt d-xl-inline d-md-inline d-lg-none"></i> Dashboard
+                </a>
+              </li>
+            {{else}}
+              <li class="nav-item px-3">
+                <a href="/community" class="nav-link">
+                  <i class="fas fa-people-carry d-xl-inline d-md-inline d-lg-none"></i> Community
+                </a>
+              </li>
+            {{/if}}
+
+            <!-- <li class="nav-item px-3">
+              <a href="/blog" class="nav-link">
+                <i class="far fa-newspaper d-xl-inline d-md-inline d-lg-none"></i> Blog
+              </a>
+            </li> -->
+
+            <li class="nav-item px-3">
+              <a href="/projects" class="nav-link">
+                <i class="fas fa-project-diagram d-xl-inline d-md-inline d-lg-none"></i> Projects
+              </a>
+            </li>
+
+            <li class="nav-item px-3">
+              <a href="/contact" class="nav-link special">
+                <i class="fas fa-envelope-open d-xl-inline d-md-inline d-lg-none"></i> Contact Us
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="collapse navbar-collapse navbarMenu">
+          <ul class="navbar-nav ml-auto">
+            {{#if user}}
+              <!-- <li class="nav-item px-3" {{#if hideGoPremiumBtn}}style="visibility: hidden;"{{/if}}>
+                <a href="/plans" class="btn btn-primary">
+                  <i class="fas fa-crown text-warning"></i> Go Premium
+                </a>
+              </li> -->
+
+              <li class="nav-item px-3">
+                <a href="/account" class="nav-link special">
+                  <i class="far fa-user"></i> {{user.username}}
+                </a>
+              </li>
+
+              <li class="nav-item px-3">
+                <a href="/logout" class="nav-link special">
+                  <i class="fas fa-sign-out-alt"></i> Log Out
+                </a>
+              </li>
+            {{else}}
+              <li class="nav-item px-2">
+                <a href="/register" class="nav-link special">
+                  <i class="fas fa-user-plus"></i> Join
+                </a>
+              </li>
+
+              <li class="nav-item px-2">
+                <a href="/login" class="nav-link special">
+                  <i class="fas fa-sign-in-alt"></i> Sign In
+                </a>
+              </li>
+            {{/if}}
+          </ul>
+        </div>
+      </nav>
+    </div>
+    <hr style="margin: 0; background-color: rgba(255, 255, 255, 0.5);">
+
+    <!-- Side Bar -->
+    <div id="sidebar" style="user-select: none;">
+      <div id="create-project-box" class="sidebar-box"
+      {{#if expanded}}style="width: 350px;"{{/if}}>
+        <div class="content container">
+          <!-- {{#if invite_mentor}}
+          <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <strong>Welcome!</strong> Please create a new project and our mentors will by notified.
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+
+          {{else}}
+          <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <strong>Welcome!</strong> Please create a new project and then you can invite collaborators to the project.
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          {{/if}} -->
+
+          <form class="createNewProject {{#if invite_mentor}}mentor-invite{{else if invite_user}}user-invite{{/if}}">
+            <div class="container">
+              <h3>Create New Project</h3>
+              <hr>
+              <div class="row">
+                <div class="col-12">
+                  <div class="form-group">
+                    <input type="text" class="form-control" maxlength="25" name="project_name" id="project_name" {{#if expanded}}value="{{expanded}}"{{/if}} placeholder="Project Name" required autofocus autocomplete="off">
+                    <div class="text-light invalid-feedback">
+                      Invalid project name.
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <button type="submit" class="btn btn-teal btn-block"><i class="fas fa-plus"></i><span> {{#if invite_mentor}}Create and Invite a Mentor{{else}}Start a Project{{/if}}</span></button>
+                  {{#if invite_mentor}}
+                  <a href="" class="btn btn-secondary btn-block"><span>Invite Later</span></a>
+                  {{/if}}
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- <div id="global-chat-box" class="sidebar-box" style="opacity: 1;">
+        <div class="content container">
+          <ul id="messages"></ul>
+          <form id="submit-messages">
+            <input id="msg" autocomplete="off" /><button>Send</button>
+          </form>
+        </div>
+      </div> -->
+
+      <ul class="list-group">
+        <li id="create-project" class="list-group-item"><i class="fas fa-plus"></i></li>
+        <!-- <li id="global-chat" class="list-group-item"><i class="far fa-comment-alt"></i></li> -->
+        <!-- <li id="global-settings" class="list-group-item"><i class="fas fa-sliders-h"></i></li> -->
+      </ul>
+    </div>
+
+    {{{body}}}
+
+    <div class="site-footer container jumbotron text-center d-none d-sm-block" style="background-color: #f9f9f9;">
+      <a href="/"><h3 class="text-dark">Code Assist</h3></a>
+      <hr>
+      <div class="footerLinks row">
+        <div class="col-5">
+          <p class="footerHeader">Company</p>
+          <p><a href="/contact" class="footerLink">Contact Us</a></p>
+          <p><a href="/team" class="footerLink">The Team</a></p>
+        </div>
+        <div class="socialMediaIcons col-2">
+          <a href="https://www.linkedin.com/company/codeassist"><i class="fab fa-linkedin"></i></a>
+          <i class="fab fa-twitter text-primary"></i>
+          <i class="fab fa-instagram text-primary"></i>
+        </div>
+        <div class="col-5">
+          <p class="footerHeader">Code Assist</p>
+          <p><a href="/community" class="footerLink">Community</a></p>
+          <p><a href="/dashboard" class="footerLink">Dashboard</a></p>
+          <p><a href="/projects" class="footerLink">Projects</a></p>
+        </div>
+      </div>
+
+      <div class="mt-4">Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+    </div>
+
+    <div class="site-footer container jumbotron text-center d-sm-none rounded-0 bg-white" style="background-color: #f9f9f9;">
+      <a href="/"><h3 class="text-dark">Code Assist</h3></a>
+      <hr>
+      <div class="footerLinks row">
+        <div class="col-5">
+          <p class="footerHeader">Company</p>
+          <p><a href="/contact" class="footerLink">Contact Us</a></p>
+          <p><a href="/team" class="footerLink">The Team</a></p>
+        </div>
+        <div class="socialMediaIcons col-2">
+          <a href="https://www.linkedin.com/company/codeassist"><i class="fab fa-linkedin"></i></a>
+          <i class="fab fa-twitter text-primary"></i>
+          <i class="fab fa-instagram text-primary"></i>
+        </div>
+        <div class="col-5">
+          <p class="footerHeader">Code Assist</p>
+          <p><a href="/community" class="footerLink">Community</a></p>
+          <p><a href="/dashboard" class="footerLink">Dashboard</a></p>
+          <p><a href="/projects" class="footerLink">Projects</a></p>
+        </div>
+      </div>
+
+      <div class="mt-2 mb-5 pb-5">Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+    </div>
+
+    <div id="feedback-floating-btn" onclick="relocateFeedback()">
+      <i class="fas fa-bullhorn"></i>
+      <span><strong> Feedback</strong></span>
+    </div>
+    <script type="text/javascript">
+    function relocateFeedback() {
+      window.location.replace('http://' + window.location.host + '/contact');
+    }
+    </script>
+
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.min.js"
+      integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+      crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.2.0/js/all.js" integrity="sha384-4oV5EgaV02iISL2ban6c/RmotsABqE4yZxZLcYMAdG7FAPsyHYAPpywE9PJo+Khy" crossorigin="anonymous"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.slim.js"></script>
+    <script>
+    //Notification Reciever
+    $( document ).ready(function() {
+        var socket = io("/Notify{{user._id}}");
+        console.log(socket);
+        socket.on("notify",function(message){
+          alert(message);
+        });
+      });
+    </script>
+    <script src="/js/projects-dash.js"></script>
+    <script type="text/javascript">
+      var socket = io('{{namespace}}');
+      $(function () {
+        $('#global-chat-box #submit-messages').submit(function(){
+          socket.emit('chat', $(this).find('#msg').val());
+          console.log($(this).find('#msg').val());
+          $(this).find('#msg').val('');
+          return false;
+        });
+        socket.on('broadcastchat', function(msg){
+          console.log(msg);
+          $('#global-chat-box #messages').append($('<li>').text(msg));
+        });
+      });
+    </script>
+  </body>
+</html>

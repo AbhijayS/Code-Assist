@@ -14,6 +14,17 @@
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,300,300i,400,400i,700" rel="stylesheet">
   </head>
   <body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.slim.js"></script>
+    <script>
+    //Notification Reciever
+    $( document ).ready(function() {
+        var socket = io("/Notify{{user._id}}");
+        console.log(socket);
+        socket.on("notify",function(message){
+          alert(message);
+        });
+      });
+    </script>
     <!-- Just an image -->
     <nav class="navbar navbar-toggleable-sm bg-primary navbar-inverse">
       <div class="container">

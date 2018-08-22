@@ -1,0 +1,651 @@
+@import url('https://fonts.googleapis.com/css?family=Nunito:300,300i,400,700');
+
+body {
+  font-family: 'Nunito', sans-serif !important;
+  background-color: #eeeeee54;
+  overflow-x: hidden;
+}
+
+.profile-pic {
+  width: 50px;
+  height: 50px;
+  border: 2px #eee solid !important;
+
+  background-size: contain;
+  display: inline-block;
+
+  background-repeat: no-repeat;
+  background-size: auto 100%;
+  background-position-x: center;
+  border-radius: 5px;
+}
+
+#feedback-floating-btn {
+  display: flex;
+  width: 75px;
+  height: 75px;
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  border-radius: 50%;
+  border: none;
+  background-color: #fffffff2;
+  font-size: 40px;
+  padding: 15px;
+  box-shadow: 0px 3px 20px 3px #1b1b1b5c;
+  cursor: pointer;
+  vertical-align: baseline;
+  transition: 0.7s;
+  overflow: hidden;
+}
+
+#feedback-floating-btn > span {
+  display: none;
+  font-size: 30px;
+  padding-left: 10px;
+  margin-top: auto;
+}
+
+#feedback-floating-btn:hover {
+  background-color: white;
+  box-shadow: 0px 7px 13px 2px #1b1b1b5c;
+  border-radius: 15px;
+  padding-right: 200px;
+}
+
+#feedback-floating-btn:hover > span {
+  display: inline;
+}
+
+nav {
+  z-index: 6;
+  background-color: #f9f9f9;
+}
+
+#sidebar {
+  position: fixed;
+  left: 0;
+  width: 75px;
+  min-height: 100vh;
+  background: linear-gradient(#009688, #007bff);
+  box-shadow: 8px 2px 20px 1px rgba(0,0,0,.14);
+  z-index: 5;
+  padding-top: 60px;
+}
+
+#sidebar li {
+  background: transparent;
+  border: none;
+  border-radius: none;
+  text-align: left;
+  padding: 0;
+  padding-left: 15px;
+  font-size: 40px;
+  color: #fff8f0;
+  margin: 30px 0;
+  font-weight: 200;
+  transition: 0.3s;
+  max-width: 75px;
+}
+
+#sidebar li:hover {
+  cursor: pointer;
+  background-color: #0000001a;
+}
+
+#sidebar li.select {
+  background-color: #0000001a;
+}
+
+.hide {
+  display: none;
+}
+
+#sidebar .sidebar-box {
+  background: linear-gradient(#009688, #007bff);
+  box-shadow: 8px 2px 20px 1px rgba(0,0,0,.14);
+  position: fixed;
+  width: 0px;
+  height: 100%;
+  top: 65px;
+  left: 75px;
+  transition: 0.5s;
+  opacity: 0.8;
+  overflow: hidden;
+}
+
+#sidebar .sidebar-box .content {
+  margin-top: 56px;
+  padding-top: 53px;
+  color: white;
+}
+
+#sidebar #exit-btn {
+  border-top: 2px white solid;
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  width: 75px;
+  margin-bottom: 0;
+}
+/*
+===========================
+    Project Text Editor
+===========================
+*/
+
+html, body {
+	height: 100%;
+	margin: 0;
+  /*overflow: auto;*/
+}
+
+.ui-layout-center {
+  overflow: hidden !important;
+}
+
+.ui-layout-south {
+  padding: 0 !important;
+}
+
+#terminal {
+  /* height: calc(100% - 60px); */
+  height: 100%;
+}
+
+#code-editor {
+  height: 100%;
+}
+
+#code-editor #editor {
+	/* height: 100%; */
+	font-size: 14px;
+}
+
+#editorContainer {
+  padding: 0;
+  height: calc(100% - 64px);
+}
+
+#editorContainer .row {
+  margin: 0;
+  height: 100%;
+}
+
+/* styling for tab input */
+.hiddenSpan {
+	display: none;
+	white-space: pre;
+}
+
+.fileName {
+	outline: none;
+	border: none;
+	cursor: pointer;
+	min-width: 55px;
+	width: 55px;
+}
+
+#fileTabs .close {
+	outline: none !important;
+	color: #a2a2a2 !important;
+  margin-top: -42px !important;
+	margin-right: 5px !important;
+	font-size: 18px !important;
+}
+
+#fileTabs .close:hover {
+	color: red !important;
+}
+
+#fileTabs {
+  flex-shrink: 0;
+}
+
+.fileName, .hiddenSpan {
+	font: inherit;
+	margin: 0;
+	padding: 0;
+}
+
+/* .nav-link {
+	padding-right: 1.5rem !important;
+} */
+/*----------*/
+
+#topBar {
+	margin: 10px;
+}
+
+#output {
+	min-height: 25%;
+	padding: 10px;
+	box-sizing: border-box;
+	width: 100%;
+	background-color: #f1f1f1;
+	resize: vertical;
+	border-color: rgb(210, 208, 208);
+}
+
+.outputError {
+	border-color: red !important;
+}
+
+#programInput {
+	width: 100%;
+}
+
+#buttons {
+	/* width: 104px;
+	margin: 0 auto;
+	margin-top: 20px;
+  position: relative; */
+	position: relative;
+  width: 100%;
+  text-align: center;
+  margin-top: -50px;
+}
+
+#run, #htmlRun {
+	width: 100px;
+	height: 40px;
+}
+
+#htmlRun {
+  position: absolute;
+  bottom: 10px;
+  margin: 0 auto;
+  left: 0;
+  right: 0;
+}
+
+button:enabled {
+	cursor: pointer;
+}
+
+#loadingWheel {
+	margin: 0 10px;
+	height: 40px;
+  display: inline-block;
+  vertical-align: top;
+  position: absolute;
+}
+
+[hidden] {
+	display: none !important;
+}
+
+/*
+======================
+  HTML Preview
+======================
+*/
+
+editorContainer .row {
+	height: 100%;
+}
+
+#htmlPreview {
+	height: 100%;
+	width: 100%;
+	border: none;
+}
+
+#htmlPreviewNewWindow {
+  position: absolute;
+  left: 5px;
+  bottom: 5px;
+  padding: 2px 5px;
+  color: white;
+}
+
+#previewContainer {
+	padding: 0;
+	border: 1px solid rgb(210, 208, 208);
+}
+
+/*
+======================
+  Group Chat
+======================
+*/
+
+#group-chat #all-messages {
+  list-style-type: none;
+  max-height: 50vh;
+  overflow-y: scroll;
+}
+
+/* #group-chat #all-messages::-webkit-scrollbar {
+  width: 0;
+  background-color: transparent;
+} */
+
+/* Turn on custom 8px wide scrollbar */
+#group-chat #all-messages::-webkit-scrollbar {
+  width: 8px; /* 1px wider than Lion. */
+  /* This is more usable for users trying to click it. */
+  background-color: rgba(0,0,0,0);
+  -webkit-border-radius: 100px;
+}
+/* hover effect for both scrollbar area, and scrollbar 'thumb' */
+#group-chat #all-messages::-webkit-scrollbar:hover {
+  background-color: rgba(0, 0, 0, 0.09);
+}
+
+/* The scrollbar 'thumb' ...that marque oval shape in a scrollbar */
+#group-chat #all-messages::-webkit-scrollbar-thumb:vertical {
+  /* This is the EXACT color of Mac OS scrollbars.
+     Yes, I pulled out digital color meter */
+  background: rgba(0,0,0,0.5);
+  -webkit-border-radius: 100px;
+}
+
+#group-chat #all-messages::-webkit-scrollbar-thumb:vertical:active {
+  background: rgba(0,0,0,0.61); /* Some darker color when you click it */
+  -webkit-border-radius: 100px;
+}
+
+
+/*
+======================
+  Video Chat
+======================
+*/
+
+#selfVideo {
+  width: 40%;
+  float: right;
+}
+
+.onlyUserConnected {
+  width: 100% !important;
+  float: unset !important;
+}
+
+.peerVideo {
+  width: 100%;
+}
+
+#peerButtons button {
+  margin-right: 4px;
+}
+
+.ui-layout-east {
+  padding: 10px 0 !important;
+}
+
+.ui-layout-center {
+  padding: 0 !important;
+}
+
+#callButtons, #connectButtons {
+  text-align: center;
+}
+
+#callButtons {
+  margin-top: 10px;
+}
+
+#callButtons button {
+  font-size: 20px;
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  margin: 0 2px;
+}
+
+#peerButtonContainer {
+  margin-left: 10px;
+  margin-bottom: 20px;
+}
+
+/*
+======================
+  Projects Homepage
+======================
+*/
+
+#projects {
+  margin-left: 75px;
+  transition: 0.5s cubic-bezier(0.55, 0.06, 0.68, 0.19);
+}
+
+#projects .card {
+  border-radius: 20px;
+  width: 200px;
+  height: 220px;
+  box-shadow: 6px 4px 19px 0px rgba(0,0,0,.14);
+  border: none;
+  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+  opacity: 0.92;
+  /* border-bottom: 1px solid #007bff; */
+  overflow: hidden;
+}
+
+#projects .card:hover {
+  box-shadow: 0px 0px 1px 7px rgba(0,0,0,.14);
+  opacity: 1;
+  color: #007bff;
+  background: none;
+}
+
+#projects .card .card-body {
+  font-size: 72px;
+}
+
+#projects .card .card-body .thumbnail iframe {
+  width: 1000px;
+  height: 900px;
+  opacity: 0;
+  transition: all 300ms ease-in-out;
+}
+
+#projects .card .card-body .thumbnail {
+  position: relative;
+  -ms-zoom: 0.35;
+  -moz-transform: scale(0.35);
+  -moz-transform-origin: 0 0;
+  -o-transform: scale(0.35);
+  -o-transform-origin: 0 0;
+  -webkit-transform: scale(0.35);
+  -webkit-transform-origin: 0 0;
+}
+
+#projects .card .card-body .thumbnail:after {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.thumbnailLetter {
+  z-index: -2;
+  position: relative;
+}
+
+#projects .card .card-body .thumbnail-container {
+  width: 200px;
+  height: 200px;
+  display: inline-block;
+  overflow: hidden;
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: -1;
+}
+
+#projects .card button {
+  border-radius: 20px;
+}
+
+#projects .card .card-footer {
+  background-color: #007bff;
+  color: white;
+  border-radius: 2px 2px 20px 20px;
+}
+
+#projects .card-link {
+  margin: 10px 30px 30px 10px;
+}
+#projects .container-fluid {
+  padding: 40px 40px 20px 100px;
+
+}
+#projects .flex-container {
+  margin: 0;
+  list-style: none;
+
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+
+  -webkit-flex-flow: row wrap;
+  /* justify-content: space-evenly; */
+  align-items: flex-start;
+}
+
+#projects .dropdown-menu {
+  position: absolute;
+  display: block;
+}
+/*
+=======================
+    Project Settings
+=======================
+*/
+
+#settings {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #363b40bf;
+  z-index: 9;
+}
+
+#settings #box {
+  top: 80px;
+  left: 10%;
+  right: 10%;
+  height: 80%;
+  background-color: white;
+  border-radius: 20px;
+  position: fixed;
+  overflow-y: scroll;
+}
+
+#settings #box::-webkit-scrollbar {
+  width: 0px;  /* remove scrollbar space */
+  background: transparent;  /* optional: just make scrollbar invisible */
+}
+
+#settings .title {
+  font-weight: 700;
+}
+/*
+.close {
+  margin: 0;
+  vertical-align: middle;
+} */
+
+#settings #add-more-emails:hover {
+  color: #007bff;
+  cursor: pointer;
+}
+
+#close-settings {
+  position: fixed;
+  top: 80px;
+  left: calc(10%);
+  font-size: 40px;
+  color: #4e4a4a;
+  opacity: 1;
+  z-index: 10;
+  transition: 0.5s;
+}
+
+#close-settings:hover {
+  color: black;
+  cursor: pointer;
+  transform: rotate(90deg);
+}
+
+
+/*
+====================
+  ParticleJS
+====================
+
+canvas {
+  display: block;
+  vertical-align: bottom;
+}
+#particles-js {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: #eeeeee54;
+  background-image: url("");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: 50% 50%;
+}
+.count-particles {
+  background: #000022;
+  position: absolute;
+  top: 48px;
+  left: 0;
+  width: 80px;
+  color: #13e8e9;
+  font-size: 0.8em;
+  text-align: left;
+  text-indent: 4px;
+  line-height: 14px;
+  padding-bottom: 2px;
+  font-family: Helvetica, Arial, sans-serif;
+  font-weight: bold;
+}
+.js-count-particles {
+  font-size: 1.1em;
+}
+#stats,
+.count-particles {
+  -webkit-user-select: none;
+  margin-top: 5px;
+  margin-left: 5px;
+}
+#stats {
+  border-radius: 3px 3px 0 0;
+  overflow: hidden;
+}
+.count-particles {
+  border-radius: 0 0 3px 3px;
+}
+*/
+
+.socialMediaIcons {
+  margin-top: 5px;
+  font-size: 30px !important;
+  letter-spacing: 10px;
+}
+
+.footerLinks {
+  margin-top: 15px;
+}
+
+.footerLink {
+  margin: 0 5px;
+  color: #343a40 !important;
+}
+
+.footerHeader {
+  color: #343a40 !important;
+  font-weight: bold;
+}

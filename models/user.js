@@ -1,27 +1,57 @@
-// var mongo = require('mongodb');
-// var MongoClient = mongo.MongoClient;
 require('dotenv').config();
 var bcrypt = require('bcryptjs');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
-// mongoose.connect(process.env.DB_HOST);
-// mongoose.connect(process.env.DB_HOST_TEST);
 var db = mongoose.connection;
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+// Chat Schema
+var ChatSchema = new Schema({
+	authorid: String,
+	author:String,
+	message:String,
+	date:String,
+	projectid:String,
+});
 
 // User Schema
 var UserSchema = new Schema({
+
+		membership: {type: String, default: "free"}, // "free", "premium"
+		subscribed: false,
+
+		first: String,
+		last: String,
+
 		username: {
 			type: String,
-			index:true
+			index: true
 		},
+
+		pic: String,
+
+		profile: {
+			status: {type: String, default: "public"} // "public", private"
+		},
+
 	  email: {
 	    type: String
 	  },
+
 		password: {
 			type: String
 		},
 
-		title: String,
+		title: {type: String, default: "user"}, // user, mentor, admin
+
+		bio: String,
+
+		e_link: String,
+
+		forgotpasslastattempt:{type:Date},
+		forgotpass_link: String, // nanoid module 21-characters
+		password_reset_attempts: {type: Number, default: 0}, // max 3 attempts
 
 		posts: [{
 			type: Schema.Types.ObjectId,
@@ -31,7 +61,21 @@ var UserSchema = new Schema({
 		private_posts: [{
 			type: Schema.Types.ObjectId,
 			ref: 'PostSchema'
-		}]
+		}],
+
+		projectsWithAccess:[{
+			type: Schema.Types.ObjectId,
+			ref: 'ProjectSchema'
+		}],
+
+		qualities: {
+			rank: {type: String, default: "bronze"},
+			// bronze, silver, gold, platinum
+
+			assists: {type: Number, default: 0}
+		},
+
+		profile_url: String
 });
 
 var CommunitySchema = new Schema ({
@@ -47,12 +91,63 @@ var FileRefSchema = new Schema ({
 	fileID: Schema.Types.ObjectId
 });
 
+// var ProjectFileSchema = new Schema ({
+// 	fileName: String,
+// 	text: String
+// });
+
+//Project Schema
+var ProjectSchema = new Schema({
+	name: String,
+	thumbnail: String,
+	date_created: {type: Date, default: Date.now},
+	last_modified: {type: Date, default: Date.now},
+
+	owner: {
+		type: Schema.Types.ObjectId,
+		ref: 'UserSchema'
+	},
+
+	usersWithAccess: [{ // Doesn't include owner
+		type: Schema.Types.ObjectId,
+		ref: 'UserSchema'
+	}],
+
+	fileNames: [{
+			type: String,
+	}],
+
+	chatHistory:[{
+	  type: Schema.Types.ObjectId,
+	  ref:'ChatSchema'
+	}],
+
+	assignedMentor: {
+		type: Schema.Types.ObjectId,
+		ref: 'UserSchema'
+	},
+
+	invitationPending: false,
+	mentor_invitation_secret: String,
+
+	status: {type: String, default: "new"} // new, using, unused
+});
+
+// Post Schema
 var PostSchema = new Schema ({
-	author: String,
+	author: {
+		type: Schema.Types.ObjectId,
+		ref: 'UserSchema'
+	},
+	authorid: String,
 	timestamp: {type: Date, default: Date.now},
 	question: String,
 	description: String,
 	prog_lang: String,
+	status: {
+		edited: false
+		// add others in the future
+	},
 	answers: [{
 		type: Schema.Types.ObjectId,
 		ref: 'AnswerSchema'
@@ -60,13 +155,36 @@ var PostSchema = new Schema ({
 	files: [{
 		type: Schema.Types.ObjectId,
 		ref: 'FileRefSchema'
-	}]
+	}],
+	assignedMentor: {
+		type: Schema.Types.ObjectId,
+		ref: 'UserSchema'
+	},
+	userLikes: [{
+		type: Schema.Types.ObjectId,
+		ref: 'UserSchema'
+	}],
+	likeCount: {type: Number, default: 0}
 });
 
 var AnswerSchema = new Schema ({
-	author: String,
-  answer: String,
-	timestamp: {type: Date, default: Date.now}
+	author: {
+		type: Schema.Types.ObjectId,
+		ref: 'UserSchema'
+	},
+	answer: String,
+	timestamp: {type: Date, default: Date.now},
+	userLikes: [{
+		type: Schema.Types.ObjectId,
+		ref: 'UserSchema'
+	}],
+	likeCount: {type: Number, default: 0},
+
+	status: {
+		edited: false
+		// add others in the future
+	}
+
   // ...
 });
 
@@ -75,13 +193,20 @@ var CommunitySchema = mongoose.model('CommunitySchema', CommunitySchema);
 var PostSchema = mongoose.model('PostSchema', PostSchema);
 var AnswerSchema = mongoose.model('AnswerSchema', AnswerSchema);
 var FileRefSchema = mongoose.model('FileRefSchema', FileRefSchema);
+var ProjectSchema = mongoose.model('ProjectSchema', ProjectSchema);
+// var ProjectFileSchema = mongoose.model('ProjectFileSchema', ProjectFileSchema);
+var ChatSchema = mongoose.model('ChatSchema', ChatSchema);
+
 
 module.exports = {
 	UserSchema: User,
 	CommunitySchema: CommunitySchema,
 	PostSchema: PostSchema,
 	AnswerSchema: AnswerSchema,
-	FileRefSchema: FileRefSchema
+	FileRefSchema: FileRefSchema,
+	ProjectSchema: ProjectSchema,
+	// ProjectFileSchema: ProjectFileSchema,
+	ChatSchema: ChatSchema
 }
 
 CommunitySchema.findOne({}).populate('posts').exec(function(err, community) {
@@ -181,6 +306,12 @@ module.exports.getUserByUsername = function(username, callback) {
 	User.findOne(query, callback);
 }
 
+module.exports.getUserByUserId = function(_id, callback) {
+	// "i" regex ignores upper/lowercase
+	var query = {_id: _id};
+	User.findOne(query, callback);
+}
+
 module.exports.getUserByEmail = function(email, callback) {
 	// "i" regex ignores upper/lowercase
 	var query = {email: new RegExp(email, 'i')};
@@ -233,7 +364,51 @@ module.exports.userHasPrivatePostById = function(userID, postID, callback) {
 			return;
 		}
 	});
-}
+};
+
+module.exports.isLinkValid = function(originalDate, compareDate, days, callback) {
+	var diff = (((((Math.abs(originalDate-compareDate))/1000)/60)/60)/24);
+	if(diff <= days) {
+		callback(true);
+		return;
+	}
+	callback(false);
+	return;
+};
+
+module.exports.updateRank = function(user) {
+	if(user.qualities.assists >= 50) {
+		user.qualities.rank = "silver";
+	}else if(user.qualities.assists >= 100) {
+		user.qualities.rank = "gold";
+	}else if(user.qualities.assists >= 250) {
+		user.qualities.rank = "platinum";
+	}else{
+		user.qualities.rank = "bronze";
+	}
+	user.save(function(err) {
+		if(err) throw err;
+		// rank updated!
+	})
+};
+
+module.exports.emailAllMentors = function(subject, msg) {
+	var meta = {
+		from: `Code Assist <${process.env.SENDER_EMAIL}>`,
+		subject: subject,
+		html: msg
+	};
+
+	User.find({title: "mentor"}, function(err, mentors) {
+		console.log("Emailing", mentors.length, "mentors for:", subject);
+		for (var i = 0; i < mentors.length; i++) {
+			var mentor = mentors[i];
+			meta.to = mentor.email;
+			sgMail.send(meta);
+		}
+	});
+	return;
+};
 /*
 ==============================
 Database Utilities

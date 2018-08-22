@@ -1,0 +1,119 @@
+html, body {
+	height: 100%;
+	margin: 0;
+}
+
+#editor {
+	height: 100%;
+	font-size: 14px;
+	visibility: hidden;
+}
+
+#editorContainer {
+	height: 60%;
+	padding: 0;
+}
+
+#editorContainer .row {
+	height: 100%;
+}
+
+#htmlPreview {
+	height: 100%;
+	width: 100%;
+	border: none;
+}
+
+#previewContainer {
+	padding-left: 0;
+	border: 1px solid rgb(210, 208, 208);
+}
+
+/* styling for tab input */
+.hiddenSpan {
+	display: none;
+	white-space: pre;
+}
+
+.fileName {
+	outline: none;
+	border: none;
+	cursor: pointer;
+	min-width: 55px;
+	width: 55px;
+}
+
+.close {
+	margin-top: -42px !important;
+	margin-right: 5px !important;
+	font-size: 18px !important;
+	outline: none !important;
+	color: #a2a2a2 !important;
+}
+
+.close:hover {
+	color: red !important;
+}
+
+.fileName, .hiddenSpan {
+	font: inherit;
+	margin: 0;
+	padding: 0;
+}
+
+.nav-link {
+	padding-right: 1.5rem !important;
+}
+/*----------*/
+
+#topBar {
+	margin: 10px;
+}
+
+#output {
+	min-height: 25%;
+	padding: 10px;
+	box-sizing: border-box;
+	width: 100%;
+	background-color: #f1f1f1;
+	resize: vertical;
+	border-color: rgb(210, 208, 208);
+}
+
+.outputError {
+	border-color: red !important;
+}
+
+#programInput {
+	width: 100%;
+}
+
+#buttons {
+	width: 104px;
+	margin: 0 auto;
+	margin-top: 20px;
+	position: relative;
+}
+
+#run {
+	width: 100px;
+	height: 40px;
+}
+
+button:enabled {
+	cursor: pointer;
+}
+
+#loadingWheel {
+	margin: 0 10px;
+	height: 40px;
+    display: inline-block;
+    vertical-align: top;
+
+    position: absolute;
+    left: 100%;
+}
+
+[hidden] {
+	display: none !important;
+}
