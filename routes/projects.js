@@ -1174,7 +1174,10 @@ function Project(id) {
 			var fireJailArgs = fireJailStr.trim().split(" ");
 			switch(fileExt) {
 				case '.java':
-					exec('javac "' + file.fileName, {cwd: self.folderPath}, function(error, stdout, stderr) {
+					var command = 'javac "' + file.fileName + '"';
+					if (isLinux)
+						command = fireJailStr + command;
+					exec(command, {cwd: self.folderPath}, function(error, stdout, stderr) {
 
 						if (error) {
 							console.log("Projects - Compile Error Given");
@@ -1194,7 +1197,12 @@ function Project(id) {
 
 						// file name without file extension
 						var fileNameNoExt = path.parse(file.fileName).name;
-						self.runner = spawn('java', [fileNameNoExt], {cwd: self.folderPath});
+
+						var command = ['java', fileNameNoExt];
+						if (isLinux)
+							command = fireJailArgs.concat(command);
+
+						self.runner = spawn(command.shift(), command, {cwd: self.folderPath});
 						self.nsp.emit("readyForInput");
 
 						self.runner.stdout.on('data', function(data) {
@@ -1220,8 +1228,6 @@ function Project(id) {
 					var command = ['python', file.fileName];
 					if (isLinux)
 						command = fireJailArgs.concat(command);
-
-					console.log(command);
 
 					self.runner = spawn(command.shift(), command, {cwd: self.folderPath});
 					self.nsp.emit("readyForInput");
