@@ -1169,9 +1169,10 @@ function Project(id) {
 			saveAllFiles(self.folderPath, self.files);
 
 			// console.log("Compiling");
+			var fireJailStr = "firejail --quiet --private=" + self.folderPath + " ";
 			switch(fileExt) {
 				case '.java':
-					exec('javac "' + file.fileName, {cwd: self.folderPath}, function(error, stdout, stderr) {
+					exec(fireJailStr + 'javac "' + file.fileName, {cwd: self.folderPath}, function(error, stdout, stderr) {
 
 						if (error) {
 							console.log("Projects - Compile Error Given");
@@ -1214,7 +1215,7 @@ function Project(id) {
 					});
 					break;
 				case ".py":
-					self.runner = spawn('python', [file.fileName], {cwd: self.folderPath});
+					self.runner = spawn(fireJailStr + 'python', [file.fileName], {cwd: self.folderPath});
 					self.nsp.emit("readyForInput");
 
 					self.runner.stdout.on('data', function(data) {
@@ -1236,7 +1237,7 @@ function Project(id) {
 					});
 					break;
 				case ".cpp":
-					exec('g++ "' + file.fileName, {cwd: self.folderPath}, function(error, stdout, stderr) {
+					exec(fireJailStr + 'g++ "' + file.fileName, {cwd: self.folderPath}, function(error, stdout, stderr) {
 
 						if (error) {
 							console.log("Projects - Compile Error Given");
