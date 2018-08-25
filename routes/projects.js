@@ -14,6 +14,7 @@ var emailTemplate = handlebars.compile(fs.readFileSync('./views/email.handlebars
 
 var zip = new require('node-zip')();
 var easyrtc_server = require('../easyrtc/easyrtc_server_setup');
+var isLinux = (process.platform == 'linux');
 
 const nanoid = require('nanoid');
 const safe_chars = 50;
@@ -1170,9 +1171,10 @@ function Project(id) {
 
 			// console.log("Compiling");
 			var fireJailStr = "firejail --quiet --private=" + self.folderPath + " ";
+			var fireJailArgs = fireJailStr.trim().split(" ");
 			switch(fileExt) {
 				case '.java':
-					exec(fireJailStr + 'javac "' + file.fileName, {cwd: self.folderPath}, function(error, stdout, stderr) {
+					exec('javac "' + file.fileName, {cwd: self.folderPath}, function(error, stdout, stderr) {
 
 						if (error) {
 							console.log("Projects - Compile Error Given");
@@ -1215,7 +1217,11 @@ function Project(id) {
 					});
 					break;
 				case ".py":
-					self.runner = spawn(fireJailStr + 'python', [file.fileName], {cwd: self.folderPath});
+					var command = ['python', [file.fileName]];
+					if (isLinux)
+						command = fireJailArgs.concat(command);
+
+					self.runner = spawn(command.shift(), command, {cwd: self.folderPath});
 					self.nsp.emit("readyForInput");
 
 					self.runner.stdout.on('data', function(data) {
@@ -1237,7 +1243,7 @@ function Project(id) {
 					});
 					break;
 				case ".cpp":
-					exec(fireJailStr + 'g++ "' + file.fileName, {cwd: self.folderPath}, function(error, stdout, stderr) {
+					exec('g++ "' + file.fileName, {cwd: self.folderPath}, function(error, stdout, stderr) {
 
 						if (error) {
 							console.log("Projects - Compile Error Given");
