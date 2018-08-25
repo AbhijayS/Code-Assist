@@ -1170,7 +1170,7 @@ function Project(id) {
 			saveAllFiles(self.folderPath, self.files);
 
 			// console.log("Compiling");
-			var fireJailStr = "firejail --quiet --private=" + self.folderPath + " ";
+			var fireJailStr = "firejail --private=" + self.folderPath + " ";
 			var fireJailArgs = fireJailStr.trim().split(" ");
 			switch(fileExt) {
 				case '.java':
@@ -1217,9 +1217,11 @@ function Project(id) {
 					});
 					break;
 				case ".py":
-					var command = ['python', [file.fileName]];
+					var command = ['python', file.fileName];
 					if (isLinux)
 						command = fireJailArgs.concat(command);
+
+					console.log(command);
 
 					self.runner = spawn(command.shift(), command, {cwd: self.folderPath});
 					self.nsp.emit("readyForInput");
