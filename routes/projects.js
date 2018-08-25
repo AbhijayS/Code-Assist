@@ -1251,7 +1251,10 @@ function Project(id) {
 					});
 					break;
 				case ".cpp":
-					exec('g++ "' + file.fileName, {cwd: self.folderPath}, function(error, stdout, stderr) {
+					var command = 'g++ "' + file.fileName + '"';
+					if (isLinux)
+						command = fireJailStr + command;
+					exec(command, {cwd: self.folderPath}, function(error, stdout, stderr) {
 
 						if (error) {
 							console.log("Projects - Compile Error Given");
@@ -1266,7 +1269,8 @@ function Project(id) {
 						}
 
 						// file name without file extension
-						self.runner = spawn('a.exe', {cwd: self.folderPath});
+						var command = isLinux ? './a.out' : 'a.exe';
+						self.runner = spawn(command, {cwd: self.folderPath});
 						self.nsp.emit("readyForInput");
 
 						self.runner.stdout.on('data', function(data) {
