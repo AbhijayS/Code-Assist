@@ -1179,7 +1179,7 @@ function Project(id) {
 						command = fireJailStr + command;
 					exec(command, {cwd: self.folderPath}, function(error, stdout, stderr) {
 
-						if (error) {
+						if (error || stderr.trim()) {
 							console.log("Projects - Compile Error Given");
 							console.log(stderr.replace(/\n$/, "")); //regex gets rid of newline character
 
@@ -1256,7 +1256,7 @@ function Project(id) {
 						command = fireJailStr + command;
 					exec(command, {cwd: self.folderPath}, function(error, stdout, stderr) {
 
-						if (error) {
+						if (error || stderr.trim()) {
 							console.log("Projects - Compile Error Given");
 							console.log(stderr.replace(/\n$/, "")); //regex gets rid of newline character
 
