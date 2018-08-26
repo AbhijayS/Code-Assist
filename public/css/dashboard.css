@@ -211,6 +211,7 @@ Team Page (team.handlebars)
 
 #team-body #a_img{
   background-image: url('../images/abhijay.jpg');
+  background-position-x: 58%;
 }
 
 #team-body #i_img{
@@ -223,6 +224,11 @@ Team Page (team.handlebars)
 
 #team-body .description hr{
   border-style: solid;
+}
+
+#team-body .title {
+  font-size: 16px;
+  vertical-align: super;
 }
 
 /* #team-body #right-col {
