@@ -54,28 +54,16 @@ body{
   left: 54%;
 }
 
-#collaboration {
-  background-image: url('/images/conversation.svg');
-  top: 50%;
-  left: 70%;
-}
-
 #education {
   background-image: url('/images/learning.svg');
-  bottom: 11%;
-  left: 48%;
+  top: 50%;
+  left: 70%;
 }
 
 #online-learning-collapsed {
   background-image: url('/images/online-learning.svg');
   bottom: 45%;
   left: 73%;
-}
-
-#collaboration-collapsed {
-  background-image: url('/images/conversation.svg');
-  bottom: 30%;
-  left: 44%;
 }
 
 #education-collapsed {
