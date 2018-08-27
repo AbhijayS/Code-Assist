@@ -137,6 +137,8 @@ router.post('/post', upload.array('file'), function(req, res) {
       pPost.question = question;
       pPost.description = description;
       pPost.prog_lang = req.body.programming;
+
+      if(pPost.question.length<=30){
       for (var i = 0; i < req.files.length; i++) {
         // console.log(req.files[i]);
 
@@ -240,6 +242,7 @@ router.post('/post', upload.array('file'), function(req, res) {
         };
         sgMail.send(msg);
       }
+    }
     });
   }
 });
