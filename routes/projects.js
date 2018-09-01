@@ -1130,7 +1130,17 @@ function Project(id) {
 			}
 		});
 
+		socket.on("terminateProgram", function() {
+			if (self.runner) {
+				self.runner.kill();
+				socket.broadcast.emit("programTerminated");
+			}
+		});
+
 		socket.on("run", function(fileIndex) {
+			if (self.runner)
+				self.runner.kill();
+
 			var file = self.files[fileIndex];
 			var fileExt = path.extname(file.fileName);
 

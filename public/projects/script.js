@@ -366,14 +366,39 @@ socket.on("renameFile", function(newFileName, fileIndex) {
 });
 
 $("#run, #htmlRun").click(function() {
-	runProgram();
+  if ($("#run, #htmlRun").hasClass("btn-primary")) {
+    runProgram();
+  } else {
+    socket.emit("terminateProgram");
+    resetRunButtons();
+    $("#loadingWheel").hide();
+  }
 });
 
 $(document).keydown(function(e) {
 	if (e.ctrlKey && e.keyCode == 13) {
-		runProgram();
+    if ($("#run, #htmlRun").hasClass("btn-primary")) {
+      runProgram();
+    } else {
+      socket.emit("terminateProgram");
+      resetRunButtons();
+      $("#loadingWheel").hide();
+    }
 	}
 });
+
+socket.on("programTerminated", function() {
+  resetRunButtons();
+  $("#loadingWheel").hide();
+});
+
+function resetRunButtons() {
+  var runBtns = $("#run, #htmlRun");
+  runBtns.removeClass("btn-danger");
+  runBtns.addClass("btn-primary");
+  runBtns.text("Run");
+  $("#run, #htmlRun").prop("disabled", false);
+}
 
 function reloadIframe(fileIndex, text) {
 	$("#htmlPreview").get(0).contentDocument.location.reload(true);
@@ -403,13 +428,23 @@ function updateHtmlPreviewWindow(fileIndex) {
   editor.resize();
 }
 
+function activateCancelProgramBtns() {
+  var runBtns = $("#run, #htmlRun");
+  runBtns.removeClass("btn-primary");
+  runBtns.addClass("btn-danger");
+  runBtns.text("Stop");
+  $("#run, #htmlRun").prop("disabled", true);
+}
+
 function runProgram() {
 	var fileIndex = $("#code-editor .nav-link").index($("#code-editor .nav-link.active"));
 	var fileName = $("#code-editor .nav-link.active").find(".fileName").val();
 
+  activateCancelProgramBtns();
+
 	socket.emit("run", fileIndex);
 	$("#loadingWheel").show();
-	$("#run, #htmlRun").prop("disabled", true);
+	// $("#run, #htmlRun").prop("disabled", true);
 	// $('#output').removeClass("outputError");
 	// $('#output').val("");
   terminal.clear();
@@ -421,7 +456,8 @@ function runProgram() {
 
 socket.on("programRunning", function(fileIndex) {
 	$("#loadingWheel").show();
-	$("#run, #htmlRun").prop("disabled", true);
+  activateCancelProgramBtns();
+	// $("#run, #htmlRun").prop("disabled", true);
 	// $('#output').removeClass("outputError");
 	// $('#output').val("");
   terminal.clear();
@@ -442,12 +478,12 @@ socket.on("output", function(text) {
 
 socket.on("runFinished", function() {
 	$("#loadingWheel").hide();
-	$("#run, #htmlRun").prop("disabled", false);
+  resetRunButtons();
 	// $("#programInput").prop("disabled", true);
 });
 
 socket.on("readyForInput", function() {
-	// $("#programInput").prop("disabled", false);
+	$("#run, #htmlRun").prop("disabled", false);
 });
 
 socket.on("programInput", function(text) {
