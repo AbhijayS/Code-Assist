@@ -20,6 +20,7 @@ var UserSchema = new Schema({
 
 		membership: {type: String, default: "free"}, // "free", "premium"
 		subscribed: false,
+		status: {type: String, default: "new"}, // "new", "using"
 
 		first: String,
 		last: String,
