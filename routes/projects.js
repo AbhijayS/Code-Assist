@@ -1180,7 +1180,7 @@ function Project(id) {
 			saveAllFiles(self.folderPath, self.files);
 
 			// console.log("Compiling");
-			var fireJailStr = "firejail --quiet --private=. ";
+			var fireJailStr = "firejail --quiet --private=. --timeout=01:00:00";
 			var fireJailArgs = fireJailStr.trim().split(" ");
 			switch(fileExt) {
 				case '.java':
