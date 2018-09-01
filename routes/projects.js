@@ -872,6 +872,7 @@ function Project(id) {
 		//chat handler
 		socket.on("chat",function(msg,chatterid,chatter){
 			//console.log(msg+'  ');
+			if(msg.length<=500){
 			var NewChatMessage = new User.ChatSchema();
 			NewChatMessage.authorid=chatterid;
 			NewChatMessage.author=chatter;
@@ -899,6 +900,7 @@ function Project(id) {
 					console.log(error);
 				}
 			});
+		}
 		});
 
 		socket.on("updateFile", function(text, fileIndex) {
