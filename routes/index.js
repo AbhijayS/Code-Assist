@@ -211,7 +211,14 @@ router.get('/logout', function(req, res) {
 router.get('/dashboard', function(req, res) {
   if(req.user)
   {
-    res.render('dashboard', {layout: 'dashboard-layout'});
+    res.render('dashboard', {layout: 'dashboard-layout', new_user: req.user.status == "new", username: req.user.username});
+    if(req.user.status == "new") {
+      req.user.status = "using";
+      req.user.save(function(err) {
+        if(err) throw err;
+        //saved
+      });
+    }
   }else{
     req.flash('origin');
     req.flash('origin', '/dashboard');
@@ -301,7 +308,7 @@ router.post('/register', function(req, res) {
                   }).end(function(err, response) {
                     if (response.status < 300 || (response.status === 400 && response.body.title === "Member Exists")) {
                       // sign up successful
-                      res.redirect('/account');
+                      res.redirect('/dashboard');
                     } else {
                       // res.send('Sign Up Failed :( Sorry, this is on our end');
                       res.redirect('/login');
