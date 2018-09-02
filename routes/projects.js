@@ -1190,8 +1190,8 @@ function Project(id) {
 					exec(command, {cwd: self.folderPath}, function(error, stdout, stderr) {
 
 						if (error || stderr.trim()) {
-							console.log("Projects - Compile Error Given");
-							console.log(stderr.replace(/\n$/, "")); //regex gets rid of newline character
+							// console.log("Projects - Compile Error Given");
+							// console.log(stderr.replace(/\n$/, "")); //regex gets rid of newline character
 
 							self.output = stderr;
 							self.outputError = true;
@@ -1218,14 +1218,14 @@ function Project(id) {
 						self.runner.stdout.on('data', function(data) {
 							self.output += data;
 							self.nsp.emit("output", data.toString());
-							process.stdout.write(data);
+							// process.stdout.write(data);
 						});
 
 						self.runner.stderr.on('data', function(data) {
 							self.output += data;
 							self.nsp.emit("outputError", data.toString());
 							self.outputError = true;
-							process.stdout.write(data);
+							// process.stdout.write(data);
 						});
 
 						self.runner.on('exit', function() {
@@ -1245,14 +1245,14 @@ function Project(id) {
 					self.runner.stdout.on('data', function(data) {
 						self.output += data;
 						self.nsp.emit("output", data.toString());
-						process.stdout.write(data);
+						// process.stdout.write(data);
 					});
 
 					self.runner.stderr.on('data', function(data) {
 						self.output += data;
 						self.nsp.emit("outputError", data.toString());
 						self.outputError = true;
-						process.stdout.write(data);
+						// process.stdout.write(data);
 					});
 
 					self.runner.on('exit', function() {
@@ -1267,8 +1267,8 @@ function Project(id) {
 					exec(command, {cwd: self.folderPath}, function(error, stdout, stderr) {
 
 						if (error || stderr.trim()) {
-							console.log("Projects - Compile Error Given");
-							console.log(stderr.replace(/\n$/, "")); //regex gets rid of newline character
+							// console.log("Projects - Compile Error Given");
+							// console.log(stderr.replace(/\n$/, "")); //regex gets rid of newline character
 
 							self.output = stderr;
 							self.outputError = true;
@@ -1286,14 +1286,14 @@ function Project(id) {
 						self.runner.stdout.on('data', function(data) {
 							self.output += data;
 							self.nsp.emit("output", data.toString()+"\n");
-							console.log(data.toString());
+							// console.log(data.toString());
 						});
 
 						self.runner.stderr.on('data', function(data) {
 							self.output += data;
 							self.nsp.emit("outputError", data.toString()+"\n");
 							self.outputError = true;
-							console.log(data.toString());
+							// console.log(data.toString());
 						});
 
 						self.runner.on('exit', function() {
