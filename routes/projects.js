@@ -73,7 +73,7 @@ router.post('/', function(req, res){
 	var project_name = req.body.project_name;
 
 	if(req.user) {
-		if((project_name.length > 1) && (project_name.length <= 25) && !(project_name.includes('/'))) {
+		if((project_name.length > 1) && (project_name.length <= 20) && !(project_name.includes('/'))) {
 			var newProject = new User.ProjectSchema();
 			newProject.name = project_name.trim();
 			newProject.owner = req.user._id;
@@ -895,6 +895,7 @@ function Project(id) {
 		//chat handler
 		socket.on("chat",function(msg,chatterid,chatter){
 			//console.log(msg+'  ');
+			if(msg.length<=500){
 			var NewChatMessage = new User.ChatSchema();
 			NewChatMessage.authorid=chatterid;
 			NewChatMessage.author=chatter;
@@ -922,6 +923,7 @@ function Project(id) {
 					console.log(error);
 				}
 			});
+		}
 		});
 
 		socket.on("updateFile", function(text, fileIndex) {
