@@ -406,7 +406,7 @@ router.post('/username-change', function(req, res) {
     var username = req.body.username;
     console.log("New username:", username);
     const regex = /^[a-z][a-z0-9_\.]{2,24}$/i;
-    if(regex.exec(username)) {
+    if(regex.exec(username)&& username.length<=30) {
       if(username == req.user.username)
       {
         res.send({status: true});
@@ -440,7 +440,7 @@ router.post('/first-name-change', function(req, res) {
   var firstName = req.body.firstName;
   if(req.user) {
     console.log(firstName);
-    if(firstName && firstName.length >=1) {
+    if(firstName && firstName.length >=1 && firstName.length<=20) {
       req.user.first = firstName;
       req.user.save(function (err) {
         if (err) throw err;
@@ -460,7 +460,7 @@ router.post('/first-name-change', function(req, res) {
 router.post('/last-name-change', function(req, res) {
   var lastName = req.body.lastName;
   if(req.user) {
-    if(lastName && lastName.length >=1) {
+    if(lastName && lastName.length >=1 && lastName.length<=20) {
       req.user.last = lastName;
       req.user.save(function (err) {
         if (err) throw err;
