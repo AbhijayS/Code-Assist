@@ -148,6 +148,14 @@ html, body {
   padding: 0 !important;
 }
 
+.ui-layout-resizer-south, .ui-layout-toggler-south {
+  height: 15px !important;
+}
+
+.ui-layout-resizer-east, .ui-layout-toggler-east {
+  width: 15px !important;
+}
+
 #terminal {
   /* height: calc(100% - 60px); */
   height: 100%;

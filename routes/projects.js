@@ -784,6 +784,29 @@ function Project(id) {
 
 	this.files = [];
 
+	this.msgCount;
+	this.msgCountResetter;
+	this.checkMsgCount = function() {
+		self.msgCount++;
+		// console.log(self.msgCount)
+		if (self.msgCount >= 5) {
+			// console.log("program terminated")
+			self.runner.kill();
+			clearInterval(self.msgCountResetter);
+			self.nsp.emit("programTerminated");
+			self.nsp.emit("outputError", "Your program printed to the console too quickly. You may need to add a delay between each print statement in your program.");
+			return false;
+		} else {
+			return true;
+		}
+	}
+	this.startMessageResetter = function() {
+		self.msgCount = 0;
+		self.msgCountResetter = setInterval(function() {
+			self.msgCount = 0;
+		}, 50);
+	}
+
 	this.getFileByName = function(fileName) {
 		for (var i = 0; i < this.files.length; i++) {
 			if (this.files[i].fileName == fileName)
@@ -1130,7 +1153,20 @@ function Project(id) {
 			}
 		});
 
+		socket.on("terminateProgram", function() {
+			if (self.runner) {
+				self.runner.kill();
+				clearInterval(self.msgCountResetter);
+				socket.broadcast.emit("programTerminated");
+			}
+		});
+
 		socket.on("run", function(fileIndex) {
+			if (self.runner)
+				self.runner.kill();
+
+			clearInterval(self.msgCountResetter);
+
 			var file = self.files[fileIndex];
 			var fileExt = path.extname(file.fileName);
 
@@ -1170,7 +1206,7 @@ function Project(id) {
 			saveAllFiles(self.folderPath, self.files);
 
 			// console.log("Compiling");
-			var fireJailStr = "firejail --quiet --private=. ";
+			var fireJailStr = "firejail --quiet --private=. --timeout=01:00:00";
 			var fireJailArgs = fireJailStr.trim().split(" ");
 			switch(fileExt) {
 				case '.java':
@@ -1180,8 +1216,8 @@ function Project(id) {
 					exec(command, {cwd: self.folderPath}, function(error, stdout, stderr) {
 
 						if (error || stderr.trim()) {
-							console.log("Projects - Compile Error Given");
-							console.log(stderr.replace(/\n$/, "")); //regex gets rid of newline character
+							// console.log("Projects - Compile Error Given");
+							// console.log(stderr.replace(/\n$/, "")); //regex gets rid of newline character
 
 							self.output = stderr;
 							self.outputError = true;
@@ -1202,24 +1238,30 @@ function Project(id) {
 						if (isLinux)
 							command = fireJailArgs.concat(command);
 
+						self.startMessageResetter();
 						self.runner = spawn(command.shift(), command, {cwd: self.folderPath});
 						self.nsp.emit("readyForInput");
 
 						self.runner.stdout.on('data', function(data) {
-							self.output += data;
-							self.nsp.emit("output", data.toString());
-							process.stdout.write(data);
+							if (self.checkMsgCount()) {
+								self.output += data;
+								self.nsp.emit("output", data.toString());
+								// process.stdout.write(data);
+							}
 						});
 
 						self.runner.stderr.on('data', function(data) {
-							self.output += data;
-							self.nsp.emit("outputError", data.toString());
-							self.outputError = true;
-							process.stdout.write(data);
+							if (self.checkMsgCount()) {
+								self.output += data;
+								self.nsp.emit("outputError", data.toString());
+								self.outputError = true;
+								// process.stdout.write(data);
+							}
 						});
 
 						self.runner.on('exit', function() {
 							self.nsp.emit("runFinished");
+							clearInterval(self.msgCountResetter);
 							// console.log('Run Finished');
 						});
 					});
@@ -1229,24 +1271,30 @@ function Project(id) {
 					if (isLinux)
 						command = fireJailArgs.concat(command);
 
+					self.startMessageResetter();
 					self.runner = spawn(command.shift(), command, {cwd: self.folderPath});
 					self.nsp.emit("readyForInput");
 
 					self.runner.stdout.on('data', function(data) {
-						self.output += data;
-						self.nsp.emit("output", data.toString());
-						process.stdout.write(data);
+						if (self.checkMsgCount()) {
+							self.output += data;
+							self.nsp.emit("output", data.toString());
+							// process.stdout.write(data);
+						}
 					});
 
 					self.runner.stderr.on('data', function(data) {
-						self.output += data;
-						self.nsp.emit("outputError", data.toString());
-						self.outputError = true;
-						process.stdout.write(data);
+						if (self.checkMsgCount()) {
+							self.output += data;
+							self.nsp.emit("outputError", data.toString());
+							self.outputError = true;
+							// process.stdout.write(data);
+						}
 					});
 
 					self.runner.on('exit', function() {
 						self.nsp.emit("runFinished");
+						clearInterval(self.msgCountResetter);
 						// console.log('Run Finished');
 					});
 					break;
@@ -1257,8 +1305,8 @@ function Project(id) {
 					exec(command, {cwd: self.folderPath}, function(error, stdout, stderr) {
 
 						if (error || stderr.trim()) {
-							console.log("Projects - Compile Error Given");
-							console.log(stderr.replace(/\n$/, "")); //regex gets rid of newline character
+							// console.log("Projects - Compile Error Given");
+							// console.log(stderr.replace(/\n$/, "")); //regex gets rid of newline character
 
 							self.output = stderr;
 							self.outputError = true;
@@ -1270,24 +1318,31 @@ function Project(id) {
 
 						// file name without file extension
 						var command = isLinux ? './a.out' : 'a.exe';
+
+						self.startMessageResetter();
 						self.runner = spawn(command, {cwd: self.folderPath});
 						self.nsp.emit("readyForInput");
 
 						self.runner.stdout.on('data', function(data) {
-							self.output += data;
-							self.nsp.emit("output", data.toString()+"\n");
-							console.log(data.toString());
+							if (self.checkMsgCount()) {
+								self.output += data;
+								self.nsp.emit("output", data.toString()+"\n");
+								// console.log(data.toString());
+							}
 						});
 
 						self.runner.stderr.on('data', function(data) {
-							self.output += data;
-							self.nsp.emit("outputError", data.toString()+"\n");
-							self.outputError = true;
-							console.log(data.toString());
+							if (self.checkMsgCount()) {
+								self.output += data;
+								self.nsp.emit("outputError", data.toString()+"\n");
+								self.outputError = true;
+								// console.log(data.toString());
+							}
 						});
 
 						self.runner.on('exit', function() {
 							self.nsp.emit("runFinished");
+							clearInterval(self.msgCountResetter);
 							// console.log('Run Finished');
 						});
 					});
