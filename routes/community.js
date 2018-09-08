@@ -452,6 +452,12 @@ router.post('/:id/delete', function(req, res){
 	});
 });
 
+//Serverside Delete Answer Handling
+router.post('/:id/deleteanswer', function(req, res){
+  User.AnswerSchema.findOneAndRemove({_id: req.params.id}, function(err, user) {
+	});
+});
+
 router.post('/:id/answer', function(req, res){
   var postID = req.params.id;
   var message = req.body.answer;
