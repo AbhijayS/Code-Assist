@@ -456,6 +456,12 @@ router.post('/:id/answer', function(req, res){
   var postID = req.params.id;
   var message = req.body.answer;
 
+	if (message == '[{"insert":"\\n"}]') {
+		console.log("invalid answer");
+		res.end();
+		return false;
+	}
+
   if(req.user)
   {
     User.PostSchema.findOne({_id: postID}).populate(['answers', 'author']).exec(function(err, post) {
