@@ -249,7 +249,7 @@ html, body {
 	margin-top: 20px;
   position: relative; */
 	position: relative;
-  width: 100%;
+  width: calc(100% - 17px);
   text-align: center;
   margin-top: -50px;
 }
