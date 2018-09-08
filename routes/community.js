@@ -237,7 +237,7 @@ router.post('/post', upload.array('file'), function(req, res) {
 		var questionInvalid = false;
 		var descriptionInvalid = false;
 
-		if (question.trim().split(' ').length < 1 || question.length>150) {
+		if (question.trim().split(' ').length < 2 || question.length>150) {
 			data.questionInvalid = true;
 			res.send(data);
 		}else{
@@ -711,7 +711,7 @@ router.post('/post/edit/:id', upload.array('file'), function(req, res) {
 		var removedFileIds = req.body.removedFileIds;
 		// console.log("removedFileIds:", removedFileIds);
 
-		if (question.trim().split(' ').length < 1 || question.length>150) {
+		if (question.trim().split(' ').length < 2 || question.length>150) {
 			data.questionInvalid = true;
 			res.send(data);
 		}else{
