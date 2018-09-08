@@ -28,7 +28,7 @@
 
     <button type="button" class="d-none d-md-block btn btn-info btn-lg float-right start-project"><i class="fas fa-code-branch"></i> Create Project</button>
     {{#if isowner}}
-    <button class="btn btn-danger" href="/community" id="delete" type="button" name="button" action=" " >Delete Post</button>
+    <button class="btn btn-danger" id="delete" type="button" name="button">Delete Post</button>
     {{/if}}
     <button type="button" class="d-md-none btn btn-info float-right start-project" data-toggle="modal"><i class="fas fa-code-branch"></i> Create Project</button>
   </div>
@@ -362,7 +362,8 @@
       var post_url2 = "/community/{{post.id}}/delete";
       var thepost='ah';
       $.post(post_url2, {deletedpost:"thepost"}, function(url) {
-        window.location.replace(window.location.host + url);
+        console.log(url);
+        window.location.replace(url);
       });
     });
 
