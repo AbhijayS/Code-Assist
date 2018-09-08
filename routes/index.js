@@ -480,7 +480,7 @@ router.post('/last-name-change', function(req, res) {
 router.post('/change-bio', function(req, res) {
   var newBio = req.body.bio;
   if(req.user) {
-    if(newBio.length <= 120) {
+    if(newBio.length <= 250) {
       if(newBio.length > 0) {
         req.user.bio = newBio;
         req.user.save(function(err) {
