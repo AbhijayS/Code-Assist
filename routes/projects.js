@@ -1253,12 +1253,10 @@ function Project(id) {
 						});
 
 						self.runner.stderr.on('data', function(data) {
-							if (self.checkMsgCount()) {
-								self.output += data;
-								self.nsp.emit("outputError", data.toString());
-								self.outputError = true;
-								// process.stdout.write(data);
-							}
+							self.output += data;
+							self.nsp.emit("outputError", data.toString());
+							self.outputError = true;
+							// process.stdout.write(data);
 						});
 
 						self.runner.on('exit', function() {
@@ -1286,12 +1284,10 @@ function Project(id) {
 					});
 
 					self.runner.stderr.on('data', function(data) {
-						if (self.checkMsgCount()) {
-							self.output += data;
-							self.nsp.emit("outputError", data.toString());
-							self.outputError = true;
-							// process.stdout.write(data);
-						}
+						self.output += data;
+						self.nsp.emit("outputError", data.toString());
+						self.outputError = true;
+						// process.stdout.write(data);
 					});
 
 					self.runner.on('exit', function() {
@@ -1334,12 +1330,10 @@ function Project(id) {
 						});
 
 						self.runner.stderr.on('data', function(data) {
-							if (self.checkMsgCount()) {
-								self.output += data;
-								self.nsp.emit("outputError", data.toString()+"\n");
-								self.outputError = true;
-								// console.log(data.toString());
-							}
+							self.output += data;
+							self.nsp.emit("outputError", data.toString()+"\n");
+							self.outputError = true;
+							// console.log(data.toString());
 						});
 
 						self.runner.on('exit', function() {
