@@ -143,7 +143,7 @@
         </div>
       </div>
 
-      <button class="btn btn-outline-primary btn-lg btn-block py-3" id="submit">Post your answer</button>
+      <button class="btn btn-outline-primary btn-lg btn-block py-3" id="submit">Post your answer<img id="postLoading" class="transparentBack ml-2" src="/images/loadingwheel.gif" style="height: 32px; display: none;"></button>
     </form>
   </div>
 </div>
@@ -335,6 +335,7 @@
         $("#blank-answer-alert").show();
       } else {
         $("#blank-answer-alert").hide();
+        $("#postLoading").show();
         var answer = JSON.stringify(answerEditor.getContents().ops);
         var post_url = "/community/{{post._id}}/answer";
 
