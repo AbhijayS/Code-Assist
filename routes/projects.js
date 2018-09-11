@@ -789,7 +789,7 @@ function Project(id) {
 	this.checkMsgCount = function() {
 		self.msgCount++;
 		// console.log(self.msgCount)
-		if (self.msgCount >= 5) {
+		if (self.msgCount >= 1000) {
 			// console.log("program terminated")
 			self.runner.kill();
 			clearInterval(self.msgCountResetter);
@@ -804,7 +804,7 @@ function Project(id) {
 		self.msgCount = 0;
 		self.msgCountResetter = setInterval(function() {
 			self.msgCount = 0;
-		}, 50);
+		}, 1000);
 	}
 
 	this.getFileByName = function(fileName) {
