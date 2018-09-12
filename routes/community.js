@@ -332,9 +332,7 @@ router.get('/:id', function(req, res) {
 			} else if (req.user) {
 				res.render('community-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description, username: req.user.username});
 			} else {
-				req.flash('origin');
-		    req.flash('origin', '/community/' + postID);
-				res.redirect('/login');
+				res.render('community-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description});
 			}
 		}else{
 			res.redirect('/community');
