@@ -22,14 +22,15 @@
     <hr>
     {{#if isowner}}
     <a href="/community/post/edit/{{post._id}}"><i class="fas fa-pencil-alt"></i> Edit</a>
+    <a href="#delete-project-modal" data-toggle="modal" data-target="#delete-project-modal" class="ml-3 text-danger"><i class="fas fa-trash-alt"></i> Delete</a>
     {{else}}
     <a href="#flagPost" data-toggle="modal" data-target="#flagPost" class="text-secondary"><i class="far fa-flag"></i> Flag Post</a>
     {{/if}}
 
     <button type="button" class="d-none d-md-block btn btn-info btn-lg float-right start-project"><i class="fas fa-code-branch"></i> Create Project</button>
-    {{#if isowner}}
+    <!-- {{#if isowner}}
     <button class="btn btn-danger" id="delete" type="button" name="button">Delete Post</button>
-    {{/if}}
+    {{/if}} -->
     <button type="button" class="d-md-none btn btn-info float-right start-project" data-toggle="modal"><i class="fas fa-code-branch"></i> Create Project</button>
   </div>
 </div>
@@ -48,8 +49,7 @@
   <div id="post-{{post._id}}" class="card mb-5">
     <div class="card-header bg-white">
       <div class="float-left d-flex" style="font-size: 16px;">
-        <div class="profile-pic" style="background-image: url({{post.author.pic}});">
-        </div>
+        <a href="/users/profile/{{post.author.id}}"><div class="profile-pic" style="background-image: url({{post.author.pic}});"></div></a>
         <div class="ml-2">
           <p class="m-0">{{post.author.username}}</p>
           <span class="text-muted">asked <span class="moment-timestamp" style="display: none;">{{post.timestamp}}</span></span>
@@ -103,8 +103,7 @@
 
       <div class="card-footer text-muted">
         <div class="float-left d-flex" style="font-size: 16px;">
-          <div class="profile-pic" style="background-image: url({{this.author.pic}});">
-          </div>
+          <a href="/users/profile/{{this.author.id}}"><div class="profile-pic" style="background-image: url({{this.author.pic}});"></div></a>
           <div class="ml-2">
             <p class="m-0 answer-author">{{this.author.username}}</p>
             <span class="text-muted">asked <span class="moment-timestamp" style="display: none;">{{this.timestamp}}</span></span>
@@ -222,6 +221,26 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="delete-project-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="exampleModalLabel"><strong>Are you sure?</strong></h3>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        Do you really want to delete the post <strong>{{post.question}}</strong> and all answers associated with it?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger" id="delete">Delete</button>
       </div>
     </div>
   </div>
