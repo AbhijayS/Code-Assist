@@ -48,40 +48,7 @@
 
 		{{#unless isThumbnail}}
 		<div class="ui-layout-east">
-			<div id="videoChat" class="video-chat-view hide mt-5">
-				<button type="button" name="switch-views" id="toggle-chat" class="btn btn-primary" data-toggle="tooltip" data-placement="bottom" title="Toggle Group Chat" style="position: absolute; top: 5px; right: 5px;"><i class="fas fa-comments"></i></button>
-				<div id="peerButtonContainer">
-					<h5 id="callStatus"></h5>
-					<div id="peerButtons"></div>
-				</div>
-				<video autoplay="autoplay" id="selfVideo" class="easyrtcMirror" muted="muted" style="display: none;"></video>
-				<div id="peerVideos">
-				</div>
-
-				<div id="connectButtons">
-					<div class="btn-group btn-group-toggle w-100 px-2" data-toggle="buttons">
-					  <label class="btn btn-outline-info w-50" id="joinCallAudio" style="overflow: hidden;">
-					    <input type="radio" name="options" id="option1" autocomplete="off" checked>Join Call With Audio
-					  </label>
-					  <label class="btn btn-outline-info btn-block w-50" id="joinCallVideo" style="overflow: hidden;">
-					    <input type="radio" name="options" id="option2" autocomplete="off">Join Call With Video
-					  </label>
-					</div>
-
-					<!-- <button id="joinCallAudio" class="btn btn-success">Join Call With Audio</button>
-					<button id="joinCallVideo" class="btn btn-success">Join Call With Video</button> -->
-				</div>
-
-				<div id="callButtons" style="display: none;">
-					<button id="muteAudio" class="btn btn-danger"><i class="fas fa-microphone"></i></button>
-					<button id="hangUp" class="btn btn-danger"><i class="fas fa-phone-slash"></i></button>
-					<button id="toggleVideo" class="btn btn-danger"><i class="fas fa-video"></i></button>
-				</div>
-			</div>
-
 			<div id="chat" class="container video-chat-view mt-5">
-				<button type="button" name="switch-views" id="toggle-video" class="btn btn-primary" data-toggle="tooltip" data-placement="bottom" title="Toggle Video" style="position: absolute; top: 5px; right: 5px;"><i class="fas fa-headset"></i></button>
-
 				<div class="card">
 					<div class="card-header">
 						Group Chat
