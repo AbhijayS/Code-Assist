@@ -53,14 +53,20 @@ var applyingChanges = false;
 
 // $('#output').val("");
 
-$("input:file").change(function() {
+$("#fileUpload").change(function() {
 	let file = $(this)[0].files[0];
 	let reader = new FileReader();
 	reader.readAsText(file);
 	reader.onload = function(e) {
-		let text = e.target.result;
-		addFile(file.name, text);
-		socket.emit("fileAdded", file.name, text);
+    var fileNames = $(".fileName").map(function(){return $(this).val()}).get();
+    if (fileNames.indexOf(file.name) == -1) {
+      let text = e.target.result;
+      addFile(file.name, text);
+      socket.emit("fileAdded", file.name, text);
+    } else {
+      $("#file-name-taken-modal").modal('show');
+    }
+    $("#fileUpload").val("");
 	};
 });
 

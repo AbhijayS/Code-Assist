@@ -4,7 +4,7 @@
 				{{#unless isThumbnail}}
 				<div id="topBar">
 					<label class="btn btn-primary mb-0">
-						Upload File<input type="file" accept=".java,.py,.cpp,.dat,.txt,.html,.css,.js" hidden>
+						Upload File<input id="fileUpload" type="file" accept=".java,.py,.cpp,.dat,.txt,.html,.css,.js" hidden>
 					</label>
 					<button id="newFileBtn" class="btn btn-primary">New File</button>
 					<a id="downloadFileBtn" class="btn btn-primary disabled" href="#">Download File</a>
@@ -392,4 +392,24 @@
 			</div>
 		</form>
 	</div>
+</div>
+
+<!-- File Name Taken modal -->
+<div id="file-name-taken-modal" class="modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" style="color: red; font-weight: bold;">File Name Already In Use</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>A file with the same name already exists. Please rename the existing file or the file you're uploading.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
+      </div>
+    </div>
+  </div>
 </div>
