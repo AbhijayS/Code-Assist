@@ -113,55 +113,65 @@
 
     {{{body}}}
 
-    <div class="site-footer container jumbotron text-center d-none d-sm-block bg-white" style="margin-top: 20%;">
-      <a href="/"><h3 class="text-dark">Code Assist</h3></a>
-      <hr>
-      <div class="footerLinks row">
-        <div class="col-5">
-          <p class="footerHeader">Company</p>
-          <p><a href="/contact" class="footerLink">Contact Us</a></p>
-          <p><a href="/team" class="footerLink">The Team</a></p>
+    <!-- Desktop -->
+    <div class="site-footer container jumbotron d-none d-md-block bg-white" style="margin-top: 20%; box-shadow: 0px 3px 13px 2px #00000014;">
+      <div class="row mt-4">
+        <div class="offset-md-2 col-md-2">
+          <p><strong>Company</strong></p>
+          <p><a href="/contact">Contact Us</a></p>
+          <p><a href="/team">The Team</a></p>
         </div>
-        <div class="socialMediaIcons col-2">
-          <a href="https://www.linkedin.com/company/codeassist"><i class="fab fa-linkedin"></i></a>
-          <i class="fab fa-twitter text-primary"></i>
-          <i class="fab fa-instagram text-primary"></i>
+        <div class="offset-md-1 col-md-3">
+          <p><strong>Community</strong></p>
+          <div class="socialMediaIcons mt-3">
+            <a href="https://www.linkedin.com/company/codeassist"><i class="fab fa-linkedin"></i></a>
+            <i class="fab fa-twitter text-primary"></i>
+            <i class="fab fa-instagram text-primary"></i>
+          </div>
         </div>
-        <div class="col-5">
-          <p class="footerHeader">Code Assist</p>
-          <p><a href="/community" class="footerLink">Community</a></p>
-          <p><a href="/dashboard" class="footerLink">Dashboard</a></p>
-          <p><a href="/projects" class="footerLink">Projects</a></p>
-        </div>
-      </div>
-
-      <div class="mt-4">Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
-    </div>
-
-    <div class="site-footer container jumbotron text-center d-sm-none rounded-0 bg-white">
-      <a href="/"><h3 class="text-dark">Code Assist</h3></a>
-      <hr>
-      <div class="footerLinks row">
-        <div class="col-5">
-          <p class="footerHeader">Company</p>
-          <p><a href="/contact" class="footerLink">Contact Us</a></p>
-          <p><a href="/team" class="footerLink">The Team</a></p>
-        </div>
-        <div class="socialMediaIcons col-2">
-          <a href="https://www.linkedin.com/company/codeassist"><i class="fab fa-linkedin"></i></a>
-          <i class="fab fa-twitter text-primary"></i>
-          <i class="fab fa-instagram text-primary"></i>
-        </div>
-        <div class="col-5">
-          <p class="footerHeader">Code Assist</p>
-          <p><a href="/community" class="footerLink">Community</a></p>
-          <p><a href="/dashboard" class="footerLink">Dashboard</a></p>
-          <p><a href="/projects" class="footerLink">Projects</a></p>
+        <div class="col-md-4">
+          <p><strong>Code Assist</strong></p>
+          <p><a href="/community">Community</a></p>
+          <p><a href="/dashboard">Dashboard</a></p>
+          <p><a href="/projects">Projects</a></p>
         </div>
       </div>
 
-      <div class="mt-2 mb-5 pb-5">Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+      <div class="mt-4 text-muted text-center">
+        © 2018 <a href="/">Code Assist</a>. Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY.</a>
+      </div>
     </div>
+
+    <!-- Mobile -->
+    <div class="site-footer container jumbotron d-md-none rounded-0 text-center bg-white">
+      <div class="row mt-4">
+        <div class="offset-md-1 col-md-3 mb-4">
+          <p><strong>Community</strong></p>
+          <div class="socialMediaIcons">
+            <a href="https://www.linkedin.com/company/codeassist"><i class="fab fa-linkedin"></i></a>
+            <i class="fab fa-twitter text-primary"></i>
+            <i class="fab fa-instagram text-primary"></i>
+          </div>
+        </div>
+        <div class="col-md-4 mb-4">
+          <p><strong>Company</strong></p>
+          <p><a href="/contact">Contact Us</a></p>
+          <p><a href="/team">The Team</a></p>
+        </div>
+        <div class="col-md-3 mb-3">
+          <p><strong>Code Assist</strong></p>
+          <p><a href="/community">Community</a></p>
+          <p><a href="/dashboard">Dashboard</a></p>
+          <p><a href="/projects">Projects</a></p>
+        </div>
+      </div>
+
+      <div class="mb-5 pb-5 w-75 mx-auto">
+        © 2018 <a href="/">Code Assist</a>. Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY.</a>
+      </div>
+    </div>
+
+
 
     <div id="feedback-floating-btn" onclick="relocateFeedback()">
       <i class="fas fa-bullhorn"></i>

@@ -22,5 +22,9 @@
   </div>
 </div>
 
-
+{{#if user.profile.assists_added}}
+<div style="position: absolute; top: 64px; vertical-align: middle; text-align: center; z-index: 1;" class="alert alert-success w-100 rounded-0 text-center py-3" role="alert">
+  <strong>🎉 Congratulations!</strong> Your account has been awarded <strong>{{user.profile.assists_added}} assists</strong>. <a href="/account">Visit your profile</a>
+</div>
+{{/if}}
 <!--<script type="text/javascript" src="js/blur.js"></script>-->

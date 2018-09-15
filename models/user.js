@@ -33,7 +33,8 @@ var UserSchema = new Schema({
 		pic: String,
 
 		profile: {
-			status: {type: String, default: "public"} // "public", private"
+			status: {type: String, default: "public"}, // "public", private"
+			assists_added: {type: Number, default: null} // assists assigned
 		},
 
 	  email: {
