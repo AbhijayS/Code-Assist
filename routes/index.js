@@ -19,6 +19,8 @@ var socket = require('socket.io');
 var fs = require('fs');
 var handlebars = require('handlebars');
 var emailTemplate = handlebars.compile(fs.readFileSync('./views/email.handlebars', 'utf8'));
+var Identicon = require('identicon.js');
+var crypto = require('crypto');
 // var io=socket(server);
 var io = require('../app').io;
 const nanoid = require('nanoid');
@@ -245,6 +247,18 @@ router.post('/dashboard', function(req, res) {
     }
 });
 
+router.get('/identicon/:username', function(req, res){
+  var username = req.params.username;
+  var hash = crypto.createHash('md5').update(username).digest("hex");
+  var data = new Identicon(hash, {size: 300}).toString();
+  var img = new Buffer(data, 'base64');
+ res.writeHead(200, {
+   'Content-Type': 'image/png',
+   'Content-Length': img.length
+ });
+ res.end(img);
+});
+
 // Register User
 router.post('/register', function(req, res) {
   var username = req.body.username;
@@ -273,7 +287,7 @@ router.post('/register', function(req, res) {
     email: email,
     password: password,
     title: 'user',
-    pic: "http://identicon.org?t=" + username + "&s=300",
+    pic: "/identicon/" + username,
     profile_url: username + "-" + getRandomInt(2001, 9000),
     subscribed: subscribe
   });
@@ -521,7 +535,7 @@ router.post('/profile-pic-change', profilePicUpload.single('file'), function(req
       if (req.file) {
         user.pic = '/profilePic/' + req.file.id;
       } else {
-        user.pic = "https://github.com/identicons/"+ user.username + ".png"
+        user.pic = "/identicon/"+ user.username
       }
 
       res.send({pic: user.pic});
