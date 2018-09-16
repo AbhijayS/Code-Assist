@@ -304,6 +304,13 @@ router.get('/:id', function(req, res) {
 		if(post) {
 			if (req.user) {
 				for (var i = 0; i < post.answers.length; i++) {
+					//make sure the rendered page knows which answers were made by the current user
+					//console.log("Userid="+post.answers[i].author._id.equals(req.user._id));
+					if(post.answers[i].author._id.equals(req.user._id)){
+					//	console.log("Userid="+post.answers[i].author._id);
+						post.answers[i].isowner=true;
+					}
+
 					var userLikedAnswer = post.answers[i].userLikes.some(function(userID) {
 						return userID.equals(req.user._id);
 					});
@@ -328,9 +335,9 @@ router.get('/:id', function(req, res) {
 			}
 
 			if (req.user && req.user.id==post.author.id) {
-				res.render('community-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description, isowner: true, username: req.user.username});
+				res.render('community-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description, isowner: true, username: req.user.username, userid:req.user._id});
 			} else if (req.user) {
-				res.render('community-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description, username: req.user.username});
+				res.render('community-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description, username: req.user.username,userid:req.user._id});
 			} else {
 				res.render('community-view-post', {layout: 'dashboard-layout', post: post, saved: req.flash('saved_answer'), date: today, description: description});
 			}
@@ -456,6 +463,7 @@ router.post('/:id/delete', function(req, res){
 
 //Serverside Delete Answer Handling
 router.post('/:id/deleteanswer', function(req, res){
+	console.log("attempting to delete "+req.params.id);
   User.AnswerSchema.findOneAndRemove({_id: req.params.id}, function(err, user) {
 	});
 });
