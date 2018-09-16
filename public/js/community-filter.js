@@ -228,9 +228,8 @@ window.onload = function() {
         if(data.postsToAdd.length == 0)
         {
           var alert = `
-          <div class="alert alert-info">
-            <h2>No posts found matching <span style="text-decoration: underline;">${value}</span>!</h2>
-          </div>
+          <h4 style="font-weight: 300;">🙁 No posts found matching <strong>${value}</strong></h4>
+          <p>Try searching in a different category.</p>
           `;
           postsContainer.append(alert);
         }else{
@@ -260,9 +259,8 @@ window.onload = function() {
       if(postsToAdd.length == 0)
       {
         var alert = `
-        <div class="alert alert-info">
-          <h2>No posts found matching <span style="text-decoration: underline;">${key}</span>!</h2>
-        </div>
+        <h4 style="font-weight: 300;">🙁 No posts found matching <strong>${key}</strong></h4>
+        <p>Try searching for a different keyword.</p>
         `;
         postsContainer.append(alert);
       }else{
