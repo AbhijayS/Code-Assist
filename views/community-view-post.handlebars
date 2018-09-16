@@ -85,11 +85,14 @@
   </div>
 
   {{#if post.answers}}
-    <h1 style="font-weight: 200;">{{post.answers.length}} Answers</h1>
+    <h1 style="font-weight: 200;" id="answercounter">{{post.answers.length}} Answers</h1>
     <hr>
     {{#each post.answers}}
     <div id="answer-{{this._id}}" class="card mb-3">
       <div class="card-body">
+        {{#if this.isowner}}
+        <button type="button" class="btn btn-danger" id="deleteanswer:{{this._id}}" answerhook="{{this._id}}">Delete</button>
+        {{/if}}
         <p class="card-text answer-view noborder d-none mb-3">{{this.answer}}</p>
 
         <div style="position: absolute; top: 5px; right: 5px;">
@@ -374,6 +377,34 @@
       $(this).text(timestamp.format("MMM D"));
       $(this).show();
       $(this).removeClass('d-none');
+    });
+
+
+//clientside handler for the deleteanswer function
+var answercount={{post.answers.length}};
+
+    $(document).on('click', function(event) {
+    //  var a=Object.getOwnPropertyNames(event);
+      //alert(Object.getOwnPropertyNames(event.handleObj));
+      event.preventDefault();
+      var target=event.target.id;
+
+      if(target.indexOf("deleteanswer")>=0){
+        var targetsplit=target.split(":")
+      //  alert(targetsplit[0]);
+        var answer2 = JSON.stringify(answerEditor.getContents().ops);
+        var post_url2 = "/community/"+targetsplit[1]+"/deleteanswer";
+        $("#answer-"+targetsplit[1]).hide("slow");
+        answercount=answercount-1;
+        $("#answercounter").replaceWith("<h1 style='font-weight: 200;' id='answercounter'>"+answercount+" Answers</h1>"
+)
+        $.post(post_url2, {deletedid:event.answerhook}, function(url) {
+          console.log(url);
+          window.location.replace(url);
+        });
+
+      }
+
     });
 
     $('#delete').on('click', function(event) {
