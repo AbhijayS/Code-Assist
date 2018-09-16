@@ -150,10 +150,9 @@ $(document).ready(function() {
   });
 
   $('#chat-btn').click(function() {
-    $('.ui-layout-east .video-chat-view').hide();
-    $('.ui-layout-east #chat').show();
-    if(layout.state.east.isClosed)
-      layout.toggle("east");
+    // $('.ui-layout-east .video-chat-view').hide();
+    // $('.ui-layout-east #chat').show();
+    layout.toggle("east");
   });
 
   $('#toggle-chat').click(function() {
