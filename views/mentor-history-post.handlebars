@@ -80,7 +80,6 @@ clip-path: polygon(0 87%, 100% 81%, 100% 100%, 0% 100%); height: 351px; z-index:
 
     /* All of the Answers Viewer (Quill) */
     var answerViews = $('.answer-view');
-    // console.log("#Answers: " + answerViews.length);
     var postAnswers = [];
     {{#each post.answers}}
     postAnswers.push({{{this.answer}}});
@@ -94,7 +93,6 @@ clip-path: polygon(0 87%, 100% 81%, 100% 100%, 0% 100%); height: 351px; z-index:
         },
         theme: 'snow'
       });
-      console.log(postAnswers[i]);
       quill.setContents(postAnswers[i]);
       quill.disable();
     }
@@ -119,7 +117,6 @@ clip-path: polygon(0 87%, 100% 81%, 100% 100%, 0% 100%); height: 351px; z-index:
     $('#submit').on('click', function(event) {
       event.preventDefault();
       var answer = JSON.stringify(answerEditor.getContents().ops);
-      console.log($(location).attr('pathname'));
       var post_url = "/mentor/history/{{post.id}}/answer";
 
       $.post(post_url, {answer: answer}, function(url) {

@@ -111,9 +111,7 @@ clip-path: polygon(93% 77%, 100% 26%, 100% 100%, 59% 85%); height: 405px; z-inde
       event.preventDefault();
       $("#submit").attr("disabled", true);
       $("#postLoading").show();
-      console.log('');
-      console.log('-------------------------------------');
-      console.log('community-post clicked');
+//clicked a community post
       var description = JSON.stringify(quillEditor.getContents().ops);
 
       var formData = new FormData();
@@ -135,7 +133,6 @@ clip-path: polygon(93% 77%, 100% 26%, 100% 100%, 59% 85%); height: 405px; z-inde
           processData: false,
           success: function(resData) {
             $(".alert-danger").hide();
-            // console.log(resData);
             if (!resData.questionInvalid && !resData.descriptionInvalid) {
               window.location.replace(resData.url);
             } else {
@@ -187,7 +184,6 @@ clip-path: polygon(93% 77%, 100% 26%, 100% 100%, 59% 85%); height: 405px; z-inde
         for (var i = fileList.length-1; i >= 0; i--) {
           if (fileList[i].name == $(this).siblings(".btn").attr('id')) {
             fileList.splice(i, 1);
-            // console.log(fileList);
             break;
           }
         }
@@ -199,7 +195,6 @@ clip-path: polygon(93% 77%, 100% 26%, 100% 100%, 59% 85%); height: 405px; z-inde
         event.preventDefault();
       });
 
-      // console.log(fileList);
     });
   };
 </script>

@@ -127,7 +127,6 @@
     quillEditor.setContents({{{post.description}}});
 
     function editPost() {
-      console.log("POSTING");
       var description = JSON.stringify(quillEditor.getContents().ops);
 
       var formData = new FormData();
@@ -220,7 +219,6 @@
         for (var i = fileList.length-1; i >= 0; i--) {
           if (fileList[i].name == $(this).siblings(".btn").attr('id')) {
             fileList.splice(i, 1);
-            // console.log(fileList);
             break;
           }
         }
@@ -233,13 +231,11 @@
       });
 
 
-      // console.log(fileList);
     });
 
     $('#fileContainer .deleteFileBtn').click(function(event) {
       event.preventDefault();
       removedFileIds.push($(this).siblings('.fileBtn').attr('id'));
-      // console.log(removedFileIds);
 
       $(this).parent().remove();
       $('#fileUpload').val("");
