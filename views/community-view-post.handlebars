@@ -308,7 +308,6 @@
     /* All of the Answers Viewer (Quill) */
 
     var answerViews = $('.answer-view');
-    // console.log("#Answers: " + answerViews.length);
     var postAnswers = [];
     {{#each post.answers}}
     postAnswers.push({{{this.answer}}});
@@ -399,7 +398,6 @@ var answercount={{post.answers.length}};
         $("#answercounter").replaceWith("<h1 style='font-weight: 200;' id='answercounter'>"+answercount+" Answers</h1>"
 )
         $.post(post_url2, {deletedid:event.answerhook}, function(url) {
-          console.log(url);
           window.location.replace(url);
         });
 
@@ -413,7 +411,6 @@ var answercount={{post.answers.length}};
       var post_url2 = "/community/{{post.id}}/delete";
       var thepost='ah';
       $.post(post_url2, {deletedpost:"thepost"}, function(url) {
-        console.log(url);
         window.location.replace(url);
       });
     });

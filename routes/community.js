@@ -463,9 +463,17 @@ router.post('/:id/delete', function(req, res){
 
 //Serverside Delete Answer Handling
 router.post('/:id/deleteanswer', function(req, res){
-	console.log("attempting to delete "+req.params.id);
-  User.AnswerSchema.findOneAndRemove({_id: req.params.id}, function(err, user) {
+	//console.log("attempting to delete "+req.params.id);
+	User.AnswerSchema.findOne({_id:req.params.id},function(err,answer){
+		if(answer){
+		//	console.log(answer.author);
+			if(answer.author.equals(req.user._id)){
+				User.AnswerSchema.findOneAndRemove({_id: req.params.id}, function(err, user) {
+				});
+			}
+		}
 	});
+
 });
 
 router.post('/:id/answer', function(req, res){
