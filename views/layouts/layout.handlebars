@@ -41,9 +41,7 @@
 
     <!-- Page larger than Bootstrap lg-->
     <div class="d-none d-lg-block">
-      {{#unless user.profile.assists_added}}
       <div id="online-learning" class="landing-pg-illustration"></div>
-      {{/unless}}
       <div id="education" class="landing-pg-illustration"></div>
     </div>
 
@@ -232,6 +230,9 @@
         socket.on("notify",function(message){
           alert(message);
         });
+
+        // tell backend to update assists_added variable
+        $.post('/update-rewards');
       });
     </script>
   </body>

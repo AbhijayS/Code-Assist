@@ -34,7 +34,7 @@ var UserSchema = new Schema({
 
 		profile: {
 			status: {type: String, default: "public"}, // "public", private"
-			assists_added: {type: Number, default: null} // assists assigned
+			assists_added: {type: Number, default: null} // assists awarded
 		},
 
 	  email: {

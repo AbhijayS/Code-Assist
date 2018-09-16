@@ -44,6 +44,17 @@ router.post('/current-user', function(req, res) {
     res.send(null);
 });
 
+// update assists_added variable
+router.post('/update-rewards', function(req, res) {
+  if(req.user) {
+    console.log("Updating rewards");
+    req.user.profile.assists_added = null;
+    req.user.save(function(err) {
+      if(err) throw err;
+    })
+  }
+});
+
 // Get Homepage
 router.get('/', function(req, res){
     // console.log("Homepage: ");

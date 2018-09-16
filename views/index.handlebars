@@ -23,8 +23,11 @@
 </div>
 
 {{#if user.profile.assists_added}}
-<div style="position: absolute; top: 64px; vertical-align: middle; text-align: center; z-index: 1;" class="alert alert-success w-100 rounded-0 text-center py-3" role="alert">
-  <strong>🎉 Congratulations!</strong> Your account has been awarded <strong>{{user.profile.assists_added}} assists</strong>. <a href="/account">Visit your profile</a>
+<div style="position: fixed; bottom: 100px; left: 25%; vertical-align: middle; text-align: center; z-index: 1;" class="alert alert-success alert-dismissible fade show w-50 text-center py-3 mx-auto d-none d-md-block" role="alert">
+  <strong>🎉 Congratulations!</strong> Your account has been awarded <strong>{{user.profile.assists_added}} assists</strong>. <a href="/account">Visit your profile <i class="fas fa-arrow-circle-right text-primary"></i></a>
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
 </div>
 {{/if}}
 <!--<script type="text/javascript" src="js/blur.js"></script>-->

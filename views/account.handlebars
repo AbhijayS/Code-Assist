@@ -1,4 +1,13 @@
 {{!-- Edit profile picture modal --}}
+{{#if user.profile.assists_added}}
+<div style="position: absolute; vertical-align: middle; text-align: center; z-index: 1;" class="alert alert-success alert-dismissible fade show w-100 text-center py-3 rounded-0" role="alert">
+  <strong>🎉 Congratulations!</strong> Your account has been awarded <strong>{{user.profile.assists_added}} assists</strong>. <a href="/account">Visit your profile <i class="fas fa-arrow-circle-right text-primary"></i></a>
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+{{/if}}
+
 <div id="profilePicModal" class="modal fade" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -22,7 +31,7 @@
   </div>
 </div>
 
-<div class="container mt-5">
+<div class="container mt-5 pt-4">
   <div class="row">
     <div class="col-sm-5 text-center">
       {{!-- <img id="userPic" src="{{user.pic}}" alt="" width="50%;" class="text-center" style="border-radius: 10px;"> --}}
