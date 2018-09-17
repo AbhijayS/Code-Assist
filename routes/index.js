@@ -44,15 +44,45 @@ router.post('/current-user', function(req, res) {
     res.send(null);
 });
 
-// update assists_added variable
-router.post('/update-rewards', function(req, res) {
+// set assists_added variable to "null"
+router.post('/'+process.env.FIREWALL_PASS + '/update-rewards', function(req, res) {
   if(req.user) {
-    console.log("Updating rewards");
     req.user.profile.assists_added = null;
     req.user.save(function(err) {
       if(err) throw err;
     })
   }
+});
+
+// award user with assists
+router.post('/award-assists', function(req, res) {
+  var submittedBy = req.body.Username;
+  User.UserSchema.findOne({username: submittedBy}, function(err, user) {
+    if(user) {
+      user.qualities.assists += 10;
+      user.save(function(err) {
+        if(err) throw err;
+        const output = `
+        <p>We are sorry to know that you lost your account. Click the button below to reset your password.</p>
+        <p>If you don't recognize this activity, please contact Code Assist at contact@codeassist.org and we will try to help resolve the issue.</p>
+        `;
+
+        const msg = {
+          to: user.email,
+          from: `Code Assist <${process.env.SENDER_EMAIL}>`,
+          subject: 'Code Assist Password Recovery Link',
+          html: emailTemplate({
+            username: user.username,
+            rawHTML: true,
+            text: output,
+            btnText: "Reset Password",
+            btnLink: resetLink
+          })
+        };
+        sgMail.send(msg);
+      });
+    }
+  })
 });
 
 // Get Homepage
