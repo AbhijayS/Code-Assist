@@ -15,7 +15,6 @@ window.onload = function(){
     var answer = JSON.stringify(answerEditor.getContents().ops);
 
     $.post("/" + {{post.id}} + "/answer", {answer: answer}, function(answer) {
-      console.log("Answer Saved");
       var newAnswer = `
       <a class="list-group-item list-group-item-action flex-column align-items-start">
       <div class="d-flex w-100 justify-content-between">

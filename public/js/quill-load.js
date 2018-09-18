@@ -7,7 +7,7 @@ window.onload = function(){
     theme: 'snow'
   });
 
-  console.log("Community description: " + typeof {{{description}}});
+  // console.log("Community description: " + typeof {{{description}}});
   postViewEditor.setContents({{{description}}});
   postViewEditor.disable();
 };
