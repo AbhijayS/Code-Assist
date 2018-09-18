@@ -45,7 +45,7 @@ router.post('/current-user', function(req, res) {
 });
 
 // set assists_added variable to "null"
-router.post('/'+process.env.FIREWALL_PASS + '/update-rewards', function(req, res) {
+router.post('/update-rewards', function(req, res) {
   if(req.user) {
     req.user.profile.assists_added = null;
     req.user.save(function(err) {
@@ -55,7 +55,7 @@ router.post('/'+process.env.FIREWALL_PASS + '/update-rewards', function(req, res
 });
 
 // award user with assists
-router.post('/award-assists', function(req, res) {
+router.post('/' + process.env.FIREWALL_PASS + '/award-assists', function(req, res) {
   var submittedBy = req.body.Username;
   User.UserSchema.findOne({username: submittedBy}, function(err, user) {
     if(user) {
