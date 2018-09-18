@@ -107,7 +107,6 @@ $(document).ready(function() {
     addEmail.insertBefore('#settings #send-options');
 
     $('#settings .close').click(function() {
-      console.log('clicked');
       $(this).parent().parent().remove();
     });
   });
@@ -170,9 +169,7 @@ $(document).ready(function() {
     }
     // console.log(window.location.pathname.split('/')[2]);
     $.post('/projects/share', {emailInput: toSend, projectID: window.location.pathname.split('/')[2]}, function(data) {
-      console.log("Data Length: " + data.length);
       if(!data || data.length == 0) {
-        console.log("Success");
         var emailsSent = $(`
           <div class="row">
             <div class="col-sm-10 offset-sm-1">
@@ -209,17 +206,13 @@ $(document).ready(function() {
   $('#invite-mentor').submit(function(event) {
     event.preventDefault();
     $.post(window.location.pathname+'invite-mentor', function(data) {
-      console.log(data);
       window.location.replace("http://"+window.location.host+data.url);
     });
   })
 
   $("#settings #change-project-name").change(function() {
     var input_field = $(this);
-    console.log("Changing name ...");
     $.post(window.location.pathname+'change-project-name', {newName: $(this).val()}, function(data) {
-      // console.log(input_field.attr('class'));
-      console.log(data);
       if(data.auth) {
         input_field.attr('class', 'form-control is-valid')
       }else{
@@ -238,7 +231,6 @@ $(document).ready(function() {
 
     $.post(window.location.pathname+'delete', {projectName: name.val()}, function(data) {
       if(data.auth) {
-        console.log("Auth");
         name.attr('class', 'form-control');
         window.location.replace("http://" + window.location.host + data.url);
       }else{
