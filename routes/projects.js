@@ -878,6 +878,17 @@ function Project(id) {
 
 	this.runner;
 
+	this.getCHeaders = function(text) {
+		var regexp = /#include "(.+)\.h"/g;
+		var match = regexp.exec(text);
+		var result = "";
+		text.replace(regexp, function(match, fileName) {
+			result += (fileName + ".cpp ");
+		});
+		console.log(result);
+		return result;
+	}
+
 	// nsp is the socket.io namespace
 	this.nsp = io.of('/'+this.id)
 	var chatdatanamespace=this.nsp;
@@ -1311,7 +1322,8 @@ function Project(id) {
 					});
 					break;
 				case ".cpp":
-					var command = 'g++ "' + file.fileName + '"';
+					var otherFiles = self.getCHeaders(file.text);
+					var command = 'g++ "' + file.fileName + '" ' + otherFiles;
 					if (isLinux)
 						command = fireJailStr + command;
 					exec(command, {cwd: self.folderPath}, function(error, stdout, stderr) {
