@@ -1159,6 +1159,8 @@ function Project(id) {
 
 			if (self.activeUserCount == 0) {
 				self.output = "";
+				if (self.runner)
+					self.runner.kill();
 				// console.log("cleared output")
 			}
 
