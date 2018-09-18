@@ -25,6 +25,7 @@ router.get('/', function(req, res) {
 		 options: {sort: {'timestamp': -1},limit: postLimit},
 		 populate: {path: 'author'}
 	 }).exec(function(err, community) {
+		 if(err) throw err;
 		 if(community) {
 			 var posts = community.posts;
 
@@ -42,7 +43,7 @@ router.get('/', function(req, res) {
 					 var count =  communityRemainingPosts.posts.length;
 					 if (count > 0)
 					 morePosts = true;
-					 
+
 					 res.render('community', {layout: 'dashboard-layout', posts: posts, morePosts: morePosts});
 				 });
 
