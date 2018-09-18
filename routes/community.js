@@ -25,29 +25,31 @@ router.get('/', function(req, res) {
 		 options: {sort: {'timestamp': -1},limit: postLimit},
 		 populate: {path: 'author'}
 	 }).exec(function(err, community) {
-    var posts = community.posts;
+		 if(community) {
+			 var posts = community.posts;
 
-    addDescriptionPreviews(posts);
-		addLikedProperty(posts, req.user);
-		addIsOwner(posts, req.user);
+			 addDescriptionPreviews(posts);
+			 addLikedProperty(posts, req.user);
+			 addIsOwner(posts, req.user);
 
-    var morePosts = false;
-    if (posts.length > 0) {
-      User.CommunitySchema.findOne({}).populate({
-        path: 'posts',
-        match: {timestamp: {$lt: posts[posts.length-1].timestamp}},
-				populate: 'author'
-      }).exec(function(err, communityRemainingPosts) {
-        var count =  communityRemainingPosts.posts.length;
-        if (count > 0)
-          morePosts = true;
+			 var morePosts = false;
+			 if (posts.length > 0) {
+				 User.CommunitySchema.findOne({}).populate({
+					 path: 'posts',
+					 match: {timestamp: {$lt: posts[posts.length-1].timestamp}},
+					 populate: 'author'
+				 }).exec(function(err, communityRemainingPosts) {
+					 var count =  communityRemainingPosts.posts.length;
+					 if (count > 0)
+					 morePosts = true;
+					 
+					 res.render('community', {layout: 'dashboard-layout', posts: posts, morePosts: morePosts});
+				 });
 
-        res.render('community', {layout: 'dashboard-layout', posts: posts, morePosts: morePosts});
-      });
-
-    } else {
-      res.render('community', {layout: 'dashboard-layout', posts: posts, morePosts: false});
-    }
+			 } else {
+				 res.render('community', {layout: 'dashboard-layout', posts: posts, morePosts: false});
+			 }
+		 }
 	});
 
 });
