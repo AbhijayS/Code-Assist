@@ -20,7 +20,6 @@ function() {
   });
 
   function firstLetter() {
-    console.log($(this));
     $(this).text($(this).text().substring(0, 1));
   }
 
@@ -43,7 +42,6 @@ function() {
   $('.date-modified').each(function() {
 
     var timestamp = new Date($(this).find('.moment-timestamp').text());
-    console.log(timestamp);
     timestamp = moment(timestamp, "MM-DD");
     $(this).find('.moment-timestamp').text(timestamp.format("MMM D"));
   });

@@ -1,7 +1,6 @@
 
 window.onload = function(){
   $('#first-name').change(function() {
-    console.log("Changing first name");
     var inputBox = $(this);
     $.post('/first-name-change', {firstName: inputBox.val()}, function(data) {
       if(data.url) {
@@ -79,7 +78,6 @@ window.onload = function(){
   $('#bio-textarea').change(function() {
     var textBox = $(this);
     $.post('/change-bio', {bio: textBox.val()}, function(data) {
-      console.log(data);
       if(data.auth) {
         textBox.attr('class', 'form-control is-valid');
       }else{
@@ -93,7 +91,6 @@ window.onload = function(){
   })
   $(".deleteAccount").click(function() {
     $('.confirm-delete-account').click(function() {
-      console.log("Confirmed");
         $.post('/delete-account', function(url) {
           window.location.replace(url);
         });

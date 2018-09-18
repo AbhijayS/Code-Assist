@@ -35,7 +35,7 @@ easyrtc.setOnStreamClosed(function (callerEasyrtcid) {
 		$("#peerButtons button").eq(0).removeClass("btn-secondary");
 		$("#peerButtons button").eq(0).addClass("btn-primary");
 	} else {
-		video.remove();	
+		video.remove();
 	}
 
 	checkOnlyUserConnected();
@@ -84,7 +84,7 @@ function initVideo(callback) {
 			// $("#selfVideo").show();
 			callback();
 		}, function(errmesg) {
-	        console.log(errmesg);
+	        // console.log(errmesg);
 	    }
 	);
 }
@@ -121,11 +121,11 @@ function connectSuccess(easyrtcid, roomOwner) {
 		readyToJoinCall = true;
 	});
 }
- 
+
 function connectFailure(errorCode, errorText) {
 	easyrtc.showError(errorCode, errorText);
 }
- 
+
 function RoomOccupantListener(roomName, occupants, isPrimary) {
 	$("#peerButtons").empty();
 	for(var easyrtcid in occupants) {
@@ -142,8 +142,8 @@ function RoomOccupantListener(roomName, occupants, isPrimary) {
 				// console.log("Got mediaType " + mediaType + " from " + easyrtc.idToName(easyrtcid));
 			},
 			function(errorCode, errMessage){
-				console.log("call to  " + easyrtc.idToName(easyrtcid) + " failed:" + errMessage);
-			});		
+				// console.log("call to  " + easyrtc.idToName(easyrtcid) + " failed:" + errMessage);
+			});
 		}
 
 	}

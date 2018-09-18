@@ -28,7 +28,6 @@ window.onload = function(){
       var timestamp = new Date(postsToAdd[i].timestamp);
       timestamp = moment(timestamp, "MM-DD");
       timestamp = timestamp.format("MMM D");
-      console.log(timestamp);
 
       var newPost = `
       <li id="${id}" class="list-group-item lead" style="font-weight: 400;">
@@ -79,7 +78,6 @@ window.onload = function(){
       filter_opt: currentFilter
     };
     $.post('/mentor/morePosts', data, function(data) {
-      console.log(data);
       if (!data.morePostsAvailable) {
         $("#getMorePosts").attr("disabled", true);
       } else {
