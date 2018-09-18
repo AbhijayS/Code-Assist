@@ -182,7 +182,6 @@ clip-path: polygon(0 87%, 100% 81%, 100% 100%, 0% 100%); height: 351px; z-index:
     $('#submit').on('click', function(event) {
       event.preventDefault();
       var answer = JSON.stringify(answerEditor.getContents().ops);
-      console.log($(location).attr('pathname'));
       var post_url = "/community/{{post.id}}/answer";
 
       $.post(post_url, {answer: answer}, function(url) {

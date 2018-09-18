@@ -216,11 +216,11 @@
     })
 
     $('.forgotpass').submit(function(e) {
-      console.log("Sending reset request ...");
+      // console.log("Sending reset request ...");
       e.preventDefault();
       var recoveryForm = $(this);
       $.post('/reset-password',{email: recoveryForm.find('input').val()},function(data){
-        console.log(data);
+        // console.log(data);
         if(data.auth) {
           recoveryForm.find('input').removeClass('is-invalid');
           recoveryForm.find('input').removeClass('is-valid');
