@@ -261,7 +261,7 @@
     //Notification Reciever
     $( document ).ready(function() {
         var socket = io("/Notify{{user._id}}");
-        console.log(socket);
+        // console.log(socket);
         socket.on("notify",function(message){
           alert(message);
         });
@@ -273,12 +273,10 @@
       $(function () {
         $('#global-chat-box #submit-messages').submit(function(){
           socket.emit('chat', $(this).find('#msg').val());
-          console.log($(this).find('#msg').val());
           $(this).find('#msg').val('');
           return false;
         });
         socket.on('broadcastchat', function(msg){
-          console.log(msg);
           $('#global-chat-box #messages').append($('<li>').text(msg));
         });
       });

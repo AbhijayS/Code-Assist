@@ -163,7 +163,7 @@
     //Notification Reciever
     $( document ).ready(function() {
         var socket = io("/Notify{{user._id}}");
-        console.log(socket);
+        // console.log(socket);
         socket.on("notify",function(message){
           alert(message);
         });
@@ -180,7 +180,6 @@
     <script type="text/javascript" src="/easyrtc/easyrtc.js"></script>
 
     <script type="text/javascript">
-      console.log('{{user.username}}'+' is your username and you have a clearance of level '+{{clearance}});
       var namespace = '{{namespace}}';
       var socket = io('{{namespace}}');
       var username = '{{user.username}}';

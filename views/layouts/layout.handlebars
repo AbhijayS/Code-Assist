@@ -226,7 +226,7 @@
     //Notification Reciever
     $( document ).ready(function() {
         var socket = io("/Notify{{user._id}}");
-        console.log(socket);
+        // console.log(socket);
         socket.on("notify",function(message){
           alert(message);
         });
