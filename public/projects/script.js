@@ -13,14 +13,16 @@ var editor = ace.edit("editor");
 
 var editorSessions = [];
 
-$('#terminal').terminal(function(input) {
-  socket.emit("programInput", input);
-}, {
-  prompt: '> ',
-  greetings: false
-});
+if (!isThumbnail) {
+  $('#terminal').terminal(function(input) {
+    socket.emit("programInput", input);
+  }, {
+    prompt: '> ',
+    greetings: false
+  });
 
-var terminal = $('#terminal').terminal();
+  var terminal = $('#terminal').terminal();
+}
 
 // var htmlPreviewDoc = $("#htmlPreview").get(0).contentWindow.document;
 
@@ -353,6 +355,8 @@ socket.on("files", function(files) { // only for when client first joins
 		}
 	}
 
+  if (isThumbnail)
+    socket.disconnect(true);
 });
 
 socket.on("renameFile", function(newFileName, fileIndex) {

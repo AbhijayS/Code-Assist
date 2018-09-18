@@ -784,13 +784,15 @@ function Project(id) {
 
 	this.files = [];
 
+	this.activeUserCount = 0;
 	this.msgCount;
 	this.msgCountResetter;
 	this.checkMsgCount = function() {
 		self.msgCount++;
 		// console.log(self.msgCount)
 		if (self.msgCount >= 1000) {
-			// console.log("program terminated")
+			console.log("program terminated")
+			self.output = "";
 			self.runner.kill();
 			clearInterval(self.msgCountResetter);
 			self.nsp.emit("programTerminated");
@@ -885,6 +887,10 @@ function Project(id) {
 		// console.log("new projects connection");
 		socket.emit("socketID", socket.id);
 		socket.emit("files", self.files);
+
+		socket.on("userConnected", function() {
+			self.activeUserCount++;
+		});
 
 		if (self.outputError) {
 			socket.emit("outputError", self.output);
@@ -1137,6 +1143,14 @@ function Project(id) {
 		});
 
 		socket.on("disconnect", function() {
+			if (self.activeUserCount >= 1)
+				self.activeUserCount--;
+
+			if (self.activeUserCount == 0) {
+				self.output = "";
+				// console.log("cleared output")
+			}
+
 			for (var i = 0; i < self.files.length; i++) {
 				delete self.files[i].cursors[socket.id];
 				delete self.files[i].selections[socket.id];
