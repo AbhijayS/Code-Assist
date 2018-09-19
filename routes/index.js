@@ -91,9 +91,9 @@ router.get('/' + process.env.FIREWALL_PASS + '/award-assists', function(req, res
   `;
 
   const msg = {
-    to: 'pegasusmeteoldrago@gmail.com',
+    to: 'jepi@hubii-network.com',
     from: `Code Assist <${process.env.SENDER_EMAIL}>`,
-    subject: 'Testing 🎉Special Rewards from Code Assist',
+    subject: 'Testing 2 🎉Special Rewards from Code Assist',
     html: emailTemplate({
       username: 'AbhijayS',
       rawHTML: true,
