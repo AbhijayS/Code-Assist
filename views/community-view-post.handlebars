@@ -91,7 +91,7 @@
     <div id="answer-{{this._id}}" class="card mb-3">
       <div class="card-body">
         {{#if this.isowner}}
-        <button type="button" class="btn btn-danger" id="deleteanswer:{{this._id}}" answerhook="{{this._id}}">Delete</button>
+        <button type="button" class="deleteAnswerBtn btn btn-danger" id="deleteanswer:{{this._id}}" answerhook="{{this._id}}">Delete</button>
         {{/if}}
         <p class="card-text answer-view noborder d-none mb-3">{{this.answer}}</p>
 
@@ -382,7 +382,7 @@
 //clientside handler for the deleteanswer function
 var answercount={{post.answers.length}};
 
-    $(document).on('click', function(event) {
+    $(".deleteAnswerBtn").on('click', function(event) {
     //  var a=Object.getOwnPropertyNames(event);
       //alert(Object.getOwnPropertyNames(event.handleObj));
       event.preventDefault();
