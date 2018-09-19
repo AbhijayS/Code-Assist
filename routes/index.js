@@ -87,23 +87,29 @@ router.get('/' + process.env.FIREWALL_PASS + '/award-assists', function(req, res
   const output = `
   <p>Thank you for taking part in the Code Assist survey. Your feedback really helps us make the website a better place so that programmers like you have an easier time using features like the community discussions and project collaborations.</p>
 
-  <p>As promised, you will be awarded 10 assist points on your account for providing us with feedback. Please go to your profile or visit this url to redeem your assists. Using assists, you can rank higher up in the community and develop your programming portfolio at the same time.</p>
+  <p>As promised, you will be awarded 10 assist points on your account for providing us with feedback. Please go to your profile or click on the link below to redeem your assists. Using assists, you can rank higher up in the community and develop your programming portfolio at the same time.</p>
+
+  <p>As an early bird on the website, you are also eligible for special discounts and merchandise as you continue to gain more assists.</p>
+
+  <p>Happy coding!</p>
+
+  <p>- Team Code Assist</p>
   `;
 
   const msg = {
-    to: 'jepi@hubii-network.com',
+    to: 'keyuchenstuff@gmail.com',
     from: `Code Assist <${process.env.SENDER_EMAIL}>`,
-    subject: 'Testing 2 🎉Special Rewards from Code Assist',
+    subject: '🎉Special Rewards from Code Assist',
     html: emailTemplate({
-      username: 'AbhijayS',
+      username: 'ILikeToShrug',
       rawHTML: true,
       text: output,
       btnText: "View your Profile",
-      btnLink: 'https://codeassist.org/users/profile/5b790bd9d78ea3368fadf93a'
+      btnLink: 'https://codeassist.org/users/profile/5ba13a4ea486696f4fa0cdff'
     })
   };
   sgMail.send(msg);
-  res.send("EMAIUL");
+  res.send("Joey");
 });
 
 // Get Homepage
