@@ -58,6 +58,7 @@ router.post('/update-rewards', function(req, res) {
 router.post('/' + process.env.FIREWALL_PASS + '/award-assists', function(req, res) {
   var submittedBy = req.body.Username;
   console.log(submittedBy);
+  res.sendStatus(200);
   // User.UserSchema.findOne({username: submittedBy}, function(err, user) {
   //   if(user) {
   //     user.qualities.assists += 10;
