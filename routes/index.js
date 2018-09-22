@@ -61,6 +61,7 @@ router.post('/' + process.env.FIREWALL_PASS + '/award-assists', function(req, re
   res.sendStatus(200);
   User.UserSchema.findOne({username: submittedBy}, function(err, user) {
     if(user) {
+      console.log("Rewarding", user.username, user.email);
       user.qualities.assists += 10;
       user.profile.assists_added = 10;
       user.save(function(err) {
