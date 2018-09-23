@@ -789,6 +789,8 @@ router.post('/post/edit/:id', upload.array('file'), function(req, res) {
 						}
 
 						post.status.edited = true;
+						post.timestamp=Date.now();
+
 						post.save(function(err) {
 							if(err) throw err;
 							data.auth = true;
