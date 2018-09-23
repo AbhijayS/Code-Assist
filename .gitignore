@@ -6,6 +6,6 @@
 node_modules/
 
 # Project Files
-project_files
+project_files/**/*
 
 package-lock.json
