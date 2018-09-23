@@ -563,7 +563,7 @@ editorContainer .row {
   vertical-align: middle;
 } */
 
-#settings #add-more-emails:hover {
+#settings #add-more-inputs:hover {
   color: #007bff;
   cursor: pointer;
 }

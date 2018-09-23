@@ -1,6 +1,7 @@
 var express = require('express');
 var path = require('path');
 var async = require('async');
+var emailValidator = require("email-validator");
 var router = express.Router();
 // var router = express.Router({'strict' : true});
 var User = require('../models/user');
@@ -107,82 +108,120 @@ router.post('/share', function(req, res){
 		User.UserSchema.findOne({_id: req.user._id}, function(err, fromUser) {
 			User.ProjectSchema.findOne({_id: projectID}, function(err, project) {
 				if (fromUser && project) {
-					var emails = req.body.emailInput;
+					var credentials = req.body.credentials;
 
 					// in case only one email given
-					if (!Array.isArray(emails)) {
-						emails = [emails];
+					if (!Array.isArray(credentials)) {
+						credentials = [credentials];
 					}
 
 					console.log("Share post request ----------------")
 					console.log("projectID: " + projectID);
 
-					// sort between emails and usernames
+					// sort between credentials and usernames
 
-					var failedEmails = [];
+					var failedCreds = [];
 					async.parallel([
 						function(callback) {
-							async.each(emails, function(email, checkCallback) {
-								User.UserSchema.findOne({email: email}, function(err, user) {
-									if(err) checkCallback(err);
-									if(!user) {
-										failedEmails.push(email);
-									}
-									checkCallback();
-								});
-							}, function(err) {
+							async.each(credentials, function(cred, checkCallback) {
+								if(emailValidator.validate(cred)) {
+									User.UserSchema.findOne({email: cred}, function(err, user) {
+										if(err) checkCallback(err);
+										if(!user) {
+											failedCreds.push(cred);
+										}
+										checkCallback(null);
+									});
+								}else{
+									User.UserSchema.findOne({username: cred}, function(err, user) {
+										if(err) checkCallback(err);
+										if(!user) {
+											failedCreds.push(cred);
+										}
+										checkCallback(null);
+									});
+								}
+							},
+							// optional callback: checkCallback
+							function(err) {
 								callback(err);
 							});
 						}
 					],
-					// optional callback
+					// callback
 					function(err) {
 						if(err) throw err;
-						if(failedEmails.length == 0) {
-							var sentEmails = [];
-							async.each(emails, function(email, finalCallback) {
-								User.UserSchema.findOne({email: email}, function(err, user) {
-									if(err) finalCallback(err);
+						if(failedCreds.length == 0) {
+							var sentCreds = [];
+							async.each(credentials, function(cred, finalCallback) {
+								if(emailValidator.validate(cred)) {
+									User.UserSchema.findOne({email: cred}, function(err, user) {
+										if(err) finalCallback(err);
 
-									if(!sentEmails.includes(email)) {
-										var e_link = projectID + "/" + uniqid();
-										user.e_link = e_link;
-										user.save(function(err) {
-											if(err) throw err;
-										});
+										if(!sentCreds.includes(cred)) {
+											var e_link = projectID + "/" + uniqid();
+											user.e_link = e_link;
+											user.save(function(err) {
+												if(err) throw err;
+											});
 
-										console.log("sharing with: " + user.email);
-/*										const output = `
-										<p>Hi ${user.username},</p>
-										<p><a href="http://codeassist.org/users/profile/${fromUser.id}">${fromUser.username}</a> invited you to a project titled <strong>${project.name}</strong></p>
+											console.log("sharing with: " + user.email);
 
-										<h3><a href="http://codeassist.org/projects/invite/${e_link}">Accept invitation</a></h3>
-										`;*/
+											const msg = {
+												to: user.email,
+												from: `Code Assist <${process.env.SENDER_EMAIL}>`,
+												subject: "You've been invited to a new project",
+												html: emailTemplate({
+													username: user.username,
+													text: `<a href="http://codeassist.org/users/profile/${fromUser.id}">${fromUser.username}</a> invited you to a project titled <strong>${project.name}</strong>`,
+													btnText: "Accept Invitation",
+													btnLink: `http://codeassist.org/projects/invite/${e_link}`
+												})
+											};
+											sentCreds.push(cred);
+											sgMail.send(msg);
+										}
+										finalCallback();
+									})
 
-										const msg = {
-											to: user.email,
-											from: `Code Assist <${process.env.SENDER_EMAIL}>`,
-											subject: "You've been invited to a new project",
-											html: emailTemplate({
-												username: user.username,
-												text: `<a href="http://codeassist.org/users/profile/${fromUser.id}">${fromUser.username}</a> invited you to a project titled <strong>${project.name}</strong>`,
-												btnText: "Accept Invitation",
-												btnLink: `http://codeassist.org/projects/invite/${e_link}`
-											})
-										};
-										sentEmails.push(email);
-										sgMail.send(msg);
-									}
-									finalCallback();
-								});
+								}else{
+									User.UserSchema.findOne({username: cred}, function(err, user) {
+										if(err) finalCallback(err);
+
+										if(!sentCreds.includes(cred)) {
+											var e_link = projectID + "/" + uniqid();
+											user.e_link = e_link;
+											user.save(function(err) {
+												if(err) throw err;
+											});
+
+											console.log("sharing with: " + user.email);
+
+											const msg = {
+												to: user.email,
+												from: `Code Assist <${process.env.SENDER_EMAIL}>`,
+												subject: "You've been invited to a new project",
+												html: emailTemplate({
+													username: user.username,
+													text: `<a href="http://codeassist.org/users/profile/${fromUser.id}">${fromUser.username}</a> invited you to a project titled <strong>${project.name}</strong>`,
+													btnText: "Accept Invitation",
+													btnLink: `http://codeassist.org/projects/invite/${e_link}`
+												})
+											};
+											sentCreds.push(user.email);
+											sgMail.send(msg);
+										}
+										finalCallback();
+									})
+								}
 							}, function(err) {
 								if(err) throw err;
 								console.log("All Emails sent successfully");
 								res.send([]);
 							});
 						}else{
-							console.log("Failed emails: " + failedEmails);
-							res.send(failedEmails);
+							console.log("Failed credentials: " + failedCreds);
+							res.send(failedCreds);
 						}
 					});
 				}
