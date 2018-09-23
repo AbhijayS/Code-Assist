@@ -1055,19 +1055,19 @@ router.post('/admin', function(req, res){
   }
 });
 
-router.get('/trello', function(req, res) {
-  trello.addCard('Clean car', 'Wax on, wax off', process.env.TRELLO_TODO_LIST,
-    function (error, trelloCard) {
-        if (error) {
-            console.log('Could not add card:');
-            res.status(200).send('Could not add card');
-        }
-        else {
-            console.log('Added card');
-            res.status(200).send('Added card');
-        }
-    });
-});
+// router.get('/trello', function(req, res) {
+//   trello.addCard('Clean car', 'Wax on, wax off', process.env.TRELLO_TODO_LIST,
+//     function (error, trelloCard) {
+//         if (error) {
+//             console.log('Could not add card:');
+//             res.status(200).send('Could not add card');
+//         }
+//         else {
+//             console.log('Added card');
+//             res.status(200).send('Added card');
+//         }
+//     });
+// });
 
 router.get('/:userid-:randomNum', function(req, res) {
   console.log("TEst");
