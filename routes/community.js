@@ -1,19 +1,19 @@
+var fs = require('fs');
 var express = require('express');
 var router = express.Router();
 var User = require('../models/user');
 var moment = require('moment');
-
 var upload = require('../database').upload;
 var mongoose = require('mongoose');
-require('dotenv').config();
-const escapeRegex = require('escape-string-regexp');
-
-const sgMail = require('@sendgrid/mail');
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-
-var fs = require('fs');
 var handlebars = require('handlebars');
+const sgMail = require('@sendgrid/mail');
+const escapeRegex = require('escape-string-regexp');
+const Trello = require("trello");
+
+var trello = new Trello(process.env.TRELLO_API_KEY, process.env.TRELLO_API_TOKEN);
 var emailTemplate = handlebars.compile(fs.readFileSync('./views/email.handlebars', 'utf8'));
+require('dotenv').config();
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 var postLimit = 10; // how many posts to show user at a time
 
@@ -223,7 +223,6 @@ router.get('/file/:fileID', (req, res) => {
   });
 });
 
-/* Chris this needs to get updated */
 router.post('/post', upload.array('file'), function(req, res) {
 	var data = {
 		auth: false
@@ -285,6 +284,18 @@ router.post('/post', upload.array('file'), function(req, res) {
 				req.user.save(function(err) {
 					if(err) throw err;
 				});
+				console.log("Sending to trello ...");
+				var cardTitle = '['+newPost.prog_lang+'] '+newPost.author.username+' - '+newPost.question;
+				var cardDescription = 'https://codeassist.org/community/'+newPost.id;
+				trello.addCard(cardTitle, cardDescription, process.env.TRELLO_TODO_LIST,
+			    function (error, trelloCard) {
+			        if (error) {
+			            console.log('Could not add card:', error);
+			        }
+			        else {
+			            console.log('Added card:', trelloCard);
+			        }
+			    });
 			});
 		}
 

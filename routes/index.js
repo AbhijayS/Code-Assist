@@ -24,6 +24,8 @@ var crypto = require('crypto');
 // var io=socket(server);
 var io = require('../app').io;
 const nanoid = require('nanoid');
+const Trello = require("trello");
+var trello = new Trello(process.env.TRELLO_API_KEY, process.env.TRELLO_API_TOKEN);
 
 var mailchimpInstance   = process.env.MAILCHIMP_SERVER_INSTANCE,
     listUniqueId        = process.env.MAILCHIMP_LIST,
@@ -1053,8 +1055,18 @@ router.post('/admin', function(req, res){
   }
 });
 
-router.get('/test', function(req, res) {
-  res.render('login-test', {layout: 'dashboard-layout'});
+router.get('/trello', function(req, res) {
+  trello.addCard('Clean car', 'Wax on, wax off', process.env.TRELLO_TODO_LIST,
+    function (error, trelloCard) {
+        if (error) {
+            console.log('Could not add card:');
+            res.status(200).send('Could not add card');
+        }
+        else {
+            console.log('Added card');
+            res.status(200).send('Added card');
+        }
+    });
 });
 
 router.get('/:userid-:randomNum', function(req, res) {
