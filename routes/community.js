@@ -800,6 +800,8 @@ router.post('/post/edit/:id', upload.array('file'), function(req, res) {
 						}
 
 						post.status.edited = true;
+						post.timestamp=Date.now();
+
 						post.save(function(err) {
 							if(err) throw err;
 							data.auth = true;
@@ -834,6 +836,7 @@ router.post('/:id/answers/edit/:answerid', function(req, res) {
 				if(foundAnswer.author.id === req.user.id) {
 					foundAnswer.answer = newAnswer;
 					foundAnswer.status.edited = true;
+					foundAnswer.timestamp=Date.now();
 					foundAnswer.save(function(err) {
 						if(err) throw err;
 						console.log("Answer Updated");
