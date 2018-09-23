@@ -825,6 +825,7 @@ router.post('/:id/answers/edit/:answerid', function(req, res) {
 				if(foundAnswer.author.id === req.user.id) {
 					foundAnswer.answer = newAnswer;
 					foundAnswer.status.edited = true;
+					foundAnswer.timestamp=Date.now();
 					foundAnswer.save(function(err) {
 						if(err) throw err;
 						console.log("Answer Updated");
