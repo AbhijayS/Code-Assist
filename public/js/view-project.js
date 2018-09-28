@@ -1,4 +1,8 @@
 $(document).ready(function() {
+  socket.on('disconnect', () => {
+    $("#disconnection-modal").modal('show');
+  });
+
   const bronze = {
     color: "#d06f10",
     html: `<i class="fas fa-medal"></i>`
