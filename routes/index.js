@@ -28,7 +28,7 @@ const Trello = require("trello");
 var trello = new Trello(process.env.TRELLO_API_KEY, process.env.TRELLO_API_TOKEN);
 
 var mailchimpInstance   = process.env.MAILCHIMP_SERVER_INSTANCE,
-    listUniqueId        = process.env.MAILCHIMP_LIST,
+    listUniqueId        = process.env.MAILCHIMP_SUBSCRIBE_LIST,
     mailchimpApiKey     = process.env.MAILCHIMP_API_KEY;
 
 var saltRounds=10;
@@ -182,7 +182,7 @@ router.post('/contact', uploadNoDest.array('file'), function(req, res) {
 
   if(req.user && (req.user.title!='mentor')) {
     req.user.qualities.assists += 10;
-    User.updateRank(req.user);
+    User.updateRank(req.user, req.user.qualities.rank);
   }
   // For generating quill HTML
   var converter = new QuillDeltaToHtmlConverter(JSON.parse(description), {});

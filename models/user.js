@@ -4,7 +4,12 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var db = mongoose.connection;
 const sgMail = require('@sendgrid/mail');
+var request = require('superagent');
+
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+var mailchimpInstance   = process.env.MAILCHIMP_SERVER_INSTANCE,
+    levelUpListID       = process.env.MAILCHIMP_LEVEL_UP_LIST,
+    mailchimpApiKey     = process.env.MAILCHIMP_API_KEY;
 
 // Chat Schema
 var ChatSchema = new Schema({
@@ -378,19 +383,42 @@ module.exports.isLinkValid = function(originalDate, compareDate, days, callback)
 	return;
 };
 
-module.exports.updateRank = function(user) {
-	if(user.qualities.assists >= 50) {
-		user.qualities.rank = "silver";
-	}else if(user.qualities.assists >= 100) {
-		user.qualities.rank = "gold";
-	}else if(user.qualities.assists >= 250) {
-		user.qualities.rank = "platinum";
-	}else{
+module.exports.updateRank = function(user, oldRank) {
+	if(user.qualities.assists < 50) {
 		user.qualities.rank = "bronze";
+	}else if(user.qualities.assists < 100) {
+		user.qualities.rank = "silver";
+	}else if(user.qualities.assists < 250) {
+		user.qualities.rank = "gold";
+	}else{
+		user.qualities.rank = "platinum";
 	}
 	user.save(function(err) {
 		if(err) throw err;
 		// rank updated!
+		console.log("Assists", user.qualities.assists);
+		console.log("Check if", oldRank, "is same as", user.qualities.rank);
+		if(oldRank != user.qualities.rank) {
+			console.log("Level Up Email");
+			request
+			.post('https://' + mailchimpInstance + '.api.mailchimp.com/3.0/lists/' + levelUpListID + '/members/')
+			.set('Content-Type', 'application/json;charset=utf-8')
+			.set('Authorization', 'Basic ' + new Buffer('any:' + mailchimpApiKey ).toString('base64'))
+			.send({
+				'email_address': user.email,
+				'status': 'subscribed',
+				'merge_fields': {
+					'FNAME': (user.first!='') ? user.first : user.username
+				}
+			}).end(function(err, response) {
+				if (response.status < 300 || (response.status === 400 && response.body.title === "Member Exists")) {
+					// sign up successful
+					console.log("User successfully subscribed to Mailchimp Level Up Email List");
+				} else {
+					console.log("User already subscibed on Mailchimp Level Up Email List - OR - User subscription to Mailchimp Level Up Email List Failed");
+				}
+			});
+		}
 	})
 };
 
