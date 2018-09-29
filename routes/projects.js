@@ -794,6 +794,7 @@ function Project(id) {
 			console.log("program terminated")
 			self.output = "";
 			self.runner.kill();
+			self.runner = null;
 			clearInterval(self.msgCountResetter);
 			self.nsp.emit("programTerminated");
 			self.nsp.emit("outputError", "Your program printed to the console too quickly. You may need to add a delay between each print statement in your program.");
@@ -1161,6 +1162,7 @@ function Project(id) {
 				self.output = "";
 				if (self.runner)
 					self.runner.kill();
+					self.runner = null;
 				// console.log("cleared output")
 			}
 
@@ -1185,14 +1187,17 @@ function Project(id) {
 		socket.on("terminateProgram", function() {
 			if (self.runner) {
 				self.runner.kill();
+				self.runner = null;
 				clearInterval(self.msgCountResetter);
 				socket.broadcast.emit("programTerminated");
 			}
 		});
 
 		socket.on("run", function(fileIndex) {
-			if (self.runner)
+			if (self.runner) {
 				self.runner.kill();
+				self.runner = null;
+			}
 
 			clearInterval(self.msgCountResetter);
 
@@ -1289,6 +1294,7 @@ function Project(id) {
 						self.runner.on('exit', function() {
 							self.nsp.emit("runFinished");
 							clearInterval(self.msgCountResetter);
+							self.runner = null;
 							// console.log('Run Finished');
 						});
 					});
@@ -1320,6 +1326,7 @@ function Project(id) {
 					self.runner.on('exit', function() {
 						self.nsp.emit("runFinished");
 						clearInterval(self.msgCountResetter);
+						self.runner = null;
 						// console.log('Run Finished');
 					});
 					break;
@@ -1367,6 +1374,7 @@ function Project(id) {
 						self.runner.on('exit', function() {
 							self.nsp.emit("runFinished");
 							clearInterval(self.msgCountResetter);
+							self.runner = null;
 							// console.log('Run Finished');
 						});
 					});
