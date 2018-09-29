@@ -106,6 +106,17 @@
         <div class="collapse navbar-collapse navbarMenu">
           <ul class="navbar-nav ml-auto">
             {{#if user}}
+            <li class="nav-item px-3">
+              <div id="bell" class="dropdown">
+                <!-- <a id="bell" class="nav-link dropdown-toggle" href="#" data-toggle="dropdown"> -->
+                <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
+                  <i class="fas fa-bell"></i>
+                </a>
+                 <div class="dropdown-menu">
+                  <a class="dropdown-item" href="#">Notification</a>
+                </div>
+              </div>
+            </li>
               <!-- <li class="nav-item px-3">
                 <a href="/plans" class="btn btn-primary">
                   <i class="fas fa-crown text-warning"></i> Go Premium
@@ -235,5 +246,6 @@
         $.post('/update-rewards');
       });
     </script>
+    <script src="/js/bell.js" type="text/javascript"></script>
   </body>
 </html>
