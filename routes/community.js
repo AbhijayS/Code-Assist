@@ -547,7 +547,7 @@ router.post('/:id/answer', function(req, res){
 					})
 				};
 
-				// sgMail.send(msg);
+				sgMail.send(msg);
 				console.log('============================================');
 				console.log("Sending Email to User ... ");
 				console.log("User's Username: " + user.username);
