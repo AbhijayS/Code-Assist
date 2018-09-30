@@ -20,10 +20,6 @@ body{
   user-select: none;
 }
 
-.nav-link {
-  color: #343a40 !important;
-}
-
 .page-overlay {
   position: absolute;
   background-color: #007bff;

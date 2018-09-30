@@ -108,18 +108,15 @@ router.get('/', function(req, res){
     // console.log("User Account Deleted: " + deleted);
 
     if(req.user) {
-      User.UserSchema.findOne({_id: req.user._id}).select('notifications').populate('notifications').exec(function(err, user) {
-        var notifications = user.notifications;
-        console.log(notifications);
-
+      User.UserSchema.findOne({_id: req.user._id}).select('notifications unread_notifications').populate('notifications').exec(function(err, user) {
         if(deleted == 'true')
         {
           console.log("Rendering Deleted Account Page");
           console.log('============================================');
-          res.render('account-deleted', {layout: 'dashboard-layout', notifications: notifications});
+          res.render('account-deleted', {layout: 'dashboard-layout', notifications: user.notifications, unread_notifications: user.unread_notifications});
         }else{
           console.log('============================================');
-          res.render('index', {layout: 'layout', notifications: notifications});
+          res.render('index', {layout: 'layout', notifications: user.notifications, unread_notifications: user.unread_notifications});
         }
       });
     }
@@ -972,6 +969,18 @@ function Notify(userid, data){
     }
   });
 }
+
+router.post("/read-notifications", function(req, res) {
+  User.UserSchema.findOne({_id: req.user._id}).select('unread_notifications').exec(function(err, user) {
+    if (user) {
+      user.unread_notifications = false;
+      user.save(function(err) {
+        if(err) throw err;
+      });
+    }
+  });
+  res.end();
+});
 /*
 =====================================================
                         BLOG

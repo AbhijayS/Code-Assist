@@ -525,19 +525,10 @@ router.post('/:id/answer', function(req, res){
       });
 
 			User.UserSchema.findOne({_id: post.author._id}, function(err, user) {
-				var notification = {
+				Notify(post.author._id, {
 					message: `<strong>${req.user.username}</strong> responded to your question titled "<em>${post.question}</em>"`,
 					link: "/community/" + postID
-				};
-				var newNotif = new User.NotificationSchema(notification);
-				newNotif.save(function(err) {
-					if(err) throw err;
 				});
-				post.author.notifications.push(newNotif);
-				post.author.save(function(err) {
-					if(err) throw err;
-				});
-				Notify(post.author._id, notification);
 
 				var newTimestamp = moment(newAnswer.timestamp);
 				const text = `
@@ -556,7 +547,7 @@ router.post('/:id/answer', function(req, res){
 					})
 				};
 
-				sgMail.send(msg);
+				// sgMail.send(msg);
 				console.log('============================================');
 				console.log("Sending Email to User ... ");
 				console.log("User's Username: " + user.username);
@@ -874,7 +865,21 @@ function Notify(userid, data){
   User.UserSchema.findOne({_id:userid},function(err,user){
     if(user){
 			// console.log("nsp", "/Notify"+userid);
-      this.nnsp.emit('notify', data);
+			var newNotif = new User.NotificationSchema(data);
+			newNotif.save(function(err) {
+				if(err) throw err;
+			});
+			user.notifications.unshift(newNotif);
+			user.unread_notifications = true;
+
+			this.nnsp.emit('notify', data);
+
+			// removes any notifications after 5
+			user.notifications.splice(5);
+
+			user.save(function(err) {
+				if(err) throw err;
+			});
     }
   });
 }

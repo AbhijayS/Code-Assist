@@ -88,7 +88,8 @@ var UserSchema = new Schema({
 		notifications: [{
 			type: Schema.Types.ObjectId,
 			ref: 'NotificationSchema'
-		}]
+		}],
+		unread_notifications: Boolean
 });
 
 var CommunitySchema = new Schema ({

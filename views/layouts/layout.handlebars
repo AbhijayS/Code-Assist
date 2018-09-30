@@ -108,18 +108,18 @@
             {{#if user}}
             <li class="nav-item px-3">
               <div id="bell" class="dropdown">
-                <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" style="max-height: 40px;">
+                <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown" style="max-height: 40px; color: rgba(64, 62, 62, 0.9) !important;">
                   <!-- <div id="unread-icon"></div> -->
                   <span class="fa-stack fa-1x" style="width: 0.7em; line-height: 1.5; vertical-align: baseline;">
                     <i id="bell-icon" class="fas fa-bell"></i>
-                    <div id="unread-icon" style="display: none;"></div>
+                    <div id="unread-icon" {{#unless unread_notifications}}style="display: none;"{{/unless}}></div>
                   </span>
                 </a>
                 <div id="bell-menu" class="dropdown-menu" style="width: 300px;">
                   {{#each notifications}}
                   <a class="notification dropdown-item" href="{{this.link}}">{{{this.message}}}</a>
                   {{else}}
-                  <span id="no-notifications" class="dropdown-header">No new notifications</span>
+                  <span id="no-notifications" class="dropdown-header">No notifications</span>
                   {{/each}}
                 </div>
               </div>
@@ -246,7 +246,9 @@
         var socket = io("/Notify{{user._id}}");
         socket.on("notify", function(data){
           $("#no-notifications").remove();
-          $('#bell-menu').append(`<a class="dropdown-item" href=${data.link}>${data.message}</a>`);
+          $("#unread-icon").show();
+          $('#bell-menu').prepend(`<a class="notification dropdown-item" href=${data.link}>${data.message}</a>`);
+          $(".notification").slice(5).remove();
         });
 
         // tell backend to update assists_added variable

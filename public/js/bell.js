@@ -1,8 +1,14 @@
 $(document).ready(function() {
-  // $('#bell').on('show.bs.dropdown', function () {
-  //   $('#bell-menu').append('<a class="dropdown-item" href="/pr">Notification</a>');
-  // });
-   $('#bell').on('hidden.bs.dropdown', function () {
-    console.log("hidden");
+  $('#bell').on('show.bs.dropdown', function () {
+    if ($("#unread-icon").is(":visible")) {
+      $("#unread-icon").hide();
+      $.post('/read-notifications');
+    }
+  });
+  $('#bell').on('hidden.bs.dropdown', function () {
+    if ($("#unread-icon").is(":visible")) {
+      $("#unread-icon").hide();
+      $.post('/read-notifications');
+    }
   });
 });
