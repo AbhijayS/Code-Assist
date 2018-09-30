@@ -151,6 +151,11 @@ router.post('/share', function(req, res){
 											if(err) throw err;
 										});
 
+										Notify(user._id, {
+											message: `<strong>${fromUser.username}</strong> invited you to their project named "<em>${project.name}</em>" <br><span style="color:green;"><strong>(Click to accept)</strong></span>`,
+											link: '/projects/invite/' + e_link
+										});
+
 										console.log("sharing with: " + user.email);
 /*										const output = `
 										<p>Hi ${user.username},</p>
@@ -1384,6 +1389,35 @@ function Project(id) {
 		});
 	});
 
+}
+
+function Notify(userid, data){
+  this.nnsp=io.of("/Notify"+userid);
+  User.UserSchema.findOne({_id:userid}).populate('notifications').exec(function(err,user){
+    if(user){
+			// console.log("nsp", "/Notify"+userid);
+			var newNotif = new User.NotificationSchema(data);
+			newNotif.save(function(err) {
+				if(err) throw err;
+			});
+			user.notifications.unshift(newNotif);
+			user.unread_notifications = true;
+
+			this.nnsp.emit('notify', data);
+
+			// removes any notifications after 5
+			if (user.notifications.length > 5) {
+				var removed = user.notifications.splice(5);
+				removed.forEach(function(notification) {
+					notification.remove();
+				});
+			}
+
+			user.save(function(err) {
+				if(err) throw err;
+			});
+    }
+  });
 }
 
 module.exports = router;
