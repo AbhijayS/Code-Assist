@@ -106,19 +106,14 @@ router.get('/', function(req, res){
     // console.log("User is isAuthenticated: " + req.isAuthenticated());
     var deleted = req.flash('account-deleted');
     // console.log("User Account Deleted: " + deleted);
-
-    if(req.user) {
-      User.UserSchema.findOne({_id: req.user._id}).select('notifications unread_notifications').populate('notifications').exec(function(err, user) {
-        if(deleted == 'true')
-        {
-          console.log("Rendering Deleted Account Page");
-          console.log('============================================');
-          res.render('account-deleted', {layout: 'dashboard-layout', notifications: user.notifications, unread_notifications: user.unread_notifications});
-        }else{
-          console.log('============================================');
-          res.render('index', {layout: 'layout', notifications: user.notifications, unread_notifications: user.unread_notifications});
-        }
-      });
+    if(deleted == 'true')
+    {
+      console.log("Rendering Deleted Account Page");
+      console.log('============================================');
+      res.render('account-deleted', {layout: 'dashboard-layout'});
+    }else{
+      console.log('============================================');
+      res.render('index', {layout: 'layout'});
     }
 });
 

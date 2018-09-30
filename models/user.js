@@ -335,7 +335,8 @@ module.exports.getUserByEmail = function(email, callback) {
 }
 
 module.exports.getUserById = function(id, callback) {
-	User.findById(id, callback);
+	// User.findById(id, callback);
+	User.findById(id).populate('notifications').exec(callback);
 }
 
 module.exports.comparePassword = function(candidatePassword, hash, callback) {
