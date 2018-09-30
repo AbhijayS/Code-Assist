@@ -52,7 +52,10 @@ router.post('/update-rewards', function(req, res) {
     req.user.profile.assists_added = null;
     req.user.save(function(err) {
       if(err) throw err;
+      res.end();
     })
+  } else {
+    res.end();
   }
 });
 
