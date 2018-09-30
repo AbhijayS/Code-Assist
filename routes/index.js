@@ -107,14 +107,21 @@ router.get('/', function(req, res){
     var deleted = req.flash('account-deleted');
     // console.log("User Account Deleted: " + deleted);
 
-    if(deleted == 'true')
-    {
-      console.log("Rendering Deleted Account Page");
-      console.log('============================================');
-      res.render('account-deleted', {layout: 'dashboard-layout'});
-    }else{
-      console.log('============================================');
-      res.render('index', {layout: 'layout'})
+    if(req.user) {
+      User.UserSchema.findOne({_id: req.user._id}).select('notifications').populate('notifications').exec(function(err, user) {
+        var notifications = user.notifications;
+        console.log(notifications);
+
+        if(deleted == 'true')
+        {
+          console.log("Rendering Deleted Account Page");
+          console.log('============================================');
+          res.render('account-deleted', {layout: 'dashboard-layout', notifications: notifications});
+        }else{
+          console.log('============================================');
+          res.render('index', {layout: 'layout', notifications: notifications});
+        }
+      });
     }
 });
 
@@ -956,16 +963,16 @@ router.post("/forgot_pass/:userid/:secretid", function(req, res) {
   });
 });
 
-function Notify(userid,message){
+function Notify(userid, message){
   //console.log("Notify user"+userid);
   this.nnsp=io.of("/Notify"+userid);
   this.nnsp.on('connection',function(socket){
-  //  console.log("connected21");
+
   });
 
   User.UserSchema.findOne({_id:userid},function(err,user){
     if(user){
-      this.nnsp.emit('notify',message);
+      this.nnsp.emit('notify', message);
     }
   });
 }

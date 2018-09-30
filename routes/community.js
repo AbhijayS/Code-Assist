@@ -9,6 +9,7 @@ var handlebars = require('handlebars');
 const sgMail = require('@sendgrid/mail');
 const escapeRegex = require('escape-string-regexp');
 const Trello = require("trello");
+const io = require('../app').io;
 
 var trello = new Trello(process.env.TRELLO_API_KEY, process.env.TRELLO_API_TOKEN);
 var emailTemplate = handlebars.compile(fs.readFileSync('./views/email.handlebars', 'utf8'));
@@ -524,6 +525,20 @@ router.post('/:id/answer', function(req, res){
       });
 
 			User.UserSchema.findOne({_id: post.author._id}, function(err, user) {
+				var notification = {
+					message: `<strong>${req.user.username}</strong> responded to your question titled "<em>${post.question}</em>"`,
+					link: "/community/" + postID
+				};
+				var newNotif = new User.NotificationSchema(notification);
+				newNotif.save(function(err) {
+					if(err) throw err;
+				});
+				post.author.notifications.push(newNotif);
+				post.author.save(function(err) {
+					if(err) throw err;
+				});
+				Notify(post.author._id, notification);
+
 				var newTimestamp = moment(newAnswer.timestamp);
 				const text = `
 					<p><a href="http://codeassist.org/users/profile/${req.user._id}">${req.user.username}</a> has recently replied to your question titled, <em>${post.question}</em>.</p>
@@ -854,5 +869,16 @@ router.post('/:id/answers/edit/:answerid', function(req, res) {
 	}
 });
 
+function Notify(userid, data){
+  console.log("Notify user"+userid);
+  this.nnsp=io.of("/Notify"+userid);
+  User.UserSchema.findOne({_id:userid},function(err,user){
+    if(user){
+			console.log("found user");
+			console.log("nsp", "/Notify"+userid);
+      this.nnsp.emit('notify', data);
+    }
+  });
+}
 
 module.exports = router;

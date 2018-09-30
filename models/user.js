@@ -15,6 +15,12 @@ var ChatSchema = new Schema({
 	projectid:String,
 });
 
+// Notification Schema
+var NotificationSchema = new Schema ({
+	message: String,
+	link: String
+});
+
 // User Schema
 var UserSchema = new Schema({
 
@@ -77,7 +83,12 @@ var UserSchema = new Schema({
 			assists: {type: Number, default: 0}
 		},
 
-		profile_url: String
+		profile_url: String,
+
+		notifications: [{
+			type: Schema.Types.ObjectId,
+			ref: 'NotificationSchema'
+		}]
 });
 
 var CommunitySchema = new Schema ({
@@ -198,6 +209,7 @@ var FileRefSchema = mongoose.model('FileRefSchema', FileRefSchema);
 var ProjectSchema = mongoose.model('ProjectSchema', ProjectSchema);
 // var ProjectFileSchema = mongoose.model('ProjectFileSchema', ProjectFileSchema);
 var ChatSchema = mongoose.model('ChatSchema', ChatSchema);
+var NotificationSchema = mongoose.model('NotificationSchema', NotificationSchema);
 
 
 module.exports = {
@@ -208,7 +220,8 @@ module.exports = {
 	FileRefSchema: FileRefSchema,
 	ProjectSchema: ProjectSchema,
 	// ProjectFileSchema: ProjectFileSchema,
-	ChatSchema: ChatSchema
+	ChatSchema: ChatSchema,
+	NotificationSchema: NotificationSchema
 }
 
 CommunitySchema.findOne({}).populate('posts').exec(function(err, community) {
