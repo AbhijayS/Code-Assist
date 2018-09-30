@@ -862,7 +862,7 @@ router.post('/:id/answers/edit/:answerid', function(req, res) {
 
 function Notify(userid, data){
   this.nnsp=io.of("/Notify"+userid);
-  User.UserSchema.findOne({_id:userid},function(err,user){
+  User.UserSchema.findOne({_id:userid}).populate('notifications').exec(function(err,user){
     if(user){
 			// console.log("nsp", "/Notify"+userid);
 			var newNotif = new User.NotificationSchema(data);
@@ -875,7 +875,12 @@ function Notify(userid, data){
 			this.nnsp.emit('notify', data);
 
 			// removes any notifications after 5
-			user.notifications.splice(5);
+			if (user.notifications.length > 5) {
+				var removed = user.notifications.splice(5);
+				removed.forEach(function(notification) {
+					notification.remove();
+				});
+			}
 
 			user.save(function(err) {
 				if(err) throw err;
