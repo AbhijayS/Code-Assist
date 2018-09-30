@@ -238,9 +238,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.slim.js"></script>
     <script>
     //Notification Reciever
-    $( document ).ready(function() {
+      $(document).ready(function() {
         var socket = io("/Notify{{user._id}}");
-        // console.log(socket);
         socket.on("notify", function(data){
           $("#no-notifications").remove();
           $('#bell-menu').append(`<a class="dropdown-item" href=${data.link}>${data.message}</a>`);

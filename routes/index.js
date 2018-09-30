@@ -963,16 +963,12 @@ router.post("/forgot_pass/:userid/:secretid", function(req, res) {
   });
 });
 
-function Notify(userid, message){
-  //console.log("Notify user"+userid);
+function Notify(userid, data){
   this.nnsp=io.of("/Notify"+userid);
-  this.nnsp.on('connection',function(socket){
-
-  });
-
   User.UserSchema.findOne({_id:userid},function(err,user){
     if(user){
-      this.nnsp.emit('notify', message);
+			// console.log("nsp", "/Notify"+userid);
+      this.nnsp.emit('notify', data);
     }
   });
 }

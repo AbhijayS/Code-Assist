@@ -870,12 +870,10 @@ router.post('/:id/answers/edit/:answerid', function(req, res) {
 });
 
 function Notify(userid, data){
-  console.log("Notify user"+userid);
   this.nnsp=io.of("/Notify"+userid);
   User.UserSchema.findOne({_id:userid},function(err,user){
     if(user){
-			console.log("found user");
-			console.log("nsp", "/Notify"+userid);
+			// console.log("nsp", "/Notify"+userid);
       this.nnsp.emit('notify', data);
     }
   });
