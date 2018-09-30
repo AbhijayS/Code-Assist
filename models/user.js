@@ -39,7 +39,8 @@ var UserSchema = new Schema({
 
 		profile: {
 			status: {type: String, default: "public"}, // "public", private"
-			assists_added: {type: Number, default: null} // assists awarded
+			assists_added: {type: Number, default: null}, // assists awarded
+      level_up_Email_status: {type: String}
 		},
 
 	  email: {
@@ -76,9 +77,7 @@ var UserSchema = new Schema({
 		}],
 
 		qualities: {
-			rank: {type: String, default: "bronze"},
-			// bronze, silver, gold, platinum
-
+			rank: {type: String, default: "bronze"}, // bronze, silver, gold, platinum
 			assists: {type: Number, default: 0}
 		},
 
@@ -396,10 +395,7 @@ module.exports.updateRank = function(user, oldRank) {
 	user.save(function(err) {
 		if(err) throw err;
 		// rank updated!
-		console.log("Assists", user.qualities.assists);
-		console.log("Check if", oldRank, "is same as", user.qualities.rank);
 		if(oldRank != user.qualities.rank) {
-			console.log("Level Up Email");
 			request
 			.post('https://' + mailchimpInstance + '.api.mailchimp.com/3.0/lists/' + levelUpListID + '/members/')
 			.set('Content-Type', 'application/json;charset=utf-8')
@@ -408,12 +404,17 @@ module.exports.updateRank = function(user, oldRank) {
 				'email_address': user.email,
 				'status': 'subscribed',
 				'merge_fields': {
-					'FNAME': (user.first!='') ? user.first : user.username
+					'FNAME': (user.first == null) ? user.username : user.first
 				}
 			}).end(function(err, response) {
 				if (response.status < 300 || (response.status === 400 && response.body.title === "Member Exists")) {
 					// sign up successful
 					console.log("User successfully subscribed to Mailchimp Level Up Email List");
+					user.profile.level_up_Email_status = "silver";
+					user.save(function(err) {
+						if(err) throw err;
+						// saved
+					});
 				} else {
 					console.log("User already subscibed on Mailchimp Level Up Email List - OR - User subscription to Mailchimp Level Up Email List Failed");
 				}
@@ -421,6 +422,53 @@ module.exports.updateRank = function(user, oldRank) {
 		}
 	})
 };
+
+// ca-database crawler -> makes sure everybody gets emails for leveling up
+function checkLevelUps(index) {
+	User.find({}, function(err, users) {
+		if(err) throw err;
+		if(users) {
+			if(users[index]) {
+				var user = users[index];
+				if((user.qualities.assists >= 50) && (user.profile.level_up_Email_status != "silver")) {
+					// mailchimp api
+					request
+					.post('https://' + mailchimpInstance + '.api.mailchimp.com/3.0/lists/' + levelUpListID + '/members/')
+					.set('Content-Type', 'application/json;charset=utf-8')
+					.set('Authorization', 'Basic ' + new Buffer('any:' + mailchimpApiKey ).toString('base64'))
+					.send({
+						'email_address': user.email,
+						'status': 'subscribed',
+						'merge_fields': {
+							'FNAME': (user.first == null) ? user.username : user.first
+						}
+					}).end(function(err, response) {
+						if (response.status < 300 || (response.status === 400 && response.body.title === "Member Exists")) {
+							// sign up successful
+							console.log("User successfully subscribed to Mailchimp Level Up Email List");
+							user.profile.level_up_Email_status = "silver";
+							user.save(function(err) {
+								if(err) throw err;
+								// saved
+							});
+
+						} else {
+							console.log("User already subscibed on Mailchimp Level Up Email List - OR - User subscription to Mailchimp Level Up Email List Failed");
+						}
+					});
+				}
+				index++;
+			}else{
+				index = 0;
+			}
+		}
+		setTimeout(function() {checkLevelUps(index);}, 5000);
+	});
+};
+setTimeout(function() {
+	checkLevelUps(0);
+}, 1000);
+
 
 module.exports.emailAllMentors = function(subject, msg) {
 	var meta = {
@@ -439,6 +487,7 @@ module.exports.emailAllMentors = function(subject, msg) {
 	});
 	return;
 };
+
 /*
 ==============================
 Database Utilities

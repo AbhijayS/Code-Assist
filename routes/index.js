@@ -68,6 +68,7 @@ router.post('/' + process.env.FIREWALL_PASS + '/award-assists', function(req, re
       user.profile.assists_added = 10;
       user.save(function(err) {
         if(err) throw err;
+        User.updateRank(user, user.qualities.rank);
         const output = `
         <p>Thank you for taking part in the Code Assist survey. Your feedback really helps us make the website a better place so that programmers like you have an easier time using features like the community discussions and project collaborations.</p>
 
