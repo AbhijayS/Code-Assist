@@ -134,6 +134,9 @@ $(document).ready(function() {
           $('#settings').hide();
       }
   });
+  $('#exit-settings').click(function() {
+    $('#settings').hide();
+  })
 
   $('#settings-btn').click(function() {
     $('#settings').show();

@@ -101,7 +101,7 @@ router.post('/', function(req, res){
 
 });
 
-router.post('/share', function(req, res){
+router.post('/share', function(req, res) {
 	var projectID = req.body.projectID;
 	if (req.user) {
 		User.UserSchema.findOne({_id: req.user._id}, function(err, fromUser) {
