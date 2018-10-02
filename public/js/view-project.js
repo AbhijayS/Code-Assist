@@ -210,6 +210,12 @@ $(document).ready(function() {
 
   });
 
+  $('#make-public-btn').click(function() {
+    $.post('/projects/make-project-public', {projectID: window.location.pathname.split('/')[2]}, function(data) {
+
+    });
+  });
+
   $('#invite-mentor').submit(function(event) {
     event.preventDefault();
     $.post(window.location.pathname+'invite-mentor', function(data) {

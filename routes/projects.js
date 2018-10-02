@@ -198,6 +198,24 @@ router.post('/share', function(req, res) {
 
 });
 
+router.post('/make-project-public', function(req, res) {
+	var projectID = req.body.projectID;
+	if(req.user) {
+		User.ProjectSchema.findOne({_id: projectID}, function(err, project) {
+			if(err) throw err;
+			if(project) {
+				if(project.owner == req.user.id) {
+					project.publicProject = true;
+					project.save(function(err) {
+						if(err) throw err;
+						// project is public now
+					})
+				}
+			}
+		})
+	}
+});
+
 router.get('/invite/:projectID/:randomID', function(req, res){
 	var projectID = req.params.projectID;
 	var randomID = req.params.randomID;
@@ -369,6 +387,7 @@ router.get('/:id', function(req, res) {
 	var projectID = req.params.id;
 
 	User.ProjectSchema.findOne({_id: projectID}).populate(['usersWithAccess', 'owner', 'chatHistory', 'assignedMentor']).exec(function(err, project) {
+		if(err) throw err;
 		if(req.user) {
 			if (project) {
 				var userAccessLevel = 0;
