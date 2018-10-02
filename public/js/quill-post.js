@@ -7,7 +7,11 @@ window.onload = function(){
         [{ header: [1, 2, false] }],
         ['bold', 'italic', 'underline'],
         ['image', 'code-block']
-      ]
+      ],
+      'auto-links': {
+        paste: true,
+        type: true
+      }
     },
     theme: 'snow'
   });
