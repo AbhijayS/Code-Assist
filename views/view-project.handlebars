@@ -115,7 +115,11 @@
 
 			<hr>
 			<div class="row">
+				{{#if isowner}}
+				{{#if publicOption}}
 				<div class="col-sm-7">
+				{{/if}}
+				{{/if}}
 					<div class="container">
 						<form id="share-project" novalidate>
 							<div class="form-group">
@@ -146,8 +150,14 @@
 							</div>
 						</form>
 					</div>
+				{{#if isowner}}
+				{{#if publicOption}}
 				</div>
+				{{/if}}
+				{{/if}}
 
+				{{#if isowner}}
+				{{#if publicOption}}
 				<div class="col-sm-4">
 					<div class="container">
 						<strong>Make this project public</strong>
@@ -156,6 +166,9 @@
 						<button type="button" class="btn btn-outline-primary btn-block">Make public</button>
 					</div>
 				</div>
+				{{/if}}
+				{{/if}}
+
 			</div>
 		</div>
 		{{/unless}}

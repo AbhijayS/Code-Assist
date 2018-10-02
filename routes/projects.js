@@ -42,7 +42,7 @@ function projectActive(id) {
 	return false;
 }
 
-router.get('/', function(req, res){
+router.get('/', function(req, res) {
 	if(req.user) {
 		User.UserSchema.findOne({_id: req.user._id}).
 		populate({
@@ -69,7 +69,7 @@ router.get('/', function(req, res){
 	}
 });
 
-router.post('/', function(req, res){
+router.post('/', function(req, res) {
 	var project_name = req.body.project_name;
 
 	if(req.user) {
@@ -410,7 +410,7 @@ router.get('/:id', function(req, res) {
 						mentor = (req.user.id == project.assignedMentor.id);
 					project.save(function(err) {
 						if(err) throw err;
-						res.render('view-project', {layout: 'view-project-layout', isThumbnail: isThumbnail, namespace: '/' + projectID, clearance:userAccessLevel, isNew: projectStatus, mentor: mentor, popup: req.flash('display-settings'), project: project, users: project.usersWithAccess, owner: project.owner, isowner: project.owner.id == req.user.id ? true : false});
+						res.render('view-project', {layout: 'view-project-layout', isThumbnail: isThumbnail, namespace: '/' + projectID, clearance:userAccessLevel, isNew: projectStatus, mentor: mentor, popup: req.flash('display-settings'), project: project, users: project.usersWithAccess, owner: project.owner, isowner: project.owner.id == req.user.id, publicOption: (project.owner.qualities.assists >= 50)});
 					})
 				} else {
 					res.redirect('/projects');
