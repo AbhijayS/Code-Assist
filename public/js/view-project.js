@@ -211,8 +211,17 @@ $(document).ready(function() {
   });
 
   $('#make-public-btn').click(function() {
-    $.post('/projects/make-project-public', {projectID: window.location.pathname.split('/')[2]}, function(data) {
+    // var public_btn = $('#make-public-btn');
+    var public_div = $('.public-div');
+    var private_div = $('.private-div');
 
+    $.post('/projects/make-project-public', {projectID: window.location.pathname.split('/')[2]}, function(data) {
+      if(data.auth) {
+        public_div.addClass('d-none');
+        private_div.removeClass('d-none');
+      }else{
+        window.location.replace('/');
+      }
     });
   });
 

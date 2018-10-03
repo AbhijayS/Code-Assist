@@ -3,10 +3,12 @@
 			<div id="code-editor" class="d-flex flex-column">
 				{{#unless isThumbnail}}
 				<div id="topBar">
+					{{#unless displayPublic}}
 					<label class="btn btn-primary mb-0">
 						Upload File<input id="fileUpload" type="file" accept=".java,.py,.cpp,.dat,.txt,.html,.css,.js" hidden>
 					</label>
 					<button id="newFileBtn" class="btn btn-primary">New File</button>
+					{{/unless}}
 					<a id="downloadFileBtn" class="btn btn-primary disabled" href="#">Download File</a>
 					<a id="downloadAllFiles" class="btn btn-primary" href="downloadAll">Download Project as .ZIP</a>
 				</div>
@@ -102,7 +104,7 @@
 		{{#unless ismentor}}
 		<div id="sharing" class="mb-5">
 
-			<h1 class="title mb-4" style="font-weight: 200;">Add collaborators to<input id="change-project-name" type="text" class="form-control" value="{{project.name}}" style="
+			<h1 class="title mb-4" style="font-weight: 200;">Add collaborators to <input id="change-project-name" type="text" class="form-control" value="{{project.name}}" style="
 				    display: inline;
 				    vertical-align: baseline;
 				    font-weight: 400;
@@ -158,12 +160,21 @@
 
 				{{#if isowner}}
 				{{#if publicOption}}
-				<div class="col-sm-4">
+				<div class="public-div col-sm-4">
 					<div class="container">
 						<strong>Make this project public</strong>
 						<hr class="mt-2">
-						<p>Anyone with the link can only view and run this project</p>
+						<p>Anyone with the link can view and run this project.</p>
 						<button type="button" class="btn btn-outline-primary btn-block" id="make-public-btn">Make public</button>
+					</div>
+				</div>
+
+				<div class="private-div col-sm-4 d-none">
+					<div class="container">
+						<strong>Make this project private</strong>
+						<hr class="mt-2">
+						<p>Only collaborators can view and edit the project.</p>
+						<button type="button" class="btn btn-secondary btn-block" id="make-private-btn">Make private</button>
 					</div>
 				</div>
 				{{/if}}

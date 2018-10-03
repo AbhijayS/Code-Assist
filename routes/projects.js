@@ -209,8 +209,13 @@ router.post('/make-project-public', function(req, res) {
 					project.save(function(err) {
 						if(err) throw err;
 						// project is public now
+						res.send({auth: true});
 					})
+				}else{
+					res.send({auth: false});
 				}
+			}else{
+				res.send({auth: false});
 			}
 		})
 	}
@@ -381,16 +386,14 @@ router.post('/:projectid/leave-project-confirm', function(req, res) {
 })
 
 router.get('/:id', function(req, res) {
-	console.log("Project");
 	var isThumbnail = req.query.thumbnail;
-	// console.log("isThumbnail:", isThumbnail);
 	var projectID = req.params.id;
 
 	User.ProjectSchema.findOne({_id: projectID}).populate(['usersWithAccess', 'owner', 'chatHistory', 'assignedMentor']).exec(function(err, project) {
 		if(err) throw err;
 		if(req.user) {
 			if (project) {
-				var userAccessLevel = 0;
+				var userAccessLevel = -1;
 
 				if (req.user.id == (project.owner.id)) {
 					userAccessLevel = 2;
@@ -402,14 +405,17 @@ router.get('/:id', function(req, res) {
 						// console.log(typeof req.user._id);
 						// console.log(typeof project.usersWithAccess[i].id);
 						if (project.usersWithAccess[i].id === req.user.id) {
-							userAccessLevel = 1;
+							userAccessLevel = 1; // Collaborator
 							break;
 						}
 					}
 				}
+				if((userAccessLevel == -1) && project.publicProject) {
+					userAccessLevel = 0; // public project viewer
+				}
 
 				// console.log(userAccessLevel);
-				if (userAccessLevel != 0) {
+				if (userAccessLevel != -1) {
 
 					if (!projectActive(projectID)){
 						// currentProjects.push(new Project(project._id, project.text));
@@ -429,7 +435,7 @@ router.get('/:id', function(req, res) {
 						mentor = (req.user.id == project.assignedMentor.id);
 					project.save(function(err) {
 						if(err) throw err;
-						res.render('view-project', {layout: 'view-project-layout', isThumbnail: isThumbnail, namespace: '/' + projectID, clearance:userAccessLevel, isNew: projectStatus, mentor: mentor, popup: req.flash('display-settings'), project: project, users: project.usersWithAccess, owner: project.owner, isowner: project.owner.id == req.user.id, publicOption: (project.owner.qualities.assists >= 50)});
+						res.render('view-project', {layout: 'view-project-layout', isThumbnail: isThumbnail, namespace: '/' + projectID, clearance:userAccessLevel, isNew: projectStatus, mentor: mentor, popup: req.flash('display-settings'), project: project, users: project.usersWithAccess, owner: project.owner, isowner: project.owner.id == req.user.id, publicOption: (project.owner.qualities.assists >= 50), isPublic: project.publicProject, displayPublic: (userAccessLevel == 0)});
 					})
 				} else {
 					res.redirect('/projects');
@@ -624,17 +630,21 @@ router.get('/:id/file/:fileIndex', function(req, res) {
 		User.ProjectSchema.findOne({_id: projectID}).populate(['usersWithAccess', 'owner']).exec(function(err, project) {
 			if (project) {
 				// Check if user has access to project
-				var userAccessLevel = 0;
+				var userAccessLevel = -1;
 				for (var i = 0; i < project.usersWithAccess.length; i++) {
 					if (project.usersWithAccess[i].id === req.user.id)
-						userAccessLevel = 1;
+						userAccessLevel = 1; // Collaborator
 				}
 
 				if (req.user._id.equals(project.owner.id)) {
-					userAccessLevel = 2;
+					userAccessLevel = 2; // owner
 				}
 
-				if (userAccessLevel != 0) {
+				if((userAccessLevel == -1) && project.publicProject) {
+					userAccessLevel = 0; // public project viewer
+				}
+
+				if (userAccessLevel != -1) {
 					var projectObject = getCurrentProject(projectID);
 					if (projectObject && projectObject.files[fileIndex] && projectObject.files[fileIndex].fileName) {
 						var fileName = projectObject.files[fileIndex].fileName;
@@ -674,17 +684,21 @@ router.get('/:id/downloadAll', function(req, res) {
 		User.ProjectSchema.findOne({_id: projectID}).populate(['usersWithAccess', 'owner']).exec(function(err, project) {
 			if (project) {
 				// Check if user has access to project
-				var userAccessLevel = 0;
+				var userAccessLevel = -1;
 				for (var i = 0; i < project.usersWithAccess.length; i++) {
 					if (project.usersWithAccess[i].id === req.user.id)
-						userAccessLevel = 1;
+						userAccessLevel = 1; // Collaborator
 				}
 
 				if (req.user._id.equals(project.owner.id)) {
-					userAccessLevel = 2;
+					userAccessLevel = 2; // Owner
 				}
 
-				if (userAccessLevel != 0) {
+				if((userAccessLevel == -1) && project.publicProject) {
+					userAccessLevel = 0; // public project viewer
+				}
+
+				if (userAccessLevel != -1) {
 					async.each(project.fileNames, function(fileName, callback) {
 						if (fs.existsSync(projectDir + fileName)) {
 							fs.readFile(projectDir + fileName, {encoding: 'utf-8'}, function(err, text) {
