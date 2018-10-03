@@ -242,7 +242,6 @@ router.post('/post', upload.array('file'), function(req, res) {
 		var questionInvalid = false;
 		var descriptionInvalid = false;
 
-		// console.log(detectLinks(new Delta(JSON.parse(description))));
 		var descWithLinks = detectLinks(new Delta(JSON.parse(description))).ops;
 		description = JSON.stringify(descWithLinks);
 
@@ -500,6 +499,9 @@ router.post('/:id/deleteanswer', function(req, res){
 router.post('/:id/answer', function(req, res){
   var postID = req.params.id;
   var message = req.body.answer;
+
+	var msgWithLinks = detectLinks(new Delta(JSON.parse(message))).ops;
+	message = JSON.stringify(msgWithLinks);
 
 	if (message == '[{"insert":"\\n"}]') {
 		console.log("invalid answer");
@@ -761,6 +763,9 @@ router.post('/post/edit/:id', upload.array('file'), function(req, res) {
 		var removedFileIds = req.body.removedFileIds;
 		// console.log("removedFileIds:", removedFileIds);
 
+		var descWithLinks = detectLinks(new Delta(JSON.parse(description))).ops;
+		description = JSON.stringify(descWithLinks);
+
 		if (question.trim().split(' ').length < 2 || question.length>150) {
 			data.questionInvalid = true;
 			res.send(data);
@@ -840,6 +845,9 @@ router.post('/:id/answers/edit/:answerid', function(req, res) {
   var postID = req.params.id;
 	var answerID = req.params.answerid;
 	var newAnswer = req.body.answer;
+
+	var answerWithLinks = detectLinks(new Delta(JSON.parse(newAnswer))).ops;
+	newAnswer = JSON.stringify(answerWithLinks);
 
 	if(req.user) {
 		User.AnswerSchema.findOne({_id: answerID}).populate('author').exec(function(err, foundAnswer) {

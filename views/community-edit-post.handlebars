@@ -119,7 +119,11 @@
           [{ header: [1, 2, false] }],
           ['bold', 'italic', 'underline'],
           ['image', 'code-block']
-        ]
+        ],
+        'auto-links': {
+          paste: true,
+          type: true
+        }
       },
       theme: 'snow'
     });
@@ -234,7 +238,7 @@
     $('#fileContainer .deleteFileBtn').click(function(event) {
       event.preventDefault();
       removedFileIds.push($(this).siblings('.fileBtn').attr('id'));
-      
+
       $(this).parent().remove();
       $('#fileUpload').val("");
     });
