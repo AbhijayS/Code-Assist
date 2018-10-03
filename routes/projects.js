@@ -1014,7 +1014,7 @@ function Project(id) {
 
 			file.saveTimeout = setTimeout(function() {
 				if (file.fileName) {
-					console.log("saving")
+					// console.log("saving")
 					fs.writeFile(self.folderPath + file.fileName, text, function(err) {
 						if (err)
 							console.log(err);
