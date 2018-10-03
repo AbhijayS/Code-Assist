@@ -221,6 +221,29 @@ router.post('/make-project-public', function(req, res) {
 	}
 });
 
+router.post('/make-project-private', function(req, res) {
+	var projectID = req.body.projectID;
+	if(req.user) {
+		User.ProjectSchema.findOne({_id: projectID}, function(err, project) {
+			if(err) throw err;
+			if(project) {
+				if(project.owner == req.user.id) {
+					project.publicProject = false;
+					project.save(function(err) {
+						if(err) throw err;
+						// project is public now
+						res.send({auth: true});
+					})
+				}else{
+					res.send({auth: false});
+				}
+			}else{
+				res.send({auth: false});
+			}
+		})
+	}
+});
+
 router.get('/invite/:projectID/:randomID', function(req, res){
 	var projectID = req.params.projectID;
 	var randomID = req.params.randomID;
