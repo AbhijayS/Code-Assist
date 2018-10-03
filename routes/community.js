@@ -10,6 +10,8 @@ const sgMail = require('@sendgrid/mail');
 const escapeRegex = require('escape-string-regexp');
 const Trello = require("trello");
 const io = require('../app').io;
+const detectLinks = require('delta-detect-links');
+const Delta = require('quill-delta');
 
 var trello = new Trello(process.env.TRELLO_API_KEY, process.env.TRELLO_API_TOKEN);
 var emailTemplate = handlebars.compile(fs.readFileSync('./views/email.handlebars', 'utf8'));
@@ -240,6 +242,10 @@ router.post('/post', upload.array('file'), function(req, res) {
 		var questionInvalid = false;
 		var descriptionInvalid = false;
 
+		// console.log(detectLinks(new Delta(JSON.parse(description))));
+		var descWithLinks = detectLinks(new Delta(JSON.parse(description))).ops;
+		description = JSON.stringify(descWithLinks);
+
 		if (question.trim().split(' ').length < 2 || question.length>150) {
 			data.questionInvalid = true;
 			res.send(data);
@@ -343,7 +349,7 @@ router.get('/:id', function(req, res) {
 
 			var today = moment(Date.now());
 			var description = JSON.parse(post.description);
-			if(description.length == 0 || description[0].insert.trim() == "") {
+			if(description.length == 0 || (description[0].insert && description[0].insert.trim() == "")) {
 				description = null;
 			}else{
 				description = post.description;
