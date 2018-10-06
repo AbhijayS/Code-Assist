@@ -437,9 +437,18 @@ router.get('/:id', function(req, res) {
 					userAccessLevel = 0; // public project viewer
 				}
 
+				if (userAccessLevel >= 1) {
+					var token = nanoid(safe_chars);
+					console.log(project.tokens);
+					project.tokens[req.user.id] = token;
+					project.markModified('tokens');
+					project.save(function(err) {
+						if(err) throw err;
+					});
+				}
+
 				// console.log(userAccessLevel);
 				if (userAccessLevel != -1) {
-
 					if (!projectActive(projectID)){
 						// currentProjects.push(new Project(project._id, project.text));
 						currentProjects.push(new Project(project._id, project.files));
@@ -458,7 +467,7 @@ router.get('/:id', function(req, res) {
 						mentor = (req.user.id == project.assignedMentor.id);
 					project.save(function(err) {
 						if(err) throw err;
-						res.render('view-project', {layout: 'view-project-layout', isThumbnail: isThumbnail, namespace: '/' + projectID, clearance:userAccessLevel, isNew: projectStatus, mentor: mentor, popup: req.flash('display-settings'), project: project, users: project.usersWithAccess, owner: project.owner, isowner: project.owner.id == req.user.id, publicOption: (project.owner.qualities.assists >= 50), isPublic: project.publicProject, displayPublic: (userAccessLevel == 0)});
+						res.render('view-project', {layout: 'view-project-layout', isThumbnail: isThumbnail, namespace: '/' + projectID, clearance:userAccessLevel, isNew: projectStatus, mentor: mentor, popup: req.flash('display-settings'), project: project, users: project.usersWithAccess, owner: project.owner, isowner: project.owner.id == req.user.id, publicOption: (project.owner.qualities.assists >= 50), isPublic: project.publicProject, displayPublic: (userAccessLevel == 0), token: token});
 					})
 				} else {
 					res.redirect('/projects');

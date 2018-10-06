@@ -210,6 +210,9 @@
     <script type="text/javascript">
       var namespace = '{{namespace}}';
       var socket = io('{{namespace}}');
+
+      console.log('{{token}}');
+
       var username = '{{user.username}}';
       var isThumbnail = false;
       {{#if isThumbnail}}
