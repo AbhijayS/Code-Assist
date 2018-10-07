@@ -1001,6 +1001,23 @@ function Project(id) {
 			self.activeUserCount++;
 		});
 
+		socket.on("programInput", function(text) {
+			if (self.runner) {
+				self.runner.stdin.write(text+"\n");
+				// runner.stdin.end();
+				socket.broadcast.emit("programInput", text);
+			}
+		});
+
+		socket.on("terminateProgram", function() {
+			if (self.runner) {
+				self.runner.kill();
+				self.runner = null;
+				clearInterval(self.msgCountResetter);
+				socket.broadcast.emit("programTerminated");
+			}
+		});
+
 		socket.on("run", function(fileIndex) {
 			if (self.runner) {
 				self.runner.kill();
@@ -1467,23 +1484,6 @@ function Project(id) {
 			self.nsp.emit("deleteCursors", socket.id);
 			self.nsp.emit("deleteSelections", socket.id);
 			// console.log(self.cursors);
-		});
-
-		socket.on("programInput", function(text) {
-			if (self.runner) {
-				self.runner.stdin.write(text+"\n");
-				// runner.stdin.end();
-				socket.broadcast.emit("programInput", text);
-			}
-		});
-
-		socket.on("terminateProgram", function() {
-			if (self.runner) {
-				self.runner.kill();
-				self.runner = null;
-				clearInterval(self.msgCountResetter);
-				socket.broadcast.emit("programTerminated");
-			}
 		});
 
 	}
