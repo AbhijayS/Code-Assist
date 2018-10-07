@@ -52,7 +52,9 @@ function checkOnlyUserConnected() {
 
 easyrtc.enableDebug(false);
 easyrtc.setRoomOccupantListener(RoomOccupantListener);
-easyrtc.setUsername(username);
+
+if (username)
+	easyrtc.setUsername(username);
 
 $("#joinCallAudio").click(function() {
 	if (!connected) {

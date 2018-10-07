@@ -84,7 +84,7 @@ socket.on("addFile", function(fileName, text) {
 
 function addFile(fileName, text) {
 	var newTab;
-	if (fileName) {
+	if (fileName || displayPublic) {
 		newTab = $(`<li class="nav-item" data-toggle="popover"><a class="nav-link" data-toggle="tab" href=""><span class="hiddenSpan"></span><input maxlength="100" readonly class="fileName" value="${fileName}" placeholder="untitled" autocomplete="off" spellcheck="false" type="text"></a><button class="close">&times;</button></li>`);
 	} else {
 		newTab = $('<li class="nav-item" data-toggle="popover"><a class="nav-link" data-toggle="tab" href=""><span class="hiddenSpan"></span><input maxlength="100" class="fileName" placeholder="untitled" autocomplete="off" spellcheck="false" type="text"></a><button class="close">&times;</button></li>');
@@ -289,11 +289,14 @@ function initFileTab(newTab) {
 	fileNameInput.blur(function() {
 		if ($(this).val() == "" || validFileName($(this).val())) {
 			newTab.popover('hide');
-			if ($(this).val().length > 0) {
-				$(this).prop("readonly", true);
-			} else {
-				$(this).prop("readonly", false);
-			}
+
+      if (!displayPublic) {
+  			if ($(this).val().length > 0) {
+  				$(this).prop("readonly", true);
+  			} else {
+  				$(this).prop("readonly", false);
+  			}
+      }
 
 			var sessionIndex = $(".fileName").index($(this));
 	        socket.emit("fileRenamed", $(this).val(), sessionIndex);

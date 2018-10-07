@@ -415,25 +415,28 @@ router.get('/:id', function(req, res) {
 
 	User.ProjectSchema.findOne({_id: projectID}).populate(['usersWithAccess', 'owner', 'chatHistory', 'assignedMentor']).exec(function(err, project) {
 		if(err) throw err;
-		if(req.user) {
+		if(req.user || project.publicProject) {
 			if (project) {
 				var userAccessLevel = -1;
 
-				if (req.user.id == (project.owner.id)) {
-					userAccessLevel = 2;
-					// console.log("Owner is accessing");
-				}else if (project.assignedMentor && (project.assignedMentor.id == req.user.id)) {
-					userAccessLevel = 1;
-				}else{
-					for (var i = 0; i < project.usersWithAccess.length; i++) {
-						// console.log(typeof req.user._id);
-						// console.log(typeof project.usersWithAccess[i].id);
-						if (project.usersWithAccess[i].id === req.user.id) {
-							userAccessLevel = 1; // Collaborator
-							break;
+				if(req.user) {
+					if (req.user.id == (project.owner.id)) {
+						userAccessLevel = 2;
+						// console.log("Owner is accessing");
+					}else if (project.assignedMentor && (project.assignedMentor.id == req.user.id)) {
+						userAccessLevel = 1;
+					}else{
+						for (var i = 0; i < project.usersWithAccess.length; i++) {
+							// console.log(typeof req.user._id);
+							// console.log(typeof project.usersWithAccess[i].id);
+							if (project.usersWithAccess[i].id === req.user.id) {
+								userAccessLevel = 1; // Collaborator
+								break;
+							}
 						}
 					}
 				}
+
 				if((userAccessLevel == -1) && project.publicProject) {
 					userAccessLevel = 0; // public project viewer
 				}
@@ -465,7 +468,7 @@ router.get('/:id', function(req, res) {
 						mentor = (req.user.id == project.assignedMentor.id);
 					project.save(function(err) {
 						if(err) throw err;
-						res.render('view-project', {layout: 'view-project-layout', isThumbnail: isThumbnail, namespace: '/' + projectID, clearance:userAccessLevel, isNew: projectStatus, mentor: mentor, popup: req.flash('display-settings'), project: project, users: project.usersWithAccess, owner: project.owner, isowner: project.owner.id == req.user.id, publicOption: (project.owner.qualities.assists >= 50), isPublic: project.publicProject, displayPublic: (userAccessLevel == 0), token: token});
+						res.render('view-project', {layout: 'view-project-layout', isThumbnail: isThumbnail, namespace: '/' + projectID, clearance:userAccessLevel, isNew: projectStatus, mentor: mentor, popup: req.flash('display-settings'), project: project, users: project.usersWithAccess, owner: project.owner, isowner: req.user ? project.owner.id == req.user.id: false, publicOption: (project.owner.qualities.assists >= 50), isPublic: project.publicProject, displayPublic: (userAccessLevel == 0), token: token});
 					})
 				} else {
 					res.redirect('/projects');
