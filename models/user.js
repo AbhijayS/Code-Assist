@@ -148,7 +148,9 @@ var ProjectSchema = new Schema({
 	invitationPending: false,
 	mentor_invitation_secret: String,
 
-	status: {type: String, default: "new"} // new, using, unused
+	status: {type: String, default: "new"}, // new, using, unused
+
+	publicProject: false
 });
 
 // Post Schema

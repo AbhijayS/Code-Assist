@@ -134,6 +134,9 @@ $(document).ready(function() {
           $('#settings').hide();
       }
   });
+  $('#exit-settings').click(function() {
+    $('#settings').hide();
+  })
 
   $('#settings-btn').click(function() {
     $('#settings').show();
@@ -204,6 +207,38 @@ $(document).ready(function() {
       }
     });
 
+  });
+
+  $('#make-public-btn').click(function() {
+    // var public_btn = $('#make-public-btn');
+    var public_div = $('.public-div');
+    var private_div = $('.private-div');
+
+    $.post('/projects/make-project-public', {projectID: window.location.pathname.split('/')[2]}, function(data) {
+      if(data.auth) {
+        public_div.removeClass('d-none');
+        public_div.addClass('d-none');
+        private_div.removeClass('d-none');
+      }else{
+        window.location.replace('/');
+      }
+    });
+  });
+
+  $('#make-private-btn').click(function() {
+    // var public_btn = $('#make-public-btn');
+    var public_div = $('.public-div');
+    var private_div = $('.private-div');
+
+    $.post('/projects/make-project-private', {projectID: window.location.pathname.split('/')[2]}, function(data) {
+      if(data.auth) {
+        private_div.removeClass('d-none');
+        private_div.addClass('d-none');
+        public_div.removeClass('d-none');
+      }else{
+        window.location.replace('/');
+      }
+    });
   });
 
   $('#invite-mentor').submit(function(event) {

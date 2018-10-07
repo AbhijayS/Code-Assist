@@ -3,10 +3,12 @@
 			<div id="code-editor" class="d-flex flex-column">
 				{{#unless isThumbnail}}
 				<div id="topBar">
+					{{#unless displayPublic}}
 					<label class="btn btn-primary mb-0">
 						Upload File<input id="fileUpload" type="file" accept=".java,.py,.cpp,.dat,.txt,.html,.css,.js" hidden>
 					</label>
 					<button id="newFileBtn" class="btn btn-primary">New File</button>
+					{{/unless}}
 					<a id="downloadFileBtn" class="btn btn-primary disabled" href="#">Download File</a>
 					<a id="downloadAllFiles" class="btn btn-primary" href="downloadAll">Download Project as .ZIP</a>
 				</div>
@@ -47,6 +49,7 @@
 			</div>
 		</div>
 
+		{{#unless displayPublic}}
 		<div class="ui-layout-east">
 			<div id="chat" class="container video-chat-view mt-5">
 				<div class="card">
@@ -84,6 +87,8 @@
 
 		</div>
 		{{/unless}}
+
+		{{/unless}}
 </div>
 
 <!-- <div id="editorContainer" class="container-fluid">
@@ -95,10 +100,14 @@
 {{#unless isThumbnail}}
 <div id="settings" {{#if isNew}}{{else}}{{#if popup}}{{else}} style="display: none;" {{/if}}{{/if}}>
 	<div id="box" class="mx-auto p-5" style="max-width: 1100px;">
+		<button type="button" id="exit-settings" class="close" aria-label="Close">
+			<span aria-hidden="true" style="font-size: 36px;">&times;</span>
+		</button>
+
 		{{#unless ismentor}}
 		<div id="sharing" class="mb-5">
 
-			<h1 class="title mb-4" style="font-weight: 200;">Invite Members to<input id="change-project-name" type="text" class="form-control" value="{{project.name}}" style="
+			<h1 class="title mb-4" style="font-weight: 200;">Add collaborators to <input id="change-project-name" type="text" class="form-control" value="{{project.name}}" style="
 				    display: inline;
 				    vertical-align: baseline;
 				    font-weight: 400;
@@ -110,41 +119,76 @@
 			</h1>
 
 			<hr>
-			<div class="container">
-				<form id="share-project" novalidate>
-					<div class="form-group">
-						<div class="row">
-							<div class="col-sm-10 offset-sm-1">
-								<label for="exampleInputEmail1" style="font-weight: bold;">Email or Username <span class="badge badge-primary" style="vertical-align: top;">New</span></label>
-							</div>
-						</div>
+			<div class="row">
+				{{#if isowner}}
+				{{#if publicOption}}
+				<div class="col-sm-7">
+				{{/if}}
+				{{/if}}
+					<div class="container">
+						<form id="share-project" novalidate>
+							<div class="form-group">
+								<div class="row">
+									<div class="col-sm-10 offset-sm-1">
+										<label for="exampleInputEmail1" style="font-weight: bold;">Email or Username <span class="badge badge-primary" style="vertical-align: top;">New</span> <p style="font-weight: normal;" class="mb-1">Collaborators can view, edit, and invite new collaborators to this project</p></label>
+									</div>
+								</div>
 
-						<div class="row mb-2">
-							<div class="col-sm-10 offset-sm-1">
-								<input id="exampleInputEmail1" type="text" class="form-control" name="credentials" aria-describedby="emailHelp" required>
-								<div class="text-danger invalid-feedback">
-				          Member not found.
-				        </div>
-							</div>
-						</div>
+								<div class="row mb-2">
+									<div class="col-sm-10 offset-sm-1">
+										<input id="exampleInputEmail1" type="text" class="form-control" name="credentials" aria-describedby="emailHelp" required>
+										<div class="text-danger invalid-feedback">
+						          Member not found.
+						        </div>
+									</div>
+								</div>
 
-						<div id="send-options" class="row">
-							<div class="col-sm-3 offset-sm-1">
-								<div id="add-more-inputs"><i class="fas fa-plus-circle"></i> Add More</div>
-							</div>
+								<div id="send-options" class="row">
+									<div class="col-sm-3 offset-sm-1">
+										<div id="add-more-inputs"><i class="fas fa-plus-circle"></i> Add More</div>
+									</div>
 
-							<div class="col-sm-7">
-								<button class="btn btn-success ml-auto" type="submit" name="button" style="display: block !important;"><i class="fas fa-paper-plane"></i> Send Invitations</button>
+									<div class="col-sm-7 text-right">
+										<button class="btn btn-success" type="submit" name="button"><i class="fas fa-paper-plane"></i> Send Invitations</button>
+									</div>
+								</div>
 							</div>
-						</div>
+						</form>
 					</div>
-				</form>
+				{{#if isowner}}
+				{{#if publicOption}}
+				</div>
+				{{/if}}
+				{{/if}}
+
+				{{#if isowner}}
+				{{#if publicOption}}
+				<div class="public-div col-sm-4 {{#if isPublic}}d-none{{/if}}">
+					<div class="container">
+						<strong>Make this project public</strong>
+						<hr class="mt-2">
+						<p>Anyone with the link can view and run this project.</p>
+						<button type="button" class="btn btn-outline-primary btn-block" id="make-public-btn">Make public</button>
+					</div>
+				</div>
+
+				<div class="private-div col-sm-4 {{#unless isPublic}}d-none{{/unless}}">
+					<div class="container">
+						<strong>Make this project private</strong>
+						<hr class="mt-2">
+						<p>Only collaborators can view and edit the project.</p>
+						<button type="button" class="btn btn-secondary btn-block" id="make-private-btn">Make private</button>
+					</div>
+				</div>
+				{{/if}}
+				{{/if}}
+
 			</div>
 		</div>
 		{{/unless}}
 
 			<!-- <div id="members"> -->
-			<h1 style="font-weight: 200;" id="members">Members with Access</h1>
+			<h1 style="font-weight: 200;" id="members">Collaborators</h1>
 			<hr>
 			<div class="container">
 				<div class="jumbotron container w-75 bg-light" style="max-height: 500px; overflow-y: scroll;">
@@ -154,7 +198,7 @@
 								<div class="d-flex" style="font-size: 16px;">
 									<a href="/users/profile/{{project.owner.id}}" target="_blank"><div class="profile-pic" style="background-image: url({{project.owner.pic}});"></div></a>
 									<div class="ml-2">
-										<p class="m-0"><span class="prize" hidden>{{project.owner.qualities.rank}}</span>{{project.owner.username}}</p>
+										<p class="m-0"><span class="prize" hidden>{{project.owner.qualities.rank}}</span> {{project.owner.username}}</p>
 									</div>
 								</div>
 							</div>
@@ -179,13 +223,13 @@
 								<div class="d-flex" style="font-size: 16px;">
 									<a href="/users/profile/{{this.id}}" target="_blank"><div class="profile-pic" style="background-image: url({{this.pic}});"></div></a>
 									<div class="ml-2">
-										<p class="m-0"><span class="prize" hidden>{{this.qualities.rank}}</span>{{this.username}}</p>
+										<p class="m-0"><span class="prize" hidden>{{this.qualities.rank}}</span> {{this.username}}</p>
 									</div>
 								</div>
 							</div>
 
 							<div class="col pt-3">
-								<button class="btn btn-danger delete-user-btn" type="button" name="{{this.id}}" data-toggle="modal" data-target="#delete-user-modal">Delete User <span class="name" hidden>{{this.username}}</span></button>
+								<button class="btn btn-danger delete-user-btn" type="button" name="{{this.id}}" data-toggle="modal" data-target="#delete-user-modal">Remove Collaborator <span class="name" hidden>{{this.username}}</span></button>
 							</div>
 						</div>
 						{{/each}}
@@ -196,7 +240,7 @@
 								<div class="d-flex" style="font-size: 16px;">
 									<a href="/users/profile/{{project.owner.id}}" target="_blank"><div class="profile-pic" style="background-image: url({{project.owner.pic}});"></div></a>
 									<div class="ml-2">
-										<p class="m-0"><span class="prize" hidden>{{project.owner.qualities.rank}}</span>{{project.owner.username}}</p>
+										<p class="m-0"><span class="prize" hidden>{{project.owner.qualities.rank}}</span> {{project.owner.username}}</p>
 									</div>
 								</div>
 							</div>
@@ -212,7 +256,7 @@
 								<div class="d-flex" style="font-size: 16px;">
 									<a href="/users/profile/{{this.id}}" target="_blank"><div class="profile-pic" style="background-image: url({{this.pic}});"></div></a>
 									<div class="ml-2">
-										<p class="m-0"><span class="prize" hidden>{{this.qualities.rank}}</span>{{this.username}}</p>
+										<p class="m-0"><span class="prize" hidden>{{this.qualities.rank}}</span> {{this.username}}</p>
 									</div>
 								</div>
 							</div>
@@ -382,6 +426,7 @@
 </div>
 
 <!-- Disconnection with server error -->
+{{#unless displayPublic}}
 <div id="disconnection-modal" class="modal" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -400,3 +445,4 @@
     </div>
   </div>
 </div>
+{{/unless}}
