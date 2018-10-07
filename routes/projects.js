@@ -965,6 +965,7 @@ function Project(id) {
 
 	socketioAuth(this.nsp, {
 	  authenticate: authenticate,
+		postAuthenticate: postAuthenticateGuestAccess,
 	  timeout: 1000
 	});
 
@@ -973,14 +974,242 @@ function Project(id) {
 		var userid = data.id;
 
 		if (self.tokens[userid] == token) {
-			postAuthenticate(socket, data);
+			postAuthenticateWithAccess(socket, data);
 			return callback(null, true);
+		} else {
+			User.ProjectSchema.findOne({_id: self.id}, function(err, project) {
+				if (project && project.publicProject) {
+					return callback(null, true);
+				}
+				return callback(null, false);
+			});
 		}
-		return callback(null, true);
+
 	}
 
-	function postAuthenticate(socket, data) {
-		// all the socket handlers applied after being authenticated
+	function postAuthenticateGuestAccess(socket, data) {
+		// the following socket handlers are applied for
+		// users acesssing a project publicly and for users with access to project
+
+		socket.emit("socketID", socket.id);
+		socket.emit("files", self.files);
+
+		socket.on("userConnected", function() {
+			self.activeUserCount++;
+		});
+
+		socket.on("run", function(fileIndex) {
+			if (self.runner) {
+				self.runner.kill();
+				self.runner = null;
+			}
+
+			clearInterval(self.msgCountResetter);
+
+			var file = self.files[fileIndex];
+			var fileExt = path.extname(file.fileName);
+
+			if (!file) {
+				self.nsp.emit("outputError", "No file selected");
+				self.nsp.emit("runFinished");
+				return false;
+			}
+
+			if (!file.fileName) {
+				self.nsp.emit("outputError", "Please enter a file name");
+				self.nsp.emit("runFinished");
+				return false;
+			}
+
+			if (fileExt == ".html") {
+				socket.broadcast.emit("programRunning", fileIndex);
+				file.htmlPreviewCode = file.text;
+				self.nsp.emit("runFinished");
+				return false;
+			}
+
+			if (fileExt != ".java" && fileExt != ".py" && fileExt != ".cpp") {
+				self.nsp.emit("outputError", "Currently only .java, .py, and .cpp files are able to be compiled/run");
+				self.nsp.emit("runFinished");
+				return false;
+			}
+
+			if (!fs.existsSync(self.folderPath)) {
+				fs.mkdirSync(self.folderPath);
+			}
+
+			self.output = "";
+			self.outputError = false;
+			socket.broadcast.emit("programRunning", fileIndex);
+			// console.log("Saving")
+			saveAllFiles(self.folderPath, self.files);
+
+			// console.log("Compiling");
+			var fireJailStr = "firejail --quiet --private=. ";
+			var fireJailArgs = fireJailStr.trim().split(" ");
+			switch(fileExt) {
+				case '.java':
+					var command = 'javac "' + file.fileName + '"';
+					if (isLinux)
+						command = fireJailStr + command;
+					exec(command, {cwd: self.folderPath}, function(error, stdout, stderr) {
+
+						if (error || stderr.trim()) {
+							// console.log("Projects - Compile Error Given");
+							// console.log(stderr.replace(/\n$/, "")); //regex gets rid of newline character
+
+							self.output = stderr;
+							self.outputError = true;
+
+							self.nsp.emit("outputError", stderr);
+							self.nsp.emit("runFinished");
+							return false; //breaks out of function
+						}
+
+
+						// console.log("Running");
+						// console.log("-------");
+
+						// file name without file extension
+						var fileNameNoExt = path.parse(file.fileName).name;
+
+						var command = ['java', fileNameNoExt];
+						if (isLinux)
+							command = fireJailArgs.concat(command);
+
+						self.startMessageResetter();
+						self.runner = spawn(command.shift(), command, {cwd: self.folderPath});
+						self.nsp.emit("readyForInput");
+
+						self.runner.stdout.on('data', function(data) {
+							if (self.checkMsgCount()) {
+								self.output += data;
+								self.nsp.emit("output", data.toString());
+								// process.stdout.write(data);
+							}
+						});
+
+						self.runner.stderr.on('data', function(data) {
+							self.output += data;
+							self.nsp.emit("outputError", data.toString());
+							self.outputError = true;
+							// process.stdout.write(data);
+						});
+
+						self.runner.on('exit', function() {
+							self.nsp.emit("runFinished");
+							clearInterval(self.msgCountResetter);
+							self.runner = null;
+							// console.log('Run Finished');
+						});
+					});
+					break;
+				case ".py":
+					var command = ['python', file.fileName];
+					if (isLinux)
+						command = fireJailArgs.concat(command);
+
+					self.startMessageResetter();
+					self.runner = spawn(command.shift(), command, {cwd: self.folderPath});
+					self.nsp.emit("readyForInput");
+
+					self.runner.stdout.on('data', function(data) {
+						if (self.checkMsgCount()) {
+							self.output += data;
+							self.nsp.emit("output", data.toString());
+							// process.stdout.write(data);
+						}
+					});
+
+					self.runner.stderr.on('data', function(data) {
+						self.output += data;
+						self.nsp.emit("outputError", data.toString());
+						self.outputError = true;
+						// process.stdout.write(data);
+					});
+
+					self.runner.on('exit', function() {
+						self.nsp.emit("runFinished");
+						clearInterval(self.msgCountResetter);
+						self.runner = null;
+						// console.log('Run Finished');
+					});
+					break;
+				case ".cpp":
+					var otherFiles = self.getCHeaders(file.text);
+					var command = 'g++ "' + file.fileName + '" ' + otherFiles;
+					if (isLinux)
+						command = fireJailStr + command;
+					exec(command, {cwd: self.folderPath}, function(error, stdout, stderr) {
+
+						if (error || stderr.trim()) {
+							// console.log("Projects - Compile Error Given");
+							// console.log(stderr.replace(/\n$/, "")); //regex gets rid of newline character
+
+							self.output = stderr;
+							self.outputError = true;
+
+							self.nsp.emit("outputError", stderr);
+							self.nsp.emit("runFinished");
+							return false; //breaks out of function
+						}
+
+						// file name without file extension
+						var command = isLinux ? './a.out' : 'a.exe';
+
+						self.startMessageResetter();
+						self.runner = spawn(command, {cwd: self.folderPath});
+						self.nsp.emit("readyForInput");
+
+						self.runner.stdout.on('data', function(data) {
+							if (self.checkMsgCount()) {
+								self.output += data;
+								self.nsp.emit("output", data.toString()+"\n");
+								// console.log(data.toString());
+							}
+						});
+
+						self.runner.stderr.on('data', function(data) {
+							self.output += data;
+							self.nsp.emit("outputError", data.toString()+"\n");
+							self.outputError = true;
+							// console.log(data.toString());
+						});
+
+						self.runner.on('exit', function() {
+							self.nsp.emit("runFinished");
+							clearInterval(self.msgCountResetter);
+							self.runner = null;
+							// console.log('Run Finished');
+						});
+					});
+					break;
+			}
+
+		});
+
+		socket.on("disconnect", function() {
+			if (self.activeUserCount >= 1)
+				self.activeUserCount--;
+
+			if (self.activeUserCount == 0) {
+				self.output = "";
+				if (self.runner)
+					self.runner.kill();
+					self.runner = null;
+				// console.log("cleared output")
+			}
+		});
+
+		if (self.outputError) {
+			socket.emit("outputError", self.output);
+		} else {
+			socket.emit("output", self.output);
+		}
+	}
+
+	function postAuthenticateWithAccess(socket, data) {
+		// all the socket handlers applied after being authenticated (someone who can edit project)
 
 		//chat handler
 		socket.on("chat",function(msg,chatterid,chatter){
@@ -1256,228 +1485,9 @@ function Project(id) {
 
 	}
 
-	this.nsp.on('connection', function connection(socket) {
-		// console.log("new projects connection");
-
-		// the following socket handlers are applied for
-		// users acesssing a project publicly and for users with access to project
-
-		socket.emit("socketID", socket.id);
-		socket.emit("files", self.files);
-
-		socket.on("userConnected", function() {
-			self.activeUserCount++;
-		});
-
-		socket.on("run", function(fileIndex) {
-			if (self.runner) {
-				self.runner.kill();
-				self.runner = null;
-			}
-
-			clearInterval(self.msgCountResetter);
-
-			var file = self.files[fileIndex];
-			var fileExt = path.extname(file.fileName);
-
-			if (!file) {
-				self.nsp.emit("outputError", "No file selected");
-				self.nsp.emit("runFinished");
-				return false;
-			}
-
-			if (!file.fileName) {
-				self.nsp.emit("outputError", "Please enter a file name");
-				self.nsp.emit("runFinished");
-				return false;
-			}
-
-			if (fileExt == ".html") {
-				socket.broadcast.emit("programRunning", fileIndex);
-				file.htmlPreviewCode = file.text;
-				self.nsp.emit("runFinished");
-				return false;
-			}
-
-			if (fileExt != ".java" && fileExt != ".py" && fileExt != ".cpp") {
-				self.nsp.emit("outputError", "Currently only .java, .py, and .cpp files are able to be compiled/run");
-				self.nsp.emit("runFinished");
-				return false;
-			}
-
-			if (!fs.existsSync(self.folderPath)) {
-				fs.mkdirSync(self.folderPath);
-			}
-
-			self.output = "";
-			self.outputError = false;
-			socket.broadcast.emit("programRunning", fileIndex);
-			// console.log("Saving")
-			saveAllFiles(self.folderPath, self.files);
-
-			// console.log("Compiling");
-			var fireJailStr = "firejail --quiet --private=. ";
-			var fireJailArgs = fireJailStr.trim().split(" ");
-			switch(fileExt) {
-				case '.java':
-					var command = 'javac "' + file.fileName + '"';
-					if (isLinux)
-						command = fireJailStr + command;
-					exec(command, {cwd: self.folderPath}, function(error, stdout, stderr) {
-
-						if (error || stderr.trim()) {
-							// console.log("Projects - Compile Error Given");
-							// console.log(stderr.replace(/\n$/, "")); //regex gets rid of newline character
-
-							self.output = stderr;
-							self.outputError = true;
-
-							self.nsp.emit("outputError", stderr);
-							self.nsp.emit("runFinished");
-							return false; //breaks out of function
-						}
-
-
-						// console.log("Running");
-						// console.log("-------");
-
-						// file name without file extension
-						var fileNameNoExt = path.parse(file.fileName).name;
-
-						var command = ['java', fileNameNoExt];
-						if (isLinux)
-							command = fireJailArgs.concat(command);
-
-						self.startMessageResetter();
-						self.runner = spawn(command.shift(), command, {cwd: self.folderPath});
-						self.nsp.emit("readyForInput");
-
-						self.runner.stdout.on('data', function(data) {
-							if (self.checkMsgCount()) {
-								self.output += data;
-								self.nsp.emit("output", data.toString());
-								// process.stdout.write(data);
-							}
-						});
-
-						self.runner.stderr.on('data', function(data) {
-							self.output += data;
-							self.nsp.emit("outputError", data.toString());
-							self.outputError = true;
-							// process.stdout.write(data);
-						});
-
-						self.runner.on('exit', function() {
-							self.nsp.emit("runFinished");
-							clearInterval(self.msgCountResetter);
-							self.runner = null;
-							// console.log('Run Finished');
-						});
-					});
-					break;
-				case ".py":
-					var command = ['python', file.fileName];
-					if (isLinux)
-						command = fireJailArgs.concat(command);
-
-					self.startMessageResetter();
-					self.runner = spawn(command.shift(), command, {cwd: self.folderPath});
-					self.nsp.emit("readyForInput");
-
-					self.runner.stdout.on('data', function(data) {
-						if (self.checkMsgCount()) {
-							self.output += data;
-							self.nsp.emit("output", data.toString());
-							// process.stdout.write(data);
-						}
-					});
-
-					self.runner.stderr.on('data', function(data) {
-						self.output += data;
-						self.nsp.emit("outputError", data.toString());
-						self.outputError = true;
-						// process.stdout.write(data);
-					});
-
-					self.runner.on('exit', function() {
-						self.nsp.emit("runFinished");
-						clearInterval(self.msgCountResetter);
-						self.runner = null;
-						// console.log('Run Finished');
-					});
-					break;
-				case ".cpp":
-					var otherFiles = self.getCHeaders(file.text);
-					var command = 'g++ "' + file.fileName + '" ' + otherFiles;
-					if (isLinux)
-						command = fireJailStr + command;
-					exec(command, {cwd: self.folderPath}, function(error, stdout, stderr) {
-
-						if (error || stderr.trim()) {
-							// console.log("Projects - Compile Error Given");
-							// console.log(stderr.replace(/\n$/, "")); //regex gets rid of newline character
-
-							self.output = stderr;
-							self.outputError = true;
-
-							self.nsp.emit("outputError", stderr);
-							self.nsp.emit("runFinished");
-							return false; //breaks out of function
-						}
-
-						// file name without file extension
-						var command = isLinux ? './a.out' : 'a.exe';
-
-						self.startMessageResetter();
-						self.runner = spawn(command, {cwd: self.folderPath});
-						self.nsp.emit("readyForInput");
-
-						self.runner.stdout.on('data', function(data) {
-							if (self.checkMsgCount()) {
-								self.output += data;
-								self.nsp.emit("output", data.toString()+"\n");
-								// console.log(data.toString());
-							}
-						});
-
-						self.runner.stderr.on('data', function(data) {
-							self.output += data;
-							self.nsp.emit("outputError", data.toString()+"\n");
-							self.outputError = true;
-							// console.log(data.toString());
-						});
-
-						self.runner.on('exit', function() {
-							self.nsp.emit("runFinished");
-							clearInterval(self.msgCountResetter);
-							self.runner = null;
-							// console.log('Run Finished');
-						});
-					});
-					break;
-			}
-
-		});
-
-		socket.on("disconnect", function() {
-			if (self.activeUserCount >= 1)
-				self.activeUserCount--;
-
-			if (self.activeUserCount == 0) {
-				self.output = "";
-				if (self.runner)
-					self.runner.kill();
-					self.runner = null;
-				// console.log("cleared output")
-			}
-		});
-
-		if (self.outputError) {
-			socket.emit("outputError", self.output);
-		} else {
-			socket.emit("output", self.output);
-		}
-	});
+	// this.nsp.on('connection', function connection(socket) {
+	// 	// console.log("new projects connection");
+	// });
 
 }
 
