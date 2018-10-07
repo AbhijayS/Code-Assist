@@ -965,8 +965,6 @@ function Project(id) {
 
 	socketioAuth(this.nsp, {
 	  authenticate: authenticate,
-		postAuthenticate: postAuthenticate,
-	  disconnect: disconnect,
 	  timeout: 1000
 	});
 
@@ -975,12 +973,15 @@ function Project(id) {
 		var userid = data.id;
 
 		if (self.tokens[userid] == token) {
+			postAuthenticate(socket, data);
 			return callback(null, true);
 		}
-		return callback(null, false);
+		return callback(null, true);
 	}
 
 	function postAuthenticate(socket, data) {
+		// all the socket handlers applied after being authenticated
+
 		//chat handler
 		socket.on("chat",function(msg,chatterid,chatter){
 			//console.log(msg+'  ');
@@ -1253,6 +1254,21 @@ function Project(id) {
 			}
 		});
 
+	}
+
+	this.nsp.on('connection', function connection(socket) {
+		// console.log("new projects connection");
+
+		// the following socket handlers are applied for
+		// users acesssing a project publicly and for users with access to project
+
+		socket.emit("socketID", socket.id);
+		socket.emit("files", self.files);
+
+		socket.on("userConnected", function() {
+			self.activeUserCount++;
+		});
+
 		socket.on("run", function(fileIndex) {
 			if (self.runner) {
 				self.runner.kill();
@@ -1441,20 +1457,6 @@ function Project(id) {
 					break;
 			}
 
-		});
-	}
-
-	function disconnect(socket) {
-	  // console.log(socket.id + ' disconnected');
-	}
-
-	this.nsp.on('connection', function connection(socket) {
-		// console.log("new projects connection");
-		socket.emit("socketID", socket.id);
-		socket.emit("files", self.files);
-
-		socket.on("userConnected", function() {
-			self.activeUserCount++;
 		});
 
 		socket.on("disconnect", function() {
