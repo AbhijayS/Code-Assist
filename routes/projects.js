@@ -770,7 +770,7 @@ function saveAllFiles(folderPath, files) {
 		if (err) {
 			console.log('A file failed to save');
 		} else {
-			console.log('All files have been saved successfully');
+			// console.log('All files have been saved successfully');
 		}
 	});
 }
@@ -958,7 +958,7 @@ function Project(id) {
 
 			file.saveTimeout = setTimeout(function() {
 				if (file.fileName) {
-					console.log("saving")
+					// console.log("saving")
 					fs.writeFile(self.folderPath + file.fileName, text, function(err) {
 						if (err)
 							console.log(err);
