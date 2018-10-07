@@ -210,10 +210,12 @@
     <script type="text/javascript">
       var namespace = '{{namespace}}';
       var socket = io(namespace);
+      {{#unless isThumbnail}}
       socket.emit('authentication', {
         token: '{{token}}',
         id: '{{user.id}}'
       });
+      {{/unless}}
 
       var username = '{{user.username}}';
       var isThumbnail = false;

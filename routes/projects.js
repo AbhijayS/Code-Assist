@@ -421,7 +421,7 @@ router.get('/:id', function(req, res) {
 
 				if (req.user.id == (project.owner.id)) {
 					userAccessLevel = 2;
-					console.log("Owner is accessing");
+					// console.log("Owner is accessing");
 				}else if (project.assignedMentor && (project.assignedMentor.id == req.user.id)) {
 					userAccessLevel = 1;
 				}else{
@@ -438,21 +438,19 @@ router.get('/:id', function(req, res) {
 					userAccessLevel = 0; // public project viewer
 				}
 
-				if (userAccessLevel >= 1) {
-					var token = nanoid(safe_chars);
-					project.tokens[req.user.id] = token;
-					project.markModified('tokens');
-					project.save(function(err) {
-						if(err) throw err;
-					});
-				}
-
 				// console.log(userAccessLevel);
 				if (userAccessLevel != -1) {
 					if (!projectActive(projectID)){
 						// currentProjects.push(new Project(project._id, project.text));
 						currentProjects.push(new Project(project._id, project.files));
 					}
+
+					if (userAccessLevel >= 1 && !isThumbnail) {
+						// Storing a new token in project object
+						var token = nanoid(safe_chars);
+						getCurrentProject(projectID).tokens[req.user.id] = token;
+					}
+
 					// console.log(project.owner.id == req.user.id ? true : false);
 					var projectStatus = project.status;
 					if(projectStatus == "new") {
@@ -853,6 +851,7 @@ function Project(id) {
 	this.folderPath = "./project_files/" + id + "/";
 
 	this.files = [];
+	this.tokens = {};
 
 	this.activeUserCount = 0;
 	this.msgCount;
@@ -971,41 +970,17 @@ function Project(id) {
 	  timeout: 1000
 	});
 
-	function authenticate (socket, data, callback) {
+	function authenticate(socket, data, callback) {
 		var token = data.token;
 		var userid = data.id;
-		// console.log("data:", data);
-		User.ProjectSchema.findOne({_id: self.id}).exec(function(err, project) {
-			if (project.tokens[userid] == token) {
-				return callback(null, true);
-			}
-			return callback(null, false);
-		});
+
+		if (self.tokens[userid] == token) {
+			return callback(null, true);
+		}
+		return callback(null, false);
 	}
 
 	function postAuthenticate(socket, data) {
-		console.log("authenticated");
-	}
-
-	function disconnect(socket) {
-	  // console.log(socket.id + ' disconnected');
-	}
-
-	this.nsp.on('connection', function connection(socket) {
-		// console.log("new projects connection");
-		socket.emit("socketID", socket.id);
-		socket.emit("files", self.files);
-
-		socket.on("userConnected", function() {
-			self.activeUserCount++;
-		});
-
-		if (self.outputError) {
-			socket.emit("outputError", self.output);
-		} else {
-			socket.emit("output", self.output);
-		}
-
 		//chat handler
 		socket.on("chat",function(msg,chatterid,chatter){
 			//console.log(msg+'  ');
@@ -1251,17 +1226,6 @@ function Project(id) {
 		});
 
 		socket.on("disconnect", function() {
-			if (self.activeUserCount >= 1)
-				self.activeUserCount--;
-
-			if (self.activeUserCount == 0) {
-				self.output = "";
-				if (self.runner)
-					self.runner.kill();
-					self.runner = null;
-				// console.log("cleared output")
-			}
-
 			for (var i = 0; i < self.files.length; i++) {
 				delete self.files[i].cursors[socket.id];
 				delete self.files[i].selections[socket.id];
@@ -1478,6 +1442,39 @@ function Project(id) {
 			}
 
 		});
+	}
+
+	function disconnect(socket) {
+	  // console.log(socket.id + ' disconnected');
+	}
+
+	this.nsp.on('connection', function connection(socket) {
+		// console.log("new projects connection");
+		socket.emit("socketID", socket.id);
+		socket.emit("files", self.files);
+
+		socket.on("userConnected", function() {
+			self.activeUserCount++;
+		});
+
+		socket.on("disconnect", function() {
+			if (self.activeUserCount >= 1)
+				self.activeUserCount--;
+
+			if (self.activeUserCount == 0) {
+				self.output = "";
+				if (self.runner)
+					self.runner.kill();
+					self.runner = null;
+				// console.log("cleared output")
+			}
+		});
+
+		if (self.outputError) {
+			socket.emit("outputError", self.output);
+		} else {
+			socket.emit("output", self.output);
+		}
 	});
 
 }

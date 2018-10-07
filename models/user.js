@@ -146,8 +146,7 @@ var ProjectSchema = new Schema({
 
 	status: {type: String, default: "new"}, // new, using, unused
 
-	publicProject: false,
-	tokens: {type: Schema.Types.Mixed, default: {}}
+	publicProject: false
 });
 
 // Post Schema
