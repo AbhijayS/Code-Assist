@@ -318,9 +318,11 @@ function initFileTab(newTab) {
 			newTab.popover('show');
 		}
 	});
-	fileNameInput.dblclick(function() {
-		$(this).prop("readonly", false);
-	});
+  if (!displayPublic) {
+    fileNameInput.dblclick(function() {
+      $(this).prop("readonly", false);
+    });
+  }
 }
 
 /*$("#programInputForm").submit(function(e) {

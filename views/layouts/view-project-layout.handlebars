@@ -217,6 +217,12 @@
       });
       {{/unless}}
 
+      {{#if displayPublic}}
+      var displayPublic = true;
+      {{else}}
+      var displayPublic = false;
+      {{/if}}
+
       var username = '{{user.username}}';
       var isThumbnail = false;
       {{#if isThumbnail}}
