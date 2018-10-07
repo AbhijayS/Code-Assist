@@ -116,8 +116,8 @@ router.post('/share', function(req, res) {
 						credentials = [credentials];
 					}
 
-					console.log("Share post request ----------------")
-					console.log("projectID: " + projectID);
+					// console.log("Share post request ----------------")
+					// console.log("projectID: " + projectID);
 
 					// sort between credentials and usernames
 
@@ -166,7 +166,7 @@ router.post('/share', function(req, res) {
 												if(err) throw err;
 											});
 
-											console.log("sharing with: " + user.email);
+											// console.log("sharing with: " + user.email);
 
 											const msg = {
 												to: user.email,
@@ -196,7 +196,7 @@ router.post('/share', function(req, res) {
 												if(err) throw err;
 											});
 
-											console.log("sharing with: " + user.email);
+											// console.log("sharing with: " + user.email);
 
 											const msg = {
 												to: user.email,
@@ -1280,7 +1280,7 @@ function Project(id) {
 				console.log(self.id);
 				User.ProjectSchema.findOne({_id:self.id}).exec(function(error, project){
 					project.chatHistory.push(NewChatMessage._id);
-					console.log(project);
+					// console.log(project);
 						project.save(function(error){
 							chatdatanamespace.emit('broadcastchat',NewChatMessage);
 
