@@ -836,7 +836,7 @@ function saveAllFiles(folderPath, files) {
 		if (err) {
 			console.log('A file failed to save');
 		} else {
-			console.log('All files have been saved successfully');
+			// console.log('All files have been saved successfully');
 		}
 	});
 }
