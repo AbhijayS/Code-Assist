@@ -173,7 +173,7 @@ $(document).ready(function() {
           <div class="row">
             <div class="col-sm-10 offset-sm-1">
               <div id="emailsSent" class="alert alert-success alert-dismissible fade show" role="alert">
-              Email Invitations sent successfully
+              Invitations sent successfully
               <button type="button" class="close" onclick="$('.alert').alert('close')" aria-label="Close">
               <span aria-hidden="true">&times;</span>
               </button>
