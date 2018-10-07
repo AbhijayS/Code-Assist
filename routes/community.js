@@ -277,7 +277,7 @@ router.post('/post', upload.array('file'), function(req, res) {
 				req.user.posts.push(newPost);
 
 				req.user.qualities.assists += 15;
-				User.updateRank(req.user);
+				User.updateRank(req.user, req.user.qualities.rank);
 
 				community.save(function(err) {
 					if(err) throw err;
@@ -382,7 +382,7 @@ router.post('/like', function(req, res) {
 
 					if(post.author.id != req.user.id) {
 						post.author.qualities.assists += 5;
-						User.updateRank(post.author);
+						User.updateRank(post.author, post.author.qualities.rank);
 					}
         } else {
           post.userLikes.splice(index, 1);
@@ -390,7 +390,7 @@ router.post('/like', function(req, res) {
 
 					if(post.author.id != req.user.id) {
 						post.author.qualities.assists -= 5;
-				    User.updateRank(post.author);
+				    User.updateRank(post.author, post.author.qualities.rank);
 					}
         }
 
@@ -524,7 +524,7 @@ router.post('/:id/answer', function(req, res){
 			// make sure the person isn't cheating the system
 			if(req.user.id != post.author.id) {
 				req.user.qualities.assists += 10;
-				User.updateRank(req.user);
+				User.updateRank(req.user, req.user.qualities.rank);
 			}
 
 			post.answers.push(newAnswer);
