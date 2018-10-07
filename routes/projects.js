@@ -11,6 +11,7 @@ var mongoose = require('mongoose');
 var fs = require('fs');
 var handlebars = require('handlebars');
 var emailTemplate = handlebars.compile(fs.readFileSync('./views/email.handlebars', 'utf8'));
+var socketioAuth = require('socketio-auth');
 
 var zip = new require('node-zip')();
 var easyrtc_server = require('../easyrtc/easyrtc_server_setup');
@@ -439,7 +440,6 @@ router.get('/:id', function(req, res) {
 
 				if (userAccessLevel >= 1) {
 					var token = nanoid(safe_chars);
-					console.log(project.tokens);
 					project.tokens[req.user.id] = token;
 					project.markModified('tokens');
 					project.save(function(err) {
@@ -964,6 +964,32 @@ function Project(id) {
 	this.nsp = io.of('/'+this.id)
 	var chatdatanamespace=this.nsp;
 
+	socketioAuth(this.nsp, {
+	  authenticate: authenticate,
+		postAuthenticate: postAuthenticate,
+	  disconnect: disconnect,
+	  timeout: 1000
+	});
+
+	function authenticate (socket, data, callback) {
+		var token = data.token;
+		var userid = data.id;
+		// console.log("data:", data);
+		User.ProjectSchema.findOne({_id: self.id}).exec(function(err, project) {
+			if (project.tokens[userid] == token) {
+				return callback(null, true);
+			}
+			return callback(null, false);
+		});
+	}
+
+	function postAuthenticate(socket, data) {
+		console.log("authenticated");
+	}
+
+	function disconnect(socket) {
+	  // console.log(socket.id + ' disconnected');
+	}
 
 	this.nsp.on('connection', function connection(socket) {
 		// console.log("new projects connection");

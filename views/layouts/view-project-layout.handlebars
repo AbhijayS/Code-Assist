@@ -209,9 +209,11 @@
 
     <script type="text/javascript">
       var namespace = '{{namespace}}';
-      var socket = io('{{namespace}}');
-
-      console.log('{{token}}');
+      var socket = io(namespace);
+      socket.emit('authentication', {
+        token: '{{token}}',
+        id: '{{user.id}}'
+      });
 
       var username = '{{user.username}}';
       var isThumbnail = false;
