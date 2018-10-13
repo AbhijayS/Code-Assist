@@ -24,9 +24,11 @@ var crypto = require('crypto');
 // var io=socket(server);
 var io = require('../app').io;
 const nanoid = require('nanoid');
+const Trello = require("trello");
+var trello = new Trello(process.env.TRELLO_API_KEY, process.env.TRELLO_API_TOKEN);
 
 var mailchimpInstance   = process.env.MAILCHIMP_SERVER_INSTANCE,
-    listUniqueId        = process.env.MAILCHIMP_LIST,
+    listUniqueId        = process.env.MAILCHIMP_SUBSCRIBE_LIST,
     mailchimpApiKey     = process.env.MAILCHIMP_API_KEY;
 
 var saltRounds=10;
@@ -50,33 +52,48 @@ router.post('/update-rewards', function(req, res) {
     req.user.profile.assists_added = null;
     req.user.save(function(err) {
       if(err) throw err;
+      res.end();
     })
+  } else {
+    res.end();
   }
 });
 
 // award user with assists
 router.post('/' + process.env.FIREWALL_PASS + '/award-assists', function(req, res) {
-  var submittedBy = req.body.Username;
+  var submittedBy = req.body.username;
+  // console.log(submittedBy);
+  res.sendStatus(200);
   User.UserSchema.findOne({username: submittedBy}, function(err, user) {
     if(user) {
+      // console.log("Rewarding", user.username, user.email);
       user.qualities.assists += 10;
+      user.profile.assists_added = 10;
       user.save(function(err) {
         if(err) throw err;
+        User.updateRank(user, user.qualities.rank);
         const output = `
-        <p>We are sorry to know that you lost your account. Click the button below to reset your password.</p>
-        <p>If you don't recognize this activity, please contact Code Assist at contact@codeassist.org and we will try to help resolve the issue.</p>
+        <p>Thank you for taking part in the Code Assist survey. Your feedback really helps us make the website a better place so that programmers like you have an easier time using features like the community discussions and project collaborations.</p>
+
+        <p>As promised, you will be awarded 10 assist points on your account for providing us with feedback. Please go to your profile or click on the link below to redeem your assists. Using assists, you can rank higher up in the community and develop your programming portfolio at the same time.</p>
+
+        <p>As an early bird on the website, you are also eligible for special discounts and merchandise as you continue to gain more assists.</p>
+
+        <p>Happy coding!</p>
+
+        <p>- Team Code Assist</p>
         `;
 
         const msg = {
           to: user.email,
           from: `Code Assist <${process.env.SENDER_EMAIL}>`,
-          subject: 'Code Assist Password Recovery Link',
+          subject: '🎉Special Rewards from Code Assist',
           html: emailTemplate({
             username: user.username,
             rawHTML: true,
             text: output,
-            btnText: "Reset Password",
-            btnLink: resetLink
+            btnText: "View your Profile",
+            btnLink: 'https://codeassist.org/users/profile/'+user.id
           })
         };
         sgMail.send(msg);
@@ -93,7 +110,6 @@ router.get('/', function(req, res){
     // console.log("User is isAuthenticated: " + req.isAuthenticated());
     var deleted = req.flash('account-deleted');
     // console.log("User Account Deleted: " + deleted);
-
     if(deleted == 'true')
     {
       console.log("Rendering Deleted Account Page");
@@ -101,7 +117,7 @@ router.get('/', function(req, res){
       res.render('account-deleted', {layout: 'dashboard-layout'});
     }else{
       console.log('============================================');
-      res.render('index', {layout: 'layout'})
+      res.render('index', {layout: 'layout'});
     }
 });
 
@@ -169,7 +185,7 @@ router.post('/contact', uploadNoDest.array('file'), function(req, res) {
 
   if(req.user && (req.user.title!='mentor')) {
     req.user.qualities.assists += 10;
-    User.updateRank(req.user);
+    User.updateRank(req.user, req.user.qualities.rank);
   }
   // For generating quill HTML
   var converter = new QuillDeltaToHtmlConverter(JSON.parse(description), {});
@@ -943,19 +959,27 @@ router.post("/forgot_pass/:userid/:secretid", function(req, res) {
   });
 });
 
-function Notify(userid,message){
-  //console.log("Notify user"+userid);
+function Notify(userid, data){
   this.nnsp=io.of("/Notify"+userid);
-  this.nnsp.on('connection',function(socket){
-  //  console.log("connected21");
-  });
-
   User.UserSchema.findOne({_id:userid},function(err,user){
     if(user){
-      this.nnsp.emit('notify',message);
+			// console.log("nsp", "/Notify"+userid);
+      this.nnsp.emit('notify', data);
     }
   });
 }
+
+router.post("/read-notifications", function(req, res) {
+  User.UserSchema.findOne({_id: req.user._id}).select('unread_notifications').exec(function(err, user) {
+    if (user) {
+      user.unread_notifications = false;
+      user.save(function(err) {
+        if(err) throw err;
+      });
+    }
+  });
+  res.end();
+});
 /*
 =====================================================
                         BLOG
@@ -1042,9 +1066,19 @@ router.post('/admin', function(req, res){
   }
 });
 
-router.get('/test', function(req, res) {
-  res.render('login-test', {layout: 'dashboard-layout'});
-});
+// router.get('/trello', function(req, res) {
+//   trello.addCard('Clean car', 'Wax on, wax off', process.env.TRELLO_TODO_LIST,
+//     function (error, trelloCard) {
+//         if (error) {
+//             console.log('Could not add card:');
+//             res.status(200).send('Could not add card');
+//         }
+//         else {
+//             console.log('Added card');
+//             res.status(200).send('Added card');
+//         }
+//     });
+// });
 
 router.get('/:userid-:randomNum', function(req, res) {
   console.log("TEst");

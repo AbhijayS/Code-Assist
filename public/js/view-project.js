@@ -1,4 +1,8 @@
 $(document).ready(function() {
+  socket.on('disconnect', () => {
+    $("#disconnection-modal").modal('show');
+  });
+
   const bronze = {
     color: "#d06f10",
     html: `<i class="fas fa-medal"></i>`
@@ -87,7 +91,7 @@ $(document).ready(function() {
   });
 
 
-  $('#add-more-emails').click(function() {
+  $('#add-more-inputs').click(function() {
     var addEmail = $(`
       <div class="row mb-2">
         <div class="col-sm-1">
@@ -97,9 +101,9 @@ $(document).ready(function() {
         </div>
 
         <div class="col-sm-10">
-          <input type="email" class="form-control" name="emailInput" aria-describedby="emailHelp" placeholder="Enter email">
+          <input type="text" class="form-control" name="credentials" aria-describedby="emailHelp">
           <div class="text-danger invalid-feedback">
-            Member with this email could not be found
+            Member not found.
           </div>
         </div>
       </div>
@@ -130,6 +134,9 @@ $(document).ready(function() {
           $('#settings').hide();
       }
   });
+  $('#exit-settings').click(function() {
+    $('#settings').hide();
+  })
 
   $('#settings-btn').click(function() {
     $('#settings').show();
@@ -162,19 +169,18 @@ $(document).ready(function() {
   $('#share-project').submit(function(event) {
     event.preventDefault();
     var form = $(this);
-    var allEmails = form.find("input[name=emailInput]");
+    var allCredentials = form.find("input[name=credentials]");
     var toSend = [];
-    for(var i = 0; i < form.find("input[name=emailInput]").length; i++) {
-      toSend.push($(form.find("input[name=emailInput]")[i]).val());
+    for(var i = 0; i < allCredentials.length; i++) {
+      toSend.push($(allCredentials[i]).val());
     }
-    // console.log(window.location.pathname.split('/')[2]);
-    $.post('/projects/share', {emailInput: toSend, projectID: window.location.pathname.split('/')[2]}, function(data) {
+    $.post('/projects/share', {credentials: toSend, projectID: window.location.pathname.split('/')[2]}, function(data) {
       if(!data || data.length == 0) {
         var emailsSent = $(`
           <div class="row">
             <div class="col-sm-10 offset-sm-1">
               <div id="emailsSent" class="alert alert-success alert-dismissible fade show" role="alert">
-              Email Invitations sent successfully
+              Invitations sent successfully
               <button type="button" class="close" onclick="$('.alert').alert('close')" aria-label="Close">
               <span aria-hidden="true">&times;</span>
               </button>
@@ -184,23 +190,55 @@ $(document).ready(function() {
         `);
         $('#settings #box #share-project').prepend((emailsSent));
 
-        allEmails.removeClass();
-        allEmails.addClass('form-control');
-        allEmails.addClass("is-valid");
+        allCredentials.removeClass();
+        allCredentials.addClass('form-control');
+        allCredentials.addClass("is-valid");
 
       }else{
-        allEmails.removeClass();
-        allEmails.addClass('form-control');
-        allEmails.addClass("is-valid");
+        allCredentials.removeClass();
+        allCredentials.addClass('form-control');
+        allCredentials.addClass("is-valid");
 
         for(var i = 0; i < data.length; i++) {
           // console.log(data[i]);
           var temp = data[i];
-          $(allEmails.get(toSend.indexOf(temp))).addClass('is-invalid');
+          $(allCredentials.get(toSend.indexOf(temp))).addClass('is-invalid');
         }
       }
     });
 
+  });
+
+  $('#make-public-btn').click(function() {
+    // var public_btn = $('#make-public-btn');
+    var public_div = $('.public-div');
+    var private_div = $('.private-div');
+
+    $.post('/projects/make-project-public', {projectID: window.location.pathname.split('/')[2]}, function(data) {
+      if(data.auth) {
+        public_div.removeClass('d-none');
+        public_div.addClass('d-none');
+        private_div.removeClass('d-none');
+      }else{
+        window.location.replace('/');
+      }
+    });
+  });
+
+  $('#make-private-btn').click(function() {
+    // var public_btn = $('#make-public-btn');
+    var public_div = $('.public-div');
+    var private_div = $('.private-div');
+
+    $.post('/projects/make-project-private', {projectID: window.location.pathname.split('/')[2]}, function(data) {
+      if(data.auth) {
+        private_div.removeClass('d-none');
+        private_div.addClass('d-none');
+        public_div.removeClass('d-none');
+      }else{
+        window.location.replace('/');
+      }
+    });
   });
 
   $('#invite-mentor').submit(function(event) {

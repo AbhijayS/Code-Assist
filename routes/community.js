@@ -1,19 +1,22 @@
+var fs = require('fs');
 var express = require('express');
 var router = express.Router();
 var User = require('../models/user');
 var moment = require('moment');
-
 var upload = require('../database').upload;
 var mongoose = require('mongoose');
-require('dotenv').config();
-const escapeRegex = require('escape-string-regexp');
-
-const sgMail = require('@sendgrid/mail');
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-
-var fs = require('fs');
 var handlebars = require('handlebars');
+const sgMail = require('@sendgrid/mail');
+const escapeRegex = require('escape-string-regexp');
+const Trello = require("trello");
+const io = require('../app').io;
+const detectLinks = require('delta-detect-links');
+const Delta = require('quill-delta');
+
+var trello = new Trello(process.env.TRELLO_API_KEY, process.env.TRELLO_API_TOKEN);
 var emailTemplate = handlebars.compile(fs.readFileSync('./views/email.handlebars', 'utf8'));
+require('dotenv').config();
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 var postLimit = 10; // how many posts to show user at a time
 
@@ -223,7 +226,6 @@ router.get('/file/:fileID', (req, res) => {
   });
 });
 
-/* Chris this needs to get updated */
 router.post('/post', upload.array('file'), function(req, res) {
 	var data = {
 		auth: false
@@ -239,6 +241,9 @@ router.post('/post', upload.array('file'), function(req, res) {
 		var authorid=req.user._id;
 		var questionInvalid = false;
 		var descriptionInvalid = false;
+
+		var descWithLinks = detectLinks(new Delta(JSON.parse(description))).ops;
+		description = JSON.stringify(descWithLinks);
 
 		if (question.trim().split(' ').length < 2 || question.length>150) {
 			data.questionInvalid = true;
@@ -272,7 +277,7 @@ router.post('/post', upload.array('file'), function(req, res) {
 				req.user.posts.push(newPost);
 
 				req.user.qualities.assists += 15;
-				User.updateRank(req.user);
+				User.updateRank(req.user, req.user.qualities.rank);
 
 				community.save(function(err) {
 					if(err) throw err;
@@ -285,6 +290,18 @@ router.post('/post', upload.array('file'), function(req, res) {
 				req.user.save(function(err) {
 					if(err) throw err;
 				});
+				console.log("Sending to trello ...");
+				var cardTitle = '['+newPost.prog_lang+'] '+newPost.author.username+' - '+newPost.question;
+				var cardDescription = 'https://codeassist.org/community/'+newPost.id;
+				trello.addCard(cardTitle, cardDescription, process.env.TRELLO_TODO_LIST,
+			    function (error, trelloCard) {
+			        if (error) {
+			            console.log('Could not add card:', error);
+			        }
+			        else {
+			            console.log('Added card:', trelloCard);
+			        }
+			    });
 			});
 		}
 
@@ -331,7 +348,7 @@ router.get('/:id', function(req, res) {
 
 			var today = moment(Date.now());
 			var description = JSON.parse(post.description);
-			if(description.length == 0 || description[0].insert.trim() == "") {
+			if(description.length == 0 || (description[0].insert && description[0].insert.trim() == "")) {
 				description = null;
 			}else{
 				description = post.description;
@@ -365,7 +382,7 @@ router.post('/like', function(req, res) {
 
 					if(post.author.id != req.user.id) {
 						post.author.qualities.assists += 5;
-						User.updateRank(post.author);
+						User.updateRank(post.author, post.author.qualities.rank);
 					}
         } else {
           post.userLikes.splice(index, 1);
@@ -373,7 +390,7 @@ router.post('/like', function(req, res) {
 
 					if(post.author.id != req.user.id) {
 						post.author.qualities.assists -= 5;
-				    User.updateRank(post.author);
+				    User.updateRank(post.author, post.author.qualities.rank);
 					}
         }
 
@@ -483,6 +500,9 @@ router.post('/:id/answer', function(req, res){
   var postID = req.params.id;
   var message = req.body.answer;
 
+	var msgWithLinks = detectLinks(new Delta(JSON.parse(message))).ops;
+	message = JSON.stringify(msgWithLinks);
+
 	if (message == '[{"insert":"\\n"}]') {
 		console.log("invalid answer");
 		res.end();
@@ -504,7 +524,7 @@ router.post('/:id/answer', function(req, res){
 			// make sure the person isn't cheating the system
 			if(req.user.id != post.author.id) {
 				req.user.qualities.assists += 10;
-				User.updateRank(req.user);
+				User.updateRank(req.user, req.user.qualities.rank);
 			}
 
 			post.answers.push(newAnswer);
@@ -513,6 +533,11 @@ router.post('/:id/answer', function(req, res){
       });
 
 			User.UserSchema.findOne({_id: post.author._id}, function(err, user) {
+				Notify(post.author._id, {
+					message: `<strong>${req.user.username}</strong> responded to your question titled "<em>${post.question}</em>"`,
+					link: "/community/" + postID
+				});
+
 				var newTimestamp = moment(newAnswer.timestamp);
 				const text = `
 					<p><a href="http://codeassist.org/users/profile/${req.user._id}">${req.user.username}</a> has recently replied to your question titled, <em>${post.question}</em>.</p>
@@ -738,6 +763,9 @@ router.post('/post/edit/:id', upload.array('file'), function(req, res) {
 		var removedFileIds = req.body.removedFileIds;
 		// console.log("removedFileIds:", removedFileIds);
 
+		var descWithLinks = detectLinks(new Delta(JSON.parse(description))).ops;
+		description = JSON.stringify(descWithLinks);
+
 		if (question.trim().split(' ').length < 2 || question.length>150) {
 			data.questionInvalid = true;
 			res.send(data);
@@ -789,6 +817,8 @@ router.post('/post/edit/:id', upload.array('file'), function(req, res) {
 						}
 
 						post.status.edited = true;
+						post.timestamp=Date.now();
+
 						post.save(function(err) {
 							if(err) throw err;
 							data.auth = true;
@@ -816,6 +846,9 @@ router.post('/:id/answers/edit/:answerid', function(req, res) {
 	var answerID = req.params.answerid;
 	var newAnswer = req.body.answer;
 
+	var answerWithLinks = detectLinks(new Delta(JSON.parse(newAnswer))).ops;
+	newAnswer = JSON.stringify(answerWithLinks);
+
 	if(req.user) {
 		User.AnswerSchema.findOne({_id: answerID}).populate('author').exec(function(err, foundAnswer) {
 			if(err) throw err;
@@ -823,6 +856,7 @@ router.post('/:id/answers/edit/:answerid', function(req, res) {
 				if(foundAnswer.author.id === req.user.id) {
 					foundAnswer.answer = newAnswer;
 					foundAnswer.status.edited = true;
+					foundAnswer.timestamp=Date.now();
 					foundAnswer.save(function(err) {
 						if(err) throw err;
 						console.log("Answer Updated");
@@ -840,5 +874,33 @@ router.post('/:id/answers/edit/:answerid', function(req, res) {
 	}
 });
 
+function Notify(userid, data){
+  this.nnsp=io.of("/Notify"+userid);
+  User.UserSchema.findOne({_id:userid}).populate('notifications').exec(function(err,user){
+    if(user){
+			// console.log("nsp", "/Notify"+userid);
+			var newNotif = new User.NotificationSchema(data);
+			newNotif.save(function(err) {
+				if(err) throw err;
+			});
+			user.notifications.unshift(newNotif);
+			user.unread_notifications = true;
+
+			this.nnsp.emit('notify', data);
+
+			// removes any notifications after 5
+			if (user.notifications.length > 5) {
+				var removed = user.notifications.splice(5);
+				removed.forEach(function(notification) {
+					notification.remove();
+				});
+			}
+
+			user.save(function(err) {
+				if(err) throw err;
+			});
+    }
+  });
+}
 
 module.exports = router;

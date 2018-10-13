@@ -3,9 +3,9 @@
 
 # Node Dependencies
 # Dev use node install for setup
-node_modules/
+node_modules
 
 # Project Files
-project_files
+project_files/**/*
 
 package-lock.json

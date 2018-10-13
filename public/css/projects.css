@@ -563,7 +563,7 @@ editorContainer .row {
   vertical-align: middle;
 } */
 
-#settings #add-more-emails:hover {
+#settings #add-more-inputs:hover {
   color: #007bff;
   cursor: pointer;
 }
@@ -656,4 +656,19 @@ canvas {
 .footerHeader {
   color: #343a40 !important;
   font-weight: bold;
+}
+
+.notification {
+  font-size: 14px;
+  white-space: pre-wrap !important;
+}
+
+#unread-icon {
+  background-color: red;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  top: 4px;
+  left: 8px;
+  position: absolute;
 }

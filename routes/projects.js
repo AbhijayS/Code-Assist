@@ -1,6 +1,7 @@
 var express = require('express');
 var path = require('path');
 var async = require('async');
+var emailValidator = require("email-validator");
 var router = express.Router();
 // var router = express.Router({'strict' : true});
 var User = require('../models/user');
@@ -11,6 +12,7 @@ var mongoose = require('mongoose');
 var fs = require('fs');
 var handlebars = require('handlebars');
 var emailTemplate = handlebars.compile(fs.readFileSync('./views/email.handlebars', 'utf8'));
+var socketioAuth = require('socketio-auth');
 
 var zip = new require('node-zip')();
 var easyrtc_server = require('../easyrtc/easyrtc_server_setup');
@@ -42,7 +44,7 @@ function projectActive(id) {
 	return false;
 }
 
-router.get('/', function(req, res){
+router.get('/', function(req, res) {
 	if(req.user) {
 		User.UserSchema.findOne({_id: req.user._id}).
 		populate({
@@ -69,7 +71,7 @@ router.get('/', function(req, res){
 	}
 });
 
-router.post('/', function(req, res){
+router.post('/', function(req, res) {
 	var project_name = req.body.project_name;
 
 	if(req.user) {
@@ -101,88 +103,126 @@ router.post('/', function(req, res){
 
 });
 
-router.post('/share', function(req, res){
+router.post('/share', function(req, res) {
 	var projectID = req.body.projectID;
 	if (req.user) {
 		User.UserSchema.findOne({_id: req.user._id}, function(err, fromUser) {
 			User.ProjectSchema.findOne({_id: projectID}, function(err, project) {
 				if (fromUser && project) {
-					var emails = req.body.emailInput;
+					var credentials = req.body.credentials;
 
 					// in case only one email given
-					if (!Array.isArray(emails)) {
-						emails = [emails];
+					if (!Array.isArray(credentials)) {
+						credentials = [credentials];
 					}
 
-					console.log("Share post request ----------------")
-					console.log("projectID: " + projectID);
+					// console.log("Share post request ----------------")
+					// console.log("projectID: " + projectID);
 
-					// sort between emails and usernames
+					// sort between credentials and usernames
 
-					var failedEmails = [];
+					var failedCreds = [];
 					async.parallel([
 						function(callback) {
-							async.each(emails, function(email, checkCallback) {
-								User.UserSchema.findOne({email: email}, function(err, user) {
-									if(err) checkCallback(err);
-									if(!user) {
-										failedEmails.push(email);
-									}
-									checkCallback();
-								});
-							}, function(err) {
+							async.each(credentials, function(cred, checkCallback) {
+								if(emailValidator.validate(cred)) {
+									User.UserSchema.findOne({email: cred}, function(err, user) {
+										if(err) checkCallback(err);
+										if(!user) {
+											failedCreds.push(cred);
+										}
+										checkCallback(null);
+									});
+								}else{
+									User.UserSchema.findOne({username: cred}, function(err, user) {
+										if(err) checkCallback(err);
+										if(!user) {
+											failedCreds.push(cred);
+										}
+										checkCallback(null);
+									});
+								}
+							},
+							// optional callback: checkCallback
+							function(err) {
 								callback(err);
 							});
 						}
 					],
-					// optional callback
+					// callback
 					function(err) {
 						if(err) throw err;
-						if(failedEmails.length == 0) {
-							var sentEmails = [];
-							async.each(emails, function(email, finalCallback) {
-								User.UserSchema.findOne({email: email}, function(err, user) {
-									if(err) finalCallback(err);
+						if(failedCreds.length == 0) {
+							var sentCreds = [];
+							async.each(credentials, function(cred, finalCallback) {
+								if(emailValidator.validate(cred)) {
+									User.UserSchema.findOne({email: cred}, function(err, user) {
+										if(err) finalCallback(err);
 
-									if(!sentEmails.includes(email)) {
-										var e_link = projectID + "/" + uniqid();
-										user.e_link = e_link;
-										user.save(function(err) {
-											if(err) throw err;
-										});
+										if(!sentCreds.includes(cred)) {
+											var e_link = projectID + "/" + uniqid();
+											user.e_link = e_link;
+											user.save(function(err) {
+												if(err) throw err;
+											});
 
-										console.log("sharing with: " + user.email);
-/*										const output = `
-										<p>Hi ${user.username},</p>
-										<p><a href="http://codeassist.org/users/profile/${fromUser.id}">${fromUser.username}</a> invited you to a project titled <strong>${project.name}</strong></p>
+											// console.log("sharing with: " + user.email);
 
-										<h3><a href="http://codeassist.org/projects/invite/${e_link}">Accept invitation</a></h3>
-										`;*/
+											const msg = {
+												to: user.email,
+												from: `Code Assist <${process.env.SENDER_EMAIL}>`,
+												subject: "You've been invited to a new project",
+												html: emailTemplate({
+													username: user.username,
+													text: `<a href="http://codeassist.org/users/profile/${fromUser.id}">${fromUser.username}</a> invited you to a project titled <strong>${project.name}</strong>`,
+													btnText: "Accept Invitation",
+													btnLink: `http://codeassist.org/projects/invite/${e_link}`
+												})
+											};
+											sentCreds.push(cred);
+											sgMail.send(msg);
+										}
+										finalCallback();
+									})
 
-										const msg = {
-											to: user.email,
-											from: `Code Assist <${process.env.SENDER_EMAIL}>`,
-											subject: "You've been invited to a new project",
-											html: emailTemplate({
-												username: user.username,
-												text: `<a href="http://codeassist.org/users/profile/${fromUser.id}">${fromUser.username}</a> invited you to a project titled <strong>${project.name}</strong>`,
-												btnText: "Accept Invitation",
-												btnLink: `http://codeassist.org/projects/invite/${e_link}`
-											})
-										};
-										sentEmails.push(email);
-										sgMail.send(msg);
-									}
-									finalCallback();
-								});
+								}else{
+									User.UserSchema.findOne({username: cred}, function(err, user) {
+										if(err) finalCallback(err);
+
+										if(!sentCreds.includes(cred)) {
+											var e_link = projectID + "/" + uniqid();
+											user.e_link = e_link;
+											user.save(function(err) {
+												if(err) throw err;
+											});
+
+											// console.log("sharing with: " + user.email);
+
+											const msg = {
+												to: user.email,
+												from: `Code Assist <${process.env.SENDER_EMAIL}>`,
+												subject: "You've been invited to a new project",
+												html: emailTemplate({
+													username: user.username,
+													text: `<a href="http://codeassist.org/users/profile/${fromUser.id}">${fromUser.username}</a> invited you to a project titled <strong>${project.name}</strong>`,
+													btnText: "Accept Invitation",
+													btnLink: `http://codeassist.org/projects/invite/${e_link}`
+												})
+											};
+											sentCreds.push(user.email);
+											sgMail.send(msg);
+										}
+										finalCallback();
+									})
+								}
 							}, function(err) {
 								if(err) throw err;
 								console.log("All Emails sent successfully");
 								res.send([]);
 							});
 						}else{
-							console.log("Failed emails: " + failedEmails);
-							res.send(failedEmails);
+							console.log("Failed credentials: " + failedCreds);
+							res.send(failedCreds);
 						}
 					});
 				}
@@ -191,6 +231,52 @@ router.post('/share', function(req, res){
 		});
 	}
 
+});
+
+router.post('/make-project-public', function(req, res) {
+	var projectID = req.body.projectID;
+	if(req.user) {
+		User.ProjectSchema.findOne({_id: projectID}, function(err, project) {
+			if(err) throw err;
+			if(project) {
+				if(project.owner == req.user.id) {
+					project.publicProject = true;
+					project.save(function(err) {
+						if(err) throw err;
+						// project is public now
+						res.send({auth: true});
+					})
+				}else{
+					res.send({auth: false});
+				}
+			}else{
+				res.send({auth: false});
+			}
+		})
+	}
+});
+
+router.post('/make-project-private', function(req, res) {
+	var projectID = req.body.projectID;
+	if(req.user) {
+		User.ProjectSchema.findOne({_id: projectID}, function(err, project) {
+			if(err) throw err;
+			if(project) {
+				if(project.owner == req.user.id) {
+					project.publicProject = false;
+					project.save(function(err) {
+						if(err) throw err;
+						// project is public now
+						res.send({auth: true});
+					})
+				}else{
+					res.send({auth: false});
+				}
+			}else{
+				res.send({auth: false});
+			}
+		})
+	}
 });
 
 router.get('/invite/:projectID/:randomID', function(req, res){
@@ -358,39 +444,50 @@ router.post('/:projectid/leave-project-confirm', function(req, res) {
 })
 
 router.get('/:id', function(req, res) {
-	console.log("Project");
 	var isThumbnail = req.query.thumbnail;
-	// console.log("isThumbnail:", isThumbnail);
 	var projectID = req.params.id;
 
 	User.ProjectSchema.findOne({_id: projectID}).populate(['usersWithAccess', 'owner', 'chatHistory', 'assignedMentor']).exec(function(err, project) {
-		if(req.user) {
+		if(err) throw err;
+		if(req.user || project.publicProject) {
 			if (project) {
-				var userAccessLevel = 0;
+				var userAccessLevel = -1;
 
-				if (req.user.id == (project.owner.id)) {
-					userAccessLevel = 2;
-					console.log("Owner is accessing");
-				}else if (project.assignedMentor && (project.assignedMentor.id == req.user.id)) {
-					userAccessLevel = 1;
-				}else{
-					for (var i = 0; i < project.usersWithAccess.length; i++) {
-						// console.log(typeof req.user._id);
-						// console.log(typeof project.usersWithAccess[i].id);
-						if (project.usersWithAccess[i].id === req.user.id) {
-							userAccessLevel = 1;
-							break;
+				if(req.user) {
+					if (req.user.id == (project.owner.id)) {
+						userAccessLevel = 2;
+						// console.log("Owner is accessing");
+					}else if (project.assignedMentor && (project.assignedMentor.id == req.user.id)) {
+						userAccessLevel = 1;
+					}else{
+						for (var i = 0; i < project.usersWithAccess.length; i++) {
+							// console.log(typeof req.user._id);
+							// console.log(typeof project.usersWithAccess[i].id);
+							if (project.usersWithAccess[i].id === req.user.id) {
+								userAccessLevel = 1; // Collaborator
+								break;
+							}
 						}
 					}
 				}
 
-				// console.log(userAccessLevel);
-				if (userAccessLevel != 0) {
+				if((userAccessLevel == -1) && project.publicProject) {
+					userAccessLevel = 0; // public project viewer
+				}
 
+				// console.log(userAccessLevel);
+				if (userAccessLevel != -1) {
 					if (!projectActive(projectID)){
 						// currentProjects.push(new Project(project._id, project.text));
 						currentProjects.push(new Project(project._id, project.files));
 					}
+
+					if (userAccessLevel >= 1 && !isThumbnail) {
+						// Storing a new token in project object
+						var token = nanoid(safe_chars);
+						getCurrentProject(projectID).tokens[req.user.id] = token;
+					}
+
 					// console.log(project.owner.id == req.user.id ? true : false);
 					var projectStatus = project.status;
 					if(projectStatus == "new") {
@@ -405,7 +502,7 @@ router.get('/:id', function(req, res) {
 						mentor = (req.user.id == project.assignedMentor.id);
 					project.save(function(err) {
 						if(err) throw err;
-						res.render('view-project', {layout: 'view-project-layout', isThumbnail: isThumbnail, namespace: '/' + projectID, clearance:userAccessLevel, isNew: projectStatus, mentor: mentor, popup: req.flash('display-settings'), project: project, users: project.usersWithAccess, owner: project.owner, isowner: project.owner.id == req.user.id ? true : false});
+						res.render('view-project', {layout: 'view-project-layout', isThumbnail: isThumbnail, namespace: '/' + projectID, clearance:userAccessLevel, isNew: projectStatus, mentor: mentor, popup: req.flash('display-settings'), project: project, users: project.usersWithAccess, owner: project.owner, isowner: req.user ? project.owner.id == req.user.id: false, publicOption: (project.owner.qualities.assists >= 50), isPublic: project.publicProject, displayPublic: (userAccessLevel == 0), token: token});
 					})
 				} else {
 					res.redirect('/projects');
@@ -600,17 +697,21 @@ router.get('/:id/file/:fileIndex', function(req, res) {
 		User.ProjectSchema.findOne({_id: projectID}).populate(['usersWithAccess', 'owner']).exec(function(err, project) {
 			if (project) {
 				// Check if user has access to project
-				var userAccessLevel = 0;
+				var userAccessLevel = -1;
 				for (var i = 0; i < project.usersWithAccess.length; i++) {
 					if (project.usersWithAccess[i].id === req.user.id)
-						userAccessLevel = 1;
+						userAccessLevel = 1; // Collaborator
 				}
 
 				if (req.user._id.equals(project.owner.id)) {
-					userAccessLevel = 2;
+					userAccessLevel = 2; // owner
 				}
 
-				if (userAccessLevel != 0) {
+				if((userAccessLevel == -1) && project.publicProject) {
+					userAccessLevel = 0; // public project viewer
+				}
+
+				if (userAccessLevel != -1) {
 					var projectObject = getCurrentProject(projectID);
 					if (projectObject && projectObject.files[fileIndex] && projectObject.files[fileIndex].fileName) {
 						var fileName = projectObject.files[fileIndex].fileName;
@@ -650,17 +751,21 @@ router.get('/:id/downloadAll', function(req, res) {
 		User.ProjectSchema.findOne({_id: projectID}).populate(['usersWithAccess', 'owner']).exec(function(err, project) {
 			if (project) {
 				// Check if user has access to project
-				var userAccessLevel = 0;
+				var userAccessLevel = -1;
 				for (var i = 0; i < project.usersWithAccess.length; i++) {
 					if (project.usersWithAccess[i].id === req.user.id)
-						userAccessLevel = 1;
+						userAccessLevel = 1; // Collaborator
 				}
 
 				if (req.user._id.equals(project.owner.id)) {
-					userAccessLevel = 2;
+					userAccessLevel = 2; // Owner
 				}
 
-				if (userAccessLevel != 0) {
+				if((userAccessLevel == -1) && project.publicProject) {
+					userAccessLevel = 0; // public project viewer
+				}
+
+				if (userAccessLevel != -1) {
 					async.each(project.fileNames, function(fileName, callback) {
 						if (fs.existsSync(projectDir + fileName)) {
 							fs.readFile(projectDir + fileName, {encoding: 'utf-8'}, function(err, text) {
@@ -765,7 +870,7 @@ function saveAllFiles(folderPath, files) {
 		if (err) {
 			console.log('A file failed to save');
 		} else {
-			console.log('All files have been saved successfully');
+			// console.log('All files have been saved successfully');
 		}
 	});
 }
@@ -783,6 +888,7 @@ function Project(id) {
 	this.folderPath = "./project_files/" + id + "/";
 
 	this.files = [];
+	this.tokens = {};
 
 	this.activeUserCount = 0;
 	this.msgCount;
@@ -794,6 +900,7 @@ function Project(id) {
 			console.log("program terminated")
 			self.output = "";
 			self.runner.kill();
+			self.runner = null;
 			clearInterval(self.msgCountResetter);
 			self.nsp.emit("programTerminated");
 			self.nsp.emit("outputError", "Your program printed to the console too quickly. You may need to add a delay between each print statement in your program.");
@@ -893,9 +1000,34 @@ function Project(id) {
 	this.nsp = io.of('/'+this.id)
 	var chatdatanamespace=this.nsp;
 
+	socketioAuth(this.nsp, {
+	  authenticate: authenticate,
+		postAuthenticate: postAuthenticateGuestAccess,
+	  timeout: 1000
+	});
 
-	this.nsp.on('connection', function connection(socket) {
-		// console.log("new projects connection");
+	function authenticate(socket, data, callback) {
+		var token = data.token;
+		var userid = data.id;
+
+		if (self.tokens[userid] == token) {
+			postAuthenticateWithAccess(socket, data);
+			return callback(null, true);
+		} else {
+			User.ProjectSchema.findOne({_id: self.id}, function(err, project) {
+				if (project && project.publicProject) {
+					return callback(null, true);
+				}
+				return callback(null, false);
+			});
+		}
+
+	}
+
+	function postAuthenticateGuestAccess(socket, data) {
+		// the following socket handlers are applied for
+		// users acesssing a project publicly and for users with access to project
+
 		socket.emit("socketID", socket.id);
 		socket.emit("files", self.files);
 
@@ -903,11 +1035,235 @@ function Project(id) {
 			self.activeUserCount++;
 		});
 
+		socket.on("programInput", function(text) {
+			if (self.runner) {
+				self.runner.stdin.write(text+"\n");
+				// runner.stdin.end();
+				socket.broadcast.emit("programInput", text);
+			}
+		});
+
+		socket.on("terminateProgram", function() {
+			if (self.runner) {
+				self.runner.kill();
+				self.runner = null;
+				clearInterval(self.msgCountResetter);
+				socket.broadcast.emit("programTerminated");
+			}
+		});
+
+		socket.on("run", function(fileIndex) {
+			if (self.runner) {
+				self.runner.kill();
+				self.runner = null;
+			}
+
+			clearInterval(self.msgCountResetter);
+
+			var file = self.files[fileIndex];
+			var fileExt = path.extname(file.fileName);
+
+			if (!file) {
+				self.nsp.emit("outputError", "No file selected");
+				self.nsp.emit("runFinished");
+				return false;
+			}
+
+			if (!file.fileName) {
+				self.nsp.emit("outputError", "Please enter a file name");
+				self.nsp.emit("runFinished");
+				return false;
+			}
+
+			if (fileExt == ".html") {
+				socket.broadcast.emit("programRunning", fileIndex);
+				file.htmlPreviewCode = file.text;
+				self.nsp.emit("runFinished");
+				return false;
+			}
+
+			if (fileExt != ".java" && fileExt != ".py" && fileExt != ".cpp") {
+				self.nsp.emit("outputError", "Currently only .java, .py, and .cpp files are able to be compiled/run");
+				self.nsp.emit("runFinished");
+				return false;
+			}
+
+			if (!fs.existsSync(self.folderPath)) {
+				fs.mkdirSync(self.folderPath);
+			}
+
+			self.output = "";
+			self.outputError = false;
+			socket.broadcast.emit("programRunning", fileIndex);
+			// console.log("Saving")
+			saveAllFiles(self.folderPath, self.files);
+
+			// console.log("Compiling");
+			var fireJailStr = "firejail --quiet --private=. ";
+			var fireJailArgs = fireJailStr.trim().split(" ");
+			switch(fileExt) {
+				case '.java':
+					var command = 'javac "' + file.fileName + '"';
+					if (isLinux)
+						command = fireJailStr + command;
+					exec(command, {cwd: self.folderPath}, function(error, stdout, stderr) {
+
+						if (error || stderr.trim()) {
+							// console.log("Projects - Compile Error Given");
+							// console.log(stderr.replace(/\n$/, "")); //regex gets rid of newline character
+
+							self.output = stderr;
+							self.outputError = true;
+
+							self.nsp.emit("outputError", stderr);
+							self.nsp.emit("runFinished");
+							return false; //breaks out of function
+						}
+
+
+						// console.log("Running");
+						// console.log("-------");
+
+						// file name without file extension
+						var fileNameNoExt = path.parse(file.fileName).name;
+
+						var command = ['java', fileNameNoExt];
+						if (isLinux)
+							command = fireJailArgs.concat(command);
+
+						self.startMessageResetter();
+						self.runner = spawn(command.shift(), command, {cwd: self.folderPath});
+						self.nsp.emit("readyForInput");
+
+						self.runner.stdout.on('data', function(data) {
+							if (self.checkMsgCount()) {
+								self.output += data;
+								self.nsp.emit("output", data.toString());
+								// process.stdout.write(data);
+							}
+						});
+
+						self.runner.stderr.on('data', function(data) {
+							self.output += data;
+							self.nsp.emit("outputError", data.toString());
+							self.outputError = true;
+							// process.stdout.write(data);
+						});
+
+						self.runner.on('exit', function() {
+							self.nsp.emit("runFinished");
+							clearInterval(self.msgCountResetter);
+							self.runner = null;
+							// console.log('Run Finished');
+						});
+					});
+					break;
+				case ".py":
+					var command = ['python', file.fileName];
+					if (isLinux)
+						command = fireJailArgs.concat(command);
+
+					self.startMessageResetter();
+					self.runner = spawn(command.shift(), command, {cwd: self.folderPath});
+					self.nsp.emit("readyForInput");
+
+					self.runner.stdout.on('data', function(data) {
+						if (self.checkMsgCount()) {
+							self.output += data;
+							self.nsp.emit("output", data.toString());
+							// process.stdout.write(data);
+						}
+					});
+
+					self.runner.stderr.on('data', function(data) {
+						self.output += data;
+						self.nsp.emit("outputError", data.toString());
+						self.outputError = true;
+						// process.stdout.write(data);
+					});
+
+					self.runner.on('exit', function() {
+						self.nsp.emit("runFinished");
+						clearInterval(self.msgCountResetter);
+						self.runner = null;
+						// console.log('Run Finished');
+					});
+					break;
+				case ".cpp":
+					var otherFiles = self.getCHeaders(file.text);
+					var command = 'g++ "' + file.fileName + '" ' + otherFiles;
+					if (isLinux)
+						command = fireJailStr + command;
+					exec(command, {cwd: self.folderPath}, function(error, stdout, stderr) {
+
+						if (error || stderr.trim()) {
+							// console.log("Projects - Compile Error Given");
+							// console.log(stderr.replace(/\n$/, "")); //regex gets rid of newline character
+
+							self.output = stderr;
+							self.outputError = true;
+
+							self.nsp.emit("outputError", stderr);
+							self.nsp.emit("runFinished");
+							return false; //breaks out of function
+						}
+
+						// file name without file extension
+						var command = isLinux ? './a.out' : 'a.exe';
+
+						self.startMessageResetter();
+						self.runner = spawn(command, {cwd: self.folderPath});
+						self.nsp.emit("readyForInput");
+
+						self.runner.stdout.on('data', function(data) {
+							if (self.checkMsgCount()) {
+								self.output += data;
+								self.nsp.emit("output", data.toString()+"\n");
+								// console.log(data.toString());
+							}
+						});
+
+						self.runner.stderr.on('data', function(data) {
+							self.output += data;
+							self.nsp.emit("outputError", data.toString()+"\n");
+							self.outputError = true;
+							// console.log(data.toString());
+						});
+
+						self.runner.on('exit', function() {
+							self.nsp.emit("runFinished");
+							clearInterval(self.msgCountResetter);
+							self.runner = null;
+							// console.log('Run Finished');
+						});
+					});
+					break;
+			}
+
+		});
+
+		socket.on("disconnect", function() {
+			if (self.activeUserCount >= 1)
+				self.activeUserCount--;
+
+			if (self.activeUserCount == 0) {
+				self.output = "";
+				if (self.runner)
+					self.runner.kill();
+					self.runner = null;
+				// console.log("cleared output")
+			}
+		});
+
 		if (self.outputError) {
 			socket.emit("outputError", self.output);
 		} else {
 			socket.emit("output", self.output);
 		}
+	}
+
+	function postAuthenticateWithAccess(socket, data) {
+		// all the socket handlers applied after being authenticated (someone who can edit project)
 
 		//chat handler
 		socket.on("chat",function(msg,chatterid,chatter){
@@ -924,7 +1280,7 @@ function Project(id) {
 				console.log(self.id);
 				User.ProjectSchema.findOne({_id:self.id}).exec(function(error, project){
 					project.chatHistory.push(NewChatMessage._id);
-					console.log(project);
+					// console.log(project);
 						project.save(function(error){
 							chatdatanamespace.emit('broadcastchat',NewChatMessage);
 
@@ -952,7 +1308,7 @@ function Project(id) {
 
 			file.saveTimeout = setTimeout(function() {
 				if (file.fileName) {
-					console.log("saving")
+					// console.log("saving")
 					fs.writeFile(self.folderPath + file.fileName, text, function(err) {
 						if (err)
 							console.log(err);
@@ -1154,16 +1510,6 @@ function Project(id) {
 		});
 
 		socket.on("disconnect", function() {
-			if (self.activeUserCount >= 1)
-				self.activeUserCount--;
-
-			if (self.activeUserCount == 0) {
-				self.output = "";
-				if (self.runner)
-					self.runner.kill();
-				// console.log("cleared output")
-			}
-
 			for (var i = 0; i < self.files.length; i++) {
 				delete self.files[i].cursors[socket.id];
 				delete self.files[i].selections[socket.id];
@@ -1174,208 +1520,41 @@ function Project(id) {
 			// console.log(self.cursors);
 		});
 
-		socket.on("programInput", function(text) {
-			if (self.runner) {
-				self.runner.stdin.write(text+"\n");
-				// runner.stdin.end();
-				socket.broadcast.emit("programInput", text);
-			}
-		});
+	}
 
-		socket.on("terminateProgram", function() {
-			if (self.runner) {
-				self.runner.kill();
-				clearInterval(self.msgCountResetter);
-				socket.broadcast.emit("programTerminated");
-			}
-		});
+	// this.nsp.on('connection', function connection(socket) {
+	// 	// console.log("new projects connection");
+	// });
 
-		socket.on("run", function(fileIndex) {
-			if (self.runner)
-				self.runner.kill();
+}
 
-			clearInterval(self.msgCountResetter);
+function Notify(userid, data){
+  this.nnsp=io.of("/Notify"+userid);
+  User.UserSchema.findOne({_id:userid}).populate('notifications').exec(function(err,user){
+    if(user){
+			// console.log("nsp", "/Notify"+userid);
+			var newNotif = new User.NotificationSchema(data);
+			newNotif.save(function(err) {
+				if(err) throw err;
+			});
+			user.notifications.unshift(newNotif);
+			user.unread_notifications = true;
 
-			var file = self.files[fileIndex];
-			var fileExt = path.extname(file.fileName);
+			this.nnsp.emit('notify', data);
 
-			if (!file) {
-				self.nsp.emit("outputError", "No file selected");
-				self.nsp.emit("runFinished");
-				return false;
-			}
-
-			if (!file.fileName) {
-				self.nsp.emit("outputError", "Please enter a file name");
-				self.nsp.emit("runFinished");
-				return false;
+			// removes any notifications after 5
+			if (user.notifications.length > 5) {
+				var removed = user.notifications.splice(5);
+				removed.forEach(function(notification) {
+					notification.remove();
+				});
 			}
 
-			if (fileExt == ".html") {
-				socket.broadcast.emit("programRunning", fileIndex);
-				file.htmlPreviewCode = file.text;
-				self.nsp.emit("runFinished");
-				return false;
-			}
-
-			if (fileExt != ".java" && fileExt != ".py" && fileExt != ".cpp") {
-				self.nsp.emit("outputError", "Currently only .java, .py, and .cpp files are able to be compiled/run");
-				self.nsp.emit("runFinished");
-				return false;
-			}
-
-			if (!fs.existsSync(self.folderPath)) {
-				fs.mkdirSync(self.folderPath);
-			}
-
-			self.output = "";
-			self.outputError = false;
-			socket.broadcast.emit("programRunning", fileIndex);
-			// console.log("Saving")
-			saveAllFiles(self.folderPath, self.files);
-
-			// console.log("Compiling");
-			var fireJailStr = "firejail --quiet --private=. ";
-			var fireJailArgs = fireJailStr.trim().split(" ");
-			switch(fileExt) {
-				case '.java':
-					var command = 'javac "' + file.fileName + '"';
-					if (isLinux)
-						command = fireJailStr + command;
-					exec(command, {cwd: self.folderPath}, function(error, stdout, stderr) {
-
-						if (error || stderr.trim()) {
-							// console.log("Projects - Compile Error Given");
-							// console.log(stderr.replace(/\n$/, "")); //regex gets rid of newline character
-
-							self.output = stderr;
-							self.outputError = true;
-
-							self.nsp.emit("outputError", stderr);
-							self.nsp.emit("runFinished");
-							return false; //breaks out of function
-						}
-
-
-						// console.log("Running");
-						// console.log("-------");
-
-						// file name without file extension
-						var fileNameNoExt = path.parse(file.fileName).name;
-
-						var command = ['java', fileNameNoExt];
-						if (isLinux)
-							command = fireJailArgs.concat(command);
-
-						self.startMessageResetter();
-						self.runner = spawn(command.shift(), command, {cwd: self.folderPath});
-						self.nsp.emit("readyForInput");
-
-						self.runner.stdout.on('data', function(data) {
-							if (self.checkMsgCount()) {
-								self.output += data;
-								self.nsp.emit("output", data.toString());
-								// process.stdout.write(data);
-							}
-						});
-
-						self.runner.stderr.on('data', function(data) {
-							self.output += data;
-							self.nsp.emit("outputError", data.toString());
-							self.outputError = true;
-							// process.stdout.write(data);
-						});
-
-						self.runner.on('exit', function() {
-							self.nsp.emit("runFinished");
-							clearInterval(self.msgCountResetter);
-							// console.log('Run Finished');
-						});
-					});
-					break;
-				case ".py":
-					var command = ['python', file.fileName];
-					if (isLinux)
-						command = fireJailArgs.concat(command);
-
-					self.startMessageResetter();
-					self.runner = spawn(command.shift(), command, {cwd: self.folderPath});
-					self.nsp.emit("readyForInput");
-
-					self.runner.stdout.on('data', function(data) {
-						if (self.checkMsgCount()) {
-							self.output += data;
-							self.nsp.emit("output", data.toString());
-							// process.stdout.write(data);
-						}
-					});
-
-					self.runner.stderr.on('data', function(data) {
-						self.output += data;
-						self.nsp.emit("outputError", data.toString());
-						self.outputError = true;
-						// process.stdout.write(data);
-					});
-
-					self.runner.on('exit', function() {
-						self.nsp.emit("runFinished");
-						clearInterval(self.msgCountResetter);
-						// console.log('Run Finished');
-					});
-					break;
-				case ".cpp":
-					var otherFiles = self.getCHeaders(file.text);
-					var command = 'g++ "' + file.fileName + '" ' + otherFiles;
-					if (isLinux)
-						command = fireJailStr + command;
-					exec(command, {cwd: self.folderPath}, function(error, stdout, stderr) {
-
-						if (error || stderr.trim()) {
-							// console.log("Projects - Compile Error Given");
-							// console.log(stderr.replace(/\n$/, "")); //regex gets rid of newline character
-
-							self.output = stderr;
-							self.outputError = true;
-
-							self.nsp.emit("outputError", stderr);
-							self.nsp.emit("runFinished");
-							return false; //breaks out of function
-						}
-
-						// file name without file extension
-						var command = isLinux ? './a.out' : 'a.exe';
-
-						self.startMessageResetter();
-						self.runner = spawn(command, {cwd: self.folderPath});
-						self.nsp.emit("readyForInput");
-
-						self.runner.stdout.on('data', function(data) {
-							if (self.checkMsgCount()) {
-								self.output += data;
-								self.nsp.emit("output", data.toString()+"\n");
-								// console.log(data.toString());
-							}
-						});
-
-						self.runner.stderr.on('data', function(data) {
-							self.output += data;
-							self.nsp.emit("outputError", data.toString()+"\n");
-							self.outputError = true;
-							// console.log(data.toString());
-						});
-
-						self.runner.on('exit', function() {
-							self.nsp.emit("runFinished");
-							clearInterval(self.msgCountResetter);
-							// console.log('Run Finished');
-						});
-					});
-					break;
-			}
-
-		});
-	});
-
+			user.save(function(err) {
+				if(err) throw err;
+			});
+    }
+  });
 }
 
 module.exports = router;

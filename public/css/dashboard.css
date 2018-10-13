@@ -303,3 +303,18 @@ Pricing page
     /* height: 120vh !important; */
   }
 }
+
+.notification {
+  font-size: 14px;
+  white-space: pre-wrap;
+}
+
+#unread-icon {
+  background-color: red;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  top: 4px;
+  left: 8px;
+  position: absolute;
+}

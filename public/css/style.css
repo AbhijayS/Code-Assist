@@ -16,6 +16,10 @@ body{
   color: #343a40 !important;
 }
 
+.navbar * {
+  user-select: none;
+}
+
 .page-overlay {
   position: absolute;
   background-color: #007bff;
@@ -199,4 +203,19 @@ body{
 .footerHeader {
   color: #343a40 !important;
   font-weight: bold;
+}
+
+.notification {
+  font-size: 14px;
+  white-space: pre-wrap;
+}
+
+#unread-icon {
+  background-color: red;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  top: 4px;
+  left: 8px;
+  position: absolute;
 }

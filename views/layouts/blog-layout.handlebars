@@ -85,16 +85,5 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.1/moment.min.js"></script>
     <script defer src="https://use.fontawesome.com/releases/v5.2.0/js/all.js" integrity="sha384-4oV5EgaV02iISL2ban6c/RmotsABqE4yZxZLcYMAdG7FAPsyHYAPpywE9PJo+Khy" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.slim.js"></script>
-
-    <script>
-    //Notification Reciever
-    $( document ).ready(function() {
-        var socket = io("/Notify{{user._id}}");
-        console.log(socket);
-        socket.on("notify",function(message){
-          alert(message);
-        });
-      });
-    </script>
   </body>
 </html>

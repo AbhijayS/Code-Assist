@@ -6,7 +6,11 @@ window.onload = function(){
 				[{ header: [1, 2, false] }],
 				['bold', 'italic', 'underline'],
 				['code-block']
-			]
+			],
+			'auto-links': {
+				paste: true,
+				type: true
+			}
 		},
 		theme: 'snow'
 	});
@@ -33,7 +37,7 @@ window.onload = function(){
 			return false;
 
 		$('#submit').prop('disabled', true);
- 
+
 		var description = JSON.stringify(quillEditor.getContents().ops);
 
 		var formData = new FormData();
