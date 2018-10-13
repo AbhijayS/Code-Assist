@@ -168,6 +168,11 @@ router.post('/share', function(req, res) {
 
 											// console.log("sharing with: " + user.email);
 
+											Notify(user._id, {
+												message: `<strong>${fromUser.username}</strong> invited you to their project named "<em>${project.name}</em>" <br><span style="color:green;"><strong>(Click to accept)</strong></span>`,
+												link: '/projects/invite/' + e_link
+											});
+
 											const msg = {
 												to: user.email,
 												from: `Code Assist <${process.env.SENDER_EMAIL}>`,
@@ -197,6 +202,11 @@ router.post('/share', function(req, res) {
 											});
 
 											// console.log("sharing with: " + user.email);
+
+											Notify(user._id, {
+												message: `<strong>${fromUser.username}</strong> invited you to their project named "<em>${project.name}</em>" <br><span style="color:green;"><strong>(Click to accept)</strong></span>`,
+												link: '/projects/invite/' + e_link
+											});
 
 											const msg = {
 												to: user.email,
