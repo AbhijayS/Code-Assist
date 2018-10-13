@@ -1,4 +1,4 @@
-easyrtc.setSocketUrl(":8888");
+easyrtc.setSocketUrl(":8081");
 
 var selfEasyrtcid = "";
 var connected = false;
