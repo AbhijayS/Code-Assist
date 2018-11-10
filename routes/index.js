@@ -262,6 +262,10 @@ router.get('/register', function(req, res){
     }
 });
 
+router.get('/register-school', function(req, res){
+  res.render('register-school', {layout: 'dashboard-layout'});
+});
+
 router.get('/logout', function(req, res) {
     req.logout();
     res.redirect('/login');

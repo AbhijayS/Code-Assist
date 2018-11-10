@@ -1,0 +1,104 @@
+<style>
+  .navbar {
+    display: none;
+  }
+</style>
+
+<div class="jumbotron container p-0 bg-white d-none d-md-block" style="margin-top: 5%; min-height: 500px; box-shadow: 0px 3px 20px 0px #0000000d; width: 65%;">
+  <div class="row w-100 m-0 rounded" style="min-height: 500px;">
+
+    <div class="col-sm-6 bg-white rounded-left pt-5 pl-5 p-0">
+      <p><a href="/"><i class="fas fa-home"></i> Home</a></p>
+      <div class="clippy rounded" style="-webkit-clip-path: ellipse(87% 49% at 31% 98%);
+clip-path: ellipse(87% 49% at 31% 98%); top:0; left: 0; height: 100%; z-index: 0; background-color: #0d75e8de;"></div>
+
+      <h1 class="text-left text-muted" style="font-weight: 200;">Code Assist</h1>
+      <p class="pr-4 pt-3">All in one collaboration tool for students, mentors, and teachers.</p>
+
+      <ul class="list-group text-right" style="position: absolute; bottom: 5%; right: 0px;">
+        <li class="list-group-item mb-4 ml-auto border-0" style="border-radius: 30px 0 0 30px; width: max-content; box-shadow: -3px 6px 4px 1px #00000026; background: linear-gradient(to right, white, #ffffffdb);"><i class="far fa-paper-plane"></i> Responsive Mentors</li>
+        <li class="list-group-item mb-4 ml-auto border-0" style="border-radius: 30px 0 0 30px; width: max-content; box-shadow: -3px 6px 4px 1px #00000026; background: linear-gradient(to right, white, #ffffffdb);"><i class="fas fa-people-carry"></i> Ask anyone in the Community</li>
+        <li class="list-group-item mb-4 ml-auto border-0" style="border-radius: 30px 0 0 30px; width: max-content; box-shadow: -3px 6px 4px 1px #00000026; background: linear-gradient(to right, white, #ffffffdb);"><i class="fas fa-project-diagram"></i> Collaborate on Projects</li>
+      </ul>
+
+    </div>
+
+    <div class="col-sm-6 pt-5 p-3" style="box-shadow: -4px 10px 9px 0px #0000000d;">
+      <h1 style="font-weight: bold;">Sign Up</h1>
+
+      <div class="p-1 mb-4">
+        <form method="post" action="/register-school">
+          <div class="form-group">
+            <label for="sel1">Are you a high school student?</label>
+            <select class="form-control" id="high-school-student">
+              <option>Yes</option>
+              <option>No</option>
+            </select>
+          </div>
+
+          <div id="school-div" class="form-group">
+            <label for="sel1">Please choose the high school you attend</label>
+            <!-- <p style="color: #696868; font-size: 13px; margin-bottom: 10px;"></p> -->
+            <select class="custom-select" id="school" name="school">
+              <option>Select a school</option>
+              <option>LASA High School</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <div id="school-name-div" class="form-group mb-4" style="display: none;">
+            <input type="text" class="form-control p-3" placeholder="School Name" name="school-custom">
+          </div>
+
+          <button type="submit" name="button" class="btn btn-primary btn-block btn-lg p-3 mx-auto mb-2" style="border-radius: 40px;">Finish Sign Up</button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="jumbotron container bg-white d-md-none">
+  <p><a href="/"><i class="fas fa-home"></i> Home</a></p>
+  <hr>
+  <h1 style="font-weight: bold;">Sign Up</h1>
+
+
+	<div class="p-1 mb-4">
+		<form method="post" action="/register">
+			<div class="form-group mb-4">
+				<input type="text" class="form-control p-3 {{#if usernameTaken}}is-invalid{{else if invalidUsername}}is-invalid{{/if}}" placeholder="username" style="border-radius: 40px;" value="{{username}}" name="username" autofocus>
+				<div class="invalid-feedback">
+					{{#if invalidUsername}}
+					Invalid Username.
+					{{else if usernameTaken}}
+					Username has been taken.
+					{{/if}}
+				</div>
+			</div>
+
+			<div class="form-group mb-4">
+				<input type="text" class="form-control p-3 {{#if emailTaken}}is-invalid{{else if invalidEmail}}is-invalid{{/if}}" placeholder="email" style="border-radius: 40px;" value="{{email}}" name="email">
+				<div class="invalid-feedback">
+					{{#if invalidEmail}}
+					Invalid Email.
+					{{else if emailTaken}}
+					Email has been taken.
+					{{/if}}
+				</div>
+			</div>
+
+			<div class="form-group mb-4">
+				<input type="password" class="form-control p-3 {{#if invalidPassword}}is-invalid{{/if}}" placeholder="password" style="border-radius: 40px;" name="password">
+				<div class="invalid-feedback">
+					Invalid Password.
+				</div>
+			</div>
+
+			<button type="submit" name="button" class="btn btn-primary btn-block btn-lg p-3 mx-auto mb-2" style="border-radius: 40px;">Finish Signup</button>
+		</form>
+	</div>
+
+</div>
+
+<script type="text/javascript" src="/js/register-school.js"></script>
