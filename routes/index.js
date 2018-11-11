@@ -264,6 +264,7 @@ router.get('/register', function(req, res){
 
 router.get('/register-school', function(req, res){
   if (req.user) {
+    req.flash('updatingInfo');
     if (req.user.high_school_student == null && req.user.school_name == null)
       res.render('register-school', {layout: 'dashboard-layout', schoolEmpty: req.flash("error") == "schoolEmpty" ? true:false});
     else
