@@ -265,7 +265,7 @@ router.get('/register', function(req, res){
 router.get('/register-school', function(req, res){
   if (req.user) {
     if (req.user.high_school_student == null && req.user.school_name == null)
-      res.render('register-school', {layout: 'dashboard-layout'});
+      res.render('register-school', {layout: 'dashboard-layout', schoolEmpty: req.flash("error") == "schoolEmpty" ? true:false});
     else
       res.redirect('/update-school');
   } else {
@@ -275,11 +275,12 @@ router.get('/register-school', function(req, res){
 
 router.get('/update-school', function(req, res){
   if (req.user) {
+    req.flash('updatingInfo');
     req.flash('updatingInfo', 'updating');
     if (req.user.other_school) {
-      res.render('register-school', {layout: 'dashboard-layout', updatingInfo: true, school: "Other", other_school_name: req.user.school_name});
+      res.render('register-school', {layout: 'dashboard-layout', updatingInfo: true, high_school_student: req.user.high_school_student ? "Yes" : "No", school: "Other", other_school_name: req.user.school_name, schoolInvalid: req.flash("error") == "schoolInvalid" ? true:false});
     } else {
-      res.render('register-school', {layout: 'dashboard-layout', updatingInfo: true, school: req.user.school_name});
+      res.render('register-school', {layout: 'dashboard-layout', updatingInfo: true, high_school_student: req.user.high_school_student ? "Yes" : "No", school: req.user.school_name, schoolInvalid: req.flash("error") == "schoolInvalid" ? true:false});
     }
   } else {
     res.redirect('/');
@@ -345,6 +346,7 @@ router.post('/register-school', function(req, res) {
     var isStudent = req.body.student;
     var school = req.body.school;
     var schoolCustom = req.body.schoolCustom;
+    var updatingInfo = req.flash('updatingInfo');
 
     if (isStudent == "Yes") {
       req.user.high_school_student = true;
@@ -355,16 +357,23 @@ router.post('/register-school', function(req, res) {
         req.user.school_name = schoolCustom;
         req.user.other_school = true;
       } else {
-        return res.render('register-school', {layout: 'dashboard-layout', schoolEmpty: true});
+        if (updatingInfo == 'updating') {
+          req.flash("error", "schoolInvalid");
+          return res.redirect("/update-school");
+        } else {
+          req.flash("error", "schoolEmpty");
+          return res.redirect("/register-school");
+        }
       }
     } else {
       req.user.high_school_student = false;
       req.user.school_name = null;
+      req.user.other_school = false;
     }
 
     req.user.save(function (err) {
       if (err) throw err;
-      if (req.flash('updatingInfo') == 'updating')
+      if (updatingInfo == 'updating')
         res.redirect("/account");
       else
         res.redirect("/dashboard");

@@ -12,6 +12,7 @@ window.onload = function() {
       $("#school-name-div").show();
     } else {
       $("#school-name-div").hide();
+      $("#schoolCustomInput").val('');
     }
 
     if ($(this).val())
