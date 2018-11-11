@@ -37,8 +37,14 @@ app.use(yes_https());
 
 // Create App Instance
 var hbs = exphbs({
-	defaultLayout: 'layout'
+	defaultLayout: 'layout',
+	helpers: {
+		select: function(selected, options) {
+		    return options.fn(this).replace( new RegExp(' value=\"' + selected + '\"'), '$& selected="selected"').replace( new RegExp('>' + selected + '</option>'), ' selected="selected"$&');
+		}
+	}
 });
+
 // View Engine
 app.set('views', path.join(__dirname, 'views'));
 app.engine('handlebars', hbs);

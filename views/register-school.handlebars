@@ -24,13 +24,13 @@ clip-path: ellipse(87% 49% at 31% 98%); top:0; left: 0; height: 100%; z-index: 0
     </div>
 
     <div class="col-sm-6 pt-5 p-3" style="box-shadow: -4px 10px 9px 0px #0000000d;">
-      <h1 style="font-weight: bold;">Sign Up</h1>
+      <h1 style="font-weight: bold;">{{#unless updatingInfo}}Sign Up{{else}}Update School Info{{/unless}}</h1>
 
       <div class="p-1 mb-4">
         <form method="post" action="/register-school">
           <div class="form-group">
             <label for="sel1">Are you a high school student?</label>
-            <select class="form-control" id="high-school-student">
+            <select class="form-control" id="high-school-student" name="student">
               <option>Yes</option>
               <option>No</option>
             </select>
@@ -39,18 +39,21 @@ clip-path: ellipse(87% 49% at 31% 98%); top:0; left: 0; height: 100%; z-index: 0
           <div id="school-div" class="form-group">
             <label for="sel1">Please choose the high school you attend</label>
             <!-- <p style="color: #696868; font-size: 13px; margin-bottom: 10px;"></p> -->
-            <select class="custom-select" id="school" name="school">
-              <option>Select a school</option>
+            <select class="custom-select {{#if schoolEmpty}}is-invalid{{/if}}" id="school" name="school">
+              {{#select school}}
+              <option value="">Select a school</option>
               <option>LASA High School</option>
               <option>Other</option>
+              {{/select}}
             </select>
+            <div class="invalid-feedback">Please select a school</div>
           </div>
 
-          <div id="school-name-div" class="form-group mb-4" style="display: none;">
-            <input type="text" class="form-control p-3" placeholder="School Name" name="school-custom">
+          <div id="school-name-div" class="form-group mb-4" {{#unless other_school_name}}style="display: none;"{{/unless}}>
+            <input type="text" class="form-control p-3" placeholder="School Name" name="schoolCustom" value="{{other_school_name}}">
           </div>
 
-          <button type="submit" name="button" class="btn btn-primary btn-block btn-lg p-3 mx-auto mb-2" style="border-radius: 40px;">Finish Sign Up</button>
+          <button type="submit" name="button" class="btn btn-primary btn-block btn-lg p-3 mx-auto mb-2" style="border-radius: 40px;">{{#unless updatingInfo}}Finish Sign Up{{else}}Save Changes{{/unless}}</button>
         </form>
       </div>
 
@@ -61,42 +64,40 @@ clip-path: ellipse(87% 49% at 31% 98%); top:0; left: 0; height: 100%; z-index: 0
 <div class="jumbotron container bg-white d-md-none">
   <p><a href="/"><i class="fas fa-home"></i> Home</a></p>
   <hr>
-  <h1 style="font-weight: bold;">Sign Up</h1>
-
 
 	<div class="p-1 mb-4">
-		<form method="post" action="/register">
-			<div class="form-group mb-4">
-				<input type="text" class="form-control p-3 {{#if usernameTaken}}is-invalid{{else if invalidUsername}}is-invalid{{/if}}" placeholder="username" style="border-radius: 40px;" value="{{username}}" name="username" autofocus>
-				<div class="invalid-feedback">
-					{{#if invalidUsername}}
-					Invalid Username.
-					{{else if usernameTaken}}
-					Username has been taken.
-					{{/if}}
-				</div>
-			</div>
+    <h1 style="font-weight: bold;">{{#unless updatingInfo}}Sign Up{{else}}Update School Info{{/unless}}</h1>
 
-			<div class="form-group mb-4">
-				<input type="text" class="form-control p-3 {{#if emailTaken}}is-invalid{{else if invalidEmail}}is-invalid{{/if}}" placeholder="email" style="border-radius: 40px;" value="{{email}}" name="email">
-				<div class="invalid-feedback">
-					{{#if invalidEmail}}
-					Invalid Email.
-					{{else if emailTaken}}
-					Email has been taken.
-					{{/if}}
-				</div>
-			</div>
+    <div class="p-1 mb-4">
+      <form method="post" action="/register-school">
+        <div class="form-group">
+          <label for="sel1">Are you a high school student?</label>
+          <select class="form-control" id="high-school-student" name="student">
+            <option>Yes</option>
+            <option>No</option>
+          </select>
+        </div>
 
-			<div class="form-group mb-4">
-				<input type="password" class="form-control p-3 {{#if invalidPassword}}is-invalid{{/if}}" placeholder="password" style="border-radius: 40px;" name="password">
-				<div class="invalid-feedback">
-					Invalid Password.
-				</div>
-			</div>
+        <div id="school-div" class="form-group">
+          <label for="sel1">Please choose the high school you attend</label>
+          <!-- <p style="color: #696868; font-size: 13px; margin-bottom: 10px;"></p> -->
+          <select class="custom-select {{#if schoolEmpty}}is-invalid{{/if}}" id="school" name="school">
+            {{#select school}}
+            <option value="">Select a school</option>
+            <option>LASA High School</option>
+            <option>Other</option>
+            {{/select}}
+          </select>
+          <div class="invalid-feedback">Please select a school</div>
+        </div>
 
-			<button type="submit" name="button" class="btn btn-primary btn-block btn-lg p-3 mx-auto mb-2" style="border-radius: 40px;">Finish Signup</button>
-		</form>
+        <div id="school-name-div" class="form-group mb-4" {{#unless other_school_name}}style="display: none;"{{/unless}}>
+          <input type="text" class="form-control p-3" placeholder="School Name" name="schoolCustom" value="{{other_school_name}}">
+        </div>
+
+        <button type="submit" name="button" class="btn btn-primary btn-block btn-lg p-3 mx-auto mb-2" style="border-radius: 40px;">{{#unless updatingInfo}}Finish Sign Up{{else}}Save Changes{{/unless}}</button>
+      </form>
+    </div>
 	</div>
 
 </div>

@@ -263,7 +263,27 @@ router.get('/register', function(req, res){
 });
 
 router.get('/register-school', function(req, res){
-  res.render('register-school', {layout: 'dashboard-layout'});
+  if (req.user) {
+    if (req.user.high_school_student == null && req.user.school_name == null)
+      res.render('register-school', {layout: 'dashboard-layout'});
+    else
+      res.redirect('/update-school');
+  } else {
+    res.redirect('/');
+  }
+});
+
+router.get('/update-school', function(req, res){
+  if (req.user) {
+    req.flash('updatingInfo', 'updating');
+    if (req.user.other_school) {
+      res.render('register-school', {layout: 'dashboard-layout', updatingInfo: true, school: "Other", other_school_name: req.user.school_name});
+    } else {
+      res.render('register-school', {layout: 'dashboard-layout', updatingInfo: true, school: req.user.school_name});
+    }
+  } else {
+    res.redirect('/');
+  }
 });
 
 router.get('/logout', function(req, res) {
@@ -318,6 +338,41 @@ router.get('/identicon/:username', function(req, res){
    'Content-Length': img.length
  });
  res.end(img);
+});
+
+router.post('/register-school', function(req, res) {
+  if (req.user) {
+    var isStudent = req.body.student;
+    var school = req.body.school;
+    var schoolCustom = req.body.schoolCustom;
+
+    if (isStudent == "Yes") {
+      req.user.high_school_student = true;
+      if (school && school != "Other") {
+        req.user.school_name = school;
+        req.user.other_school = false;
+      } else if (schoolCustom){
+        req.user.school_name = schoolCustom;
+        req.user.other_school = true;
+      } else {
+        return res.render('register-school', {layout: 'dashboard-layout', schoolEmpty: true});
+      }
+    } else {
+      req.user.high_school_student = false;
+      req.user.school_name = null;
+    }
+
+    req.user.save(function (err) {
+      if (err) throw err;
+      if (req.flash('updatingInfo') == 'updating')
+        res.redirect("/account");
+      else
+        res.redirect("/dashboard");
+      // saved!
+    });
+  } else {
+    req.end();
+  }
 });
 
 // Register User
@@ -383,10 +438,11 @@ router.post('/register', function(req, res) {
                   }).end(function(err, response) {
                     if (response.status < 300 || (response.status === 400 && response.body.title === "Member Exists")) {
                       // sign up successful
-                      res.redirect('/dashboard');
+                      res.redirect('/register-school');
                     } else {
                       // res.send('Sign Up Failed :( Sorry, this is on our end');
-                      res.redirect('/login');
+                      res.redirect('/register-school');
+                      // res.redirect('/login'); // **** uncomment this later
                     }
                 });
               })

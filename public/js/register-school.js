@@ -13,5 +13,8 @@ window.onload = function() {
     } else {
       $("#school-name-div").hide();
     }
+
+    if ($(this).val())
+      $(this).removeClass("is-invalid");
   });
 };
