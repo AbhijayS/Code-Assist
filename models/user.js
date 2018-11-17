@@ -150,7 +150,18 @@ var ProjectSchema = new Schema({
 
 	status: {type: String, default: "new"}, // new, using, unused
 
-	publicProject: false
+	publicProject: false,
+
+  school_assignment: Boolean,
+  assignment_name: String,
+  assignment_other: Boolean
+});
+
+var SchoolSchema = new Schema ({
+  school_name: String,
+  assignments: [{
+    type: String
+  }]
 });
 
 // Post Schema
@@ -217,6 +228,7 @@ var ProjectSchema = mongoose.model('ProjectSchema', ProjectSchema);
 // var ProjectFileSchema = mongoose.model('ProjectFileSchema', ProjectFileSchema);
 var ChatSchema = mongoose.model('ChatSchema', ChatSchema);
 var NotificationSchema = mongoose.model('NotificationSchema', NotificationSchema);
+var SchoolSchemaSchema = mongoose.model('SchoolSchema', SchoolSchema);
 
 
 module.exports = {
@@ -228,7 +240,8 @@ module.exports = {
 	ProjectSchema: ProjectSchema,
 	// ProjectFileSchema: ProjectFileSchema,
 	ChatSchema: ChatSchema,
-	NotificationSchema: NotificationSchema
+	NotificationSchema: NotificationSchema,
+  SchoolSchema: SchoolSchema
 }
 
 CommunitySchema.findOne({}).populate('posts').exec(function(err, community) {

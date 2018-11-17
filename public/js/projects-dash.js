@@ -30,7 +30,7 @@ function() {
       if(data.auth) {
         window.location.replace(data.url);
       }else{
-        submitForm.find('input').addClass('is-invalid');
+        $('#project_name').addClass('is-invalid');
         if(data.url) {
           window.location.replace(data.url);
         }
