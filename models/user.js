@@ -41,6 +41,10 @@ var UserSchema = new Schema({
 			index: true
 		},
 
+    high_school_student: Boolean,
+    school_name: String,
+    other_school: Boolean,
+
 		pic: String,
 
 		profile: {
