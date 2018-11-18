@@ -165,9 +165,10 @@
                       Invalid project name.
                     </div>
                   </div>
+                  {{#if student}}
                   <div class="form-group">
                     <label for="is-assignment">Is this project for a school assignment?</label>
-                    <select class="custom-select" id="is-assignment" name="is-assignment">
+                    <select class="custom-select" id="is_assignment" name="is_assignment">
                       <option>No</option>
                       <option>Yes</option>
                     </select>
@@ -175,14 +176,16 @@
                   <div class="form-group" id="assignment-div" style="display: none;">
                     <label for="assignment">Choose the assignment name</label>
                     <select class="custom-select" id="assignment" name="assignment">
-                      <option>World Data</option>
-                      <option>Lexical Analysis</option>
+                      {{#each assignments}}
+                      <option>{{this}}</option>
+                      {{/each}}
                       <option>Other</option>
                     </select>
                   </div>
                   <div class="form-group" id="assignment-custom-div" style="display: none;">
-                    <input type="text" class="form-control" maxlength="50" name="assignment-custom" id="assignment-custom"  placeholder="Assignment Name" autocomplete="off">
+                    <input type="text" class="form-control" maxlength="50" name="assignment_custom" id="assignment_custom"  placeholder="Assignment Name" autocomplete="off">
                   </div>
+                  {{/if}}
                 </div>
 
                 <div class="col-12">

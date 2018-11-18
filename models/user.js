@@ -162,7 +162,7 @@ var ProjectSchema = new Schema({
 });
 
 var SchoolSchema = new Schema ({
-  school_name: String,
+  name: String,
   assignments: [{
     type: String
   }]
@@ -232,7 +232,7 @@ var ProjectSchema = mongoose.model('ProjectSchema', ProjectSchema);
 // var ProjectFileSchema = mongoose.model('ProjectFileSchema', ProjectFileSchema);
 var ChatSchema = mongoose.model('ChatSchema', ChatSchema);
 var NotificationSchema = mongoose.model('NotificationSchema', NotificationSchema);
-var SchoolSchemaSchema = mongoose.model('SchoolSchema', SchoolSchema);
+var SchoolSchema = mongoose.model('SchoolSchema', SchoolSchema);
 
 
 module.exports = {

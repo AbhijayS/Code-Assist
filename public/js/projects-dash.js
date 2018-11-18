@@ -26,7 +26,14 @@ function() {
   $('.createNewProject').submit(function(event) {
     event.preventDefault();
     var submitForm = $(this);
-    $.post('/projects/', {project_name: submitForm.find('input').val(), inviteMentor: submitForm.hasClass('mentor-invite'), inviteUser: submitForm.hasClass('user-invite')}, function(data){
+    $.post('/projects/', {
+      project_name: $("#project_name").val(),
+      inviteMentor: submitForm.hasClass('mentor-invite'),
+      inviteUser: submitForm.hasClass('user-invite'),
+      is_assignment: $("#is_assignment").val(),
+      assignment: $("#assignment").val(),
+      assignment_custom: $("#assignment_custom").val()
+    }, function(data){
       if(data.auth) {
         window.location.replace(data.url);
       }else{

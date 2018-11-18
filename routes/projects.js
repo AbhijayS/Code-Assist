@@ -61,7 +61,16 @@ router.get('/', function(req, res) {
 			var inviteUser = req.flash('invite-user');
 			var inviteMentor = req.flash('invite-mentor');
 
-			res.render('projects', {layout: 'projects-layout', expanded: req.flash('start-project'), projects: projects, invite_mentor: inviteMentor, invite_user: inviteUser});
+			if (user.high_school_student && user.school_name) {
+				User.SchoolSchema.findOne({name: user.school_name}, function(err, school) {
+					var assignments = school ? school.assignments : null;
+
+					res.render('projects', {layout: 'projects-layout', expanded: req.flash('start-project'), projects: projects, invite_mentor: inviteMentor, invite_user: inviteUser, student: true, assignments: assignments});
+				});
+			} else {
+				res.render('projects', {layout: 'projects-layout', expanded: req.flash('start-project'), projects: projects, invite_mentor: inviteMentor, invite_user: inviteUser});
+			}
+
 		});
 	}else{
 		req.flash('origin');
@@ -74,6 +83,14 @@ router.get('/', function(req, res) {
 router.post('/', function(req, res) {
 	var project_name = req.body.project_name;
 
+	var is_assignment = req.body.is_assignment;
+	var assignment = req.body.assignment;
+	var assignment_custom = req.body.assignment_custom;
+
+	console.log("is_assignment:", is_assignment);
+	console.log("assignment:", assignment);
+	console.log("assignment_custom:", assignment_custom);
+
 	if(req.user) {
 		if((project_name.length > 1) && (project_name.length <= 20) && !(project_name.includes('/'))) {
 			var newProject = new User.ProjectSchema();
@@ -81,6 +98,19 @@ router.post('/', function(req, res) {
 			newProject.owner = req.user._id;
 			newProject.thumbnail = project_name.trim().substring(0, 1);
 			newProject.status = "new";
+
+			if (is_assignment == "Yes") {
+				newProject.school_assignment = true;
+				if (assignment && assignment != "Other") {
+					newProject.assignment_name = assignment;
+					newProject.assignment_other = false;
+				} else {
+					newProject.assignment_name = assignment_custom;
+					newProject.assignment_other = true;
+				}
+			} else {
+				newProject.school_assignment = false;
+			}
 
 			newProject.save(function(err) {
 				if(err) throw err;
