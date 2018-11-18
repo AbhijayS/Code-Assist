@@ -27,7 +27,7 @@ function() {
     event.preventDefault();
     var submitForm = $(this);
     $.post('/projects/', {
-      project_name: $("#project_name").val(),
+      project_name: submitForm.find("#project_name").val(),
       inviteMentor: submitForm.hasClass('mentor-invite'),
       inviteUser: submitForm.hasClass('user-invite'),
       is_assignment: $("#is_assignment").val(),
