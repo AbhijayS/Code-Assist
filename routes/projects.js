@@ -87,10 +87,6 @@ router.post('/', function(req, res) {
 	var assignment = req.body.assignment;
 	var assignment_custom = req.body.assignment_custom;
 
-	console.log("is_assignment:", is_assignment);
-	console.log("assignment:", assignment);
-	console.log("assignment_custom:", assignment_custom);
-
 	if(req.user) {
 		if((project_name.length > 1) && (project_name.length <= 20) && !(project_name.includes('/'))) {
 			var newProject = new User.ProjectSchema();
