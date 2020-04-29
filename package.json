@@ -38,7 +38,7 @@
     "handlebars": "^4.0.11",
     "handlebars.moment": "^1.0.4",
     "identicon.js": "^2.3.2",
-    "jquery": "^3.3.1",
+    "jquery": "^3.5.0",
     "method-override": "^2.3.10",
     "mongodb": "*",
     "mongoose": "*",
